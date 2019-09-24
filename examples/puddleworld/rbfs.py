@@ -53,5 +53,5 @@ def make_experiment(
 
 if __name__ == '__main__':
     experiment = make_experiment(1)
-    experiment.run(visualize_learning=True)
+    experiment.run(visualize_learning=True, visualize_steps=True)
     experiment.plot()

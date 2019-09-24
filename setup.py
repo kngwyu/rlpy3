@@ -7,7 +7,6 @@ BSD license.
 """
 import sys
 import glob
-import multiprocessing
 try:
     from setuptools import setup, Command, find_packages
 except ImportError:
@@ -158,6 +157,7 @@ class CleanCommand(Command):
             except Exception:
                 pass
 
+
 cmdclass = {'clean': CleanCommand,
             'build': build,
             'sdist': CheckSDist}
@@ -172,7 +172,7 @@ else:
     cmdclass['build_ext'] = CheckingBuildExt
 
 # only use Cython if explicitly told
-USE_CYTHON =  os.getenv('USE_CYTHON', False)
+USE_CYTHON = os.getenv('USE_CYTHON', False)
 # always cythonize if C-files are not present
 USE_CYTHON = not os.path.exists("rlpy/Representations/hashing.c") or USE_CYTHON
 extensions = [
@@ -192,6 +192,7 @@ extensions = [
                     ["rlpy/Tools/transformations.c"],
                     include_dirs=[])]
 
+
 def no_cythonize(extensions, **_ignore):
     for extension in extensions:
         sources = []
@@ -209,33 +210,33 @@ def no_cythonize(extensions, **_ignore):
         extension.sources[:] = sources
     return extensions
 
+
 if cython:
     from Cython.Build import cythonize
     extensions = cythonize(extensions)
 else:
     extensions = no_cythonize(extensions)
 
-setup(name="rlpy",
+setup(name="rlpy3",
       version=version,
-      maintainer="Christoph Dann",
-      maintainer_email="cdann@cdann.de",
+      maintainer="Yuji Kanagawa",
+      maintainer_email="yuji.kngw.80s.revive@gmail.com",
       license="BSD 3-clause",
       description="Value-Function-Based Reinforcement-Learning Library for"
-                  + " Education and Research",
-      url="http://acl.mit.edu/rlpy/",
+                  + " Education and Research: Python3 Fork",
+      url="https://github.com/kngwyu/rlpy",
       classifiers=['Intended Audience :: Science/Research',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved',
                    'Programming Language :: C++',
                    'Programming Language :: Python',
                    'Topic :: Scientific/Engineering',
-                   'Operating System :: Microsoft :: Windows',
-                   'Operating System :: POSIX',
-                   'Operating System :: Unix',
-                   'Operating System :: MacOS',
-                   'Programming Language :: Python :: 2',
-                   'Programming Language :: Python :: 2.7',
-                  ],
+                   'Operating System :: POSIX :: Linux',
+                   'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.5',
+                   'Programming Language :: Python :: 3.6',
+                   'Programming Language :: Python :: 3.7',
+      ],
       zip_safe=False,
       cmdclass=cmdclass,
       long_description=open('README.rst').read(),

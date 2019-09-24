@@ -1,11 +1,17 @@
 .. -*- mode: rst -*-
+|Azure|_
 
-|Travis|_
+.. |Azure| image:: https://dev.azure.com/kngwyu/RLPy/_apis/build/status/kngwyu.rlpy?branchName=master
+.. _Azure: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=2&branchName=master
 
-.. |Travis| image:: https://api.travis-ci.org/rlpy/rlpy.png?branch=master
-.. _Travis: https://travis-ci.org/rlpy/rlpy
+Why Fork?
+======================================
+This is my fork of RLPy.
+Since the PyPI version of RLPy is not compatible with the latest numpy C-API,
+I forked the repo and am hosting ManyLinux wheels on Azure.
+I don't intend to edit codes.
 
-RLPy - Reinforment Learning Framework
+Original README: RLPy - Reinforment Learning Framework
 ======================================
 
 RLPy is a framework to conduct sequential decision making experiments. The

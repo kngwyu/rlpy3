@@ -16,3 +16,4 @@ Config.py
 dist
 *.egg-info
 *.bak
+.eggs

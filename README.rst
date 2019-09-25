@@ -1,13 +1,16 @@
 |Azure|_
 
-.. |Azure| image:: https://dev.azure.com/kngwyu/RLPy/_apis/build/status/kngwyu.rlpy?branchName=master
-.. _Azure: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=2&branchName=master
+.. |Azure| image:: https://dev.azure.com/kngwyu/RLPy/_apis/build/status/kngwyu.rlpy3?branchName=master
+.. _Azure: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=3&branchName=master
 
 Why Fork?
 ======================================
 This is my fork of RLPy.
 Since the PyPI version of RLPy is not compatible with the latest numpy C-API,
-I forked the repo and am building ManyLinux wheels on Azure.
+I forked the repo and am building ManyLinux wheels for Python3 on Azure.
+You can download these wheels from `PyPI`_.
+
+.. _PyPI: https://pypi.org/project/rlpy3
 
 
 Original README: RLPy - Reinforment Learning Framework

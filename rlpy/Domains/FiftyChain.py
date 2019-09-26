@@ -1,15 +1,4 @@
 """Fifty state chain."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from past.utils import old_div
 from rlpy.Tools import plt, mpatches
 import numpy as np
 from .Domain import Domain
@@ -185,13 +174,13 @@ class FiftyChain(Domain):
             self.domain_fig.set_xlim(0, self.chainSize * 2 / 10.0)
             self.domain_fig.set_ylim(0, 2)
             self.domain_fig.add_patch(
-                mpatches.Circle((old_div(1, 5.0) + 2 / 10.0 * (self.chainSize - 1),
+                mpatches.Circle((0.2 + 2 / 10.0 * (self.chainSize - 1),
                                  self.Y),
                                 self.RADIUS * 1.1,
                                 fc="w"))  # Make the last one double circle
             self.domain_fig.xaxis.set_visible(False)
             self.domain_fig.yaxis.set_visible(False)
-            self.circles = [mpatches.Circle((old_div(1, 5.0) + 2 / 10.0 * i, self.Y), self.RADIUS, fc="w")
+            self.circles = [mpatches.Circle((0.2 + 2 / 10.0 * i, self.Y), self.RADIUS, fc="w")
                             for i in range(self.chainSize)]
             for i in range(self.chainSize):
                 self.domain_fig.add_patch(self.circles[i])

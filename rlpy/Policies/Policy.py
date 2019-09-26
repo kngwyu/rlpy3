@@ -1,17 +1,8 @@
 """Policy base class"""
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
 from rlpy.Tools import className, discrete_sample
 import numpy as np
 import logging
-from abc import ABCMeta, abstractmethod
-from future.utils import with_metaclass
+from abc import ABC, abstractmethod
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
@@ -20,7 +11,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Policy(object):
+class Policy(ABC):
 
     """The Policy determines the discrete action that an
     :py:class:`~rlpy.Agents.Agent.Agent` will take  given its
@@ -40,8 +31,6 @@ class Policy(object):
         All new policy implementations should inherit from Policy.
 
     """
-
-    __netaclass__ = ABCMeta
     representation = None
     DEBUG = False
     # A seeded numpy random number generator
@@ -106,8 +95,7 @@ class Policy(object):
             print(property, ": ", value)
 
 
-class DifferentiablePolicy(with_metaclass(ABCMeta, Policy)):
-
+class DifferentiablePolicy(ABC):
     def pi(self, s, terminal, p_actions):
         """Sample action from policy"""
         p = self.probabilities(s, terminal)

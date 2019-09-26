@@ -1,15 +1,4 @@
 """Pacman game domain."""
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from builtins import super
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from builtins import object
 from rlpy.Tools import __rlpy_location__
 from .Domain import Domain
 from .PacmanPackage import layout, pacman, game, ghostAgents
@@ -17,7 +6,6 @@ from .PacmanPackage import graphicsDisplay
 import numpy as np
 from copy import deepcopy
 import os
-import time
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",

@@ -1,16 +1,4 @@
 """Standard Experiment for Learning Control in RL."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from builtins import object
-from past.utils import old_div
 import logging
 from rlpy.Tools import plt
 import numpy as np
@@ -407,7 +395,7 @@ class Experiment(object):
                 self.domain.show(a, self.agent.representation)
 
             # Check Performance
-            if total_steps % (old_div(self.max_steps, self.num_policy_checks)) == 0:
+            if total_steps % (self.max_steps // self.num_policy_checks) == 0:
                 self.elapsed_time = deltaT(
                     self.start_time) - self.total_eval_time
 

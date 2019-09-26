@@ -1,14 +1,4 @@
 """Radial Basis Function Representation"""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from past.utils import old_div
 from rlpy.Tools import perms
 from .Representation import Representation
 import numpy as np
@@ -110,10 +100,9 @@ class RBF(Representation):
                     self.rbfs_mu[i, d] = self.random_state.uniform(
                         self.domain.statespace_limits[d, 0],
                         self.domain.statespace_limits[d, 1])
-                    self.rbfs_sigma[i,
-                                    d] = self.random_state.uniform(
-                        old_div(dim_widths[d], self.resolution_max),
-                        old_div(dim_widths[d], self.resolution_min))
+                    self.rbfs_sigma[i, d] = self.random_state.uniform(
+                        dim_widths[d] / self.resolution_max,
+                        dim_widths[d] / self.resolution_min)
 
     def phi_nonTerminal(self, s):
         F_s = np.ones(self.features_num)
@@ -121,8 +110,9 @@ class RBF(Representation):
             s = s[self.state_dimensions]
 
         exponent = np.sum(
-            0.5 * (old_div((s - self.rbfs_mu), self.rbfs_sigma)) ** 2,
-            axis=1)
+            .5 * ((s - self.rbfs_mu) / self.rbfs_sigma) ** 2,
+            axis=1
+        )
         if self.const_feature:
             F_s[:-1] = np.exp(-exponent)
         else:

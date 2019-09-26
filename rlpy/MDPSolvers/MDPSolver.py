@@ -1,13 +1,5 @@
 """MDP Solver base class."""
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import numpy as np
 import logging
 from copy import deepcopy
@@ -15,7 +7,6 @@ from rlpy.Tools import className, deltaT, hhmmss, clock, l_norm, vec2id, checkNC
 from collections import defaultdict
 import os
 import json
-from future.utils import with_metaclass
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
@@ -24,7 +15,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "N. Kemal Ure"
 
 
-class MDPSolver(with_metaclass(ABCMeta, object)):
+class MDPSolver(ABC):
 
     """MDPSolver is the base class for model based reinforcement learning agents and
     planners.
@@ -108,9 +99,6 @@ class MDPSolver(with_metaclass(ABCMeta, object)):
             'Value of S0 is = %0.5f' %
             self.representation.V(*self.domain.s0()))
         self.saveStats()
-
-    def printAll(self):
-        printClass(self)
 
     def BellmanBackup(self, s, a, ns_samples, policy=None):
         """Applied Bellman Backup to state-action pair s,a

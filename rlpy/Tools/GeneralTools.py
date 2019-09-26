@@ -1,20 +1,4 @@
 """General Tools for use throughout RLPy"""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-
-from builtins import int
-from builtins import round
-from builtins import dict
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import filter
-from builtins import zip
-from builtins import range
-from past.utils import old_div
 def module_exists(module_name):
     try:
         __import__(module_name)
@@ -99,9 +83,7 @@ if module_exists('sklearn'):
     from sklearn import svm
 else:
     'sklearn is not available => No BEBF representation available'
-from scipy import stats
-from scipy import misc
-from scipy import linalg
+from scipy import linalg, stats, special
 from scipy.sparse import linalg as slinalg
 from scipy import sparse as sp
 from time import clock
@@ -167,7 +149,7 @@ def cartesian(arrays, out=None):
     if out is None:
         out = np.zeros([n, len(arrays)], dtype=dtype)
 
-    m = old_div(n, arrays[0].size)
+    m = n // arrays[0].size
     out[:, 0] = np.repeat(arrays[0], m)
     if arrays[1:]:
         cartesian(arrays[1:], out=out[0:m, 1:])
@@ -282,8 +264,8 @@ def bin2state(bin, num_bins, limits):
     in the middle of the bin (ie, the average of the discretizations around it)
 
     """
-    bin_width = old_div((limits[1] - limits[0]), (num_bins * 1.))
-    return bin * bin_width + old_div(bin_width, 2.0) + limits[0]
+    bin_width = (limits[1] - limits[0]) / num_bins
+    return bin * bin_width + bin_width / 2 + limits[0]
 
 
 def state2bin(s, num_bins, limits):
@@ -391,7 +373,7 @@ def make_colormap(colors):
     n = len(z)
     z1 = min(z)
     zn = max(z)
-    x0 = old_div((z - z1), ((zn - z1) * 1.))
+    x0 = (z - z1) / (zn - z1)
 
     CC = ColorConverter()
     R = []
@@ -533,12 +515,12 @@ def normpdf(x, mu, sigma):
 
 
 def factorial(x):
-    return misc.factorial(x)
+    return special.factorial(x)
 
 
 def nchoosek(n, k):
     """ Returns combination n choose k. """
-    return misc.comb(n, k)
+    return special.comb(n, k)
 
 
 def findElemArray1D(x, arr):
@@ -936,7 +918,7 @@ def drawHist(data, bins=50, fig=101):
     """
     hist, bins = np.histogram(data, bins=bins)
     width = 0.7 * (bins[1] - bins[0])
-    center = old_div((bins[:-1] + bins[1:]), 2)
+    center = (bins[:-1] + bins[1:]) / 2
     plt.figure(fig)
     plt.bar(center, hist, align='center', width=width)
 
@@ -1091,20 +1073,7 @@ def regularize(A):
 
 def sparsity(A):
     """ Returns the percentage of nonzero elements in ``A``. """
-    return (1 - old_div(np.count_nonzero(A), (np.prod(A.shape) * 1.))) * 100
-
-
-# CURRENTLY UNUSED
-def incrementalAverageUpdate(avg, sample, sample_number):
-    """
-    :param avg: the old average
-    :param sample: the new sample to update the average with
-    :param sample_number: the current sample number (#samples observed so far+1)
-
-    Updates an average incrementally.
-
-    """
-    return avg + old_div((sample - avg), (sample_number * 1.))
+    return (1 - np.count_nonzero(A) / np.prod(A.shape)) * 100
 
 
 def padZeros(X, L):
@@ -1123,40 +1092,6 @@ def padZeros(X, L):
         return new_X
     else:
         return X
-
-
-# UNUSED
-def expectedPhiNS(p_vec, ns_vec, representation):
-    # Primarily for use with domain.expectedStep()
-    # Takes p_vec, probability of each state outcome in ns_vec,
-    # Returns a vector of length features_num which is the expectation
-    # over all possible outcomes.
-    expPhiNS = np.zeros(representation.features_num)
-    for i, ns in enumerate(ns_vec):
-        expPhiNS += p_vec[i] * representation.phi_nonTerminal(ns)
-    return expPhiNS
-    #  p: k-by-1    probability of each transition
-    #  r: k-by-1    rewards
-    # ns: k-by-|s|  next state
-    #  t: k-by-1    terminal values
-
-
-# UNUSED
-def allExpectedPhiNS(domain, representation, policy, allStates=None):
-    # Returns Phi' matrix with dimensions n x k,
-    # n: number of possible states, and
-    # k: number of features
-    if allStates is None:
-        allStates = domain.allStates()
-    allExpPhiNS = np.zeros((len(allStates), representation.features_num))
-    for i, s in enumerate(allStates):
-#         print s
-#         print policy.pi(s)
-#         print 'looping',i, policy.pi(s)
-#         print policy.pi(s)
-        p_vec, r_vec, ns_vec, t_vec = domain.expectedStep(s, policy.pi(s))
-        allExpPhiNS[i][:] = expectedPhiNS(p_vec, ns_vec, representation)
-    return allExpPhiNS
 
 
 def rk4(derivs, y0, t, *args, **kwargs):
@@ -1224,7 +1159,7 @@ def rk4(derivs, y0, t, *args, **kwargs):
 
         thist = t[i]
         dt = t[i + 1] - thist
-        dt2 = old_div(dt, 2.0)
+        dt2 = dt / 2
         y0 = yout[i]
 
         k1 = np.asarray(derivs(y0, thist, *args, **kwargs))
@@ -1234,66 +1169,6 @@ def rk4(derivs, y0, t, *args, **kwargs):
         yout[i + 1] = y0 + dt / 6.0 * (k1 + 2 * k2 + 2 * k3 + k4)
     return yout
 
-# # NOT USED
-# def findElem(x, lis):
-#     """
-#     Searches for the element ``x`` in the list (python built-in type) ``A``
-#     Returns the index of the first occurrence of ``x``.
-#
-#     .. warning::
-#
-#         ``A`` *MUST* be a list (python built-in type)
-#
-#     """
-#     if type(lis) is not list:
-#         print 'ERROR: Tools.findElem() only accepts python lists.
-#         return []
-#     elif x in lis:
-#         return lis.index(x)
-#     else:
-#         return []
-
-
-# def matrix_mult(A, B):
-#     """
-#     Multiples the inputs A and B using matrix multiplication.
-#     Defined because of inconsistent or confusing definition of the "*"
-#     operator for numpy ndarray, matrix, and sparse.matrix.
-#
-#     """
-#     if len(A.shape) == 1:
-#         A = A.reshape(1, -1)
-#     if len(B.shape) == 1:
-#         B = B.reshape(1, -1)
-#     n1, m1 = A.shape
-#     n2, m2 = B.shape
-#     if m1 != n2:
-#         print "Incompatible dimensions: %dx%d and %dx%d" % (n1, m2, n2, m2)
-#         return None
-#     else:
-#         return A.dot(B)
-
-# Setup the latdex path
-# if sys.platform == 'darwin':
-    # os.environ['PATH'] += ':' + TEXPATH
-# if sys.platform == 'win32':
-#    print os.environ['PATH']
-    # os.environ['PATH'] += ';' + TEXPATH
-
-# def isLatexConfigured():
-#    return False
-#    try:
-#        pl.subplot(1,3,2)
-#        pl.xlabel(r"$\theta$")
-#        pl.show()
-#        pl.draw()
-#        pl.close()
-#        print "Latex tested and functioning"
-#    except:
-#        print "Matplotlib failed to plot, likely due to a Latex problem."
-#        print "Check that your TEXPATH is set correctly in config.py,"
-#        print "and that latex is installed correctly."
-# print "\nDisabling latex functionality, using matplotlib native fonts."
 
 if module_exists('matplotlib'):
     createColorMaps()
@@ -1318,23 +1193,3 @@ RESEDUAL_THRESHOLD = 1e-7
 REGULARIZATION = 1e-6
 FONTSIZE = 15
 SEP_LINE = "=" * 60
-
-# Tips:
-# array.astype(float) => convert elements
-# matlibplot initializes the maping from the values to
-# colors on the first time creating unless bounds are set manually.
-# Hence you may update color values later but dont see any updates!
-# in specifying dimensions for reshape you can put -1 so it will be automatically infered
-# [2,2,2] = [2]*3
-# [1,2,2,1,2,2,1,2,2] = ([1]+[2]*2)*3
-# [[1,2],[1,2],[1,2]] = array([[1,2],]*3)
-# apply function foo to all elements of array A: vectorize(foo)(A) (The operation may be unstable! Care!
-# Set a property of a class:  vars(self)['prop'] = 2
-# dont use a=b=zeros((2,3)) because a and b will point to the same array!
-# b = A[:,1] does NOT create a new matrix. It is simply a pointer to that row! so if you change b you change A
-# DO NOT USE A = B = array() unless you know what you are doing. They will point to the same object!
-# Todo:
-# Replace vstack and hstack with the trick mentioned here:
-# http://stackoverflow.com/questions/4923617/efficient-numpy-2d-array-construction-from-1d-array
-# if undo redo does not work in eclipse, you may have an uninfinished
-# process. Kill all

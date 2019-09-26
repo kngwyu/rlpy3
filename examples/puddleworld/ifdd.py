@@ -11,7 +11,7 @@ standard_library.install_aliases()
 import sys
 import os
 from rlpy.Domains import PuddleWorld
-from rlpy.Agents import SARSA, Q_LEARNING
+from rlpy.Agents import SARSA, Q_Learning
 from rlpy.Representations import *
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
@@ -58,7 +58,7 @@ def make_experiment(
     policy = eGreedy(representation, epsilon=0.1)
     # agent           = SARSA(representation,policy,domain,initial_learn_rate=1.,
     # lambda_=0., learn_rate_decay_mode="boyan", boyan_N0=100)
-    opt["agent"] = Q_LEARNING(policy, representation, discount_factor=domain.discount_factor,
+    opt["agent"] = Q_Learning(policy, representation, discount_factor=domain.discount_factor,
                        lambda_=lambda_, initial_learn_rate=initial_learn_rate,
                        learn_rate_decay_mode="boyan", boyan_N0=boyan_N0)
     experiment = Experiment(**opt)

@@ -1,15 +1,4 @@
 """multi-link swimmer moving in a fluid."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
 from .Domain import Domain
 import numpy as np
 from rlpy.Tools import plt, rk4, cartesian, colors
@@ -75,7 +64,7 @@ class Swimmer(Domain):
         Q[-1, :] = self.masses
         A = np.eye(self.d, k=1) + np.eye(self.d)
         A[-1, -1] = 0.
-        self.P = old_div(np.dot(np.linalg.inv(Q), A * self.lengths[None, :]), 2.)
+        self.P = np.dot(np.linalg.inv(Q), A * self.lengths[None, :]) / 2
 
         self.U = np.eye(self.d) - np.eye(self.d, k=-1)
         self.U = self.U[:, :-1]
@@ -361,10 +350,8 @@ def dsdt(s, t, a, P, I, G, U, lengths, masses, k1, k2):
     ds = np.zeros_like(s)
     ds[:2] = vcm
     ds[2:2 + d] = dtheta
-    ds[2 + d] = old_div(- \
-        (k1 * np.sum(-sth * Vn) + k2 * np.sum(cth * Vt)), np.sum(masses))
-    ds[3 + d] = old_div(- \
-        (k1 * np.sum(cth * Vn) + k2 * np.sum(sth * Vt)), np.sum(masses))
+    ds[2 + d] = -(k1 * np.sum(-sth * Vn) + k2 * np.sum(cth * Vt)) / np.sum(masses)
+    ds[3 + d] = -(k1 * np.sum(cth * Vn) + k2 * np.sum(sth * Vt)) / np.sum(masses)
     ds[4 + d:] = np.linalg.solve(EL3, EL1 + EL2 + np.dot(U, a))
     return ds
 

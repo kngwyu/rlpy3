@@ -1,17 +1,7 @@
-"""Incremental Feature Dependency Discovery"""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-# iFDD implementation based on ICML 2011 paper
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
-from builtins import object
+"""
+Incremental Feature Dependency Discovery
+iFDD implementation based on ICML 2011 paper
+"""
 from copy import deepcopy
 import numpy as np
 
@@ -325,7 +315,7 @@ class iFDD(Representation):
         # Check for discovery
 
         if self.random_state.rand() < self.iFDDPlus:
-            relevance = old_div(abs(potential.cumtderr), np.sqrt(potential.count))
+            relevance = abs(potential.cumtderr) / np.sqrt(potential.count)
         else:
             relevance = potential.cumabstderr
 
@@ -383,7 +373,7 @@ class iFDD(Representation):
         # print "IN IFDD, New Feature = %d => Total Features = %d" % (feature.index, self.features_num)
         # Update the sorted list of features
         # priority is 1/number of initial features corresponding to the feature
-        priority = old_div(1, (len(potential.f_set) * 1.))
+        priority = 1 / len(potential.f_set)
         self.sortediFDDFeatures.push(priority, feature)
 
         # If you use cache, you should invalidate entries that their initial
@@ -607,9 +597,9 @@ class iFDDK_potential(iFDD_potential):
             plus = self.random_state.rand() >= kappa
 
         if plus:
-            return old_div(np.abs(self.b), np.sqrt(self.c))
+            return np.abs(self.b) / np.sqrt(self.c)
         else:
-            return old_div(self.a, np.sqrt(self.c))
+            return self.a / np.sqrt(self.c)
 
     def update_statistics(self, rho, td_error, lambda_, discount_factor, phi, n_rho):
         # phi = phi_s[self.p1] * phi_s[self.p2]

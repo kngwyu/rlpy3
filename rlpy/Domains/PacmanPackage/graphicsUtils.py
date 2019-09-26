@@ -1,30 +1,16 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-# graphicsUtils.py
-# ----------------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and Pieter
-# Abbeel in Spring 2013.
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-
-from builtins import dict
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
+"""
+ graphicsUtils.py
+ ----------------
+ Licensing Information: Please do not distribute or publish solutions to this
+ project. You are free to use and extend these projects for educational
+ purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+ John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+ Student side autograding was added by Brad Miller, Nick Hay, and Pieter
+ Abbeel in Spring 2013.
+ For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
+"""
 import sys
-import math
-import random
-import string
 import time
-import types
 import tkinter
 
 _Windows = sys.platform == 'win32'  # True if on Win95/98/NT
@@ -45,9 +31,8 @@ def formatColor(r, g, b):
 
 
 def colorToVector(color):
-    return (
-        [old_div(int(x, 16), 256.0) for x in [color[1:3], color[3:5], color[5:7]]]
-    )
+    return [int(x, 16) / 256.0 for x in [color[1:3], color[3:5], color[5:7]]]
+
 
 if _Windows:
     _canvas_tfonts = ['times new roman', 'lucida console']

@@ -1,16 +1,4 @@
 """Functions to be used with hyperopt for doing hyper parameter optimization."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import super
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
 import os
 import rlpy.Tools.results as tres
 import rlpy.Tools.run as rt
@@ -184,7 +172,7 @@ class CondorTrials(hyperopt.Trials):
         avg, std, n_trials = tres.avg_quantity(res, quan)
         avg *= neg
         weights = (np.arange(len(avg)) + 1) ** 2
-        loss = old_div((avg * weights).sum(), weights.sum())
+        loss = (avg * weights).sum() / weights.sum()
         print(time.ctime())
         print("Loss: {:.4g}".format(loss))
         # use #steps/eps at the moment
@@ -279,7 +267,7 @@ def find_hyperparameters(
         else:
             print("unknown objective")
         weights = (np.arange(len(val)) + 1) ** 2
-        loss = old_div((val * weights).sum(), weights.sum())
+        loss = (val * weights).sum() / weights.sum()
         print(time.ctime())
         print("Parameters", hyperparam)
         print("Loss", loss)

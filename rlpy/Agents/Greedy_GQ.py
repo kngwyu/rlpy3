@@ -1,12 +1,4 @@
 """Greedy-GQ(lambda) learning agent"""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from past.utils import old_div
 from .Agent import Agent, DescentAlgorithm
 from rlpy.Tools import addNewElementForAllActions, count_nonzero
 import numpy as np
@@ -59,11 +51,13 @@ class Greedy_GQ(DescentAlgorithm, Agent):
         phi_s = self.representation.phi(s, False)
         phi = self.representation.phi_sa(s, False, a, phi_s)
         phi_prime_s = self.representation.phi(ns, terminal)
+        # Switch na to the best possible action
         na = self.representation.bestAction(
             ns,
             terminal,
             np_actions,
-            phi_prime_s)  # Switch na to the best possible action
+            phi_prime_s
+        )
         phi_prime = self.representation.phi_sa(
             ns,
             terminal,
@@ -71,8 +65,8 @@ class Greedy_GQ(DescentAlgorithm, Agent):
             phi_prime_s)
         nnz = count_nonzero(phi_s)    # Number of non-zero elements
 
-        expanded = old_div((- len(self.GQWeight) + len(phi)), self.representation.actions_num)
-        if expanded:
+        expanded = (len(phi) - len(self.GQWeight)) // self.representation.actions_num
+        if expanded > 0:
             self._expand_vectors(expanded)
         # Set eligibility traces:
         if self.lambda_:
@@ -89,15 +83,16 @@ class Greedy_GQ(DescentAlgorithm, Agent):
             self.eligibility_trace = phi
             self.eligibility_trace_s = phi_s
 
-        td_error                     = r + \
-            np.dot(discount_factor * phi_prime - phi, weight_vec)
+        td_error = r + np.dot(discount_factor * phi_prime - phi, weight_vec)
+
         self.updateLearnRate(
             phi_s,
             phi_prime_s,
             self.eligibility_trace_s,
             discount_factor,
             nnz,
-            terminal)
+            terminal
+        )
 
         if nnz > 0:  # Phi has some nonzero elements, proceed with update
             td_error_estimate_now = np.dot(phi, self.GQWeight)

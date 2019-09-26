@@ -252,9 +252,9 @@ setup(name="rlpy3",
 
       packages=find_packages(exclude=['tests', 'tests.*']),
       install_requires=[
-          'numpy >= 1.7',
-          'scipy',
-          'matplotlib >= 1.2',
+          'numpy >= 1.15',
+          'scipy >= 1.3',
+          'matplotlib >= 3.1',
           'networkx',
           'scikit-learn',
           'joblib',

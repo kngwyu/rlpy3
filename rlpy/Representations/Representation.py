@@ -1,18 +1,7 @@
 """Representation base class."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from builtins import object
-from past.utils import old_div
 import logging
 from copy import deepcopy
-from rlpy.Tools import className, addNewElementForAllActions
+from rlpy.Tools import addNewElementForAllActions
 from rlpy.Tools import vec2id, bin2state, findElemArray1D
 from rlpy.Tools import hasFunction, id2vec, closestDiscretization
 import scipy.sparse as sp
@@ -325,7 +314,7 @@ class Representation(object):
             else:
                 self.bins_per_dim[d] = domain.statespace_limits[d, 1] - \
                     domain.statespace_limits[d, 0]
-            self.binWidth_per_dim[d] = old_div((domain.statespace_limits[d,1] - domain.statespace_limits[d, 0]), (self.bins_per_dim[d] * 1.))
+            self.binWidth_per_dim[d] = (domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]) / self.bins_per_dim[d]
 
     def binState(self, s):
         """
@@ -633,8 +622,7 @@ class Representation(object):
                         (ns_samples, self.domain.state_space_dims))
                     rewards = np.empty(ns_samples)
                     # next states per samples initial state
-                    ns_samples_ = old_div(ns_samples, \
-                        self.continuous_state_starting_samples)
+                    ns_samples_ = ns_samples // self.continuous_state_starting_samples
                     for i in range(self.continuous_state_starting_samples):
                         # sample a random state within the grid corresponding
                         # to input s
@@ -648,7 +636,6 @@ class Representation(object):
                             # sampled value to be int
                             if not d in self.domain.continuous_dims:
                                 new_s[d] = int(new_s[d])
-                        # print new_s
                         ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
                         next_states[i * ns_samples_:(i + 1) * ns_samples_,:] = ns
                         rewards[i * ns_samples_:(i + 1) * ns_samples_] = r
@@ -657,7 +644,6 @@ class Representation(object):
                         s, a, ns_samples)
                 self.expectedStepCached[key] = [next_states, rewards]
             else:
-                # print "USED CACHED"
                 next_states, rewards = cacheHit
             if policy is None:
                 Q = np.mean([rewards[i] + discount_factor * self.V(next_states[i,:]) for i in range(ns_samples)])

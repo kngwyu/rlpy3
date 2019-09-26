@@ -3,15 +3,6 @@ Representations which use local bases function (e.g. kernels) distributed
 in the statespace according to some scheme (e.g. grid, random, on previous
 samples)
 """
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from past.utils import old_div
 from .Representation import Representation
 import numpy as np
 from rlpy.Tools.GeneralTools import addNewElementForAllActions
@@ -101,8 +92,7 @@ class NonparametricLocalBases(LocalBases):
         
         """
         self.max_similarity = max_similarity
-        self.common_width = old_div((domain.statespace_limits[:, 1]
-                             - domain.statespace_limits[:, 0]), resolution)
+        self.common_width = (domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]) / resolution
         self.features_num = 0
         super(
             NonparametricLocalBases,
@@ -183,5 +173,5 @@ class RandomLocalBases(LocalBases):
                     self.domain.statespace_limits[d, 0],
                     self.domain.statespace_limits[d, 1])
                 self.widths[i, d] = self.random_state.uniform(
-                    old_div(self.dim_widths[d], self.resolution_max),
-                    old_div(self.dim_widths[d], self.resolution_min))
+                    self.dim_widths[d] / self.resolution_max,
+                    self.dim_widths[d] / self.resolution_min)

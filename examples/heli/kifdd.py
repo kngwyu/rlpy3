@@ -66,9 +66,7 @@ def make_experiment(
     return experiment
 
 if __name__ == '__main__':
-    from rlpy.Tools.run import run_profiled
-    run_profiled(make_experiment)
-    #experiment = make_experiment(1)
-    # experiment.run(visualize_learning=True)
-    # experiment.plot()
-    # experiment.save()
+    experiment = make_experiment(1)
+    experiment.run(visualize_learning=True, visualize_performance=1)
+    experiment.plot()
+    experiment.save()

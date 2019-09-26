@@ -1,16 +1,8 @@
 """Nosetests for testing the domains and their methods."""
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-from future import standard_library
-standard_library.install_aliases()
 import rlpy.Domains
 from rlpy.Domains.Domain import Domain
 import numpy as np
 import inspect
-from nose.tools import ok_, eq_
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
@@ -23,7 +15,7 @@ def test_random_trajectory():
         if d == Domain:
             continue
         if inspect.isclass(d) and issubclass(d, Domain):
-            yield check_random_trajectory, d
+            check_random_trajectory(d)
 
 
 def test_specification():
@@ -31,7 +23,7 @@ def test_specification():
         if d == Domain:
             continue
         if inspect.isclass(d) and issubclass(d, Domain):
-            yield check_specifications, d
+            check_specifications(d)
 
 
 def check_random_trajectory(domain_class):
@@ -57,4 +49,4 @@ def check_random_trajectory(domain_class):
 def check_specifications(domain_class):
     domain = domain_class()
     for v in ['statespace_limits', 'actions_num', 'episodeCap']:
-        ok_(getattr(domain, v) is not None)
+        assert getattr(domain, v) is not None

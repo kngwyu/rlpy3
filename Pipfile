@@ -3,10 +3,13 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[packages.rlpy]
-editable = true
-path = '.'
+[packages]
+rlpy = {editable = true,path = '.'}
 
 [dev-packages]
 cython = '>=0.29'
 black = '>=19.0'
+pytest = '>=5.1'
+
+[pipenv]
+allow_prereleases = true

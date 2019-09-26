@@ -1,16 +1,10 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
 from rlpy.Representations.Representation import Representation
 import numpy as np
 import logging
 from rlpy.Policies import eGreedy
 from rlpy.Agents import SARSA, Q_Learning
 from rlpy.Agents import Greedy_GQ
+
 
 class MockRepresentation(Representation):
     def __init__(self):
@@ -19,7 +13,6 @@ class MockRepresentation(Representation):
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
-
         for v in ['features_num']:
             if getattr(self, v) is None:
                 raise Exception('Missed domain initialization of ' + v)

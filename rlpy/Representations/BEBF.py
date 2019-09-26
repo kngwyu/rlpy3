@@ -26,7 +26,7 @@ class BEBF(Representation):
 
     Bellman-Error Basis Function Representation. \n
     1. Initial basis function based on immediate reward. \n
-    2. Evaluate r + Q(s', \pi{s'}) - Q(s,a) for all samples. \n
+    2. Evaluate r + Q(s', π{s'}) - Q(s,a) for all samples. \n
     3. Train function approximator on bellman error of present solution above\n
     4. Add the above as a new basis function. \n
     5. Repeat the process using the new basis until the most

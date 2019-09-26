@@ -1,15 +1,8 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
 from rlpy.Representations import iFDD
 from rlpy.Representations import IndependentDiscretizationCompactBinary
 import rlpy.Domains
 import numpy as np
+import pytest
 
 STDOUT_FILE = 'out.txt'
 JOB_ID = 1
@@ -79,10 +72,7 @@ def deterministic_test():
     assert np.array_equal(ANSWER, np.array([2, 3, 4, 5, 6, 7, 8, 22]))
     # rep.showCache()
 
-import nose.tools
 
-
-@nose.tools.nottest
 def random_test():
     discovery_threshold
     TRIALS = 200

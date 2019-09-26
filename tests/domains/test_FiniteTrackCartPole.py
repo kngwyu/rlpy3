@@ -1,34 +1,15 @@
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from rlpy.Representations import IncrementalTabular
-from rlpy.Domains.FiniteTrackCartPole import FiniteTrackCartPole, \
-FiniteCartPoleBalance, FiniteCartPoleSwingUp, FiniteCartPoleBalanceModern
-from rlpy.Agents.TDControlAgent import SARSA
 import numpy as np
-from rlpy.Tools import __rlpy_location__, plt
-import os
-
+from rlpy.Representations import IncrementalTabular
+from rlpy.Domains.FiniteTrackCartPole import FiniteCartPoleBalance,\
+    FiniteCartPoleSwingUp, FiniteCartPoleBalanceModern
+from rlpy.Agents.TDControlAgent import SARSA
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
-import logging
 from .helpers import check_seed_vis
+
 
 def _make_experiment(domain, exp_id=1,
                      path="./Results/Tmp/test_FiniteTrackCartPole"):
-    """
-    Each file specifying an experimental setup should contain a
-    make_experiment function which returns an instance of the Experiment
-    class with everything set up.
-
-    @param domain: the domain object to be used in the experiment
-    @param id: number used to seed the random number generators
-    @param path: output directory where logs and results are stored
-    """
-
     ## Representation
     # discretization only needed for continuous state spaces, discarded otherwise
     representation  = IncrementalTabular(domain)

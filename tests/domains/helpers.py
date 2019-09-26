@@ -1,11 +1,7 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
-from rlpy.Tools import plt
 import numpy as np
+from rlpy.Tools import plt
+import matplotlib as mpl
+mpl.use('pdf')  # Comment out this line to open GUI window
 
 
 def _checkSameExperimentResults(exp1, exp2):
@@ -30,9 +26,11 @@ def _checkSameExperimentResults(exp1, exp2):
         return False
     return True
 
+
 def check_seed_vis(make_exp_fun):
     """ Ensure that providing the same random seed yields same result """
     # [[initialize and run experiment without visual]]
+    mpl.use('pdf')
     expNoVis = make_exp_fun(exp_id=1)
     expNoVis.config_logging = False
     expNoVis.run(visualize_steps=False,
@@ -42,9 +40,9 @@ def check_seed_vis(make_exp_fun):
     # [[initialize and run experiment with visual]]
     expVis1 = make_exp_fun(exp_id=1)
     expVis1.config_logging = False
-    expVis1.run(visualize_steps=True,
-            visualize_learning=False,
-            visualize_performance=1)
+    expVis1.run(visualize_steps=False,
+                visualize_learning=True,
+                visualize_performance=0)
     plt.close('all')
 
     expVis2 = make_exp_fun(exp_id=1)
@@ -57,5 +55,4 @@ def check_seed_vis(make_exp_fun):
     # [[assert get same results]]
     assert _checkSameExperimentResults(expNoVis, expVis1)
     assert _checkSameExperimentResults(expNoVis, expVis2)
-
 

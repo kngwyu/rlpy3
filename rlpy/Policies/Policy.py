@@ -95,7 +95,7 @@ class Policy(ABC):
             print(property, ": ", value)
 
 
-class DifferentiablePolicy(ABC):
+class DifferentiablePolicy(Policy):
     def pi(self, s, terminal, p_actions):
         """Sample action from policy"""
         p = self.probabilities(s, terminal)

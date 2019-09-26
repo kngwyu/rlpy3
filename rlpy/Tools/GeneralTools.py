@@ -1,17 +1,13 @@
 """General Tools for use throughout RLPy"""
-def module_exists(module_name):
-    try:
-        __import__(module_name)
-    except ImportError:
-        return False
-    else:
-        return True
-
-import sys
+import datetime
+from itertools import combinations, chain
 import numpy as np
-# print "Numpy version:", numpy.__version__
-# print "Python version:", sys.version_info
+from scipy import linalg, stats, special
+from scipy.sparse import linalg as slinalg
+from scipy import sparse as sp
 import os
+import sys
+from time import process_time as clock
 
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -28,6 +24,14 @@ if os.name == 'nt':
 else:
     matplotlib_backend = 'tkagg'  # 'WX' 'QTAgg' 'QT4Agg'
 
+
+def module_exists(module_name):
+    try:
+        __import__(module_name)
+    except ImportError:
+        return False
+    else:
+        return True
 
 
 def available_matplotlib_backends():
@@ -83,24 +87,7 @@ if module_exists('sklearn'):
     from sklearn import svm
 else:
     'sklearn is not available => No BEBF representation available'
-from scipy import linalg, stats, special
-from scipy.sparse import linalg as slinalg
-from scipy import sparse as sp
-from time import clock
-from hashlib import sha1
-import datetime
-import csv
-# from string import lower
-# from Sets import ImmutableSet
-# from heapq import *
-import multiprocessing
-from os import path
-from decimal import Decimal
-# If running on an older version of numpy, check to make sure we have
-# defined all required functions.
-import numpy as np  # We need to be able to reference numpy by name
-from select import select
-from itertools import combinations, chain
+
 
 def discrete_sample(p):
     cp = np.cumsum(p)

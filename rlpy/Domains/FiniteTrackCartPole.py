@@ -20,7 +20,7 @@ class FiniteTrackCartPole(CartPoleBase):
     quantities of pendulum (position and velocity) and lateral quantities of
     the cart.
     Not only does this increase the state space relative to
-    \c %InfTrackCartPole, but the cart must remain in a finite interval
+    %InfTrackCartPole, but the cart must remain in a finite interval
     corresponding to a physical rail, which affects valid solutions/policies.
 
 
@@ -35,7 +35,7 @@ class FiniteTrackCartPole(CartPoleBase):
     Actions take the form of force applied to cart; \n
     Positive force acts to the right on the cart. \n
 
-    Note the domain defaults in \c %CartPoleBase.
+    Note the domain defaults in %CartPoleBase.
 
     .. warning::
 
@@ -80,7 +80,7 @@ class FiniteTrackCartPole(CartPoleBase):
     #: meters, m - Physical length of the pendulum, meters (note the moment-arm lies at half this distance)
     LENGTH = 1.0
     # m - Length of moment-arm to center of mass (= half the pendulum length)
-    MOMENT_ARM = LENGTH / 2.
+    MOMENT_ARM = LENGTH / 2
     # 1/kg - Used in dynamics computations, equal to 1 / (MASS_PEND +
     # MASS_CART)
     _ALPHA_MASS = 1.0 / (MASS_CART + MASS_PEND)

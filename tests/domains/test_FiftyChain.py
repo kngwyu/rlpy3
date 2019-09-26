@@ -1,31 +1,13 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
+import numpy as np
 from rlpy.Representations import Tabular
 from rlpy.Domains import FiftyChain
 from rlpy.Agents.TDControlAgent import SARSA
-import numpy as np
-from rlpy.Tools import __rlpy_location__
-import os
-
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
-import logging
+from .helpers import check_seed_vis
 
 
 def _make_experiment(exp_id=1, path="./Results/Tmp/test_FiftyChain"):
-    """
-    Each file specifying an experimental setup should contain a
-    make_experiment function which returns an instance of the Experiment
-    class with everything set up.
-
-    @param id: number used to seed the random number generators
-    @param path: output directory where logs and results are stored
-    """
-
     ## Domain:
     domain = FiftyChain()
 
@@ -47,7 +29,6 @@ def _make_experiment(exp_id=1, path="./Results/Tmp/test_FiftyChain"):
     return experiment
 
 
-from .helpers import check_seed_vis
 def test_seed():
     check_seed_vis(_make_experiment)
 
@@ -79,41 +60,49 @@ def test_transitions():
     """
     # [[initialize domain]]
     domain = FiftyChain()
-    domain.p_action_failure = 0.0 # eliminate stochasticity
+    domain.p_action_failure = 0.0  # eliminate stochasticity
     dummyS = domain.s0()
-    domain.state = 2 # state s2
+    domain.state = 2  # state s2
     left = domain.LEFT
     right = domain.RIGHT
     goals = domain.GOAL_STATES
 
     # Check basic step
     r,ns,terminal,possibleA = domain.step(left)
-    assert ns == 1 and terminal == False
-    assert np.all(possibleA == np.array([left, right])) # all actions available
-    if ns in goals: assert r > 0
-    else: assert r <= 0
+    assert ns == 1 and not terminal
+    assert np.all(possibleA == np.array([left, right]))  # all actions available
+    if ns in goals:
+        assert r > 0
+    else:
+        assert r <= 0
 
     # Check another basic step
     r,ns,terminal,possibleA = domain.step(left)
-    assert ns == 0 and terminal == False
+    assert ns == 0 and not terminal
     assert np.all(possibleA == np.array([left, right])) # all actions available
-    if ns in goals: assert r > 0
-    else: assert r <= 0
+    if ns in goals:
+        assert r > 0
+    else:
+        assert r <= 0
 
     # Ensure state does not change or wrap around and that all actions
     # remain availableon corner case, per domain spec
     r,ns,terminal,possibleA = domain.step(left)
-    assert ns == 0 and terminal == False
+    assert ns == 0 and not terminal
     assert np.all(possibleA == np.array([left, right])) # all actions available
-    if ns in goals: assert r > 0
-    else: assert r <= 0
+    if ns in goals:
+        assert r > 0
+    else:
+        assert r <= 0
 
     # A final basic step
     r,ns,terminal,possibleA = domain.step(right)
-    assert ns == 1 and terminal == False
+    assert ns == 1 and not terminal
     assert np.all(possibleA == np.array([left, right])) # all actions available
-    if ns in goals: assert r > 0
-    else: assert r <= 0
+    if ns in goals:
+        assert r > 0
+    else:
+        assert r <= 0
 
 if __name__ == '__main__':
     test_seed()

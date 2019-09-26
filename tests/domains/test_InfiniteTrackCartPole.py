@@ -1,29 +1,14 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import absolute_import
-from future import standard_library
-standard_library.install_aliases()
 from rlpy.Representations import Tabular
-from rlpy.Domains.InfiniteTrackCartPole import InfTrackCartPole, InfCartPoleBalance, InfCartPoleSwingUp
+from rlpy.Domains.InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSwingUp
 from rlpy.Agents.TDControlAgent import SARSA
 import numpy as np
 from .helpers import check_seed_vis
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
 
+
 def _make_experiment(domain, exp_id=1, \
                      path="./Results/Tmp/test_InfTrackCartPole"):
-    """
-    Each file specifying an experimental setup should contain a
-    make_experiment function which returns an instance of the Experiment
-    class with everything set up.
-
-    @param domain: the domain object to be used in the experiment
-    @param id: number used to seed the random number generators
-    @param path: output directory where logs and results are stored
-    """
-
     ## Representation
     # discretization only needed for continuous state spaces, discarded otherwise
     representation  = Tabular(domain)
@@ -41,28 +26,6 @@ def _make_experiment(domain, exp_id=1, \
     experiment = Experiment(**locals())
     return experiment
 
-def _checkSameExperimentResults(exp1, exp2):
-    """ Returns False if experiments gave same results, true if they match. """
-    if not np.all(exp1.result["learning_steps"] == exp2.result["learning_steps"]):
-        # Same number of steps before failure (where applicable)
-        print('LEARNING STEPS DIFFERENT')
-        print(exp1.result["learning_steps"])
-        print(exp2.result["learning_steps"])
-        return False
-    if not np.all(exp1.result["return"] == exp2.result["return"]):
-        # Same return on each test episode
-        print('RETURN DIFFERENT')
-        print(exp1.result["return"])
-        print(exp2.result["return"])
-        return False
-    if not np.all(exp1.result["steps"] == exp2.result["steps"]):
-        # Same number of steps taken on each training episode
-        print('STEPS DIFFERENT')
-        print(exp1.result["steps"])
-        print(exp2.result["steps"])
-        return False
-    return True
-
 
 def test_seed_balance():
     """ Ensure that providing the same random seed yields same result """
@@ -71,10 +34,12 @@ def test_seed_balance():
         return _make_experiment(InfCartPoleBalance(), *args, **kwargs)
     check_seed_vis(myfn)
 
+
 def test_seed_swingup():
     def myfn(*args, **kwargs):
         return _make_experiment(InfCartPoleSwingUp(), *args, **kwargs)
     check_seed_vis(myfn)
+
 
 def test_physicality():
     """

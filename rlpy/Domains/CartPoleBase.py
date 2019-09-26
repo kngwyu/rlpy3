@@ -100,8 +100,8 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     #: Discount factor
     discount_factor = .95
 
-    #: Set to non-zero to enable print statements
-    DEBUG = 0
+    #: Set to True to enable print statements
+    DEBUG = False
 
     # Domain visual objects
     pendulumArm = None
@@ -547,36 +547,35 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         :return: ``thetas``, a discretized array of values in the theta dimension
         :return: ``theta_dots``, a discretized array of values in the thetaDot dimension.
         """
+
         # multiplies each dimension, used to make displayed grid appear finer:
         # plotted gridcell values computed through interpolation nearby according
         # to representation.Qs(s)
-        granularity = 5.
-
-        # TODO: currently we only allow for equal discretization in all
-        # dimensions.  In future, must modify below code to handle non-uniform
-        # discretization.
+        granularity = 5
+        # TODO: Currently we only allow equal discretization for all params.
         thetaDiscr = representation.discretization
         thetaDotDiscr = representation.discretization
 
-        # Create the center of the grid cells both in theta and
-        # thetadot_dimension
-        theta_binWidth = (self.ANGLE_LIMITS[1] - self.ANGLE_LIMITS[0]) / (thetaDiscr * granularity)
+        # Create the center of the grid cells both for theta and thetadot
+        theta_n = thetaDiscr * granularity
+        theta_binWidth = (self.ANGLE_LIMITS[1] - self.ANGLE_LIMITS[0]) / theta_n
         thetas = np.linspace(
             self.ANGLE_LIMITS[0] + theta_binWidth / 2,
             self.ANGLE_LIMITS[1] - theta_binWidth / 2,
-            thetaDiscr * granularity
+            theta_n
         )
-        theta_dot_binWidth = (
-            self.ANGULAR_RATE_LIMITS[1] - self.ANGULAR_RATE_LIMITS[0]) / (thetaDotDiscr * granularity)
+        theta_dot_n = thetaDotDiscr * granularity
+        theta_dot_binWidth = (self.ANGULAR_RATE_LIMITS[1] - self.ANGULAR_RATE_LIMITS[0]) / theta_dot_n
         theta_dots = np.linspace(
             self.ANGULAR_RATE_LIMITS[0] + theta_dot_binWidth / 2,
             self.ANGULAR_RATE_LIMITS[1] - theta_dot_binWidth / 2,
-            thetaDotDiscr * granularity)
+            theta_dot_n
+        )
 
-        self.xTicks = np.linspace(0, granularity * thetaDiscr - 1, 5)
-        self.yTicks = np.linspace(0, granularity * thetaDotDiscr - 1, 5)
+        self.xTicks = np.linspace(0.0, thetaDiscr * granularity - 1.0, granularity)
+        self.yTicks = np.linspace(0.0, thetaDotDiscr * granularity - 1.0, granularity)
 
-        return (thetas, theta_dots)
+        return thetas, theta_dots
 
     def euler_int(self, df, x0, times):
         """

@@ -1,7 +1,6 @@
 import numpy as np
-from rlpy.Tools import plt
-import matplotlib as mpl
-mpl.use('pdf')  # Comment out this line to open GUI window
+from rlpy.Tools import plt, use_nogui_backend
+use_nogui_backend()
 
 
 def _checkSameExperimentResults(exp1, exp2):
@@ -30,7 +29,6 @@ def _checkSameExperimentResults(exp1, exp2):
 def check_seed_vis(make_exp_fun):
     """ Ensure that providing the same random seed yields same result """
     # [[initialize and run experiment without visual]]
-    mpl.use('pdf')
     expNoVis = make_exp_fun(exp_id=1)
     expNoVis.config_logging = False
     expNoVis.run(visualize_steps=False,

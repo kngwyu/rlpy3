@@ -1,8 +1,7 @@
 """multi-link swimmer moving in a fluid."""
 from .Domain import Domain
 import numpy as np
-from rlpy.Tools import plt, rk4, cartesian, colors
-from rlpy.Tools import matplotlib as mpl
+from rlpy.Tools import mpl, plt, rk4, cartesian, colors
 
 from rlpy.Policies.SwimmerPolicy import SwimmerPolicy
 

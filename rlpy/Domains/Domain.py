@@ -80,7 +80,7 @@ class Domain(object):
         # For discrete domains, limits should be extended by half on each side so that the mapping becomes identical with continuous states
         # The original limits will be saved in self.discrete_statespace_limits
         self._extendDiscreteDimensions()
-        if self.continuous_dims == []:
+        if len(self.continuous_dims) == 0:
             self.states_num = int(np.prod(self.statespace_limits[:, 1]
                                   - self.statespace_limits[:, 0]))
         else:

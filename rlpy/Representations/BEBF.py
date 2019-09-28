@@ -1,7 +1,11 @@
 """Bellman-Error Basis Function Representation."""
 import numpy as np
 from .Representation import Representation
-from rlpy.Tools import svm
+try:
+    from sklearn import svm
+except ImportError:
+    import warnings
+    warnings.warn('sklearn is not installed and you cannot use BEBF')
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",

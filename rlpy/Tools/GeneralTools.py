@@ -16,77 +16,30 @@ __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
-
 __rlpy_location__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if os.name == 'nt':
-    # Anaconda is built with QT4 backend support on Windows
-    matplotlib_backend = 'qt4agg'
+
+
+import matplotlib as mpl
+from matplotlib import cm, colors, lines, rc
+from matplotlib import pylab as pl
+from matplotlib import pyplot as plt
+from matplotlib import patches as mpatches
+from matplotlib import path as mpath
+from mpl_toolkits.mplot3d import axes3d
+
+
+def use_nogui_backend():
+    mpl.use('agg')
+
+    def _stub(*args, **kwargs):
+        pass
+    plt.show = _stub
+
+
+if 'DISPLAY' not in os.environ:
+    use_nogui_backend()
 else:
-    matplotlib_backend = 'tkagg'  # 'WX' 'QTAgg' 'QT4Agg'
-
-
-def module_exists(module_name):
-    try:
-        __import__(module_name)
-    except ImportError:
-        return False
-    else:
-        return True
-
-
-def available_matplotlib_backends():
-    def is_backend_module(fname):
-        """Identifies if a filename is a matplotlib backend module"""
-        return fname.startswith('backend_') and fname.endswith('.py')
-
-    def backend_fname_formatter(fname):
-        """Removes the extension of the given filename, then takes away the leading 'backend_'."""
-        return os.path.splitext(fname)[0][8:]
-
-    # get the directory where the backends live
-    backends_dir = os.path.dirname(matplotlib.backends.__file__)
-
-    # filter all files in that directory to identify all files which provide a
-    # backend
-    backend_fnames = list(filter(is_backend_module, os.listdir(backends_dir)))
-
-    backends = [backend_fname_formatter(fname) for fname in backend_fnames]
-    return backends
-
-if module_exists('matplotlib'):
-
-    import matplotlib
-    import matplotlib.backends
-    import matplotlib.pyplot as plt
-    mpl_backends = available_matplotlib_backends()
-    if matplotlib_backend in mpl_backends:
-        plt.switch_backend(matplotlib_backend)
-    else:
-        print("Warning: Matplotlib backend", matplotlib_backend, "not available")
-        print("Available backends:", mpl_backends)
-    from matplotlib import pylab as pl
-    import matplotlib.ticker as ticker
-    from matplotlib import rc, colors
-    import matplotlib.patches as mpatches
-    import matplotlib.path as mpath
-    import matplotlib.cm as cm
-    from matplotlib import lines
-    from mpl_toolkits.mplot3d import axes3d
-    from matplotlib import lines  # for plotting lines in pendulum and PST
-    from matplotlib.patches import ConnectionStyle  # for cartpole
-    pl.ion()
-else:
-    print('matplotlib is not available => No Graphics')
-
-if module_exists('networkx'):
-    import networkx as nx
-else:
-    'networkx is not available => No Graphics on SystemAdmin domain'
-
-if module_exists('sklearn'):
-    from sklearn import svm
-else:
-    'sklearn is not available => No BEBF representation available'
+    mpl.use('tkAgg')
 
 
 def discrete_sample(p):
@@ -1157,17 +1110,13 @@ def rk4(derivs, y0, t, *args, **kwargs):
     return yout
 
 
-if module_exists('matplotlib'):
-    createColorMaps()
-    rc('font', family='serif', size=15,
-       weight="bold", **{"sans-serif": ["Helvetica"]})
-    rc("axes", labelsize=15)
-    rc("xtick", labelsize=15)
-    rc("ytick", labelsize=15)
-    # rc('text',usetex=False)
-
-    # Try to use latex fonts, if available
-    # rc('text',usetex=True)
+# matplotlib configs
+createColorMaps()
+rc('font', family='serif', size=15, weight="bold", **{"sans-serif": ["Helvetica"]})
+rc("axes", labelsize=15)
+rc("xtick", labelsize=15)
+rc("ytick", labelsize=15)
+# rc('text',usetex=False)
 
 # Colors
 PURPLE = '\033[95m'

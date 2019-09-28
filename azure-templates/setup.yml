@@ -12,4 +12,5 @@ steps:
 
   - script: |
       python -m pip install --upgrade pip setuptools wheel pipenv
+      make init
     displayName: Install Python packages

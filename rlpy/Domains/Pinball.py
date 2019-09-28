@@ -4,8 +4,12 @@ from .Domain import Domain
 import numpy as np
 from itertools import tee
 import itertools
-from tkinter import Tk, Canvas
 import os
+try:
+    from tkinter import Tk, Canvas
+except ImportError:
+    import warnings
+    warnings.warn('TkInter is not found for Pinball.')
 from rlpy.Tools import __rlpy_location__
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

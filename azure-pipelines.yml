@@ -4,19 +4,16 @@ jobs:
     vmImage: 'Ubuntu-16.04'
   strategy:
     matrix:
-        Python35:
-          PYTHON_VERSION: '3.5'
         Python36:
           PYTHON_VERSION: '3.6'
         Python37:
           PYTHON_VERSION: '3.7'
-    maxParallel: 3
+    maxParallel: 2
   steps:
     - template: azure-templates/setup.yml
       parameters:
         python_version: $(PYTHON_VERSION)
     - script: |
-        make init
         make test
       displayName: Test on Linux
 
@@ -25,19 +22,16 @@ jobs:
     vmImage: 'vs2017-win2016'
   strategy:
     matrix:
-        Python35:
-          PYTHON_VERSION: '3.5'
         Python36:
           PYTHON_VERSION: '3.6'
         Python37:
           PYTHON_VERSION: '3.7'
-    maxParallel: 3
+    maxParallel: 2
   steps:
     - template: azure-templates/setup.yml
       parameters:
         python_version: $(PYTHON_VERSION)
     - bash: |
-        make init
         make test
       displayName: Test on Windows
 

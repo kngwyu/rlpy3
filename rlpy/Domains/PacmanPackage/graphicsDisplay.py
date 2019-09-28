@@ -944,27 +944,3 @@ class FirstPersonPacmanGraphics(PacmanGraphics):
 
 def add(x, y):
     return (x[0] + y[0], x[1] + y[1])
-
-
-# Saving graphical output
-# -----------------------
-# Note: to make an animated gif from this postscript output, try the command:
-# convert -delay 7 -loop 1 -compress lzw -layers optimize frame* out.gif
-# convert is part of imagemagick (freeware)
-
-SAVE_POSTSCRIPT = False
-POSTSCRIPT_OUTPUT_DIR = 'frames'
-FRAME_NUMBER = 0
-import os
-
-
-def saveFrame():
-    "Saves the current graphical output as a postscript file"
-    global SAVE_POSTSCRIPT, FRAME_NUMBER, POSTSCRIPT_OUTPUT_DIR
-    if not SAVE_POSTSCRIPT:
-        return
-    if not os.path.exists(POSTSCRIPT_OUTPUT_DIR):
-        os.mkdir(POSTSCRIPT_OUTPUT_DIR)
-    name = os.path.join(POSTSCRIPT_OUTPUT_DIR, 'frame_%08d.ps' % FRAME_NUMBER)
-    FRAME_NUMBER += 1
-    writePostscript(name)  # writes the current canvas

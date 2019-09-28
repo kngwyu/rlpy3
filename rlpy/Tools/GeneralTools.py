@@ -35,11 +35,11 @@ def use_nogui_backend():
         pass
     plt.show = _stub
 
-
-if 'DISPLAY' not in os.environ:
-    use_nogui_backend()
-else:
+# Try GUI backend first
+try:
     mpl.use('tkAgg')
+except ImportError:
+    use_nogui_backend()
 
 
 def discrete_sample(p):

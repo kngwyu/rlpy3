@@ -12,27 +12,23 @@ def get_file(fname):
 
 
 @pytest.mark.parametrize('domain_class, filename', [
-    (InfCartPoleBalance, get_file('traj_InfiniteCartpoleBalance.pck')),
-    (FiniteCartPoleBalanceOriginal, get_file('traj_FiniteCartpoleBalanceOriginal.pck')),
+    (InfCartPoleBalance, get_file('traj_InfiniteCartpoleBalance.npy')),
+    (FiniteCartPoleBalanceOriginal, get_file('traj_FiniteCartpoleBalanceOriginal.npy')),
 ])
 def test_trajectory(domain_class, filename):
-    with open(filename, 'rb') as f:
-        if not sys.version_info[:2] == (2, 7):
-            traj = pickle.load(f, encoding='latin1')
-        else:
-            traj = pickle.load(f)
+    traj = np.load(filename, allow_pickle=True)
     traj_now = sample_random_trajectory(domain_class)
-    for i, e1, e2 in zip(list(range(len(traj_now))), traj_now, traj):
-        print(i)
-        print(e1[0], e2[0])
-        if not np.allclose(e1[0], e2[0]):  # states
-            print(e1[0], e2[0])
-            assert False
-        assert e1[-1] == e2[-1]  # reward
-        print("Terminal", e1[1], e2[1])
-        assert e1[1] == e2[1]  # terminal
+    for e1, e2 in zip(traj_now, traj):
+        # State
+        assert np.allclose(e1[0], e2[0]), 'now: {}, saved: {}'.format(e1[0], e2[0])
+        # Reward
+        assert e1[-1] == e2[-1], 'now: {}, saved: {}'.format(e1[-1], e2[-1])
+        # Terminal
+        assert e1[1] == e2[1], 'now: {}, saved: {}'.format(e1[1], e2[1])
+        # Actions
         assert len(e1[2]) == len(e2[2])
-        assert np.all([a == b for a, b in zip(e1[2], e2[2])])  # p_actions
+        # p_actions
+        assert np.all([a == b for a, b in zip(e1[2], e2[2])])
 
 
 def sample_random_trajectory(domain_class):

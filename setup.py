@@ -258,12 +258,10 @@ setup(name="rlpy3",
           'networkx',
           'scikit-learn',
           'joblib',
-          'hyperopt',
           'pymongo',
           'cairocffi',
-          'future'
       ],
       setup_requires=['numpy >= 1.7'],
       ext_modules=extensions,
       test_suite='tests'
-      )
+)

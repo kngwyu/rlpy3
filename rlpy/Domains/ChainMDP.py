@@ -126,7 +126,8 @@ class ChainMDP(Domain):
                 )
                 plt.show()
 
-        [p.set_facecolor("w") for p in self.circles]
+        for p in self.circles:
+            p.set_facecolor("w")
         self.circles[s].set_facecolor("k")
         plt.draw()
 

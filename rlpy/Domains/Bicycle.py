@@ -80,6 +80,10 @@ class BicycleBalancing(Domain):
         ]
     )
 
+    def __init__(self):
+        super().__init__()
+        self._state_graph_handles = None
+
     def step(self, a):
         self.t += 1
         s = self.state
@@ -182,11 +186,11 @@ class BicycleBalancing(Domain):
         n = self.state_space_dims + 1
         names = list(self.state_names) + ["Action"]
         colors = ["m", "c", "b", "r", "g", "k"]
-        handles = getattr(self, "_state_graph_handles", None)
-        plt.figure("Domain", figsize=(12, 10))
+        handles = self._state_graph_handles
+        fig = plt.figure("Bicycle", figsize=(12, 10))
         if handles is None:
             handles = []
-            f, axes = plt.subplots(n, sharex=True, num="Domain", figsize=(12, 10))
+            f, axes = plt.subplots(n, sharex=True, num="Bicycle", figsize=(12, 10))
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
@@ -201,8 +205,8 @@ class BicycleBalancing(Domain):
             ax = handles[i].axes
             ax.relim()
             ax.autoscale_view()
-        plt.figure("Domain").canvas.draw()
-        plt.figure("Domain").canvas.flush_events()
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
 
 class BicycleRiding(BicycleBalancing):

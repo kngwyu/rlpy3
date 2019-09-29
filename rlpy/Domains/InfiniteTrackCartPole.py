@@ -1,7 +1,6 @@
 """Pendulum base domain."""
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
-from rlpy.Tools import plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -142,9 +141,8 @@ class InfTrackCartPole(CartPoleBase):
         static; see :class:`Domains.InfiniteTrackCartPole.InfTrackCartPole`.
 
         """
-        fourState = np.append(
-            self.state, np.array([0, 0])
-        )  # 0 cart position and velocity
+        # 0 cart position and velocity
+        fourState = np.append(self.state, np.array([0, 0]))
         self._plot_state(fourState, a)
 
     def showLearning(self, representation):

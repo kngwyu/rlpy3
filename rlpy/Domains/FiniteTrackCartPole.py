@@ -1,20 +1,7 @@
 """Cart with a pole domains"""
-from .Domain import Domain
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
-import scipy.integrate
-from rlpy.Tools import (
-    pl,
-    mpatches,
-    mpath,
-    fromAtoB,
-    lines,
-    rk4,
-    wrap,
-    bound,
-    colors,
-    plt,
-)
+from rlpy.Tools import pl, plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

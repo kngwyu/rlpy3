@@ -137,7 +137,7 @@ class MountainCar(Domain):
         s = self.state
         pos, vel = s
         if self.domain_fig is None:  # Need to initialize the figure
-            self.domain_fig = plt.figure("Mountain Car Domain")
+            self.domain_fig = plt.figure("MountainCar")
             # plot mountain
             mountain_x = np.linspace(self.XMIN, self.XMAX, 1000)
             mountain_y = np.sin(3 * mountain_x)
@@ -158,9 +158,7 @@ class MountainCar(Domain):
             plt.plot(self.GOAL, np.sin(3 * self.GOAL), "yd", markersize=10.0)
             plt.axis("off")
             plt.gca().set_aspect("1")
-        self.domain_fig = plt.figure("Mountain Car Domain")
-        # pos = 0
-        # a = 0
+            plt.show()
         car_middle_x = pos
         car_middle_y = np.sin(3 * pos)
         slope = np.arctan(3 * np.cos(3 * pos))
@@ -198,7 +196,8 @@ class MountainCar(Domain):
                 0,
                 "simple",
             )
-        plt.draw()
+        self.domain_fig.canvas.draw()
+        self.domain_fig.canvas.flush_events()
 
     def showLearning(self, representation):
         pi = np.zeros((self.X_discretization, self.XDot_discretization), "uint8")

@@ -91,6 +91,7 @@ class Swimmer(Domain):
         )
         self.statespace_limits = np.array(self.statespace_limits)
         self.continuous_dims = list(range(self.statespace_limits.shape[0]))
+        self.swimmer_lines = None
         super().__init__()
 
     def s0(self):
@@ -121,8 +122,8 @@ class Swimmer(Domain):
         R2 = R + 0.5 * self.lengths[:, None] * T
         Rx = np.hstack([R1[:, 0], R2[:, 0]]) + self.pos_cm[0]
         Ry = np.hstack([R1[:, 1], R2[:, 1]]) + self.pos_cm[1]
-        fig = plt.figure("Swimmer Domain")
-        if not hasattr(self, "swimmer_lines"):
+        fig = plt.figure("Swimmer")
+        if self.swimmer_lines is None:
             plt.plot(0.0, 0.0, "ro")
             self.swimmer_lines = plt.plot(Rx, Ry)[0]
             self.action_text = plt.text(-2, -8, str(a))

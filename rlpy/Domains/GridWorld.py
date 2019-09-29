@@ -105,8 +105,8 @@ class GridWorld(Domain):
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            _ = plt.figure("GridWorld")
-            self.domain_fig = plt.imshow(
+            self.domain_fig = plt.figure("GridWorld")
+            plt.imshow(
                 self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
             )
             plt.xticks(np.arange(self.COLS), fontsize=FONTSIZE)
@@ -116,11 +116,10 @@ class GridWorld(Domain):
             )
             plt.show()
         self.agent_fig.pop(0).remove()
-        fig = plt.figure("GridWorld")
         # Instead of '>' you can use 'D', 'o'
         self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.COLS)
-        fig.canvas.draw()
-        fig.canvas.flush_events()
+        self.domain_fig.canvas.draw()
+        self.domain_fig.canvas.flush_events()
 
     def showLearning(self, representation):
         if self.valueFunction_fig is None:

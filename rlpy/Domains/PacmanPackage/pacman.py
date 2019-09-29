@@ -80,13 +80,14 @@ class GameState(object):
         tmp = GameState.explored.copy()
         GameState.explored = set()
         return tmp
+
     getAndResetExplored = staticmethod(getAndResetExplored)
 
     def getLegalActions(self, agentIndex=0):
         """
         Returns the legal actions for the agent specified.
         """
-#        GameState.explored.add(self)
+        #        GameState.explored.add(self)
         if self.isWin() or self.isLose():
             return []
 
@@ -101,7 +102,7 @@ class GameState(object):
         """
         # Check that successors exist
         if self.isWin() or self.isLose():
-            raise Exception('Can\'t generate a successor of a terminal state.')
+            raise Exception("Can't generate a successor of a terminal state.")
 
         # Copy current state
         state = GameState(self)
@@ -110,7 +111,7 @@ class GameState(object):
         if agentIndex == 0:  # Pacman is moving
             state.data._eaten = [False for i in range(state.getNumAgents())]
             PacmanRules.applyAction(state, action)
-        else:                # A ghost is moving
+        else:  # A ghost is moving
             GhostRules.applyAction(state, action, agentIndex)
 
         # Time passes
@@ -241,7 +242,7 @@ class GameState(object):
         """
         Allows two states to be compared.
         """
-        return hasattr(other, 'data') and self.data == other.data
+        return hasattr(other, "data") and self.data == other.data
 
     def __hash__(self):
         """
@@ -259,13 +260,14 @@ class GameState(object):
         """
         self.data.initialize(layout, numGhostAgents)
 
+
 ############################################################################
 #                     THE HIDDEN SECRETS OF PACMAN                         #
 #                                                                          #
 # You shouldn't need to look through the code in this section of the file. #
 ############################################################################
 
-SCARED_TIME = 40    # Moves ghosts are scared
+SCARED_TIME = 40  # Moves ghosts are scared
 COLLISION_TOLERANCE = 0.7  # How close ghosts must be to Pacman to kill
 TIME_PENALTY = 1  # Number of points lost each round
 
@@ -280,9 +282,16 @@ class ClassicGameRules(object):
     def __init__(self, timeout=30):
         self.timeout = timeout
 
-    def newGame(self, layout, pacmanAgent, ghostAgents,
-                display, quiet=False, catchExceptions=False):
-        agents = [pacmanAgent] + ghostAgents[:layout.getNumGhosts()]
+    def newGame(
+        self,
+        layout,
+        pacmanAgent,
+        ghostAgents,
+        display,
+        quiet=False,
+        catchExceptions=False,
+    ):
+        agents = [pacmanAgent] + ghostAgents[: layout.getNumGhosts()]
         initState = GameState()
         initState.initialize(layout, len(ghostAgents))
         game = Game(agents, display, self, catchExceptions=catchExceptions)
@@ -341,17 +350,17 @@ class PacmanRules(object):
     These functions govern how pacman interacts with his environment under
     the classic game rules.
     """
+
     PACMAN_SPEED = 1
 
     def getLegalActions(state):
         """
         Returns a list of possible actions.
         """
-        return (
-            Actions.getPossibleActions(
-                state.getPacmanState().configuration,
-                state.data.layout.walls)
+        return Actions.getPossibleActions(
+            state.getPacmanState().configuration, state.data.layout.walls
         )
+
     getLegalActions = staticmethod(getLegalActions)
 
     def applyAction(state, action):
@@ -366,8 +375,7 @@ class PacmanRules(object):
 
         # Update Configuration
         vector = Actions.directionToVector(action, PacmanRules.PACMAN_SPEED)
-        pacmanState.configuration = pacmanState.configuration.generateSuccessor(
-            vector)
+        pacmanState.configuration = pacmanState.configuration.generateSuccessor(vector)
 
         # Eat
         next = pacmanState.configuration.getPosition()
@@ -375,6 +383,7 @@ class PacmanRules(object):
         if manhattanDistance(nearest, next) <= 0.5:
             # Remove food
             PacmanRules.consume(nearest, state)
+
     applyAction = staticmethod(applyAction)
 
     def consume(position, state):
@@ -391,12 +400,13 @@ class PacmanRules(object):
                 state.data.scoreChange += 500
                 state.data._win = True
         # Eat capsule
-        if(position in state.getCapsules()):
+        if position in state.getCapsules():
             state.data.capsules.remove(position)
             state.data._capsuleEaten = position
             # Reset all ghosts' scared timers
             for index in range(1, len(state.data.agentStates)):
                 state.data.agentStates[index].scaredTimer = SCARED_TIME
+
     consume = staticmethod(consume)
 
 
@@ -405,6 +415,7 @@ class GhostRules(object):
     """
     These functions dictate how ghosts interact with their environment.
     """
+
     GHOST_SPEED = 1.0
 
     def getLegalActions(state, ghostIndex):
@@ -413,15 +424,14 @@ class GhostRules(object):
         reach a dead end, but can turn 90 degrees at intersections.
         """
         conf = state.getGhostState(ghostIndex).configuration
-        possibleActions = Actions.getPossibleActions(
-            conf,
-            state.data.layout.walls)
+        possibleActions = Actions.getPossibleActions(conf, state.data.layout.walls)
         reverse = Actions.reverseDirection(conf.direction)
         if Directions.STOP in possibleActions:
             possibleActions.remove(Directions.STOP)
         if reverse in possibleActions and len(possibleActions) > 1:
             possibleActions.remove(reverse)
         return possibleActions
+
     getLegalActions = staticmethod(getLegalActions)
 
     def applyAction(state, action, ghostIndex):
@@ -435,16 +445,16 @@ class GhostRules(object):
         if ghostState.scaredTimer > 0:
             speed /= 2.0
         vector = Actions.directionToVector(action, speed)
-        ghostState.configuration = ghostState.configuration.generateSuccessor(
-            vector)
+        ghostState.configuration = ghostState.configuration.generateSuccessor(vector)
+
     applyAction = staticmethod(applyAction)
 
     def decrementTimer(ghostState):
         timer = ghostState.scaredTimer
         if timer == 1:
-            ghostState.configuration.pos = nearestPoint(
-                ghostState.configuration.pos)
+            ghostState.configuration.pos = nearestPoint(ghostState.configuration.pos)
         ghostState.scaredTimer = max(0, timer - 1)
+
     decrementTimer = staticmethod(decrementTimer)
 
     def checkDeath(state, agentIndex):
@@ -460,6 +470,7 @@ class GhostRules(object):
             ghostPosition = ghostState.configuration.getPosition()
             if GhostRules.canKill(pacmanPosition, ghostPosition):
                 GhostRules.collide(state, ghostState, agentIndex)
+
     checkDeath = staticmethod(checkDeath)
 
     def collide(state, ghostState, agentIndex):
@@ -473,16 +484,15 @@ class GhostRules(object):
             if not state.data._win:
                 state.data.scoreChange -= 500
                 state.data._lose = True
+
     collide = staticmethod(collide)
 
     def canKill(pacmanPosition, ghostPosition):
-        return (
-            manhattanDistance(
-                ghostPosition,
-                pacmanPosition) <= COLLISION_TOLERANCE
-        )
+        return manhattanDistance(ghostPosition, pacmanPosition) <= COLLISION_TOLERANCE
+
     canKill = staticmethod(canKill)
 
     def placeGhost(state, ghostState):
         ghostState.configuration = ghostState.start
+
     placeGhost = staticmethod(placeGhost)

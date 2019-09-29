@@ -5,8 +5,13 @@ import numpy as np
 from scipy import sparse as sp
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -49,8 +54,17 @@ class LSPI(BatchAgent):
     re_iterations = 0
 
     def __init__(
-            self, policy, representation, discount_factor, max_window, steps_between_LSPI,
-            lspi_iterations=5, tol_epsilon=1e-3, re_iterations=100, use_sparse=False):
+        self,
+        policy,
+        representation,
+        discount_factor,
+        max_window,
+        steps_between_LSPI,
+        lspi_iterations=5,
+        tol_epsilon=1e-3,
+        re_iterations=100,
+        use_sparse=False,
+    ):
 
         self.steps_between_LSPI = steps_between_LSPI
         self.tol_epsilon = tol_epsilon
@@ -68,16 +82,16 @@ class LSPI(BatchAgent):
             # Cache calculated phi vectors
             if self.use_sparse:
                 self.all_phi_s = sp.lil_matrix(
-                    (max_window, representation.features_num))
+                    (max_window, representation.features_num)
+                )
                 self.all_phi_ns = sp.lil_matrix(
-                    (max_window, representation.features_num))
+                    (max_window, representation.features_num)
+                )
                 self.all_phi_s_a = sp.lil_matrix((max_window, f_size))
                 self.all_phi_ns_na = sp.lil_matrix((max_window, f_size))
             else:
-                self.all_phi_s = np.zeros(
-                    (max_window, representation.features_num))
-                self.all_phi_ns = np.zeros(
-                    (max_window, representation.features_num))
+                self.all_phi_s = np.zeros((max_window, representation.features_num))
+                self.all_phi_ns = np.zeros((max_window, representation.features_num))
                 self.all_phi_s_a = np.zeros((max_window, f_size))
                 self.all_phi_ns_na = np.zeros((max_window, f_size))
 
@@ -90,17 +104,20 @@ class LSPI(BatchAgent):
         # Calculates the TD-Errors in a matrix format for a set of samples = R
         # + (discount_factor*F2 - F1) * Theta
         discount_factor = self.discount_factor
-        R = self.data_r[:self.samples_count, :]
+        R = self.data_r[: self.samples_count, :]
         if self.use_sparse:
-            F1 = sp.csr_matrix(self.all_phi_s_a[:self.samples_count, :])
-            F2 = sp.csr_matrix(self.all_phi_ns_na[:self.samples_count, :])
-            answer = (
-                R + (discount_factor * F2 - F1) * self.representation.weight_vec.reshape(-1, 1))
+            F1 = sp.csr_matrix(self.all_phi_s_a[: self.samples_count, :])
+            F2 = sp.csr_matrix(self.all_phi_ns_na[: self.samples_count, :])
+            answer = R + (
+                discount_factor * F2 - F1
+            ) * self.representation.weight_vec.reshape(-1, 1)
             return np.squeeze(np.asarray(answer))
         else:
-            F1 = self.all_phi_s_a[:self.samples_count, :]
-            F2 = self.all_phi_ns_na[:self.samples_count, :]
-            return R.ravel() + np.dot(discount_factor * F2 - F1, self.representation.weight_vec)
+            F1 = self.all_phi_s_a[: self.samples_count, :]
+            F2 = self.all_phi_ns_na[: self.samples_count, :]
+            return R.ravel() + np.dot(
+                discount_factor * F2 - F1, self.representation.weight_vec
+            )
 
     def episodeTerminated(self):
         """This function adjusts all necessary elements of the agent at the end of
@@ -137,23 +154,29 @@ class LSPI(BatchAgent):
             return
 
         self.logger.info(
-            "============================\nRunning LSPI with %d Samples\n============================" %
-            self.samples_count)
+            "============================\nRunning LSPI with %d Samples\n============================"
+            % self.samples_count
+        )
         while added_feature and re_iteration <= self.re_iterations:
             re_iteration += 1
             # Some Prints
-            if Tools.hasFunction(self.representation, 'batchDiscover'):
+            if Tools.hasFunction(self.representation, "batchDiscover"):
                 self.logger.info(
-                    '-----------------\nRepresentation Expansion iteration #%d\n-----------------' %
-                    re_iteration)
+                    "-----------------\nRepresentation Expansion iteration #%d\n-----------------"
+                    % re_iteration
+                )
             # Run LSTD for first solution
             self.LSTD()
             # Run Policy Iteration to change a_prime and recalculate weight_vec in a
             # loop
             td_errors = self.policyIteration()
             # Add new Features
-            if Tools.hasFunction(self.representation, 'batchDiscover'):
-                added_feature = self.representation.batchDiscover(td_errors, self.all_phi_s[:self.samples_count, :], self.data_s[:self.samples_count, :])
+            if Tools.hasFunction(self.representation, "batchDiscover"):
+                added_feature = self.representation.batchDiscover(
+                    td_errors,
+                    self.all_phi_s[: self.samples_count, :],
+                    self.data_s[: self.samples_count, :],
+                )
             else:
                 added_feature = False
             # print 'L_inf distance to V*= ',
@@ -171,29 +194,38 @@ class LSPI(BatchAgent):
         weight_diff = self.tol_epsilon + 1  # So that the loop starts
         lspi_iteration = 0
         self.best_performance = -np.inf
-        self.logger.info('Running Policy Iteration:')
+        self.logger.info("Running Policy Iteration:")
 
         # We save action_mask on the first iteration (used for batchBestAction) to reuse it and boost the speed
         # action_mask is a matrix that shows which actions are available for
         # each state
         action_mask = None
         discount_factor = self.discount_factor
-        F1 = sp.csr_matrix(self.all_phi_s_a[:self.samples_count, :]) if self.use_sparse else self.all_phi_s_a[:self.samples_count, :]
+        F1 = (
+            sp.csr_matrix(self.all_phi_s_a[: self.samples_count, :])
+            if self.use_sparse
+            else self.all_phi_s_a[: self.samples_count, :]
+        )
         while lspi_iteration < self.lspi_iterations and weight_diff > self.tol_epsilon:
 
             # Find the best action for each state given the current value function
             # Notice if actions have the same value the first action is
             # selected in the batch mode
             iteration_start_time = Tools.clock()
-            bestAction, self.all_phi_ns_new_na, action_mask = self.representation.batchBestAction(self.data_ns[:self.samples_count, :], self.all_phi_ns, action_mask, self.use_sparse)
+            bestAction, self.all_phi_ns_new_na, action_mask = self.representation.batchBestAction(
+                self.data_ns[: self.samples_count, :],
+                self.all_phi_ns,
+                action_mask,
+                self.use_sparse,
+            )
 
             # Recalculate A matrix (b remains the same)
             # Solve for the new weight_vec
             if self.use_sparse:
-                F2 = sp.csr_matrix(self.all_phi_ns_new_na[:self.samples_count, :])
+                F2 = sp.csr_matrix(self.all_phi_ns_new_na[: self.samples_count, :])
                 A = F1.T * (F1 - discount_factor * F2)
             else:
-                F2 = self.all_phi_ns_new_na[:self.samples_count, :]
+                F2 = self.all_phi_ns_new_na[: self.samples_count, :]
                 A = np.dot(F1.T, F1 - discount_factor * F2)
 
             A = Tools.regularize(A)
@@ -205,23 +237,27 @@ class LSPI(BatchAgent):
 
             # Calculate the weight difference. If it is big enough update the
             # weight_vec
-            weight_diff = np.linalg.norm(self.representation.weight_vec - new_weight_vec)
+            weight_diff = np.linalg.norm(
+                self.representation.weight_vec - new_weight_vec
+            )
             if weight_diff > self.tol_epsilon:
                 self.representation.weight_vec = new_weight_vec
 
             self.logger.info(
-                "%d: %0.0f(s), ||w1-w2|| = %0.4f, Sparsity=%0.1f%%, %d Features" % (lspi_iteration + 1,
-                                                                                    Tools.deltaT(
-                                                                                        iteration_start_time),
-                                                                                    weight_diff,
-                                                                                    Tools.sparsity(
-                                                                                        A),
-                                                                                    self.representation.features_num))
+                "%d: %0.0f(s), ||w1-w2|| = %0.4f, Sparsity=%0.1f%%, %d Features"
+                % (
+                    lspi_iteration + 1,
+                    Tools.deltaT(iteration_start_time),
+                    weight_diff,
+                    Tools.sparsity(A),
+                    self.representation.features_num,
+                )
+            )
             lspi_iteration += 1
 
         self.logger.info(
-            'Total Policy Iteration Time = %0.0f(s)' %
-            Tools.deltaT(start_time))
+            "Total Policy Iteration Time = %0.0f(s)" % Tools.deltaT(start_time)
+        )
         return td_errors
 
     def LSTD(self):
@@ -234,10 +270,8 @@ class LSPI(BatchAgent):
             # build phi_s and phi_ns for all samples
             p = self.samples_count
             n = self.representation.features_num
-            self.all_phi_s = np.empty(
-                (p, n), dtype=self.representation.featureType())
-            self.all_phi_ns = np.empty(
-                (p, n), dtype=self.representation.featureType())
+            self.all_phi_s = np.empty((p, n), dtype=self.representation.featureType())
+            self.all_phi_ns = np.empty((p, n), dtype=self.representation.featureType())
 
             for i in np.arange(self.samples_count):
                 self.all_phi_s[i, :] = self.representation.phi(self.data_s[i])
@@ -245,13 +279,21 @@ class LSPI(BatchAgent):
 
             # build phi_s_a and phi_ns_na for all samples given phi_s and
             # phi_ns
-            self.all_phi_s_a = self.representation.batchPhi_s_a(self.all_phi_s[:self.samples_count, :], self.data_a[:self.samples_count, :], use_sparse=self.use_sparse)
-            self.all_phi_ns_na = self.representation.batchPhi_s_a(self.all_phi_ns[:self.samples_count, :], self.data_na[:self.samples_count, :], use_sparse=self.use_sparse)
+            self.all_phi_s_a = self.representation.batchPhi_s_a(
+                self.all_phi_s[: self.samples_count, :],
+                self.data_a[: self.samples_count, :],
+                use_sparse=self.use_sparse,
+            )
+            self.all_phi_ns_na = self.representation.batchPhi_s_a(
+                self.all_phi_ns[: self.samples_count, :],
+                self.data_na[: self.samples_count, :],
+                use_sparse=self.use_sparse,
+            )
 
             # calculate A and b for LSTD
-            F1 = self.all_phi_s_a[:self.samples_count, :]
-            F2 = self.all_phi_ns_na[:self.samples_count, :]
-            R = self.data_r[:self.samples_count, :]
+            F1 = self.all_phi_s_a[: self.samples_count, :]
+            F2 = self.all_phi_ns_na[: self.samples_count, :]
+            R = self.data_r[: self.samples_count, :]
             discount_factor = self.discount_factor
 
             if self.use_sparse:
@@ -269,12 +311,11 @@ class LSPI(BatchAgent):
         # log solve time only if takes more than 1 second
         if solve_time > 1:
             self.logger.info(
-                'Total LSTD Time = %0.0f(s), Solve Time = %0.0f(s)' %
-                (Tools.deltaT(start_time), solve_time))
+                "Total LSTD Time = %0.0f(s), Solve Time = %0.0f(s)"
+                % (Tools.deltaT(start_time), solve_time)
+            )
         else:
-            self.logger.info(
-                'Total LSTD Time = %0.0f(s)' %
-                (Tools.deltaT(start_time)))
+            self.logger.info("Total LSTD Time = %0.0f(s)" % (Tools.deltaT(start_time)))
 
     def store_samples(self, s, a, r, ns, na, terminal):
         """Process one transition instance."""
@@ -284,11 +325,7 @@ class LSPI(BatchAgent):
         if self.fixedRep:
             if terminal:
                 phi_s = self.representation.phi(s, False)
-                phi_s_a = self.representation.phi_sa(
-                    s,
-                    False,
-                    a,
-                    phi_s=phi_s)
+                phi_s_a = self.representation.phi_sa(s, False, a, phi_s=phi_s)
             else:
                 # This is because the current s,a will be the previous ns, na
                 if self.use_sparse:
@@ -299,11 +336,7 @@ class LSPI(BatchAgent):
                     phi_s_a = self.all_phi_ns_na[self.samples_count - 1, :]
 
             phi_ns = self.representation.phi(ns, terminal)
-            phi_ns_na = self.representation.phi_sa(
-                ns,
-                terminal,
-                na,
-                phi_s=phi_ns)
+            phi_ns_na = self.representation.phi_sa(ns, terminal, na, phi_s=phi_ns)
 
             self.all_phi_s[self.samples_count, :] = phi_s
             self.all_phi_ns[self.samples_count, :] = phi_ns

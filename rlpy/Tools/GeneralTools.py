@@ -11,8 +11,13 @@ from time import process_time as clock
 
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -29,15 +34,17 @@ from mpl_toolkits.mplot3d import axes3d
 
 
 def use_nogui_backend():
-    mpl.use('agg')
+    mpl.use("agg")
 
     def _stub(*args, **kwargs):
         pass
+
     plt.show = _stub
+
 
 # Try GUI backend first
 try:
-    mpl.use('tkAgg')
+    mpl.use("tkAgg")
 except ImportError:
     use_nogui_backend()
 
@@ -94,8 +101,9 @@ def cartesian(arrays, out=None):
     if arrays[1:]:
         cartesian(arrays[1:], out=out[0:m, 1:])
         for j in range(1, arrays[0].size):
-            out[j * m:(j + 1) * m, 1:] = out[0:m, 1:]
+            out[j * m : (j + 1) * m, 1:] = out[0:m, 1:]
     return out
+
 
 # if numpy.version.version < '2.6.0': # Missing count_nonzero
 
@@ -232,14 +240,18 @@ def state2bin(s, num_bins, limits):
         return num_bins - 1
     width = limits[1] - limits[0]
     if s > limits[1]:
-        print('Tools.py: WARNING: ', s, ' > ', limits[1], '. Using the chopped value of s')
-        print('Ignoring', limits[1] - s)
+        print(
+            "Tools.py: WARNING: ", s, " > ", limits[1], ". Using the chopped value of s"
+        )
+        print("Ignoring", limits[1] - s)
         s = limits[1]
     elif s < limits[0]:
-        print('Tools.py: WARNING: ', s, ' < ', limits[0], '. Using the chopped value of s')
-#        print("WARNING: %s is out of limits of %s . Using the chopped value of s" %(str(s),str(limits)))
+        print(
+            "Tools.py: WARNING: ", s, " < ", limits[0], ". Using the chopped value of s"
+        )
+        #        print("WARNING: %s is out of limits of %s . Using the chopped value of s" %(str(s),str(limits)))
         s = limits[0]
-    return int((s - limits[0]) * num_bins / (width * 1.))
+    return int((s - limits[0]) * num_bins / (width * 1.0))
 
 
 def deltaT(start_time):
@@ -268,31 +280,30 @@ def createColorMaps():
     """
 
     # Make Grid World ColorMap
-    mycmap = colors.ListedColormap(
-        ['w', '.75', 'b', 'g', 'r', 'k'], 'GridWorld')
+    mycmap = colors.ListedColormap(["w", ".75", "b", "g", "r", "k"], "GridWorld")
     cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(['r', 'k'], 'fiftyChainActions')
+    mycmap = colors.ListedColormap(["r", "k"], "fiftyChainActions")
     cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(['b', 'r'], 'FlipBoard')
+    mycmap = colors.ListedColormap(["b", "r"], "FlipBoard")
     cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(
-        ['w', '.75', 'b', 'r'], 'IntruderMonitoring')
+    mycmap = colors.ListedColormap(["w", ".75", "b", "r"], "IntruderMonitoring")
     cm.register_cmap(cmap=mycmap)
     mycmap = colors.ListedColormap(
-        ['w', 'b', 'g', 'r', 'm', (1, 1, 0), 'k'], 'BlocksWorld')
+        ["w", "b", "g", "r", "m", (1, 1, 0), "k"], "BlocksWorld"
+    )
     cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(['.5', 'k'], 'Actions')
+    mycmap = colors.ListedColormap([".5", "k"], "Actions")
     cm.register_cmap(cmap=mycmap)
     # mycmap = make_colormap({0:(.8,.7,0), 1: 'w', 2:(0,0,1)})  # orange to
     # blue
-    mycmap = make_colormap({0: 'r', 1: 'w', 2: 'g'})  # red to blue
-    cm.register_cmap(cmap=mycmap, name='ValueFunction')
-    mycmap = colors.ListedColormap(['r', 'w', 'k'], 'InvertedPendulumActions')
+    mycmap = make_colormap({0: "r", 1: "w", 2: "g"})  # red to blue
+    cm.register_cmap(cmap=mycmap, name="ValueFunction")
+    mycmap = colors.ListedColormap(["r", "w", "k"], "InvertedPendulumActions")
     cm.register_cmap(cmap=mycmap)
 
-    mycmap = colors.ListedColormap(['r', 'w', 'k'], 'MountainCarActions')
+    mycmap = colors.ListedColormap(["r", "w", "k"], "MountainCarActions")
     cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(['r', 'w', 'k', 'b'], '4Actions')
+    mycmap = colors.ListedColormap(["r", "w", "k", "b"], "4Actions")
     cm.register_cmap(cmap=mycmap)
 
 
@@ -333,10 +344,10 @@ def make_colormap(colors):
         B.append(RGB[2])
 
     cmap_dict = {}
-    cmap_dict['red'] = [(x0[i], R[i], R[i]) for i in range(len(R))]
-    cmap_dict['green'] = [(x0[i], G[i], G[i]) for i in range(len(G))]
-    cmap_dict['blue'] = [(x0[i], B[i], B[i]) for i in range(len(B))]
-    mymap = LinearSegmentedColormap('mymap', cmap_dict)
+    cmap_dict["red"] = [(x0[i], R[i], R[i]) for i in range(len(R))]
+    cmap_dict["green"] = [(x0[i], G[i], G[i]) for i in range(len(G))]
+    cmap_dict["blue"] = [(x0[i], B[i], B[i]) for i in range(len(B))]
+    mymap = LinearSegmentedColormap("mymap", cmap_dict)
     return mymap
 
 
@@ -349,25 +360,25 @@ def showcolors(cmap):
     plt.clf()
     x = np.linspace(0, 1, 21)
     X, Y = np.meshgrid(x, x)
-    plt.pcolor(X, Y, 0.5 * (X + Y), cmap=cmap, edgecolors='k')
-    plt.axis('equal')
+    plt.pcolor(X, Y, 0.5 * (X + Y), cmap=cmap, edgecolors="k")
+    plt.axis("equal")
     plt.colorbar()
-    plt.title('Plot of x+y using colormap')
+    plt.title("Plot of x+y using colormap")
 
 
 def schlieren_colormap(color=[0, 0, 0]):
     """
     Creates and returns a colormap suitable for schlieren plots.
     """
-    if color == 'k':
+    if color == "k":
         color = [0, 0, 0]
-    if color == 'r':
+    if color == "r":
         color = [1, 0, 0]
-    if color == 'b':
+    if color == "b":
         color = [0, 0, 1]
-    if color == 'g':
+    if color == "g":
         color = [0, 0.5, 0]
-    if color == 'y':
+    if color == "y":
         color = [1, 1, 0]
     color = np.array([1, 1, 1]) - np.array(color)
     s = np.linspace(0, 1, 20)
@@ -392,9 +403,9 @@ def make_amrcolors(nlevels=4):
     """
 
     # For 4 or less levels:
-    linecolors = ['k', 'b', 'r', 'g']
+    linecolors = ["k", "b", "r", "g"]
     # Set bgcolors to white, then light shades of blue, red, green:
-    bgcolors = ['#ffffff', '#ddddff', '#ffdddd', '#ddffdd']
+    bgcolors = ["#ffffff", "#ddddff", "#ffdddd", "#ddffdd"]
     # Set bgcolors to light shades of yellow, blue, red, green:
     # bgcolors = ['#ffffdd','#ddddff','#ffdddd','#ddffdd']
 
@@ -424,16 +435,18 @@ def linearMap(x, a, b, A=0, B=1):
     if a == b:
         res = B
     else:
-        res = (x - a) / (1. * (b - a)) * (B - A) + A
+        res = (x - a) / (1.0 * (b - a)) * (B - A) + A
     if res < A:
         res = A
     if res > B:
         res = B
     return res
 
+
 def l_norm(x, norm=2):
-    ''' Returns the L infinity norm of a vector '''
+    """ Returns the L infinity norm of a vector """
     return np.linalg.norm(x, norm)
+
 
 def generalDot(x, y):
     """
@@ -520,7 +533,9 @@ def findRow(rowVec, X):
 
     # return nonzero(any(logical_and.reduce([X[:, i] == r[i] for i in arange(len(r))])))
     # return any(logical_and(X[:, 0] == r[0], X[:, 1] == r[1]))
-    ind = np.nonzero(np.logical_and.reduce([X[:, i] == rowVec[i] for i in range(len(rowVec))]))
+    ind = np.nonzero(
+        np.logical_and.reduce([X[:, i] == rowVec[i] for i in range(len(rowVec))])
+    )
     return ind[0]
 
 
@@ -542,6 +557,8 @@ def perms(X):
     allPerms, _ = perms_r(X, perm_sample=np.array([]), allPerms=None, ind=0)
 
     return allPerms
+
+
 ######################################################
 
 
@@ -562,12 +579,16 @@ def perms_r(X, perm_sample=np.array([]), allPerms=None, ind=0):
         if isinstance(X[0], list):
             for x in X[0]:
                 allPerms, ind = perms_r(
-                    X[1:], np.hstack((perm_sample, [x])), allPerms, ind)
+                    X[1:], np.hstack((perm_sample, [x])), allPerms, ind
+                )
         else:
             for x in range(X[0]):
                 allPerms, ind = perms_r(
-                    X[1:], np.hstack((perm_sample, [x])), allPerms, ind)
+                    X[1:], np.hstack((perm_sample, [x])), allPerms, ind
+                )
     return allPerms, ind
+
+
 ######################################################
 
 
@@ -623,6 +644,8 @@ def vec2id(x, limits):
         _id += x[d]
 
     return _id
+
+
 ######################################################
 
 
@@ -643,8 +666,8 @@ def id2vec(_id, limits):
     prods = np.cumprod(limits)
     s = [0] * len(limits)
     for d in range(len(prods) - 1, 0, -1):
-#       s[d] = _id / prods[d-1]
-#       _id %= prods[d-1]
+        #       s[d] = _id / prods[d-1]
+        #       _id %= prods[d-1]
         s[d], _id = divmod(_id, prods[d - 1])
     s[0] = _id
     return s
@@ -713,20 +736,17 @@ def powerset(iterable, ascending=1):
     """
     s = list(iterable)
     if ascending:
-        return (
-            chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
-        )
+        return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
     else:
-        return (
-            chain.from_iterable(combinations(s, r)
-                                for r in range(len(s) + 1, -1, -1))
+        return chain.from_iterable(
+            combinations(s, r) for r in range(len(s) + 1, -1, -1)
         )
 
 
 def printClass(obj):
     """ Print class name and all attributes of object ``obj``. """
     print(className(obj))
-    print('=======================================')
+    print("=======================================")
     for property, value in vars(obj).items():
         print(property, ": ", value)
 
@@ -756,7 +776,9 @@ def addNewElementForAllActions(weight_vec, actions_num, newElem=None):
     if len(weight_vec) == 0:
         return newElem.flatten()
     else:
-        weight_vec = weight_vec.reshape(actions_num, -1)  # -1 means figure the other dimension yourself
+        weight_vec = weight_vec.reshape(
+            actions_num, -1
+        )  # -1 means figure the other dimension yourself
         weight_vec = np.hstack((weight_vec, newElem))
         weight_vec = weight_vec.reshape(1, -1).flatten()
         return weight_vec
@@ -766,7 +788,7 @@ def solveLinear(A, b):
     """ Solve the linear equation Ax=b. Return tuple (x, time to solve). """
     error = np.inf  # just to be safe, initialize error variable here
     if sp.issparse(A):
-    # print 'sparse', type(A)
+        # print 'sparse', type(A)
         start_log_time = clock()
         result = slinalg.spsolve(A, b)
         solve_time = deltaT(start_log_time)
@@ -785,13 +807,15 @@ def solveLinear(A, b):
 
         # use numpy matrix multiplication
         if isinstance(A, np.matrixlib.defmatrix.matrix):
-            error = np.linalg.norm(
-                (A * result.reshape(-1, 1) - b.reshape(-1, 1))[0])
+            error = np.linalg.norm((A * result.reshape(-1, 1) - b.reshape(-1, 1))[0])
         elif isinstance(A, np.ndarray):  # use array multiplication
             error = np.linalg.norm(
-                (np.dot(A, result.reshape(-1, 1)) - b.reshape(-1, 1))[0])
+                (np.dot(A, result.reshape(-1, 1)) - b.reshape(-1, 1))[0]
+            )
         else:
-            print('Attempted to solve linear equation Ax=b in solveLinear() of Tools.py with a non-numpy (array / matrix) type.')
+            print(
+                "Attempted to solve linear equation Ax=b in solveLinear() of Tools.py with a non-numpy (array / matrix) type."
+            )
             sys.exit(1)
 
     if error > RESEDUAL_THRESHOLD:
@@ -810,8 +834,18 @@ def rank(A, eps=1e-12):
     return len([x for x in s if abs(x) > eps])
 
 
-def fromAtoB(x1, y1, x2, y2, color='k', connectionstyle="arc3,rad=-0.4",
-             shrinkA=10, shrinkB=10, arrowstyle="fancy", ax=None):
+def fromAtoB(
+    x1,
+    y1,
+    x2,
+    y2,
+    color="k",
+    connectionstyle="arc3,rad=-0.4",
+    shrinkA=10,
+    shrinkB=10,
+    arrowstyle="fancy",
+    ax=None,
+):
     """
     Draws an arrow from point A=(x1,y1) to point B=(x2,y2) on the (optional)
     axis ``ax``.
@@ -822,29 +856,39 @@ def fromAtoB(x1, y1, x2, y2, color='k', connectionstyle="arc3,rad=-0.4",
 
     """
     if ax is None:
-        return pl.annotate("",
-                           xy=(x2, y2), xycoords='data',
-                           xytext=(x1, y1), textcoords='data',
-                           arrowprops=dict(
-                               arrowstyle=arrowstyle,  # linestyle="dashed",
-                               color=color,
-                               shrinkA=shrinkA, shrinkB=shrinkB,
-                               patchA=None,
-                               patchB=None,
-                               connectionstyle=connectionstyle),
-                           )
+        return pl.annotate(
+            "",
+            xy=(x2, y2),
+            xycoords="data",
+            xytext=(x1, y1),
+            textcoords="data",
+            arrowprops=dict(
+                arrowstyle=arrowstyle,  # linestyle="dashed",
+                color=color,
+                shrinkA=shrinkA,
+                shrinkB=shrinkB,
+                patchA=None,
+                patchB=None,
+                connectionstyle=connectionstyle,
+            ),
+        )
     else:
-        return ax.annotate("",
-                           xy=(x2, y2), xycoords='data',
-                           xytext=(x1, y1), textcoords='data',
-                           arrowprops=dict(
-                               arrowstyle=arrowstyle,  # linestyle="dashed",
-                               color=color,
-                               shrinkA=shrinkA, shrinkB=shrinkB,
-                               patchA=None,
-                               patchB=None,
-                               connectionstyle=connectionstyle),
-                           )
+        return ax.annotate(
+            "",
+            xy=(x2, y2),
+            xycoords="data",
+            xytext=(x1, y1),
+            textcoords="data",
+            arrowprops=dict(
+                arrowstyle=arrowstyle,  # linestyle="dashed",
+                color=color,
+                shrinkA=shrinkA,
+                shrinkB=shrinkB,
+                patchA=None,
+                patchB=None,
+                connectionstyle=connectionstyle,
+            ),
+        )
 
 
 def drawHist(data, bins=50, fig=101):
@@ -860,7 +904,7 @@ def drawHist(data, bins=50, fig=101):
     width = 0.7 * (bins[1] - bins[0])
     center = (bins[:-1] + bins[1:]) / 2
     plt.figure(fig)
-    plt.bar(center, hist, align='center', width=width)
+    plt.bar(center, hist, align="center", width=width)
 
 
 def nonZeroIndex(arr):
@@ -874,7 +918,7 @@ def nonZeroIndex(arr):
     return arr.nonzero()[0]
 
 
-def sp_matrix(m, n=1, dtype='float'):
+def sp_matrix(m, n=1, dtype="float"):
     """
     :param m: number of rows in matrix
     :param n: number of cols in matrix
@@ -899,7 +943,7 @@ def sp_dot_array(sp_m, arr):
     ind = sp_m.nonzero()[1]
     if len(ind) == 0:
         return 0
-    if sp_m.dtype == 'bool':
+    if sp_m.dtype == "bool":
         # Just sum the corresponding indexes of theta
         return sum(arr[ind])
     else:
@@ -917,11 +961,7 @@ def sp_dot_sp(sp_1, sp_2):
     Returns dot product of 1-by-p matrices ``sp_1`` and ``sp_2``.
 
     """
-    assert sp_1.shape[
-        0] == sp_2.shape[
-        0] and sp_1.shape[
-        1] == 1 and sp_2.shape[
-        1] == 1
+    assert sp_1.shape[0] == sp_2.shape[0] and sp_1.shape[1] == 1 and sp_2.shape[1] == 1
     ind_1 = sp_1.nonzero()[0]
     ind_2 = sp_2.nonzero()[0]
     if len(ind_1) * len(ind_2) == 0:
@@ -967,7 +1007,7 @@ def checkNCreateDirectory(fullfilename):
     See if all directories in ``fullfilename`` exist; if not create as required.
 
     """
-    path_, _, _ = fullfilename.rpartition('/')
+    path_, _, _ = fullfilename.rpartition("/")
     if not os.path.exists(path_):
         os.makedirs(path_)
 
@@ -978,14 +1018,14 @@ def hasFunction(object, methodname):
     return callable(method)
 
 
-def pretty(X, format='%0.3f'):
+def pretty(X, format="%0.3f"):
     """
     Returns a formatted string for a numpy array ``X``. \n
     Example: [1,2,3], %0.3f => 1.000    2.000    3.000
 
     """
-    format = format + '\t'
-    return ''.join(format % x for x in X)
+    format = format + "\t"
+    return "".join(format % x for x in X)
 
 
 def regularize(A):
@@ -1028,7 +1068,7 @@ def padZeros(X, L):
     """
     if len(X) < L:
         new_X = np.zeros(L)
-        new_X[:len(X)] = X
+        new_X[: len(X)] = X
         return new_X
     else:
         return X
@@ -1112,19 +1152,19 @@ def rk4(derivs, y0, t, *args, **kwargs):
 
 # matplotlib configs
 createColorMaps()
-rc('font', family='serif', size=15, weight="bold", **{"sans-serif": ["Helvetica"]})
+rc("font", family="serif", size=15, weight="bold", **{"sans-serif": ["Helvetica"]})
 rc("axes", labelsize=15)
 rc("xtick", labelsize=15)
 rc("ytick", labelsize=15)
 # rc('text',usetex=False)
 
 # Colors
-PURPLE = '\033[95m'
-BLUE = '\033[94m'
-GREEN = '\033[92m'
-YELLOW = '\033[93m'
-RED = '\033[91m'
-NOCOLOR = '\033[0m'
+PURPLE = "\033[95m"
+BLUE = "\033[94m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+RED = "\033[91m"
+NOCOLOR = "\033[0m"
 RESEDUAL_THRESHOLD = 1e-7
 REGULARIZATION = 1e-6
 FONTSIZE = 15

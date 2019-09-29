@@ -3,8 +3,13 @@ from .Agent import Agent
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -19,13 +24,15 @@ class BatchAgent(Agent):
 
     def __init__(self, policy, representation, discount_factor, max_window):
 
-        super(BatchAgent, self).__init__(policy, representation, discount_factor=discount_factor)
+        super(BatchAgent, self).__init__(
+            policy, representation, discount_factor=discount_factor
+        )
 
         self.max_window = max_window
         self.samples_count = 0
 
         # Take memory for stored values
-        self.data_s = np.zeros((max_window, self. representation.state_space_dims))
+        self.data_s = np.zeros((max_window, self.representation.state_space_dims))
         self.data_ns = np.zeros((max_window, self.representation.state_space_dims))
         self.data_a = np.zeros((max_window, 1), dtype=np.uint32)
         self.data_na = np.zeros((max_window, 1), dtype=np.uint32)

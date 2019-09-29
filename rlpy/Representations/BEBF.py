@@ -1,15 +1,22 @@
 """Bellman-Error Basis Function Representation."""
 import numpy as np
 from .Representation import Representation
+
 try:
     from sklearn import svm
 except ImportError:
     import warnings
-    warnings.warn('sklearn is not installed and you cannot use BEBF')
+
+    warnings.warn("sklearn is not installed and you cannot use BEBF")
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Robert H. Klein"
 
@@ -44,6 +51,7 @@ class BEBF(Representation):
     each feature function.
     
     """
+
     # Number of features to be expanded in the batch setting; here 1 since
     # each BEBF will be identical on a given iteration
     maxBatchDiscovery = 1
@@ -58,8 +66,9 @@ class BEBF(Representation):
     # Initial number of features, initialized in __init__
     initial_features_num = 0
 
-    def __init__(self, domain, discretization=20,
-                 batchThreshold=10 ** -3, svm_epsilon=.1):
+    def __init__(
+        self, domain, discretization=20, batchThreshold=10 ** -3, svm_epsilon=0.1
+    ):
         """
         :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
         :param discretization: Number of bins used for each continuous dimension.
@@ -72,14 +81,14 @@ class BEBF(Representation):
             predicted within a distance epsilon from the actual value.\"
         
         """
-        
+
         self.setBinsPerDimension(domain, discretization)
         # Effectively initialize with IndependentDiscretization
         self.initial_features_num = int(sum(self.bins_per_dim))
         # Starting number of features equals the above, changes during
         # execution
         self.features_num = self.initial_features_num
-       # self.features_num           = 0
+        # self.features_num           = 0
         self.svm_epsilon = svm_epsilon
         self.batchThreshold = batchThreshold
         self.addInitialFeatures()
@@ -97,15 +106,11 @@ class BEBF(Representation):
         Returns a handle to the trained feature function.
         
         """
-        
+
         # bebfApprox = svm.SVR(kernel='rbf', degree=3, C=1.0, epsilon = 0.0005) # support vector regression
-                                                 # C = penalty parameter of
-                                                 # error term, default 1
-        bebfApprox = svm.SVR(
-            kernel='rbf',
-            degree=3,
-            C=1.0,
-            epsilon=self.svm_epsilon)
+        # C = penalty parameter of
+        # error term, default 1
+        bebfApprox = svm.SVR(kernel="rbf", degree=3, C=1.0, epsilon=self.svm_epsilon)
         bebfApprox.fit(X, y)
         return bebfApprox
 
@@ -117,10 +122,12 @@ class BEBF(Representation):
         # From IndependentDiscretization
         F_s[self.activeInitialFeatures(s)] = 1
         bebf_features_num = self.features_num - self.initial_features_num
-        for features_ind, F_s_ind in enumerate(np.arange(bebf_features_num) + self.initial_features_num):
+        for features_ind, F_s_ind in enumerate(
+            np.arange(bebf_features_num) + self.initial_features_num
+        ):
             F_s[F_s_ind] = self.features[features_ind].predict(s)
-#        print 's,F_s',s,F_s
-#        shout('F_s:',F_s)
+        #        print 's,F_s',s,F_s
+        #        shout('F_s:',F_s)
         return F_s
 
     # Adds new features based on the Bellman Error in batch setting.
@@ -140,8 +147,8 @@ class BEBF(Representation):
                 addedFeature = True
                 self.features_num += 1
                 self.logger.debug(
-                    'Added feature. \t %d total feats' %
-                    self.features_num)
+                    "Added feature. \t %d total feats" % self.features_num
+                )
             else:
                 break
         return addedFeature

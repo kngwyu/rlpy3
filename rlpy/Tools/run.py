@@ -12,8 +12,13 @@ import sys
 import subprocess
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 # template for executable file used to execute experiments
@@ -53,8 +58,7 @@ else:
     devnull = "/dev/null"
 
 
-def run_profiled(make_exp_fun, profile_location="Profiling",
-                 out="Test.pdf", **kwargs):
+def run_profiled(make_exp_fun, profile_location="Profiling", out="Test.pdf", **kwargs):
     """run an experiment (without storing its results) and profiles the execution.
     A gprof file is created and a pdf with a graphical visualization of the most
     time-consuming functions in the experiment execution
@@ -70,37 +74,41 @@ def run_profiled(make_exp_fun, profile_location="Profiling",
     pdf_fn = os.path.join(profile_location, out)
     dot_fn = os.path.join(profile_location, "graph.txt")
     exp = make_exp_fun(**kwargs)
-    cProfile.runctx('exp.run()', {}, {"exp": exp}, dat_fn)
+    cProfile.runctx("exp.run()", {}, {"exp": exp}, dat_fn)
     p = pstats.Stats(dat_fn)
-    p.sort_stats('time').print_stats(5)
+    p.sort_stats("time").print_stats(5)
 
-    gprof2dot_fn = os.path.join(__rlpy_location__, 'Tools', 'gprof2dot.py')
-    if(platform.system() == 'Windows'):
+    gprof2dot_fn = os.path.join(__rlpy_location__, "Tools", "gprof2dot.py")
+    if platform.system() == "Windows":
         # Load the STATS and prepare the dot file for graphvis
-        command = gprof2dot_fn + ' -f pstats {dat_fn} > {dot_fn}'.format(
-            dat_fn=dat_fn,
-            dot_fn=dot_fn)
+        command = gprof2dot_fn + " -f pstats {dat_fn} > {dot_fn}".format(
+            dat_fn=dat_fn, dot_fn=dot_fn
+        )
         os.system(command)
 
     else:
         # Load the STATS and prepare the dot file for graphvis
-        command = '/usr/bin/env python ' + gprof2dot_fn \
-                  + ' -f pstats {dat_fn} > {dot_fn}'.format(
-            dat_fn=dat_fn,
-            dot_fn=dot_fn)
+        command = (
+            "/usr/bin/env python "
+            + gprof2dot_fn
+            + " -f pstats {dat_fn} > {dot_fn}".format(dat_fn=dat_fn, dot_fn=dot_fn)
+        )
         os.system(command)
 
     # Call Graphvis to generate the pdf
-    command = 'dot -T pdf {dot_fn} -o {pdf_fn}'.format(dot_fn=dot_fn,
-                                                       pdf_fn=pdf_fn)
+    command = "dot -T pdf {dot_fn} -o {pdf_fn}".format(dot_fn=dot_fn, pdf_fn=pdf_fn)
     os.system(command)
 
 
 def get_finished_ids(path):
     """returns all experiment ids for which the result file exists in
     the given directory"""
-    l = sorted([int(re.findall("([0-9]*)-results.json", p)[0])
-               for p in glob.glob(os.path.join(path, "*-results.json"))])
+    l = sorted(
+        [
+            int(re.findall("([0-9]*)-results.json", p)[0])
+            for p in glob.glob(os.path.join(path, "*-results.json"))
+        ]
+    )
     return l
 
 
@@ -134,23 +142,39 @@ def prepare_directory(setting, path, **hyperparam):
 
     """
     # create file to execute
-    variables = "hyper_param = dict(" + ",\n".join(["{}={}".format(k, repr(v))
-                                                    for k, v in list(hyperparam.items())]) + ")"
+    variables = (
+        "hyper_param = dict("
+        + ",\n".join(["{}={}".format(k, repr(v)) for k, v in list(hyperparam.items())])
+        + ")"
+    )
     final_path = path
     if not os.path.exists(final_path):
         os.makedirs(final_path)
     fn = os.path.join(final_path, "main.py")
     setting_content = read_setting_content(setting)
     with open(fn, "w") as f:
-        f.write(template.format(setting=setting,
-                                rlpy_location=__rlpy_location__,
-                                variables=variables,
-                                setting_content=setting_content))
+        f.write(
+            template.format(
+                setting=setting,
+                rlpy_location=__rlpy_location__,
+                variables=variables,
+                setting_content=setting_content,
+            )
+        )
     return fn
 
 
-def run(filename, location, ids, parallelization="sequential",
-        force_rerun=False, block=True, n_jobs=-2, verbose=10, **hyperparam):
+def run(
+    filename,
+    location,
+    ids,
+    parallelization="sequential",
+    force_rerun=False,
+    block=True,
+    n_jobs=-2,
+    verbose=10,
+    **hyperparam
+):
     """
     run a file containing a RLPy experiment description (a make_experiment function)
     in batch mode. Note that the __main__ section of this file is ignored
@@ -197,24 +221,18 @@ def _run_helper(fn, job_id, verbose):
         out = "> " + devnull
     path, filen = os.path.split(fn)
     subprocess.Popen(
-        "python {} {} {}".format(
-            filen,
-            job_id + 1,
-            out),
-        shell=True,
-        cwd=path).wait(
-    )
+        "python {} {} {}".format(filen, job_id + 1, out), shell=True, cwd=path
+    ).wait()
 
 
 def run_joblib(fn, ids, n_jobs=-2, verbose=10):
     jobs = (joblib.delayed(_run_helper)(fn, i, verbose) for i in ids)
-    #jobs = (joblib.delayed(os.system)(fn, i) for i in ids)
+    # jobs = (joblib.delayed(os.system)(fn, i) for i in ids)
     exit_codes = joblib.Parallel(n_jobs=n_jobs, verbose=verbose)(jobs)
     return exit_codes
 
 
-def run_condor(fn, ids,
-               force_rerun=False, block=False, verbose=10, poll_duration=30):
+def run_condor(fn, ids, force_rerun=False, block=False, verbose=10, poll_duration=30):
     # create condor subdirectory
     dir = os.path.dirname(fn)
     fn = os.path.basename(fn)
@@ -238,8 +256,7 @@ def run_condor(fn, ids,
             for exp_id in ids:
                 f.write(condor_submit_template_each_job.format(fn=fn, exp_id=exp_id))
 
-        exit_code = os.system(
-            "cd {dir} && condor_submit condor/submit".format(dir=dir))
+        exit_code = os.system("cd {dir} && condor_submit condor/submit".format(dir=dir))
         if verbose:
             print("Jobs submitted with exit code", exit_code)
     else:
@@ -249,7 +266,7 @@ def run_condor(fn, ids,
     # WARNING: this does not recognize killed or dead jobs and would wait
     #          infinitely long
     if block:
-        while(True):
+        while True:
             sleep(poll_duration)
             finished_ids = set(get_finished_ids(dir))
             finished_ids &= set(ids)

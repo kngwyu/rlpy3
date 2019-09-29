@@ -5,19 +5,28 @@ import numpy as np
 from itertools import tee
 import itertools
 import os
+
 try:
     from tkinter import Tk, Canvas
 except ImportError:
     import warnings
-    warnings.warn('TkInter is not found for Pinball.')
+
+    warnings.warn("TkInter is not found for Pinball.")
 from rlpy.Tools import __rlpy_location__
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
-__author__ = ["Pierre-Luc Bacon",  # author of the original version
-              "Austin Hays"]  # adapted for RLPy and TKinter
+__author__ = [
+    "Pierre-Luc Bacon",  # author of the original version
+    "Austin Hays",
+]  # adapted for RLPy and TKinter
 
 
 class Pinball(Domain):
@@ -46,14 +55,16 @@ class Pinball(Domain):
         *Skill Discovery in Continuous Reinforcement Learning Domains using Skill Chaining.*
         Advances in Neural Information Processing Systems 22, pages 1015-1023, December 2009.
     """
-    #: default location of config files shipped with rlpy
-    default_config_dir = os.path.join(
-        __rlpy_location__,
-        "Domains",
-        "PinballConfigs")
 
-    def __init__(self, noise=.1, episodeCap=1000,
-                 configuration=os.path.join(default_config_dir, "pinball_simple_single.cfg")):
+    #: default location of config files shipped with rlpy
+    default_config_dir = os.path.join(__rlpy_location__, "Domains", "PinballConfigs")
+
+    def __init__(
+        self,
+        noise=0.1,
+        episodeCap=1000,
+        configuration=os.path.join(default_config_dir, "pinball_simple_single.cfg"),
+    ):
         """
         configuration:
             location of the configuration file
@@ -72,37 +83,39 @@ class Pinball(Domain):
             PinballModel.DEC_Y,
             PinballModel.DEC_X,
             PinballModel.ACC_Y,
-            PinballModel.ACC_NONE]
+            PinballModel.ACC_NONE,
+        ]
         self.statespace_limits = np.array(
-            [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]])
+            [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
+        )
         self.continuous_dims = [4]
         super(Pinball, self).__init__()
         self.environment = PinballModel(
-            self.configuration,
-            random_state=self.random_state)
+            self.configuration, random_state=self.random_state
+        )
 
     def showDomain(self, a):
         if self.screen is None:
             master = Tk()
-            master.title('RLPY Pinball')
+            master.title("RLPY Pinball")
             self.screen = Canvas(master, width=500.0, height=500.0)
-            self.screen.configure(background='LightGray')
+            self.screen.configure(background="LightGray")
             self.screen.pack()
             self.environment_view = PinballView(
-                self.screen,
-                500.0,
-                500.0,
-                self.environment)
+                self.screen, 500.0, 500.0, self.environment
+            )
         self.environment_view.blit()
         self.screen.pack()
         self.screen.update()
 
     def step(self, a):
         s = self.state
-        [self.environment.ball.position[0],
-         self.environment.ball.position[1],
-         self.environment.ball.xdot,
-         self.environment.ball.ydot] = s
+        [
+            self.environment.ball.position[0],
+            self.environment.ball.position[1],
+            self.environment.ball.xdot,
+            self.environment.ball.ydot,
+        ] = s
         if self.random_state.random_sample() < self.NOISE:
             # Random Move
             a = self.random_state.choice(self.possibleActions())
@@ -114,11 +127,17 @@ class Pinball(Domain):
 
     def s0(self):
         self.environment.ball.position[0], self.environment.ball.position[
-            1] = self.environment.start_pos
+            1
+        ] = self.environment.start_pos
         self.environment.ball.xdot, self.environment.ball.ydot = 0.0, 0.0
         self.state = np.array(
-            [self.environment.ball.position[0], self.environment.ball.position[1],
-             self.environment.ball.xdot, self.environment.ball.ydot])
+            [
+                self.environment.ball.position[0],
+                self.environment.ball.position[1],
+                self.environment.ball.xdot,
+                self.environment.ball.ydot,
+            ]
+        )
         return self.state, self.isTerminal(), self.possibleActions()
 
     def possibleActions(self, s=0):
@@ -135,6 +154,7 @@ class BallModel(object):
     it according to the current velocity and drag coefficient.
 
     """
+
     DRAG = 0.995
 
     def __init__(self, start_position, radius):
@@ -227,10 +247,7 @@ class PinballObstacle(object):
             if self._intercept_edge(pt_pair, ball):
                 if intercept_found:
                     # Ball has hit a corner
-                    self._intercept = self._select_edge(
-                        pt_pair,
-                        self._intercept,
-                        ball)
+                    self._intercept = self._select_edge(pt_pair, self._intercept, ball)
                     self._double_collision = True
                 else:
                     self._intercept = pt_pair
@@ -365,6 +382,7 @@ class PinballModel(object):
     adapter or interactively with :class:`PinballView`.
 
     """
+
     ACC_X = 0
     ACC_Y = 1
     DEC_X = 2
@@ -385,8 +403,13 @@ class PinballModel(object):
         """
 
         self.random_state = random_state
-        self.action_effects = {self.ACC_X: (1, 0), self.ACC_Y: (
-            0, 1), self.DEC_X: (-1, 0), self.DEC_Y: (0, -1), self.ACC_NONE: (0, 0)}
+        self.action_effects = {
+            self.ACC_X: (1, 0),
+            self.ACC_Y: (0, 1),
+            self.DEC_X: (-1, 0),
+            self.DEC_Y: (0, -1),
+            self.ACC_NONE: (0, 0),
+        }
 
         # Set up the environment according to the configuration
         self.obstacles = []
@@ -400,15 +423,16 @@ class PinballModel(object):
                 tokens = line.strip().split()
                 if not len(tokens):
                     continue
-                elif tokens[0] == 'polygon':
+                elif tokens[0] == "polygon":
                     self.obstacles.append(
-                        PinballObstacle(list(zip(*[iter(map(float, tokens[1:]))] * 2))))
-                elif tokens[0] == 'target':
+                        PinballObstacle(list(zip(*[iter(map(float, tokens[1:]))] * 2)))
+                    )
+                elif tokens[0] == "target":
                     self.target_pos = [float(tokens[1]), float(tokens[2])]
                     self.target_rad = float(tokens[3])
-                elif tokens[0] == 'start':
+                elif tokens[0] == "start":
                     start_pos = list(zip(*[iter(map(float, tokens[1:]))] * 2))
-                elif tokens[0] == 'ball':
+                elif tokens[0] == "ball":
                     ball_rad = float(tokens[1])
         self.start_pos = start_pos[0]
         a = self.random_state.randint(len(start_pos))
@@ -421,12 +445,12 @@ class PinballModel(object):
         :rtype: list
 
         """
-        return (
-            [self.ball.position[0],
-             self.ball.position[1],
-             self.ball.xdot,
-             self.ball.ydot]
-        )
+        return [
+            self.ball.position[0],
+            self.ball.position[1],
+            self.ball.xdot,
+            self.ball.ydot,
+        ]
 
     def take_action(self, action):
         """ Take a step in the environment
@@ -478,8 +502,8 @@ class PinballModel(object):
 
         """
         return (
-            np.linalg.norm(np.array(self.ball.position)
-                           - np.array(self.target_pos)) < self.target_rad
+            np.linalg.norm(np.array(self.ball.position) - np.array(self.target_pos))
+            < self.target_rad
         )
 
     def _check_bounds(self):
@@ -526,35 +550,19 @@ class PinballView(object):
             coords_list = list(map(self._to_pixels, obs.points))
             chain = itertools.chain(*coords_list)
             coords = list(chain)
-            self.screen.create_polygon(coords, fill='blue')
+            self.screen.create_polygon(coords, fill="blue")
         self.screen.pack()
 
         self.target_x, self.target_y = self._to_pixels(self.model.target_pos)
         self.target_rad = int(self.model.target_rad * self.width)
         target_id = self.drawcircle(
-            self.screen,
-            self.target_x,
-            self.target_y,
-            self.target_rad,
-            'red')
-        self.ball_id = self.drawcircle(
-            self.screen,
-            self.x,
-            self.y,
-            self.rad,
-            'black')
+            self.screen, self.target_x, self.target_y, self.target_rad, "red"
+        )
+        self.ball_id = self.drawcircle(self.screen, self.x, self.y, self.rad, "black")
         self.screen.pack()
 
     def drawcircle(self, canv, x, y, rad, color):
-        return (
-            canv.create_oval(
-                x - rad,
-                y - rad,
-                x + rad,
-                y + rad,
-                width=0,
-                fill=color)
-        )
+        return canv.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=color)
 
     def _to_pixels(self, pt):
         """ Converts from real units in the 0-1 range to pixel units
@@ -571,14 +579,11 @@ class PinballView(object):
         """ Blit the ball onto the background surface """
         self.screen.coords(
             self.ball_id,
-            self.x -
-            self.rad,
-            self.y -
-            self.rad,
-            self.x +
-            self.rad,
-            self.y +
-            self.rad)
+            self.x - self.rad,
+            self.y - self.rad,
+            self.x + self.rad,
+            self.y + self.rad,
+        )
         self.x, self.y = self._to_pixels(self.model.ball.position)
         self.screen.pack()
 
@@ -592,9 +597,9 @@ def run_pinballview(width, height, configuration):
     """
     width, height = float(width), float(height)
     master = Tk()
-    master.title('RLPY Pinball')
+    master.title("RLPY Pinball")
     screen = Canvas(master, width=500.0, height=500.0)
-    screen.configure(background='LightGray')
+    screen.configure(background="LightGray")
     screen.pack()
 
     environment = PinballModel(configuration)
@@ -605,7 +610,8 @@ def run_pinballview(width, height, configuration):
         PinballModel.DEC_Y,
         PinballModel.DEC_X,
         PinballModel.ACC_Y,
-        PinballModel.ACC_NONE]
+        PinballModel.ACC_NONE,
+    ]
     done = False
     while not done:
         user_action = np.random.choice(actions)

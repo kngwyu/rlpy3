@@ -6,8 +6,13 @@ from rlpy.Tools import mpl, plt, rk4, cartesian, colors
 from rlpy.Policies.SwimmerPolicy import SwimmerPolicy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
@@ -37,6 +42,7 @@ class Swimmer(Domain):
         *Receding Horizon Differential Dynamic Programming.*
         In Advances in Neural Information Processing Systems.
     """
+
     dt = 0.03
     episodeCap = 1000
     discount_factor = 0.98
@@ -52,17 +58,17 @@ class Swimmer(Domain):
         self.nose = 0
         self.masses = np.ones(d)
         self.lengths = np.ones(d)
-        self.inertia = self.masses * self.lengths * self.lengths / 12.
+        self.inertia = self.masses * self.lengths * self.lengths / 12.0
         self.goal = np.zeros(2)
 
         # reward function parameters
         self.cu = 0.04
-        self.cx = 2.
+        self.cx = 2.0
 
         Q = np.eye(self.d, k=1) - np.eye(self.d)
         Q[-1, :] = self.masses
         A = np.eye(self.d, k=1) + np.eye(self.d)
-        A[-1, -1] = 0.
+        A[-1, -1] = 0.0
         self.P = np.dot(np.linalg.inv(Q), A * self.lengths[None, :]) / 2
 
         self.U = np.eye(self.d) - np.eye(self.d, k=-1)
@@ -71,14 +77,18 @@ class Swimmer(Domain):
 
         # incidator variables for angles in a state representation
         self.angles = np.zeros(2 + self.d * 2 + 1, dtype=np.bool)
-        self.angles[2:2 + self.d - 1] = True
-        self.angles[-self.d - 2:] = True
+        self.angles[2 : 2 + self.d - 1] = True
+        self.angles[-self.d - 2 :] = True
 
-        self.actions = cartesian((d - 1) * [[-2., 0., 2]])
+        self.actions = cartesian((d - 1) * [[-2.0, 0.0, 2]])
         self.actions_num = len(self.actions)
 
-        self.statespace_limits = [[-15, 15]] * 2 + [[-np.pi, np.pi]] * (d - 1) \
-            + [[-2, 2]] * 2 + [[-np.pi * 2, np.pi * 2]] * d
+        self.statespace_limits = (
+            [[-15, 15]] * 2
+            + [[-np.pi, np.pi]] * (d - 1)
+            + [[-2, 2]] * 2
+            + [[-np.pi * 2, np.pi * 2]] * d
+        )
         self.statespace_limits = np.array(self.statespace_limits)
         self.continuous_dims = list(range(self.statespace_limits.shape[0]))
         super(Swimmer, self).__init__()
@@ -107,15 +117,15 @@ class Swimmer(Domain):
         T[:, 0] = np.cos(self.theta)
         T[:, 1] = np.sin(self.theta)
         R = np.dot(self.P, T)
-        R1 = R - .5 * self.lengths[:, None] * T
-        R2 = R + .5 * self.lengths[:, None] * T
+        R1 = R - 0.5 * self.lengths[:, None] * T
+        R2 = R + 0.5 * self.lengths[:, None] * T
         Rx = np.hstack([R1[:, 0], R2[:, 0]]) + self.pos_cm[0]
         Ry = np.hstack([R1[:, 1], R2[:, 1]]) + self.pos_cm[1]
         print(Rx)
         print(Ry)
         f = plt.figure("Swimmer Domain")
         if not hasattr(self, "swimmer_lines"):
-            plt.plot(0., 0., "ro")
+            plt.plot(0.0, 0.0, "ro")
             self.swimmer_lines = plt.plot(Rx, Ry)[0]
             self.action_text = plt.text(-2, -8, str(a))
             plt.xlim(-5, 15)
@@ -127,20 +137,20 @@ class Swimmer(Domain):
         plt.figure("Swimmer Domain").canvas.flush_events()
 
     def showLearning(self, representation):
-        good_pol = SwimmerPolicy(
-            representation=representation,
-            epsilon=0)
+        good_pol = SwimmerPolicy(representation=representation, epsilon=0)
         id1 = 2
         id2 = 3
         res = 200
         s = np.zeros(self.state_space_dims)
         l1 = np.linspace(
-            self.statespace_limits[id1, 0], self.statespace_limits[id1, 1], res)
+            self.statespace_limits[id1, 0], self.statespace_limits[id1, 1], res
+        )
         l2 = np.linspace(
-            self.statespace_limits[id2, 0], self.statespace_limits[id2, 1], res)
+            self.statespace_limits[id2, 0], self.statespace_limits[id2, 1], res
+        )
 
-        pi = np.zeros((res, res), 'uint8')
-        good_pi = np.zeros((res, res), 'uint8')
+        pi = np.zeros((res, res), "uint8")
+        good_pi = np.zeros((res, res), "uint8")
         V = np.zeros((res, res))
 
         for row, x1 in enumerate(l1):
@@ -153,8 +163,7 @@ class Swimmer(Domain):
                 # Assign pi to be optimal action (which maximizes Q-function)
                 maxQ = np.max(Qs)
                 pi[row, col] = np.random.choice(np.arange(len(Qs))[Qs == maxQ])
-                good_pi[row, col] = good_pol.pi(
-                    s, False, np.arange(self.actions_num))
+                good_pi[row, col] = good_pol.pi(s, False, np.arange(self.actions_num))
                 # Assign V to be the value of the Q-function under optimal
                 # action
                 V[row, col] = maxQ
@@ -163,23 +172,25 @@ class Swimmer(Domain):
             pi,
             title="Learned Policy",
             ylim=self.statespace_limits[id1],
-            xlim=self.statespace_limits[id2])
+            xlim=self.statespace_limits[id2],
+        )
         self._plot_policy(
             good_pi,
             title="Good Policy",
             var="good_policy_fig",
             ylim=self.statespace_limits[id1],
-            xlim=self.statespace_limits[id2])
+            xlim=self.statespace_limits[id2],
+        )
         self._plot_valfun(
-            V,
-            ylim=self.statespace_limits[id1],
-            xlim=self.statespace_limits[id2])
+            V, ylim=self.statespace_limits[id1], xlim=self.statespace_limits[id2]
+        )
 
         if self.policy_fig is None or self.valueFunction_fig is None:
             plt.show()
 
-    def _plot_policy(self, piMat, title="Policy",
-                     var="policy_fig", xlim=None, ylim=None):
+    def _plot_policy(
+        self, piMat, title="Policy", var="policy_fig", xlim=None, ylim=None
+    ):
         """
         :returns: handle to the figure
         """
@@ -191,9 +202,9 @@ class Swimmer(Domain):
             # extract all colors from the .jet map
             cmaplist = [cmap(i) for i in range(cmap.N)]
             # force the first color entry to be grey
-            cmaplist[0] = (.5, .5, .5, 1.0)
+            cmaplist[0] = (0.5, 0.5, 0.5, 1.0)
             # create the new map
-            cmap = cmap.from_list('Custom cmap', cmaplist, cmap.N)
+            cmap = cmap.from_list("Custom cmap", cmaplist, cmap.N)
 
             # define the bins and normalize
             bounds = np.linspace(0, self.actions_num, self.actions_num + 1)
@@ -204,15 +215,16 @@ class Swimmer(Domain):
                 extent = [0, 1, 0, 1]
             self.__dict__[var] = plt.imshow(
                 piMat,
-                interpolation='nearest',
-                origin='lower',
+                interpolation="nearest",
+                origin="lower",
                 cmap=cmap,
                 norm=norm,
-                extent=extent)
-            #pl.xticks(self.xTicks,self.xTicksLabels, fontsize=12)
-            #pl.yticks(self.yTicks,self.yTicksLabels, fontsize=12)
-            #pl.xlabel(r"$\theta$ (degree)")
-            #pl.ylabel(r"$\dot{\theta}$ (degree/sec)")
+                extent=extent,
+            )
+            # pl.xticks(self.xTicks,self.xTicksLabels, fontsize=12)
+            # pl.yticks(self.yTicks,self.yTicksLabels, fontsize=12)
+            # pl.xlabel(r"$\theta$ (degree)")
+            # pl.ylabel(r"$\dot{\theta}$ (degree/sec)")
             plt.title(title)
 
             plt.colorbar()
@@ -225,21 +237,22 @@ class Swimmer(Domain):
         :returns: handle to the figure
         """
         plt.figure("Value Function")
-        #pl.xticks(self.xTicks,self.xTicksLabels, fontsize=12)
-        #pl.yticks(self.yTicks,self.yTicksLabels, fontsize=12)
-        #pl.xlabel(r"$\theta$ (degree)")
-        #pl.ylabel(r"$\dot{\theta}$ (degree/sec)")
-        plt.title('Value Function')
+        # pl.xticks(self.xTicks,self.xTicksLabels, fontsize=12)
+        # pl.yticks(self.yTicks,self.yTicksLabels, fontsize=12)
+        # pl.xlabel(r"$\theta$ (degree)")
+        # pl.ylabel(r"$\dot{\theta}$ (degree/sec)")
+        plt.title("Value Function")
         if xlim is not None and ylim is not None:
             extent = [xlim[0], xlim[1], ylim[0], ylim[1]]
         else:
             extent = [0, 1, 0, 1]
         self.valueFunction_fig = plt.imshow(
             VMat,
-            cmap='ValueFunction',
-            interpolation='nearest',
-            origin='lower',
-            extent=extent)
+            cmap="ValueFunction",
+            interpolation="nearest",
+            origin="lower",
+            extent=extent,
+        )
 
         norm = colors.Normalize(vmin=VMat.min(), vmax=VMat.max())
         self.valueFunction_fig.set_data(VMat)
@@ -274,12 +287,11 @@ class Swimmer(Domain):
         #  velocity at nose (world frame) relative to center of mass velocity
         v2n = np.array([vx[self.nose], vy[self.nose]])
         #  rotating nose velocity to be in nose frame
-        Vcn = np.array([np.sum((self.v_cm + v2n) * c2n_x),
-                        np.sum((self.v_cm + v2n) * c2n_y)])
+        Vcn = np.array(
+            [np.sum((self.v_cm + v2n) * c2n_x), np.sum((self.v_cm + v2n) * c2n_y)]
+        )
         #  angles should be in [-pi, pi]
-        ang = np.mod(
-            self.theta[1:] - self.theta[:-1] + np.pi,
-            2 * np.pi) - np.pi
+        ang = np.mod(self.theta[1:] - self.theta[:-1] + np.pi, 2 * np.pi) - np.pi
         return Tcn, ang, Vcn, self.dtheta
 
     def step(self, a):
@@ -287,24 +299,41 @@ class Swimmer(Domain):
         a = self.actions[a]
         s = np.hstack((self.pos_cm, self.theta, self.v_cm, self.dtheta))
         ns = rk4(
-            dsdt, s, [0,
-                      self.dt], a, self.P, self.inertia, self.G, self.U, self.lengths,
-            self.masses, self.k1, self.k2)[-1]
+            dsdt,
+            s,
+            [0, self.dt],
+            a,
+            self.P,
+            self.inertia,
+            self.G,
+            self.U,
+            self.lengths,
+            self.masses,
+            self.k1,
+            self.k2,
+        )[-1]
 
-        self.theta = ns[2:2 + d]
-        self.v_cm = ns[2 + d:4 + d]
-        self.dtheta = ns[4 + d:]
+        self.theta = ns[2 : 2 + d]
+        self.v_cm = ns[2 + d : 4 + d]
+        self.dtheta = ns[4 + d :]
         self.pos_cm = ns[:2]
-        return (
-            self._reward(
-                a), self.state, self.isTerminal(), self.possibleActions()
-        )
+        return (self._reward(a), self.state, self.isTerminal(), self.possibleActions())
 
     def _dsdt(self, s, a):
         """ just a convenience function for testing and debugging, not really used"""
         return dsdt(
-            s, 0., a, self.P, self.inertia, self.G, self.U, self.lengths,
-            self.masses, self.k1, self.k2)
+            s,
+            0.0,
+            a,
+            self.P,
+            self.inertia,
+            self.G,
+            self.U,
+            self.lengths,
+            self.masses,
+            self.k1,
+            self.k2,
+        )
 
     def _reward(self, a):
         """
@@ -314,9 +343,7 @@ class Swimmer(Domain):
 
         xrel = self._body_coord()[0] - self.goal
         dist = np.sum(xrel ** 2)
-        return (
-            - self.cx * dist / (np.sqrt(dist) + 1) - self.cu * np.sum(a ** 2)
-        )
+        return -self.cx * dist / (np.sqrt(dist) + 1) - self.cu * np.sum(a ** 2)
 
 
 def dsdt(s, t, a, P, I, G, U, lengths, masses, k1, k2):
@@ -324,9 +351,9 @@ def dsdt(s, t, a, P, I, G, U, lengths, masses, k1, k2):
     time derivative of system dynamics
     """
     d = len(a) + 1
-    theta = s[2:2 + d]
-    vcm = s[2 + d:4 + d]
-    dtheta = s[4 + d:]
+    theta = s[2 : 2 + d]
+    vcm = s[2 + d : 4 + d]
+    dtheta = s[4 + d :]
 
     cth = np.cos(theta)
     sth = np.sin(theta)
@@ -338,20 +365,25 @@ def dsdt(s, t, a, P, I, G, U, lengths, masses, k1, k2):
     Vn = -sth * Vx + cth * Vy
     Vt = cth * Vx + sth * Vy
 
-    EL1 = np.dot((v1Mv2(-sth, G, cth) + v1Mv2(cth, G, sth)) * dtheta[None, :]
-                 + (v1Mv2(cth, G, -sth) + v1Mv2(sth, G, cth)) * dtheta[:, None], dtheta)
+    EL1 = np.dot(
+        (v1Mv2(-sth, G, cth) + v1Mv2(cth, G, sth)) * dtheta[None, :]
+        + (v1Mv2(cth, G, -sth) + v1Mv2(sth, G, cth)) * dtheta[:, None],
+        dtheta,
+    )
     EL3 = np.diag(I) + v1Mv2(sth, G, sth) + v1Mv2(cth, G, cth)
-    EL2 = - k1 * np.dot((v1Mv2(-sth, P.T, -sth) + v1Mv2(cth, P.T, cth)) * lengths[None, :], Vn) \
-          - k1 * np.power(lengths, 3) * dtheta / 12. \
-          - k2 * \
-        np.dot((v1Mv2(-sth, P.T, cth) + v1Mv2(cth, P.T, sth))
-               * lengths[None, :], Vt)
+    EL2 = (
+        -k1
+        * np.dot((v1Mv2(-sth, P.T, -sth) + v1Mv2(cth, P.T, cth)) * lengths[None, :], Vn)
+        - k1 * np.power(lengths, 3) * dtheta / 12.0
+        - k2
+        * np.dot((v1Mv2(-sth, P.T, cth) + v1Mv2(cth, P.T, sth)) * lengths[None, :], Vt)
+    )
     ds = np.zeros_like(s)
     ds[:2] = vcm
-    ds[2:2 + d] = dtheta
+    ds[2 : 2 + d] = dtheta
     ds[2 + d] = -(k1 * np.sum(-sth * Vn) + k2 * np.sum(cth * Vt)) / np.sum(masses)
     ds[3 + d] = -(k1 * np.sum(cth * Vn) + k2 * np.sum(sth * Vt)) / np.sum(masses)
-    ds[4 + d:] = np.linalg.solve(EL3, EL1 + EL2 + np.dot(U, a))
+    ds[4 + d :] = np.linalg.solve(EL3, EL1 + EL2 + np.dot(U, a))
     return ds
 
 

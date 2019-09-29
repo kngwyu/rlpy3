@@ -6,8 +6,13 @@ from rlpy.Tools import __rlpy_location__, findElemArray1D, perms
 import os
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -51,7 +56,7 @@ class GridWorld(Domain):
     #: Reward constants
     GOAL_REWARD = +1
     PIT_REWARD = -1
-    STEP_REWARD = -.001
+    STEP_REWARD = -0.001
     #: Set by the domain = min(100,rows*cols)
     episodeCap = None
     #: Movement Noise
@@ -62,7 +67,7 @@ class GridWorld(Domain):
     # Used for graphical normalization
     MIN_RETURN = -1
     # Used for graphical shifting of arrows
-    SHIFT = .1
+    SHIFT = 0.1
 
     actions_num = 4
     # Constants in the map
@@ -70,29 +75,30 @@ class GridWorld(Domain):
     #: Up, Down, Left, Right
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
-    default_map_dir = os.path.join(
-        __rlpy_location__,
-        "Domains",
-        "GridWorldMaps")
+    default_map_dir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
 
-    def __init__(self, mapname=os.path.join(default_map_dir, "4x5.txt"),
-                 noise=.1, episodeCap=None):
+    def __init__(
+        self,
+        mapname=os.path.join(default_map_dir, "4x5.txt"),
+        noise=0.1,
+        episodeCap=None,
+    ):
         self.map = np.loadtxt(mapname, dtype=np.uint8)
         if self.map.ndim == 1:
             self.map = self.map[np.newaxis, :]
         self.start_state = np.argwhere(self.map == self.START)[0]
         self.ROWS, self.COLS = np.shape(self.map)
-        self.statespace_limits = np.array(
-            [[0, self.ROWS - 1], [0, self.COLS - 1]])
+        self.statespace_limits = np.array([[0, self.ROWS - 1], [0, self.COLS - 1]])
         self.NOISE = noise
-        self.DimNames = ['Row', 'Col']
+        self.DimNames = ["Row", "Col"]
+        self.state = self.start_state.copy()
         # 2*self.ROWS*self.COLS, small values can cause problem for some
         # planning techniques
         if not self.episodeCap:
             self.episodeCap = 1000
         else:
             self.episodeCap = episodeCap
-        super(GridWorld, self).__init__()
+        super().__init__()
 
     def showDomain(self, a=0, s=None):
         if s is None:
@@ -102,31 +108,22 @@ class GridWorld(Domain):
         if self.domain_fig is None:
             self.agent_fig = plt.figure("Domain")
             self.domain_fig = plt.imshow(
-                self.map,
-                cmap='GridWorld',
-                interpolation='nearest',
-                vmin=0,
-                vmax=5)
+                self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
+            )
             plt.xticks(np.arange(self.COLS), fontsize=FONTSIZE)
             plt.yticks(np.arange(self.ROWS), fontsize=FONTSIZE)
             # pl.tight_layout()
-            self.agent_fig = plt.gca(
-            ).plot(s[1],
-                   s[0],
-                   'kd',
-                   markersize=20.0 - self.COLS)
+            self.agent_fig = plt.gca().plot(
+                s[1], s[0], "kd", markersize=20.0 - self.COLS
+            )
             plt.show()
         self.agent_fig.pop(0).remove()
         self.agent_fig = plt.figure("Domain")
-        #mapcopy = copy(self.map)
-        #mapcopy[s[0],s[1]] = self.AGENT
+        # mapcopy = copy(self.map)
+        # mapcopy[s[0],s[1]] = self.AGENT
         # self.domain_fig.set_data(mapcopy)
         # Instead of '>' you can use 'D', 'o'
-        self.agent_fig = plt.gca(
-        ).plot(s[1],
-               s[0],
-               'k>',
-               markersize=20.0 - self.COLS)
+        self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.COLS)
         plt.figure("Domain").canvas.draw()
         plt.figure("Domain").canvas.flush_events()
 
@@ -135,10 +132,11 @@ class GridWorld(Domain):
             plt.figure("Value Function")
             self.valueFunction_fig = plt.imshow(
                 self.map,
-                cmap='ValueFunction',
-                interpolation='nearest',
+                cmap="ValueFunction",
+                interpolation="nearest",
                 vmin=self.MIN_RETURN,
-                vmax=self.MAX_RETURN)
+                vmax=self.MAX_RETURN,
+            )
             plt.xticks(np.arange(self.COLS), fontsize=12)
             plt.yticks(np.arange(self.ROWS), fontsize=12)
             # Create quivers for each action. 4 in total
@@ -159,11 +157,11 @@ class GridWorld(Domain):
                 DY,
                 DX,
                 C,
-                units='y',
-                cmap='Actions',
+                units="y",
+                cmap="Actions",
                 scale_units="height",
                 scale=self.ROWS / arrow_ratio,
-                width=-ARROW_WIDTH
+                width=-ARROW_WIDTH,
             )
             self.upArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS) + self.SHIFT
@@ -175,11 +173,11 @@ class GridWorld(Domain):
                 DY,
                 DX,
                 C,
-                units='y',
-                cmap='Actions',
+                units="y",
+                cmap="Actions",
                 scale_units="height",
                 scale=self.ROWS / arrow_ratio,
-                width=-ARROW_WIDTH
+                width=-ARROW_WIDTH,
             )
             self.downArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS)
@@ -191,11 +189,11 @@ class GridWorld(Domain):
                 DY,
                 DX,
                 C,
-                units='x',
-                cmap='Actions',
+                units="x",
+                cmap="Actions",
                 scale_units="width",
                 scale=self.COLS / arrow_ratio,
-                width=ARROW_WIDTH
+                width=ARROW_WIDTH,
             )
             self.leftArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS)
@@ -207,11 +205,11 @@ class GridWorld(Domain):
                 DY,
                 DX,
                 C,
-                units='x',
-                cmap='Actions',
+                units="x",
+                cmap="Actions",
                 scale_units="width",
                 scale=self.COLS / arrow_ratio,
-                width=ARROW_WIDTH
+                width=ARROW_WIDTH,
             )
             self.rightArrows_fig.set_clim(vmin=0, vmax=1)
             plt.show()
@@ -219,22 +217,10 @@ class GridWorld(Domain):
         V = np.zeros((self.ROWS, self.COLS))
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
-        Mask = np.ones(
-            (self.COLS,
-             self.ROWS,
-             self.actions_num),
-            dtype='bool')
-        arrowSize = np.zeros(
-            (self.COLS,
-             self.ROWS,
-             self.actions_num),
-            dtype='float')
+        Mask = np.ones((self.COLS, self.ROWS, self.actions_num), dtype="bool")
+        arrowSize = np.zeros((self.COLS, self.ROWS, self.actions_num), dtype="float")
         # 0 = suboptimal action, 1 = optimal action
-        arrowColors = np.zeros(
-            (self.COLS,
-             self.ROWS,
-             self.actions_num),
-            dtype='uint8')
+        arrowColors = np.zeros((self.COLS, self.ROWS, self.actions_num), dtype="uint8")
         for r in range(self.ROWS):
             for c in range(self.COLS):
                 if self.map[r, c] == self.BLOCKED:
@@ -256,12 +242,7 @@ class GridWorld(Domain):
                     for i in range(len(As)):
                         a = As[i]
                         Q = Qs[i]
-                        value = linearMap(
-                            Q,
-                            self.MIN_RETURN,
-                            self.MAX_RETURN,
-                            0,
-                            1)
+                        value = linearMap(Q, self.MIN_RETURN, self.MAX_RETURN, 0, 1)
                         arrowSize[c, r, a] = value
         # Show Value Function
         self.valueFunction_fig.set_data(V)
@@ -270,28 +251,28 @@ class GridWorld(Domain):
         DY = np.zeros((self.ROWS, self.COLS))
         DX = np.ma.masked_array(DX, mask=Mask[:, :, 0])
         DY = np.ma.masked_array(DY, mask=Mask[:, :, 0])
-        C  = np.ma.masked_array(arrowColors[:, :, 0], mask=Mask[:,:, 0])
+        C = np.ma.masked_array(arrowColors[:, :, 0], mask=Mask[:, :, 0])
         self.upArrows_fig.set_UVC(DY, DX, C)
         # Show Policy Down Arrows
         DX = -arrowSize[:, :, 1]
         DY = np.zeros((self.ROWS, self.COLS))
         DX = np.ma.masked_array(DX, mask=Mask[:, :, 1])
         DY = np.ma.masked_array(DY, mask=Mask[:, :, 1])
-        C  = np.ma.masked_array(arrowColors[:, :, 1], mask=Mask[:,:, 1])
+        C = np.ma.masked_array(arrowColors[:, :, 1], mask=Mask[:, :, 1])
         self.downArrows_fig.set_UVC(DY, DX, C)
         # Show Policy Left Arrows
         DX = np.zeros((self.ROWS, self.COLS))
         DY = -arrowSize[:, :, 2]
         DX = np.ma.masked_array(DX, mask=Mask[:, :, 2])
         DY = np.ma.masked_array(DY, mask=Mask[:, :, 2])
-        C  = np.ma.masked_array(arrowColors[:, :, 2], mask=Mask[:,:, 2])
+        C = np.ma.masked_array(arrowColors[:, :, 2], mask=Mask[:, :, 2])
         self.leftArrows_fig.set_UVC(DY, DX, C)
         # Show Policy Right Arrows
         DX = np.zeros((self.ROWS, self.COLS))
         DY = arrowSize[:, :, 3]
         DX = np.ma.masked_array(DX, mask=Mask[:, :, 3])
         DY = np.ma.masked_array(DY, mask=Mask[:, :, 3])
-        C  = np.ma.masked_array(arrowColors[:, :, 3], mask=Mask[:,:, 3])
+        C = np.ma.masked_array(arrowColors[:, :, 3], mask=Mask[:, :, 3])
         self.rightArrows_fig.set_UVC(DY, DX, C)
         plt.draw()
 
@@ -306,9 +287,13 @@ class GridWorld(Domain):
         ns = self.state + self.ACTIONS[a]
 
         # Check bounds on state values
-        if (ns[0] < 0 or ns[0] == self.ROWS or
-                ns[1] < 0 or ns[1] == self.COLS or
-                self.map[ns[0], ns[1]] == self.BLOCKED):
+        if (
+            ns[0] < 0
+            or ns[0] == self.ROWS
+            or ns[1] < 0
+            or ns[1] == self.COLS
+            or self.map[ns[0], ns[1]] == self.BLOCKED
+        ):
             ns = self.state.copy()
         else:
             # If in bounds, update the current state
@@ -343,9 +328,12 @@ class GridWorld(Domain):
         for a in range(self.actions_num):
             ns = s + self.ACTIONS[a]
             if (
-                    ns[0] < 0 or ns[0] == self.ROWS or
-                    ns[1] < 0 or ns[1] == self.COLS or
-                    self.map[int(ns[0]), int(ns[1])] == self.BLOCKED):
+                ns[0] < 0
+                or ns[0] == self.ROWS
+                or ns[1] < 0
+                or ns[1] == self.COLS
+                or self.map[int(ns[0]), int(ns[1])] == self.BLOCKED
+            ):
                 continue
             possibleA = np.append(possibleA, [a])
         return possibleA
@@ -361,7 +349,7 @@ class GridWorld(Domain):
         k = len(actions)
         # Make Probabilities
         intended_action_index = findElemArray1D(a, actions)
-        p = np.ones((k, 1)) * self.NOISE / (k * 1.)
+        p = np.ones((k, 1)) * self.NOISE / (k * 1.0)
         p[intended_action_index, 0] += 1 - self.NOISE
         # Make next states
         ns = np.tile(s, (k, 1)).astype(int)
@@ -386,9 +374,9 @@ class GridWorld(Domain):
             # Recall that discrete dimensions are assumed to be integer
             return (
                 perms(
-                    self.discrete_statespace_limits[:,
-                                                    1] - self.discrete_statespace_limits[:,
-                                                                                         0] + 1) + self.discrete_statespace_limits[
-                    :,
-                    0]
+                    self.discrete_statespace_limits[:, 1]
+                    - self.discrete_statespace_limits[:, 0]
+                    + 1
+                )
+                + self.discrete_statespace_limits[:, 0]
             )

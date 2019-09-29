@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 __author__ = "William Dabney"
 
@@ -38,7 +39,7 @@ def make_experiment(exp_id=1, path="./Results/Temp"):
 
     # Domain:
     # MAZE                = '/Domains/GridWorldMaps/1x3.txt'
-    maze = os.path.join(GridWorld.default_map_dir, '4x5.txt')
+    maze = os.path.join(GridWorld.default_map_dir, "4x5.txt")
     domain = GridWorld(maze, noise=0.3)
     opt["domain"] = domain
 
@@ -49,17 +50,21 @@ def make_experiment(exp_id=1, path="./Results/Temp"):
     policy = eGreedy(representation, epsilon=0.1)
 
     # Agent
-    opt["agent"] = LSPI(policy, representation, domain.discount_factor,
-                 opt["max_steps"], 1000)
+    opt["agent"] = LSPI(
+        policy, representation, domain.discount_factor, opt["max_steps"], 1000
+    )
 
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     path = "./Results/Temp/{domain}/{agent}/{representation}/"
     experiment = make_experiment(1, path=path)
-    experiment.run(visualize_steps=10,  # should each learning step be shown?
-                   visualize_learning=False,  # show performance runs?
-                   visualize_performance=False)  # show value function?
+    experiment.run(
+        visualize_steps=10,  # should each learning step be shown?
+        visualize_learning=False,  # show performance runs?
+        visualize_performance=False,
+    )  # show value function?
     experiment.plot()
     experiment.save()

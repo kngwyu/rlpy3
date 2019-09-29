@@ -4,8 +4,13 @@ import numpy as np
 from rlpy.Tools import plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = ["Robert H. Klein"]
 
@@ -103,10 +108,9 @@ class InfTrackCartPole(CartPoleBase):
     def __init__(self):
         # Limits of each dimension of the state space.
         # Each row corresponds to one dimension and has two elements [min, max]
-        self.statespace_limits = np.array(
-            [self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
+        self.statespace_limits = np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
         self.continuous_dims = [StateIndex.THETA, StateIndex.THETA_DOT]
-        self.DimNames = ['Theta', 'Thetadot']
+        self.DimNames = ["Theta", "Thetadot"]
 
         super(InfTrackCartPole, self).__init__()
 
@@ -120,11 +124,9 @@ class InfTrackCartPole(CartPoleBase):
         and perform a ``step()``.
         """
         # import ipdb; ipdb.set_trace()
-        s = np.append(self.state, np.array(
-            [0, 0]))  # 0 cart position and velocity
+        s = np.append(self.state, np.array([0, 0]))  # 0 cart position and velocity
         ns = self._stepFourState(s, a)
-        ns = ns[
-            0:2]  # [theta,thetadot], ie, omitting position/velocity of cart
+        ns = ns[0:2]  # [theta,thetadot], ie, omitting position/velocity of cart
         self.state = ns.copy()
 
         terminal = self.isTerminal()  # automatically uses self.state
@@ -140,8 +142,9 @@ class InfTrackCartPole(CartPoleBase):
         static; see :class:`Domains.InfiniteTrackCartPole.InfTrackCartPole`.
 
         """
-        fourState = np.append(self.state, np.array(
-            [0, 0]))  # 0 cart position and velocity
+        fourState = np.append(
+            self.state, np.array([0, 0])
+        )  # 0 cart position and velocity
         self._plot_state(fourState, a)
 
     def showLearning(self, representation):
@@ -199,9 +202,11 @@ class InfCartPoleBalance(InfTrackCartPole):
     ANGLE_LIMITS = [-np.pi / 2, np.pi / 2]
     #: Limits on pendulum rate, per 1Link of Lagoudakis & Parr
     ANGULAR_RATE_LIMITS = [
-        -2., 2.]  # NOTE that L+P's rate limits [-2,2] are actually unphysically slow, and the pendulum
-                                # saturates them frequently when falling; more
-                                # realistic to use 2*pi.
+        -2.0,
+        2.0,
+    ]  # NOTE that L+P's rate limits [-2,2] are actually unphysically slow, and the pendulum
+    # saturates them frequently when falling; more
+    # realistic to use 2*pi.
 
     def __init__(self, episodeCap=3000):
         self.episodeCap = episodeCap
@@ -254,11 +259,10 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     #: Max number of steps per trajectory
     episodeCap = 300
     #: Discount factor
-    discount_factor = .90
+    discount_factor = 0.90
 
     def __init__(self):
-        self.statespace_limits = np.array(
-            [self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
+        self.statespace_limits = np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
         super(InfCartPoleSwingUp, self).__init__()
 
     def s0(self):
@@ -275,10 +279,9 @@ class InfCartPoleSwingUp(InfTrackCartPole):
         if s is None:
             s = self.state
         return (
-            self.GOAL_REWARD if self.GOAL_LIMITS[
-                0] < s[
-                StateIndex.THETA] < self.GOAL_LIMITS[
-                1] else 0
+            self.GOAL_REWARD
+            if self.GOAL_LIMITS[0] < s[StateIndex.THETA] < self.GOAL_LIMITS[1]
+            else 0
         )
 
     def isTerminal(self, s=None):

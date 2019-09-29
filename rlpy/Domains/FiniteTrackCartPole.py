@@ -3,11 +3,27 @@ from .Domain import Domain
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
 import scipy.integrate
-from rlpy.Tools import pl, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, colors, plt
+from rlpy.Tools import (
+    pl,
+    mpatches,
+    mpath,
+    fromAtoB,
+    lines,
+    rk4,
+    wrap,
+    bound,
+    colors,
+    plt,
+)
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 pi = np.pi
 
@@ -87,22 +103,26 @@ class FiniteTrackCartPole(CartPoleBase):
     #: seconds, s - Time between steps
     dt = 0.02
     #: Newtons, N - Maximum noise possible, uniformly distributed.  Default 0.
-    force_noise_max = 0.
+    force_noise_max = 0.0
 
     def __init__(self):
         # Limits of each dimension of the state space.
         # Each row corresponds to one dimension and has two elements [min, max]
         self.statespace_limits = np.array(
-            [self.ANGLE_LIMITS,
-             self.ANGULAR_RATE_LIMITS,
-             self.POSITION_LIMITS,
-             self.VELOCITY_LIMITS])
+            [
+                self.ANGLE_LIMITS,
+                self.ANGULAR_RATE_LIMITS,
+                self.POSITION_LIMITS,
+                self.VELOCITY_LIMITS,
+            ]
+        )
         self.continuous_dims = [
             StateIndex.THETA,
             StateIndex.THETA_DOT,
             StateIndex.X,
-            StateIndex.X_DOT]
-        self.DimNames = ['Theta', 'Thetadot', 'X', 'Xdot']
+            StateIndex.X_DOT,
+        ]
+        self.DimNames = ["Theta", "Thetadot", "X", "Xdot"]
         super(FiniteTrackCartPole, self).__init__()
 
     def step(self, a):
@@ -126,17 +146,18 @@ class FiniteTrackCartPole(CartPoleBase):
         (which are each 2-D grids across ``theta`` and ``thetaDot``).
 
         """
-        xSlice = 0.  # value of x assumed when plotting V and pi
-        xDotSlice = 0.  # value of xDot assumed when plotting V and pi
+        xSlice = 0.0  # value of x assumed when plotting V and pi
+        xDotSlice = 0.0  # value of xDot assumed when plotting V and pi
 
-        warnStr = "WARNING: showLearning() called with 4-state "\
-            "cartpole; only showing slice at (x, xDot) = (%.2f, %.2f)" % (
-                xSlice,
-                xDotSlice)
+        warnStr = (
+            "WARNING: showLearning() called with 4-state "
+            "cartpole; only showing slice at (x, xDot) = (%.2f, %.2f)"
+            % (xSlice, xDotSlice)
+        )
 
         (thetas, theta_dots) = self._setup_learning(representation)
 
-        pi = np.zeros((len(theta_dots), len(thetas)), 'uint8')
+        pi = np.zeros((len(theta_dots), len(thetas)), "uint8")
         V = np.zeros((len(theta_dots), len(thetas)))
 
         for row, thetaDot in enumerate(theta_dots):
@@ -195,8 +216,9 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
         `CartPole implementation <http://code.google.com/p/rl-library/wiki/CartpoleJava>`_
 
     """
+
     #: Discount factor
-    discount_factor = .999
+    discount_factor = 0.999
 
     def __init__(self):
         super(FiniteCartPoleBalance, self).__init__()
@@ -216,7 +238,10 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return not -pi / 15 < s[StateIndex.THETA] < pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
+        return (
+            not -pi / 15 < s[StateIndex.THETA] < pi / 15
+            or not -2.4 < s[StateIndex.X] < 2.4
+        )
 
 
 class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
@@ -234,9 +259,10 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
         `original definition and code <http://webdocs.cs.ualberta.ca/~sutton/book/code/pole.c>`_
 
     """
+
     __author__ = "Christoph Dann"
 
-    def __init__(self, good_reward=0.):
+    def __init__(self, good_reward=0.0):
         self.good_reward = good_reward
         super(FiniteCartPoleBalanceOriginal, self).__init__()
 
@@ -247,12 +273,15 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
-        return self.good_reward if not self.isTerminal(s=s) else -1.
+        return self.good_reward if not self.isTerminal(s=s) else -1.0
 
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
+        return (
+            not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15
+            or not -2.4 < s[StateIndex.X] < 2.4
+        )
 
 
 class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
@@ -269,26 +298,29 @@ class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
     __author__ = "Christoph Dann"
 
     #: Newtons, N - Force values available as actions (Note we add a 0-force action)
-    AVAIL_FORCE = np.array([-10., 0., 10.])
+    AVAIL_FORCE = np.array([-10.0, 0.0, 10.0])
     #: Newtons, N - Maximum noise possible, uniformly distributed
-    force_noise_max = 1.
+    force_noise_max = 1.0
 
     def __init__(self):
         super(FiniteCartPoleBalanceModern, self).__init__()
 
     def s0(self):
-        self.state = np.array([self.random_state.randn() * 0.01, 0., 0., 0.])
+        self.state = np.array([self.random_state.randn() * 0.01, 0.0, 0.0, 0.0])
         return self.state.copy(), self.isTerminal(), self.possibleActions()
 
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
-        return 0. if not self.isTerminal(s=s) else -1.
+        return 0.0 if not self.isTerminal(s=s) else -1.0
 
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
+        return (
+            not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15
+            or not -2.4 < s[StateIndex.X] < 2.4
+        )
 
 
 class FiniteCartPoleSwingUp(FiniteTrackCartPole):
@@ -310,6 +342,7 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
     See parent class :class:`Domains.FiniteTrackCartPole.FiniteTrackCartPole` for more information.
 
     """
+
     #: Limit on pendulum angle (no termination, pendulum can make full cycle)
     ANGLE_LIMITS = [-pi, pi]
 
@@ -327,9 +360,7 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
-        return (
-            self.GOAL_REWARD if -pi / 6 < s[StateIndex.THETA] < pi / 6 else 0
-        )
+        return self.GOAL_REWARD if -pi / 6 < s[StateIndex.THETA] < pi / 6 else 0
 
     def isTerminal(self, s=None):
         if s is None:
@@ -363,7 +394,7 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
     #: meters, m - Physical length of the pendulum, meters (note the moment-arm lies at half this distance)
     LENGTH = 0.6
     # a friction coefficient
-    A = .5
+    A = 0.5
     #: seconds, s - Time between steps
     dt = 0.10
     #: Max number of steps per trajectory (reduced from default of 3000)
@@ -380,27 +411,23 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
         if not (self.POSITION_LIMITS[0] < s[StateIndex.X] < self.POSITION_LIMITS[1]):
             return -30
         pen_pos = np.array(
-            [s[StateIndex.X] + self.LENGTH * np.sin(s[StateIndex.THETA]),
-             self.LENGTH * np.cos(s[StateIndex.THETA])])
+            [
+                s[StateIndex.X] + self.LENGTH * np.sin(s[StateIndex.THETA]),
+                self.LENGTH * np.cos(s[StateIndex.THETA]),
+            ]
+        )
         diff = pen_pos - np.array([0, self.LENGTH])
-        #diff[1] *= 1.5
-        return np.exp(-.5 * sum(diff ** 2) * self.A) - .5
+        # diff[1] *= 1.5
+        return np.exp(-0.5 * sum(diff ** 2) * self.A) - 0.5
 
     def _dsdt(self, s_aug, t):
         s = np.zeros((4))
         s[0] = s_aug[StateIndex.X]
         s[1] = s_aug[StateIndex.X_DOT]
         s[3] = pi - s_aug[StateIndex.THETA]
-        s[2] = - s_aug[StateIndex.THETA_DOT]
+        s[2] = -s_aug[StateIndex.THETA_DOT]
         a = s_aug[4]
-        ds = self._ode(
-            s,
-            t,
-            a,
-            self.MASS_PEND,
-            self.LENGTH,
-            self.MASS_CART,
-            self.B)
+        ds = self._ode(s, t, a, self.MASS_PEND, self.LENGTH, self.MASS_CART, self.B)
         ds_aug = s_aug.copy()
         ds_aug[StateIndex.X] = ds[0]
         ds_aug[StateIndex.X_DOT] = ds[1]
@@ -419,7 +446,13 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
         g = self.ACCEL_G
         ds = np.zeros(4)
         ds[0] = s[1]
-        ds[1] = (2 * m * l * s[2] ** 2 * s3 + 3 * m * g * s3 * c3 + 4 * a - 4 * b * s[1]) / (4 * (M + m) - 3 * m * c3 ** 2)
-        ds[2] = (-3 * m * l * s[2] ** 2 * s3 * c3 - 6 * (M + m) * g * s3 - 6 * (a - b * s[1]) * c3) / (4 * l * (m + M) - 3 * m * l * c3 ** 2)
+        ds[1] = (
+            2 * m * l * s[2] ** 2 * s3 + 3 * m * g * s3 * c3 + 4 * a - 4 * b * s[1]
+        ) / (4 * (M + m) - 3 * m * c3 ** 2)
+        ds[2] = (
+            -3 * m * l * s[2] ** 2 * s3 * c3
+            - 6 * (M + m) * g * s3
+            - 6 * (a - b * s[1]) * c3
+        ) / (4 * l * (m + M) - 3 * m * l * c3 ** 2)
         ds[3] = s[2]
         return ds

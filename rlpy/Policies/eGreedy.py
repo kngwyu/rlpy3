@@ -3,8 +3,13 @@ from .Policy import Policy
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -20,19 +25,25 @@ class eGreedy(Policy):
     have explored the entire domain.
 
     """
+
     # Probability of selecting a random action instead of greedy
-    epsilon         = None
+    epsilon = None
     # Temporarily stores value of ``epsilon`` when exploration disabled
-    old_epsilon     = None
+    old_epsilon = None
     # This boolean variable is used to avoid random selection among actions
     # with the same values
     forcedDeterministicAmongBestActions = None
 
-    def __init__(self, representation, epsilon = .1,
-                 forcedDeterministicAmongBestActions = False, seed=1):
+    def __init__(
+        self,
+        representation,
+        epsilon=0.1,
+        forcedDeterministicAmongBestActions=False,
+        seed=1,
+    ):
         self.epsilon = epsilon
         self.forcedDeterministicAmongBestActions = forcedDeterministicAmongBestActions
-        super(eGreedy, self).__init__(representation,seed)
+        super(eGreedy, self).__init__(representation, seed)
 
     def pi(self, s, terminal, p_actions):
         coin = self.random_state.rand()
@@ -51,7 +62,7 @@ class eGreedy(Policy):
         p *= self.epsilon
         b_actions = self.representation.bestActions(s, terminal, p_actions)
         if self.forcedDeterministicAmongBestActions:
-            p[b_actions[0]] += (1 - self.epsilon)
+            p[b_actions[0]] += 1 - self.epsilon
         else:
             p[b_actions] += (1 - self.epsilon) / len(b_actions)
         return p

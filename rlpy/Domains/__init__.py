@@ -16,9 +16,11 @@ from .Acrobot import Acrobot, AcrobotLegacy
 from .Bicycle import BicycleBalancing, BicycleRiding
 from .Swimmer import Swimmer
 from .Pinball import Pinball
-from .FiniteTrackCartPole import (FiniteCartPoleBalance,
-                                 FiniteCartPoleBalanceOriginal,
-                                 FiniteCartPoleBalanceModern,
-                                 FiniteCartPoleSwingUp,
-                                 FiniteCartPoleSwingUpFriction)
+from .FiniteTrackCartPole import (
+    FiniteCartPoleBalance,
+    FiniteCartPoleBalanceOriginal,
+    FiniteCartPoleBalanceModern,
+    FiniteCartPoleSwingUp,
+    FiniteCartPoleSwingUpFriction,
+)
 from .InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSwingUp

@@ -45,44 +45,43 @@ class RCCar(Domain):
     XMAX = ROOM_WIDTH / 2
     YMIN = -ROOM_HEIGHT / 2
     YMAX = ROOM_HEIGHT / 2
-    ACCELERATION = .1
+    ACCELERATION = 0.1
     TURN_ANGLE = np.pi / 6
-    SPEEDMIN = -.3
-    SPEEDMAX = .3
+    SPEEDMIN = -0.3
+    SPEEDMAX = 0.3
     HEADINGMIN = -np.pi
     HEADINGMAX = np.pi
     INIT_STATE = np.array([0.0, 0.0, 0.0, 0.0])
     STEP_REWARD = -1
     GOAL_REWARD = 0
-    GOAL = [.5, .5]
-    GOAL_RADIUS = .1
+    GOAL = [0.5, 0.5]
+    GOAL_RADIUS = 0.1
     actions = np.outer([-1, 0, 1], [-1, 0, 1])
-    discount_factor = .9
+    discount_factor = 0.9
     episodeCap = 10000
-    delta_t = .1  # time between steps
-    CAR_LENGTH = .3  # L on the webpage
-    CAR_WIDTH = .15
+    delta_t = 0.1  # time between steps
+    CAR_LENGTH = 0.3  # L on the webpage
+    CAR_WIDTH = 0.15
     # The location of rear wheels if the car facing right with heading 0
-    REAR_WHEEL_RELATIVE_LOC = .05
+    REAR_WHEEL_RELATIVE_LOC = 0.05
     # Used for visual stuff:
     domain_fig = None
     X_discretization = 20
     Y_discretization = 20
     SPEED_discretization = 5
     HEADING_discretization = 3
-    ARROW_LENGTH = .2
+    ARROW_LENGTH = 0.2
     car_fig = None
 
     def __init__(self, noise=0):
         self.statespace_limits = np.array(
-            [[self.XMIN,
-              self.XMAX],
-             [self.YMIN,
-              self.YMAX],
-                [self.SPEEDMIN,
-                 self.SPEEDMAX],
-                [self.HEADINGMIN,
-                 self.HEADINGMAX]])
+            [
+                [self.XMIN, self.XMAX],
+                [self.YMIN, self.YMAX],
+                [self.SPEEDMIN, self.SPEEDMAX],
+                [self.HEADINGMIN, self.HEADINGMAX],
+            ]
+        )
         self.noise = noise
         super(RCCar, self).__init__()
 
@@ -91,15 +90,17 @@ class RCCar(Domain):
         # Map a number between [0,8] to a pair. The first element is
         # acceleration direction. The second one is the indicator for the wheel
         acc, turn = id2vec(a, [3, 3])
-        acc -= 1                # Mapping acc to [-1, 0 1]
-        turn -= 1                # Mapping turn to [-1, 0 1]
+        acc -= 1  # Mapping acc to [-1, 0 1]
+        turn -= 1  # Mapping turn to [-1, 0 1]
 
         # Calculate next state
         nx = x + speed * np.cos(heading) * self.delta_t
         ny = y + speed * np.sin(heading) * self.delta_t
         nspeed = speed + acc * self.ACCELERATION * self.delta_t
-        nheading    = heading + speed / self.CAR_LENGTH * \
-            np.tan(turn * self.TURN_ANGLE) * self.delta_t
+        nheading = (
+            heading
+            + speed / self.CAR_LENGTH * np.tan(turn * self.TURN_ANGLE) * self.delta_t
+        )
 
         # Bound values
         nx = bound(nx, self.XMIN, self.XMAX)
@@ -133,28 +134,23 @@ class RCCar(Domain):
         if self.domain_fig is None:  # Need to initialize the figure
             self.domain_fig = plt.figure()
             # Goal
-            plt.gca(
-            ).add_patch(
-                plt.Circle(
-                    self.GOAL,
-                    radius=self.GOAL_RADIUS,
-                    color='g',
-                    alpha=.4))
+            plt.gca().add_patch(
+                plt.Circle(self.GOAL, radius=self.GOAL_RADIUS, color="g", alpha=0.4)
+            )
             plt.xlim([self.XMIN, self.XMAX])
             plt.ylim([self.YMIN, self.YMAX])
-            plt.gca().set_aspect('1')
+            plt.gca().set_aspect("1")
         # Car
         if self.car_fig is not None:
             plt.gca().patches.remove(self.car_fig)
 
         self.car_fig = mpatches.Rectangle(
-            [car_xmin,
-             car_ymin],
-            self.CAR_LENGTH,
-            self.CAR_WIDTH,
-            alpha=.4)
-        rotation = mpl.transforms.Affine2D().rotate_deg_around(
-            x, y, heading * 180 / np.pi) + plt.gca().transData
+            [car_xmin, car_ymin], self.CAR_LENGTH, self.CAR_WIDTH, alpha=0.4
+        )
+        rotation = (
+            mpl.transforms.Affine2D().rotate_deg_around(x, y, heading * 180 / np.pi)
+            + plt.gca().transData
+        )
         self.car_fig.set_transform(rotation)
         plt.gca().add_patch(self.car_fig)
 

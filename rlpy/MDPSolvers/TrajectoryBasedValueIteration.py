@@ -9,8 +9,13 @@ from rlpy.Tools import deltaT, hhmmss, randSet, className, clock
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -45,27 +50,37 @@ class TrajectoryBasedValueIteration(MDPSolver):
     epsilon = None
     # step size parameter to adjust the weights. If the representation is
     # tabular you can set this to 1.
-    alpha = .1
+    alpha = 0.1
     # Minimum number of trajectories required for convergence in which the max
     # bellman error was below the threshold
     MIN_CONVERGED_TRAJECTORIES = 5
 
     def __init__(
-            self, job_id, representation, domain, planning_time=np.inf, convergence_threshold=.005,
-            ns_samples=100, project_path='.', log_interval=500, show=False, epsilon=.1):
-        super(
-            TrajectoryBasedValueIteration,
-            self).__init__(job_id,
-                           representation,
-                           domain,
-                           planning_time,
-                           convergence_threshold,
-                           ns_samples,
-                           project_path,
-                           log_interval,
-                           show)
+        self,
+        job_id,
+        representation,
+        domain,
+        planning_time=np.inf,
+        convergence_threshold=0.005,
+        ns_samples=100,
+        project_path=".",
+        log_interval=500,
+        show=False,
+        epsilon=0.1,
+    ):
+        super(TrajectoryBasedValueIteration, self).__init__(
+            job_id,
+            representation,
+            domain,
+            planning_time,
+            convergence_threshold,
+            ns_samples,
+            project_path,
+            log_interval,
+            show,
+        )
         self.epsilon = epsilon
-        if className(representation) == 'Tabular':
+        if className(representation) == "Tabular":
             self.alpha = 1
 
     def solve(self):
@@ -86,12 +101,11 @@ class TrajectoryBasedValueIteration(MDPSolver):
             step = 0
             terminal = False
             s, terminal, p_actions = self.domain.s0()
-            a = self.representation.bestAction(
-                s,
-                terminal,
-                p_actions) if np.random.rand(
-            ) > self.epsilon else randSet(
-                p_actions)
+            a = (
+                self.representation.bestAction(s, terminal, p_actions)
+                if np.random.rand() > self.epsilon
+                else randSet(p_actions)
+            )
             while not terminal and step < self.domain.episodeCap and self.hasTime():
                 new_Q = self.representation.Q_oneStepLookAhead(s, a, self.ns_samples)
                 phi_s = self.representation.phi(s, terminal)
@@ -105,14 +119,20 @@ class TrajectoryBasedValueIteration(MDPSolver):
                 step += 1
 
                 # Discover features if the representation has the discover method
-                discover_func = getattr(self.representation, 'discover', None)  # None is the default value if the discover is not an attribute
+                discover_func = getattr(
+                    self.representation, "discover", None
+                )  # None is the default value if the discover is not an attribute
                 if discover_func and callable(discover_func):
                     self.representation.discover(phi_s, bellman_error)
 
                 max_Bellman_Error = max(max_Bellman_Error, abs(bellman_error))
                 # Simulate new state and action on trajectory
                 _, s, terminal, p_actions = self.domain.step(a)
-                a = self.representation.bestAction(s, terminal, p_actions) if np.random.rand() > self.epsilon else randSet(p_actions)
+                a = (
+                    self.representation.bestAction(s, terminal, p_actions)
+                    if np.random.rand() > self.epsilon
+                    else randSet(p_actions)
+                )
 
             # check for convergence
             iteration += 1
@@ -120,19 +140,22 @@ class TrajectoryBasedValueIteration(MDPSolver):
                 converged_trajectories += 1
             else:
                 converged_trajectories = 0
-            performance_return, performance_steps, performance_term, performance_discounted_return = self.performanceRun(
+            performance_return, performance_steps, performance_term, performance_discounted_return = (
+                self.performanceRun()
             )
             converged = converged_trajectories >= self.MIN_CONVERGED_TRAJECTORIES
             self.logger.info(
-                'PI #%d [%s]: BellmanUpdates=%d, ||Bellman_Error||=%0.4f, Return=%0.4f, Steps=%d, Features=%d' % (iteration,
-                                                                                                                  hhmmss(
-                                                                                                                      deltaT(
-                                                                                                                          self.start_time)),
-                                                                                                                  bellmanUpdates,
-                                                                                                                  max_Bellman_Error,
-                                                                                                                  performance_return,
-                                                                                                                  performance_steps,
-                                                                                                                  self.representation.features_num))
+                "PI #%d [%s]: BellmanUpdates=%d, ||Bellman_Error||=%0.4f, Return=%0.4f, Steps=%d, Features=%d"
+                % (
+                    iteration,
+                    hhmmss(deltaT(self.start_time)),
+                    bellmanUpdates,
+                    max_Bellman_Error,
+                    performance_return,
+                    performance_steps,
+                    self.representation.features_num,
+                )
+            )
             if self.show:
                 self.domain.show(a, representation=self.representation, s=s)
 
@@ -147,5 +170,5 @@ class TrajectoryBasedValueIteration(MDPSolver):
             self.result["iteration"].append(iteration)
 
         if converged:
-            self.logger.info('Converged!')
+            self.logger.info("Converged!")
         super(TrajectoryBasedValueIteration, self).solve()

@@ -5,6 +5,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 __author__ = "William Dabney"
 
@@ -16,8 +17,7 @@ from rlpy.Experiments import Experiment
 import os
 
 
-def make_experiment(
-        exp_id=1, path="./Results/Temp/{domain}/{agent}/{representation}/"):
+def make_experiment(exp_id=1, path="./Results/Temp/{domain}/{agent}/{representation}/"):
     """
     Each file specifying an experimental setup should contain a
     make_experiment function which returns an instance of the Experiment
@@ -36,7 +36,7 @@ def make_experiment(
 
     # Domain:
     # MAZE                = '/Domains/GridWorldMaps/1x3.txt'
-    maze = os.path.join(GridWorld.default_map_dir, '4x5.txt')
+    maze = os.path.join(GridWorld.default_map_dir, "4x5.txt")
     domain = GridWorld(maze, noise=0.3)
     opt["domain"] = domain
 
@@ -47,12 +47,14 @@ def make_experiment(
     policy = GibbsPolicy(representation)
 
     # Agent
-    opt["agent"] = NaturalActorCritic(policy, representation, domain.discount_factor,
-                               0.3, 100, 1000, .7, 0.1)
+    opt["agent"] = NaturalActorCritic(
+        policy, representation, domain.discount_factor, 0.3, 100, 1000, 0.7, 0.1
+    )
 
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     experiment = make_experiment()
     experiment.run_from_commandline()

@@ -7,6 +7,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 from future import standard_library
+
 standard_library.install_aliases()
 from rlpy.Domains import InfCartPoleBalance
 from rlpy.Agents import Greedy_GQ, SARSA, Q_Learning
@@ -16,24 +17,26 @@ from rlpy.Experiments import Experiment
 import numpy as np
 from hyperopt import hp
 
-param_space = {'discretization': hp.quniform("discretization", 5, 40, 1),
-               'discover_threshold':
-               hp.loguniform(
-                   "discover_threshold",
-                   np.log(1e-2),
-                   np.log(1e1)),
-               #'lambda_': hp.uniform("lambda_", 0., 1.),
-               'boyan_N0': hp.loguniform("boyan_N0", np.log(1e1), np.log(1e5)),
-               'initial_learn_rate': hp.loguniform("initial_learn_rate", np.log(1e-3), np.log(1))}
+param_space = {
+    "discretization": hp.quniform("discretization", 5, 40, 1),
+    "discover_threshold": hp.loguniform(
+        "discover_threshold", np.log(1e-2), np.log(1e1)
+    ),
+    #'lambda_': hp.uniform("lambda_", 0., 1.),
+    "boyan_N0": hp.loguniform("boyan_N0", np.log(1e1), np.log(1e5)),
+    "initial_learn_rate": hp.loguniform("initial_learn_rate", np.log(1e-3), np.log(1)),
+}
 
 
 def make_experiment(
-        exp_id=1, path="./Results/Temp/{domain}/{agent}/{representation}/",
-        discover_threshold=0.013461679,
-        lambda_=0.,
-        boyan_N0=484.78006,
-        initial_learn_rate=0.5651405,
-        discretization=23.):
+    exp_id=1,
+    path="./Results/Temp/{domain}/{agent}/{representation}/",
+    discover_threshold=0.013461679,
+    lambda_=0.0,
+    boyan_N0=484.78006,
+    initial_learn_rate=0.5651405,
+    discretization=23.0,
+):
     opt = {}
     opt["path"] = path
     opt["exp_id"] = exp_id
@@ -45,25 +48,32 @@ def make_experiment(
     domain = InfCartPoleBalance()
     opt["domain"] = domain
 
-    initial_rep = IndependentDiscretization(
+    initial_rep = IndependentDiscretization(domain, discretization=discretization)
+    representation = iFDD(
         domain,
-        discretization=discretization)
-    representation = iFDD(domain, discover_threshold, initial_rep,
-                          sparsify=sparsify,
-                          discretization=discretization,
-                          useCache=True,
-                          iFDDPlus=1. - kappa)
+        discover_threshold,
+        initial_rep,
+        sparsify=sparsify,
+        discretization=discretization,
+        useCache=True,
+        iFDDPlus=1.0 - kappa,
+    )
     policy = eGreedy(representation, epsilon=0.1)
-    opt["agent"] = Greedy_GQ(policy, representation,
-                      discount_factor=domain.discount_factor,
-                      lambda_=lambda_,
-                      BetaCoef=1e-6,
-                      initial_learn_rate=initial_learn_rate,
-                      learn_rate_decay_mode="boyan", boyan_N0=boyan_N0)
+    opt["agent"] = Greedy_GQ(
+        policy,
+        representation,
+        discount_factor=domain.discount_factor,
+        lambda_=lambda_,
+        BetaCoef=1e-6,
+        initial_learn_rate=initial_learn_rate,
+        learn_rate_decay_mode="boyan",
+        boyan_N0=boyan_N0,
+    )
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     experiment = make_experiment(1)
     experiment.run()
     experiment.save()

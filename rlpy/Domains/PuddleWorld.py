@@ -4,8 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
@@ -34,21 +39,20 @@ class PuddleWorld(Domain):
 
     """
 
-    discount_factor = 1.  # discout factor
+    discount_factor = 1.0  # discout factor
     domain_fig = None
     valfun_fig = None
     polfun_fig = None
 
     episodeCap = 1000
-    puddles = np.array([[[0.1, .75], [.45, .75]], [[.45, .4], [.45, .8]]])
+    puddles = np.array([[[0.1, 0.75], [0.45, 0.75]], [[0.45, 0.4], [0.45, 0.8]]])
     continuous_dims = np.arange(2)
-    statespace_limits = np.array([[0., 1.]] * 2)
+    statespace_limits = np.array([[0.0, 1.0]] * 2)
 
-    actions = 0.05 * \
-        np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype="float")
+    actions = 0.05 * np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype="float")
     actions_num = 4
 
-    def __init__(self, noise_level=.01, discount_factor=1.):
+    def __init__(self, noise_level=0.01, discount_factor=1.0):
         self.noise_level = noise_level
         self.discount_factor = discount_factor
         super(PuddleWorld, self).__init__()
@@ -80,8 +84,8 @@ class PuddleWorld(Domain):
         a = self.actions[a]
         ns = self.state + a + self.random_state.randn() * self.noise_level
         # make sure we stay inside the [0,1]^2 region
-        ns = np.minimum(ns, 1.)
-        ns = np.maximum(ns, 0.)
+        ns = np.minimum(ns, 1.0)
+        ns = np.maximum(ns, 0.0)
         self.state = ns.copy()
         return self._reward(ns), ns, self.isTerminal(), self.possibleActions()
 
@@ -106,9 +110,10 @@ class PuddleWorld(Domain):
         # Draw the environment
         if self.domain_fig is None:
             self.domain_fig = plt.figure("Domain")
-            self.reward_im = plt.imshow(self.reward_map, extent=(0, 1, 0, 1),
-                                        origin="lower")
-            self.state_mark = plt.plot(s[0], s[1], 'kd', markersize=20)
+            self.reward_im = plt.imshow(
+                self.reward_map, extent=(0, 1, 0, 1), origin="lower"
+            )
+            self.state_mark = plt.plot(s[0], s[1], "kd", markersize=20)
             plt.figure("Domain").canvas.draw()
             plt.figure("Domain").canvas.flush_events()
         else:
@@ -123,22 +128,17 @@ class PuddleWorld(Domain):
             for j, y in enumerate(np.linspace(0, 1, 100)):
                 a[0] = x
                 a[1] = y
-                self.val_map[j,
-                             i] = representation.V(
-                    a,
-                    self.isTerminal(a),
-                    self.possibleActions())
-                self.pi_map[j,
-                            i] = representation.bestAction(
-                    a,
-                    self.isTerminal(a),
-                    self.possibleActions())
+                self.val_map[j, i] = representation.V(
+                    a, self.isTerminal(a), self.possibleActions()
+                )
+                self.pi_map[j, i] = representation.bestAction(
+                    a, self.isTerminal(a), self.possibleActions()
+                )
 
         if self.valfun_fig is None:
             self.valfun_fig = plt.figure("Value Function")
             plt.clf()
-            self.val_im = plt.imshow(self.val_map, extent=(0, 1, 0, 1),
-                                     origin="lower")
+            self.val_im = plt.imshow(self.val_map, extent=(0, 1, 0, 1), origin="lower")
             plt.colorbar()
         else:
             self.valfun_fig = plt.figure("Value Function")
@@ -149,8 +149,9 @@ class PuddleWorld(Domain):
         if self.polfun_fig is None:
             self.polfun_fig = plt.figure("Policy")
             plt.clf()
-            self.pol_im = plt.imshow(self.pi_map, extent=(0, 1, 0, 1),
-                                     origin="lower", cmap="4Actions")
+            self.pol_im = plt.imshow(
+                self.pi_map, extent=(0, 1, 0, 1), origin="lower", cmap="4Actions"
+            )
         else:
             self.polfun_fig = plt.figure("Policy")
             self.pol_im.set_data(self.pi_map)
@@ -159,9 +160,8 @@ class PuddleWorld(Domain):
 
 
 class PuddleGapWorld(PuddleWorld):
-
     def _reward(self, s):
         r = super(PuddleGapWorld, self)._reward(s)
-        if s[1] < .67 and s[1] >= .6:
+        if s[1] < 0.67 and s[1] >= 0.6:
             r = -1
         return r

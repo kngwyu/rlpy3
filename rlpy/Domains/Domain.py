@@ -4,8 +4,13 @@ import logging
 from copy import deepcopy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
@@ -50,8 +55,9 @@ class Domain(object):
         marked as 'continuous' then it is assumed to be integer.
 
     """
+
     #: The discount factor by which rewards are reduced
-    discount_factor = .9
+    discount_factor = 0.9
     #: The number of possible states in the domain
     states_num = 0  # was None
     #: The number of Actions the agent can perform
@@ -81,8 +87,9 @@ class Domain(object):
         # The original limits will be saved in self.discrete_statespace_limits
         self._extendDiscreteDimensions()
         if len(self.continuous_dims) == 0:
-            self.states_num = int(np.prod(self.statespace_limits[:, 1]
-                                  - self.statespace_limits[:, 0]))
+            self.states_num = int(
+                np.prod(self.statespace_limits[:, 1] - self.statespace_limits[:, 0])
+            )
         else:
             self.states_num = np.inf
 
@@ -106,7 +113,9 @@ Dimensions: {self.state_space_dims}
 |A|:        {self.actions_num}
 Episode Cap:{self.episodeCap}
 Gamma:      {self.discount_factor}
-""".format(self=self)
+""".format(
+            self=self
+        )
         return res
 
     def show(self, a=None, representation=None):
@@ -261,11 +270,11 @@ Gamma:      {self.discount_factor}
         """
         # Store the original limits for other types of calculations
         self.discrete_statespace_limits = self.statespace_limits
-        self.statespace_limits = self.statespace_limits.astype('float')
+        self.statespace_limits = self.statespace_limits.astype("float")
         for d in range(self.state_space_dims):
             if d not in self.continuous_dims:
-                self.statespace_limits[d, 0] += -.5
-                self.statespace_limits[d, 1] += +.5
+                self.statespace_limits[d, 0] += -0.5
+                self.statespace_limits[d, 1] += +0.5
 
     def sampleStep(self, a, num_samples):
         """
@@ -309,7 +318,7 @@ Gamma:      {self.discount_factor}
             if k is "logger":
                 continue
             # This block bandles matplotlib transformNode objects,
-                # which cannot be coped
+            # which cannot be coped
             try:
                 setattr(result, k, deepcopy(v, memo))
             except:
@@ -317,6 +326,7 @@ Gamma:      {self.discount_factor}
                 try:
                     setattr(result, k, v.frozen())
                 except:
-                    self.logger.warning('Could not copy attribute ' + k +
-                                        ' when duplicating domain.')
+                    self.logger.warning(
+                        "Could not copy attribute " + k + " when duplicating domain."
+                    )
         return result

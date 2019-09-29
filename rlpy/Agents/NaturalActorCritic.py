@@ -6,8 +6,13 @@ from .Agent import Agent
 from rlpy.Tools import solveLinear, regularize
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
@@ -23,11 +28,19 @@ class NaturalActorCritic(Agent):
     """
 
     # minimum for the cosine of the current and last gradient
-    min_cos = np.cos(np.pi / 180.)
+    min_cos = np.cos(np.pi / 180.0)
 
-    def __init__(self, policy, representation, discount_factor, forgetting_rate,
-                 min_steps_between_updates, max_steps_between_updates, lambda_,
-                 learn_rate):
+    def __init__(
+        self,
+        policy,
+        representation,
+        discount_factor,
+        forgetting_rate,
+        min_steps_between_updates,
+        max_steps_between_updates,
+        lambda_,
+        learn_rate,
+    ):
         """
         @param representation: function approximation used to approximate the
                                value function
@@ -59,8 +72,9 @@ class NaturalActorCritic(Agent):
         self.buf_ = np.zeros((self.n, self.n))
         self.z = np.zeros((self.n))
 
-        super(NaturalActorCritic, self).__init__(policy,
-                                                 representation, discount_factor)
+        super(NaturalActorCritic, self).__init__(
+            policy, representation, discount_factor
+        )
 
     def learn(self, s, p_actions, a, r, ns, np_actions, na, terminal):
 
@@ -76,11 +90,12 @@ class NaturalActorCritic(Agent):
         self.z *= self.lambda_
         self.z += phi_s
 
-        self.A += np.einsum("i,j", self.z, phi_s - self.discount_factor * phi_ns,
-                            out=self.buf_)
+        self.A += np.einsum(
+            "i,j", self.z, phi_s - self.discount_factor * phi_ns, out=self.buf_
+        )
         self.b += self.z * r
         if terminal:
-            self.z[:] = 0.
+            self.z[:] = 0.0
         self.steps_between_updates += 1
         self.logger.debug("Statistics updated")
 
@@ -90,16 +105,20 @@ class NaturalActorCritic(Agent):
             #  v = param[:k]  # parameters of the value function representation
             w = param[k:]  # natural gradient estimate
 
-            if self._gradient_sane(w) or self.steps_between_updates > self.max_steps_between_updates:
+            if (
+                self._gradient_sane(w)
+                or self.steps_between_updates > self.max_steps_between_updates
+            ):
                 # update policy
                 self.policy.theta = self.policy.theta + self.learn_rate * w
                 self.last_w = w
                 self.logger.debug(
-                    "Policy updated, norm of gradient {}".format(np.linalg.norm(w)))
+                    "Policy updated, norm of gradient {}".format(np.linalg.norm(w))
+                )
                 # forget statistics
-                self.z *= 1. - self.forgetting_rate
-                self.A *= 1. - self.forgetting_rate
-                self.b *= 1. - self.forgetting_rate
+                self.z *= 1.0 - self.forgetting_rate
+                self.A *= 1.0 - self.forgetting_rate
+                self.b *= 1.0 - self.forgetting_rate
                 self.steps_between_updates = 0
 
         if terminal:
@@ -110,8 +129,9 @@ class NaturalActorCritic(Agent):
         checks the natural gradient estimate w for sanity
         """
         if hasattr(self, "last_w"):
-            cos = np.dot(w, self.last_w) / np.linalg.norm(w) \
-                / np.linalg.norm(self.last_w)
+            cos = (
+                np.dot(w, self.last_w) / np.linalg.norm(w) / np.linalg.norm(self.last_w)
+            )
             return cos < self.min_cos
         else:
             return False

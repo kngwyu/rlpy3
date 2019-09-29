@@ -56,11 +56,10 @@ class CheckingBuildExt(build_ext):
             for src in ext.sources:
                 if not os.path.exists(src):
                     raise Exception(
-                        """Cython-generated file '%s' not found.
-                Cython is required to compile rlpy from a development branch.
-                Please install Cython or download a release package of rlpy.
-                """
-                        % src
+                        "Cython-generated file '{}' not found."
+                        "Cython is required to compile rlpy from a development branch."
+                        "Please install Cython or download a release package of rlpy.".
+                        format(src)
                     )
 
     def build_extensions(self):
@@ -233,6 +232,7 @@ def no_cythonize(extensions, **_ignore):
 
 if HAS_CYTHON:
     from Cython.Build import cythonize
+
     extensions = cythonize(extensions)
 else:
     extensions = no_cythonize(extensions)

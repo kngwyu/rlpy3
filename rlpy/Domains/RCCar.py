@@ -83,7 +83,7 @@ class RCCar(Domain):
             ]
         )
         self.noise = noise
-        super(RCCar, self).__init__()
+        super().__init__()
 
     def step(self, a):
         x, y, speed, heading = self.state

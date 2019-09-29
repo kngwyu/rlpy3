@@ -8,6 +8,14 @@ from scipy import sparse as sp
 import os
 import sys
 from time import process_time as clock
+import matplotlib as mpl
+from matplotlib import cm, colors, lines, rc
+from matplotlib import pylab as pl
+from matplotlib import pyplot as plt
+from matplotlib import patches as mpatches
+from matplotlib import path as mpath
+from mpl_toolkits.mplot3d import axes3d
+pl.ion()
 
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -22,15 +30,6 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 __rlpy_location__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-import matplotlib as mpl
-from matplotlib import cm, colors, lines, rc
-from matplotlib import pylab as pl
-from matplotlib import pyplot as plt
-from matplotlib import patches as mpatches
-from matplotlib import path as mpath
-from mpl_toolkits.mplot3d import axes3d
 
 
 def use_nogui_backend():

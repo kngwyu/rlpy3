@@ -29,7 +29,7 @@ class BicycleBalancing(Domain):
     * ``theta:``     angle the handlebars are displaced from normal [rad]
     * ``theta dot:`` angular velocity for theta [rad / s]
     * ``psi:``       angle formed by bicycle frame and x-axis [rad]
-    
+
     [x_b:       x-coordinate where the back tire touches the ground [m]]
     [y_b:       y-coordinate where the back tire touches the ground [m]]
 
@@ -39,7 +39,7 @@ class BicycleBalancing(Domain):
 
     * T in {-2, 0, 2}:      the torque applied to the handlebar
     * d in {-.02, 0, .02}:  displacement of the rider
-    
+
     i.e., 9 actions in total.
 
 

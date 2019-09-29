@@ -114,7 +114,7 @@ class HelicopterHoverExtended(Domain):
     def __init__(self, noise_level=1.0, discount_factor=0.95):
         self.noise_level = noise_level
         self.discount_factor = discount_factor
-        super(HelicopterHoverExtended, self).__init__()
+        super().__init__()
 
     def s0(self):
         self.state = np.zeros((20))

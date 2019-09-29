@@ -123,7 +123,7 @@ class FiniteTrackCartPole(CartPoleBase):
             StateIndex.X_DOT,
         ]
         self.DimNames = ["Theta", "Thetadot", "X", "Xdot"]
-        super(FiniteTrackCartPole, self).__init__()
+        super().__init__()
 
     def step(self, a):
         s = self.state
@@ -148,12 +148,6 @@ class FiniteTrackCartPole(CartPoleBase):
         """
         xSlice = 0.0  # value of x assumed when plotting V and pi
         xDotSlice = 0.0  # value of xDot assumed when plotting V and pi
-
-        warnStr = (
-            "WARNING: showLearning() called with 4-state "
-            "cartpole; only showing slice at (x, xDot) = (%.2f, %.2f)"
-            % (xSlice, xDotSlice)
-        )
 
         (thetas, theta_dots) = self._setup_learning(representation)
 

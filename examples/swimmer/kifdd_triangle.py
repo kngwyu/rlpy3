@@ -86,7 +86,7 @@ if __name__ == "__main__":
 
     # run_profiled(make_experiment)
     experiment = make_experiment(1)
-    experiment.run(visualize_performance=1, visualize_learning=True)
+    experiment.run(visualize_performance=1)
     # experiment.plot()
     # experiment.save()
     from rlpy.Tools import plt

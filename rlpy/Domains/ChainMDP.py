@@ -22,10 +22,10 @@ class ChainMDP(Domain):
 
     **STATE:** s0 <-> s1 <-> ... <-> sn \n
     **ACTIONS:** are left [0] and right [1], deterministic. \n
-    
+
     .. note::
-    
-        The actions [left, right] are available in ALL states, but if 
+
+        The actions [left, right] are available in ALL states, but if
         left is selected in s0 or right in sn, then s remains unchanged.
 
     The task is to reach sn from s0, after which the episode terminates.
@@ -56,7 +56,7 @@ class ChainMDP(Domain):
     MIN_RETURN = 0
     # Used for graphical shifting of arrows
     SHIFT = 0.3
-    #:Used for graphical radius of states
+    # Used for graphical radius of states
     RADIUS = 0.5
     # Stores the graphical pathes for states so that we can later change their
     # colors
@@ -76,7 +76,7 @@ class ChainMDP(Domain):
         self.goal = chainSize - 1
         self.statespace_limits = np.array([[0, chainSize - 1]])
         self.episodeCap = 2 * chainSize
-        super(ChainMDP, self).__init__()
+        super().__init__()
 
     def showDomain(self, a=0):
         # Draw the environment

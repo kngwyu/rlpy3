@@ -89,7 +89,7 @@ class Pinball(Domain):
             [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
         )
         self.continuous_dims = [4]
-        super(Pinball, self).__init__()
+        super().__init__()
         self.environment = PinballModel(
             self.configuration, random_state=self.random_state
         )
@@ -555,7 +555,7 @@ class PinballView(object):
 
         self.target_x, self.target_y = self._to_pixels(self.model.target_pos)
         self.target_rad = int(self.model.target_rad * self.width)
-        target_id = self.drawcircle(
+        _ = self.drawcircle(
             self.screen, self.target_x, self.target_y, self.target_rad, "red"
         )
         self.ball_id = self.drawcircle(self.screen, self.x, self.y, self.rad, "black")

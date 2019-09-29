@@ -70,8 +70,6 @@ class HIVTreatment(Domain):
 
     def step(self, a):
         self.t += 1
-        # if self.logspace:
-        #    s = np.power(10, s)
 
         eps1, eps2 = self.actions[a]
         ns = odeint(dsdt, self.state, [0, self.dt], args=(eps1, eps2), mxstep=1000)[-1]

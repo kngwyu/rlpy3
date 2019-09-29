@@ -11,6 +11,7 @@ steps:
       architecture: ${{ parameters.python_arch }}
 
   - script: |
-      python -m pip install --upgrade pip setuptools wheel pipenv
+      python -m pip install --upgrade pipenv
       make init
-    displayName: Install Python packages
+      make test
+    displayName: Test rlpy3

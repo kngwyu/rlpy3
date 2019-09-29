@@ -10,12 +10,24 @@ jobs:
           PYTHON_VERSION: '3.7'
     maxParallel: 2
   steps:
-    - template: azure-templates/setup.yml
+    - template: azure-templates/test.yml
       parameters:
         python_version: $(PYTHON_VERSION)
-    - script: |
-        make test
-      displayName: Test on Linux
+
+- job: macOSTest
+  pool:
+    vmImage: 'macOS-10.13'
+  strategy:
+    matrix:
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/test.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
 
 - job: WindowsTest
   pool:
@@ -28,12 +40,9 @@ jobs:
           PYTHON_VERSION: '3.7'
     maxParallel: 2
   steps:
-    - template: azure-templates/setup.yml
+    - template: azure-templates/test.yml
       parameters:
         python_version: $(PYTHON_VERSION)
-    - bash: |
-        make test
-      displayName: Test on Windows
 
 - job: ManyLinux1Wheel
   pool:

@@ -309,7 +309,6 @@ def _keypress(event):
     # remap_arrows(event)
     _keysdown[event.keysym] = 1
     _keyswaiting[event.keysym] = 1
-    #    print event.char, event.keycode
     _got_release = None
 
 

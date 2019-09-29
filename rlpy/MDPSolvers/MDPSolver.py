@@ -3,14 +3,27 @@ from abc import ABC, abstractmethod
 import numpy as np
 import logging
 from copy import deepcopy
-from rlpy.Tools import className, deltaT, hhmmss, clock, l_norm, vec2id, checkNCreateDirectory
+from rlpy.Tools import (
+    className,
+    deltaT,
+    hhmmss,
+    clock,
+    l_norm,
+    vec2id,
+    checkNCreateDirectory,
+)
 from collections import defaultdict
 import os
 import json
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "N. Kemal Ure"
 
@@ -66,8 +79,17 @@ class MDPSolver(ABC):
     show = None  # Show the learning if possible?
 
     def __init__(
-            self, job_id, representation, domain, planning_time=np.inf,
-            convergence_threshold=.005, ns_samples=100, project_path='.', log_interval=5000, show=False):
+        self,
+        job_id,
+        representation,
+        domain,
+        planning_time=np.inf,
+        convergence_threshold=0.005,
+        ns_samples=100,
+        project_path=".",
+        log_interval=5000,
+        show=False,
+    ):
         self.exp_id = job_id
         self.representation = representation
         self.domain = domain
@@ -89,15 +111,15 @@ class MDPSolver(ABC):
         # create a dictionary of results
         self.result = defaultdict(list)
         self.result["seed"] = self.exp_id
-        self.output_filename = '{:0>3}-results.json'.format(self.exp_id)
+        self.output_filename = "{:0>3}-results.json".format(self.exp_id)
 
     @abstractmethod
     def solve(self):
         """Solve the domain MDP."""
         # Abstract
         self.logger.info(
-            'Value of S0 is = %0.5f' %
-            self.representation.V(*self.domain.s0()))
+            "Value of S0 is = %0.5f" % self.representation.V(*self.domain.s0())
+        )
         self.saveStats()
 
     def BellmanBackup(self, s, a, ns_samples, policy=None):
@@ -111,14 +133,10 @@ class MDPSolver(ABC):
             ns_samples(int):    Number of next state samples to use.
             policy (Policy):    Policy object to use for sampling actions.
         """
-        Q = self.representation.Q_oneStepLookAhead(
-            s,
-            a,
-            ns_samples,
-            policy)
+        Q = self.representation.Q_oneStepLookAhead(s, a, ns_samples, policy)
         s_index = vec2id(
-            self.representation.binState(s),
-            self.representation.bins_per_dim)
+            self.representation.binState(s), self.representation.bins_per_dim
+        )
         weight_vec_index = int(self.representation.agg_states_num * a + s_index)
         self.representation.weight_vec[weight_vec_index] = Q
 
@@ -135,10 +153,7 @@ class MDPSolver(ABC):
         #    self.domain.showLearning(self.representation)
 
         while not eps_term and eps_length < self.domain.episodeCap:
-            a = self.representation.bestAction(
-                s,
-                eps_term,
-                p_actions)
+            a = self.representation.bestAction(s, eps_term, p_actions)
             r, ns, eps_term, p_actions = self.domain.step(a)
             s = ns
             eps_discounted_return += self.domain.discount_factor ** eps_length * r
@@ -149,7 +164,7 @@ class MDPSolver(ABC):
     def saveStats(self):
         fullpath_output = os.path.join(self.project_path, self.output_filename)
         print(">>> ", fullpath_output)
-        checkNCreateDirectory(self.project_path + '/')
+        checkNCreateDirectory(self.project_path + "/")
         with open(fullpath_output, "w") as f:
             json.dump(self.result, f, indent=4, sort_keys=True)
 
@@ -158,11 +173,11 @@ class MDPSolver(ABC):
         return deltaT(self.start_time) < self.planning_time
 
     def IsTabularRepresentation(self):
-        '''
+        """
         Check to see if the representation is Tabular as Policy Iteration and Value Iteration only work with
         Tabular representation
-        '''
-        return className(self.representation) == 'Tabular'
+        """
+        return className(self.representation) == "Tabular"
 
         return True
 
@@ -181,10 +196,10 @@ class MDPSolver(ABC):
         """
         domain = self.representation.domain
         S = np.empty(
-            (samples,
-             self.representation.domain.state_space_dims),
-            dtype=type(domain.s0()))
-        A = np.empty((samples, 1), dtype='uint16')
+            (samples, self.representation.domain.state_space_dims),
+            dtype=type(domain.s0()),
+        )
+        A = np.empty((samples, 1), dtype="uint16")
         NS = S.copy()
         T = A.copy()
         R = np.empty((samples, 1))

@@ -4,8 +4,13 @@ import numpy as np
 from .Domain import Domain
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = ["Alborz Geramifard", "Robert H. Klein"]
 
@@ -52,9 +57,9 @@ class FiftyChain(Domain):
     # Used for graphical normalization
     MIN_RETURN = 0
     # Used for graphical shifting of arrows
-    SHIFT = .01
+    SHIFT = 0.01
     # Used for graphical radius of states
-    RADIUS = .05
+    RADIUS = 0.05
     # Stores the graphical paths for states so that we can later change their
     # colors
     circles = None
@@ -115,7 +120,8 @@ class FiftyChain(Domain):
         0.71887945635973116,
         0.57510356508778659,
         0.46008285207022837,
-        0.36806628165617972]          # Array of optimal values at each state
+        0.36806628165617972,
+    ]  # Array of optimal values at each state
 
     # The optimal policy for this domain
     optimalPolicy = None
@@ -128,7 +134,7 @@ class FiftyChain(Domain):
     policy_fig = None
     V_star_line = None
     V_approx_line = None
-    COLORS = ['g', 'k']
+    COLORS = ["g", "k"]
     LEFT = 0
     RIGHT = 1
 
@@ -140,7 +146,9 @@ class FiftyChain(Domain):
         # To catch errors
         self.optimal_policy = np.array([-1 for dummy in range(0, self.chainSize)])
         self.storeOptimalPolicy()
-        self.discount_factor = 0.8  # Set discount_factor to be 0.8 for this domain per L & P 2007
+        self.discount_factor = (
+            0.8
+        )  # Set discount_factor to be 0.8 for this domain per L & P 2007
 
     def storeOptimalPolicy(self):
         """
@@ -160,9 +168,7 @@ class FiftyChain(Domain):
             averageState = int(np.mean([goalState1, goalState2]))
             self.optimal_policy[np.arange(goalState1, averageState)] = self.LEFT
             self.optimal_policy[np.arange(averageState, goalState2)] = self.RIGHT
-        self.optimal_policy[np.arange(
-            self.GOAL_STATES[-1],
-            self.chainSize)] = self.LEFT
+        self.optimal_policy[np.arange(self.GOAL_STATES[-1], self.chainSize)] = self.LEFT
 
     def showDomain(self, a=0):
         s = self.state
@@ -174,22 +180,26 @@ class FiftyChain(Domain):
             self.domain_fig.set_xlim(0, self.chainSize * 2 / 10.0)
             self.domain_fig.set_ylim(0, 2)
             self.domain_fig.add_patch(
-                mpatches.Circle((0.2 + 2 / 10.0 * (self.chainSize - 1),
-                                 self.Y),
-                                self.RADIUS * 1.1,
-                                fc="w"))  # Make the last one double circle
+                mpatches.Circle(
+                    (0.2 + 2 / 10.0 * (self.chainSize - 1), self.Y),
+                    self.RADIUS * 1.1,
+                    fc="w",
+                )
+            )  # Make the last one double circle
             self.domain_fig.xaxis.set_visible(False)
             self.domain_fig.yaxis.set_visible(False)
-            self.circles = [mpatches.Circle((0.2 + 2 / 10.0 * i, self.Y), self.RADIUS, fc="w")
-                            for i in range(self.chainSize)]
+            self.circles = [
+                mpatches.Circle((0.2 + 2 / 10.0 * i, self.Y), self.RADIUS, fc="w")
+                for i in range(self.chainSize)
+            ]
             for i in range(self.chainSize):
                 self.domain_fig.add_patch(self.circles[i])
                 plt.show()
         for p in self.circles:
-            p.set_facecolor('w')
+            p.set_facecolor("w")
         for p in self.GOAL_STATES:
-            self.circles[p].set_facecolor('g')
-        self.circles[s].set_facecolor('k')
+            self.circles[p].set_facecolor("g")
+        self.circles[s].set_facecolor("k")
         plt.figure("Domain").canvas.draw()
         plt.figure("Domain").canvas.flush_events()
 
@@ -203,20 +213,18 @@ class FiftyChain(Domain):
 
         if self.value_function_fig is None:
             self.value_function_fig = plt.subplot(3, 1, 2)
-            self.V_star_line = self.value_function_fig.plot(
-                allStates,
-                self.V_star)
-            V = [representation.V(s, False, self.possibleActions(s=s))
-                 for s in allStates]
+            self.V_star_line = self.value_function_fig.plot(allStates, self.V_star)
+            V = [
+                representation.V(s, False, self.possibleActions(s=s)) for s in allStates
+            ]
 
             # Note the comma below, since a tuple of line objects is returned
             self.V_approx_line, = self.value_function_fig.plot(
-                allStates, V, 'r-', linewidth=3)
+                allStates, V, "r-", linewidth=3
+            )
             self.V_star_line = self.value_function_fig.plot(
-                allStates,
-                self.V_star,
-                'b--',
-                linewidth=3)
+                allStates, self.V_star, "b--", linewidth=3
+            )
             # Maximum value function is sum of all possible rewards
             plt.ylim([0, self.GOAL_REWARD * (len(self.GOAL_STATES) + 1)])
 
@@ -229,21 +237,23 @@ class FiftyChain(Domain):
                 DX,
                 DY,
                 C,
-                cmap='fiftyChainActions',
-                units='x',
+                cmap="fiftyChainActions",
+                units="x",
                 width=0.05,
-                scale=.008,
-                alpha=.8)  # headwidth=.05, headlength = .03, headaxislength = .02)
+                scale=0.008,
+                alpha=0.8,
+            )  # headwidth=.05, headlength = .03, headaxislength = .02)
             self.policy_fig.xaxis.set_visible(False)
             self.policy_fig.yaxis.set_visible(False)
 
-        V = [representation.V(s, False, self.possibleActions(s=s))
-             for s in allStates]
-        pi = [representation.bestAction(s, False, self.possibleActions(s=s))
-              for s in allStates]
-        #pi  = [self.optimal_policy[s] for s in allStates]
+        V = [representation.V(s, False, self.possibleActions(s=s)) for s in allStates]
+        pi = [
+            representation.bestAction(s, False, self.possibleActions(s=s))
+            for s in allStates
+        ]
+        # pi  = [self.optimal_policy[s] for s in allStates]
 
-        DX = [(2 * a - 1) * self.SHIFT * .1 for a in pi]
+        DX = [(2 * a - 1) * self.SHIFT * 0.1 for a in pi]
 
         self.V_approx_line.set_ydata(V)
         self.arrows.set_UVC(DX, DY, pi)
@@ -251,9 +261,7 @@ class FiftyChain(Domain):
 
     def step(self, a):
         s = self.state
-        actionFailure = (
-            self.random_state.random_sample(
-            ) < self.p_action_failure)
+        actionFailure = self.random_state.random_sample() < self.p_action_failure
         if a == self.LEFT or (a == self.RIGHT and actionFailure):  # left
             ns = max(0, self.state - 1)
         elif a == self.RIGHT or (a == self.LEFT and actionFailure):
@@ -286,6 +294,10 @@ class FiftyChain(Domain):
         :return: the L-infinity distance between the parameter representation
             and the optimal one.
         """
-        V = np.array([representation.V(s, False, self.possibleActions(s=s)) \
-                      for s in range(self.chainSize)])
+        V = np.array(
+            [
+                representation.V(s, False, self.possibleActions(s=s))
+                for s in range(self.chainSize)
+            ]
+        )
         return np.linalg.norm(V - self.V_star, np.inf)

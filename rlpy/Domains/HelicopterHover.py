@@ -8,8 +8,13 @@ from matplotlib.patches import FancyArrowPatch, Circle, Ellipse
 from mpl_toolkits.mplot3d import proj3d
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann <cdann@cdann.de>"
 
@@ -67,14 +72,14 @@ class HelicopterHoverExtended(Domain):
 
     """
 
-    MAX_POS = 20.  #: [m]  maximum deviation in position in each dimension
-    MAX_VEL = 10.  #: [m/s] maximum velocity in each dimension
+    MAX_POS = 20.0  #: [m]  maximum deviation in position in each dimension
+    MAX_VEL = 10.0  #: [m/s] maximum velocity in each dimension
     MAX_ANG_RATE = 4 * np.pi  # : maximum angular velocity
-    MAX_ANG = 1.
-    WIND_MAX = 5.  # : maximum gust indensity
-    MIN_QW_BEFORE_HITTING_TERMINAL_STATE = np.cos(30. / 2. * np.pi / 180.)
+    MAX_ANG = 1.0
+    WIND_MAX = 5.0  # : maximum gust indensity
+    MIN_QW_BEFORE_HITTING_TERMINAL_STATE = np.cos(30.0 / 2.0 * np.pi / 180.0)
 
-    wind = np.array([.0, .0, 0.])  #: wind in neutral orientation
+    wind = np.array([0.0, 0.0, 0.0])  #: wind in neutral orientation
     discount_factor = 0.95  #: discount factor
     gust_memory = 0.8
     domain_fig = None
@@ -82,46 +87,49 @@ class HelicopterHoverExtended(Domain):
     episodeCap = 6000
     # model specific parameters from the learned model
     noise_std = np.array([0.1941, 0.2975, 0.6058, 0.1508, 0.2492, 0.0734])
-    drag_vel_body = np.array([.18, .43, .49])
+    drag_vel_body = np.array([0.18, 0.43, 0.49])
     drag_ang_rate = np.array([12.78, 10.12, 8.16])
     u_coeffs = np.array([33.04, -33.32, 70.54, -42.15])
     tail_rotor_side_thrust = -0.54
 
     dt = 0.01  #: length of one timestep
     continuous_dims = np.arange(20)
-    statespace_limits_full = np.array([[-MAX_POS, MAX_POS]] * 3
-                                      + [[-MAX_VEL, MAX_VEL]] * 3
-                                      + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
-                                      + [[-MAX_ANG, MAX_ANG]] * 4
-                                      + [[-2., 2.]] * 6
-                                      + [[0, episodeCap]])
+    statespace_limits_full = np.array(
+        [[-MAX_POS, MAX_POS]] * 3
+        + [[-MAX_VEL, MAX_VEL]] * 3
+        + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
+        + [[-MAX_ANG, MAX_ANG]] * 4
+        + [[-2.0, 2.0]] * 6
+        + [[0, episodeCap]]
+    )
     statespace_limits = statespace_limits_full
 
     # create all combinations of possible actions
-    _action_bounds = np.array([[-2., 2.]] * 4)
+    _action_bounds = np.array([[-2.0, 2.0]] * 4)
     # maximum action: 2
-    _actions_dim = np.array(
-        [[-.2, -0.05, 0.05, 0.2]] * 3 + [[0., 0.15, 0.3, 0.5]])
+    _actions_dim = np.array([[-0.2, -0.05, 0.05, 0.2]] * 3 + [[0.0, 0.15, 0.3, 0.5]])
     actions = cartesian(list(_actions_dim))  #: all possible actions
     actions_num = np.prod(actions.shape[0])
 
-    def __init__(self, noise_level=1., discount_factor=0.95):
+    def __init__(self, noise_level=1.0, discount_factor=0.95):
         self.noise_level = noise_level
         self.discount_factor = discount_factor
         super(HelicopterHoverExtended, self).__init__()
 
     def s0(self):
         self.state = np.zeros((20))
-        self.state[9] = 1.
+        self.state[9] = 1.0
         return self.state.copy(), self.isTerminal(), self.possibleActions()
 
     def isTerminal(self):
         s = self.state
-        if np.any(self.statespace_limits_full[:9, 0] > s[:9]) or np.any(self.statespace_limits_full[:9, 1] < s[:9]):
+        if np.any(self.statespace_limits_full[:9, 0] > s[:9]) or np.any(
+            self.statespace_limits_full[:9, 1] < s[:9]
+        ):
             return True
 
         if len(s) <= 12:
-            w = np.sqrt(1. - np.sum(s[9:12] ** 2))
+            w = np.sqrt(1.0 - np.sum(s[9:12] ** 2))
         else:
             w = s[9]
 
@@ -131,8 +139,8 @@ class HelicopterHoverExtended(Domain):
         s = self.state
         if self.isTerminal():
             r = -np.sum(self.statespace_limits[:9, 1] ** 2)
-            #r -= np.sum(self.statespace_limits[10:12, 1] ** 2)
-            r -= (1. - self.MIN_QW_BEFORE_HITTING_TERMINAL_STATE ** 2)
+            # r -= np.sum(self.statespace_limits[10:12, 1] ** 2)
+            r -= 1.0 - self.MIN_QW_BEFORE_HITTING_TERMINAL_STATE ** 2
             return r * (self.episodeCap - s[-1])
         else:
             return -np.sum(s[:9] ** 2) - np.sum(s[10:12] ** 2)
@@ -143,14 +151,20 @@ class HelicopterHoverExtended(Domain):
     def step(self, a):
         a = self.actions[a]
         # make sure the actions are not beyond their limits
-        a = np.maximum(self._action_bounds[:, 0], np.minimum(a,
-                       self._action_bounds[:, 1]))
+        a = np.maximum(
+            self._action_bounds[:, 0], np.minimum(a, self._action_bounds[:, 1])
+        )
 
         pos, vel, ang_rate, ori_bases, q = self._state_in_world(self.state)
         t = self.state[-1]
         gust_noise = self.state[13:19]
-        gust_noise = (self.gust_memory * gust_noise
-                      + (1. - self.gust_memory) * self.random_state.randn(6) * self.noise_level * self.noise_std)
+        gust_noise = (
+            self.gust_memory * gust_noise
+            + (1.0 - self.gust_memory)
+            * self.random_state.randn(6)
+            * self.noise_level
+            * self.noise_std
+        )
         # update noise which simulates gusts
         for i in range(10):
             # Euler integration
@@ -159,8 +173,8 @@ class HelicopterHoverExtended(Domain):
             # compute acceleration on the helicopter
             vel_body = self._in_world_coord(vel, q)
             wind_body = self._in_world_coord(self.wind, q)
-            wind_body[-1] = 0.  # the java implementation
-                                # has it this way
+            wind_body[-1] = 0.0  # the java implementation
+            # has it this way
             acc_body = -self.drag_vel_body * (vel_body + wind_body)
             acc_body[-1] += self.u_coeffs[-1] * a[-1]
             acc_body[1] += self.tail_rotor_side_thrust
@@ -174,10 +188,9 @@ class HelicopterHoverExtended(Domain):
             tmp = self.dt * ang_rate
             qdt = trans.quaternion_about_axis(np.linalg.norm(tmp), tmp)
             q = trans.quaternion_multiply(q, qdt)
-            #assert np.allclose(1., np.sum(q**2))
+            # assert np.allclose(1., np.sum(q**2))
             # angular accelerations
-            ang_acc = -ang_rate * self.drag_ang_rate + \
-                self.u_coeffs[:3] * a[:3]
+            ang_acc = -ang_rate * self.drag_ang_rate + self.u_coeffs[:3] * a[:3]
             ang_acc += gust_noise[3:]
 
             ang_rate += self.dt * ang_acc
@@ -190,9 +203,7 @@ class HelicopterHoverExtended(Domain):
         st[13:19] = gust_noise
         st[-1] = t + 1
         self.state = st.copy()
-        return (
-            self._get_reward(), st, self.isTerminal(), self.possibleActions()
-        )
+        return (self._get_reward(), st, self.isTerminal(), self.possibleActions())
 
     def _state_in_world(self, s):
         """
@@ -219,8 +230,9 @@ class HelicopterHoverExtended(Domain):
         """
         q_pos = np.zeros((4))
         q_pos[1:] = p
-        q_p = trans.quaternion_multiply(trans.quaternion_multiply(q, q_pos),
-                                        trans.quaternion_conjugate(q))
+        q_p = trans.quaternion_multiply(
+            trans.quaternion_multiply(q, q_pos), trans.quaternion_conjugate(q)
+        )
         return q_p[1:]
 
     def _in_world_coord(self, p, q):
@@ -236,25 +248,25 @@ class HelicopterHoverExtended(Domain):
         pos, vel, ang_rate, ori_bases, _ = self._state_in_world(s)
         coords = np.zeros((3, 3, 2)) + pos[None, :, None]
         coords[:, :, 1] += ori_bases * 4
-        u, v = np.mgrid[0:2 * np.pi:10j, 0:2:1.]
+        u, v = np.mgrid[0 : 2 * np.pi : 10j, 0:2:1.0]
 
         # rotor coordinates
         coord = np.zeros([3] + list(u.shape))
-        coord[0] = .1 * np.sin(u) * v
-        coord[1] = 0.
-        coord[2] = .1 * np.cos(u) * v
+        coord[0] = 0.1 * np.sin(u) * v
+        coord[1] = 0.0
+        coord[2] = 0.1 * np.cos(u) * v
         coord[0] -= 0.8
         coord_side = np.einsum("ij,jkl->ikl", np.linalg.pinv(ori_bases), coord)
         coord_side += pos[:, None, None]
 
         coord = np.zeros([3] + list(u.shape))
-        coord[0] = .6 * np.cos(u) * v
-        coord[1] = .6 * np.sin(u) * v
-        coord[2] = -.4
+        coord[0] = 0.6 * np.cos(u) * v
+        coord[1] = 0.6 * np.sin(u) * v
+        coord[2] = -0.4
         coord_main = np.einsum("ij,jkl->ikl", np.linalg.pinv(ori_bases), coord)
         coord_main += pos[:, None, None]
 
-        style = dict(fc="r", ec="r", lw=2., head_width=0.05, head_length=0.1)
+        style = dict(fc="r", ec="r", lw=2.0, head_width=0.05, head_length=0.1)
         if self.domain_fig is None:
             self.domain_fig = plt.figure(figsize=(12, 8))
             # action axes
@@ -281,36 +293,62 @@ class HelicopterHoverExtended(Domain):
 
             self.action_arrows = (arr1, arr2, arr3, arr4)
             self.action_ax = ax1
-            #ax = self.domain_fig.gca(projection='3d')
-            ax = plt.subplot2grid((1, 3), (0, 1), colspan=2, projection='3d')
+            # ax = self.domain_fig.gca(projection='3d')
+            ax = plt.subplot2grid((1, 3), (0, 1), colspan=2, projection="3d")
             ax.view_init(elev=np.pi)
             # print origin
-            x = Arrow3D([0, 2], [0, 0], [0, 0], mutation_scale=30, lw=1,
-                        arrowstyle="-|>", color="r")
-            y = Arrow3D([0, 0], [0, 2], [0, 0], mutation_scale=30, lw=1,
-                        arrowstyle="-|>", color="b")
-            z = Arrow3D([0, 0], [0, 0], [0, 2], mutation_scale=30, lw=1,
-                        arrowstyle="-|>", color="g")
+            x = Arrow3D(
+                [0, 2],
+                [0, 0],
+                [0, 0],
+                mutation_scale=30,
+                lw=1,
+                arrowstyle="-|>",
+                color="r",
+            )
+            y = Arrow3D(
+                [0, 0],
+                [0, 2],
+                [0, 0],
+                mutation_scale=30,
+                lw=1,
+                arrowstyle="-|>",
+                color="b",
+            )
+            z = Arrow3D(
+                [0, 0],
+                [0, 0],
+                [0, 2],
+                mutation_scale=30,
+                lw=1,
+                arrowstyle="-|>",
+                color="g",
+            )
             ax.add_artist(x)
             ax.add_artist(y)
             ax.add_artist(z)
 
             # print helicopter coordinate axes
-            x = Arrow3D(*coords[0], mutation_scale=30, lw=2, arrowstyle="-|>",
-                        color="r")
-            y = Arrow3D(*coords[1], mutation_scale=30, lw=2, arrowstyle="-|>",
-                        color="b")
-            z = Arrow3D(*coords[2], mutation_scale=30, lw=2, arrowstyle="-|>",
-                        color="g")
+            x = Arrow3D(
+                *coords[0], mutation_scale=30, lw=2, arrowstyle="-|>", color="r"
+            )
+            y = Arrow3D(
+                *coords[1], mutation_scale=30, lw=2, arrowstyle="-|>", color="b"
+            )
+            z = Arrow3D(
+                *coords[2], mutation_scale=30, lw=2, arrowstyle="-|>", color="g"
+            )
             ax.add_artist(x)
             ax.add_artist(y)
             ax.add_artist(z)
             self.heli_arrows = (x, y, z)
 
-            self._wframe_main = ax.plot_wireframe(coord_main[0], coord_main[1],
-                                                  coord_main[2], color="k")
-            self._wframe_side = ax.plot_wireframe(coord_side[0], coord_side[1],
-                                                  coord_side[2], color="k")
+            self._wframe_main = ax.plot_wireframe(
+                coord_main[0], coord_main[1], coord_main[2], color="k"
+            )
+            self._wframe_side = ax.plot_wireframe(
+                coord_side[0], coord_side[1], coord_side[2], color="k"
+            )
             self._ax = ax
             ax.set_aspect("equal")
             lim = 5  # self.MAX_POS
@@ -339,10 +377,12 @@ class HelicopterHoverExtended(Domain):
             arr4 = ax1.arrow(1.5, 0, 0, a[3], **style)
             self.action_arrows = (arr1, arr2, arr3, arr4)
 
-            self._wframe_main = ax.plot_wireframe(coord_main[0], coord_main[1],
-                                                  coord_main[2], color="k")
-            self._wframe_side = ax.plot_wireframe(coord_side[0], coord_side[1],
-                                                  coord_side[2], color="k")
+            self._wframe_main = ax.plot_wireframe(
+                coord_main[0], coord_main[1], coord_main[2], color="k"
+            )
+            self._wframe_side = ax.plot_wireframe(
+                coord_side[0], coord_side[1], coord_side[2], color="k"
+            )
             ax.set_aspect("equal")
             lim = 5  # self.MAX_POS
             ax.set_xlim(-lim, lim)
@@ -395,23 +435,25 @@ class HelicopterHover(HelicopterHoverExtended):
     """
 
     episodeCap = 6000
-    MAX_POS = 20.  # m
-    MAX_VEL = 10.  # m/s
+    MAX_POS = 20.0  # m
+    MAX_VEL = 10.0  # m/s
     MAX_ANG_RATE = 4 * np.pi
-    MAX_ANG = 1.
-    WIND_MAX = 5.
+    MAX_ANG = 1.0
+    WIND_MAX = 5.0
 
     continuous_dims = np.arange(12)
-    statespace_limits = np.array([[-MAX_POS, MAX_POS]] * 3
-                                 + [[-MAX_VEL, MAX_VEL]] * 3
-                                 + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
-                                 + [[-MAX_ANG, MAX_ANG]] * 3)
+    statespace_limits = np.array(
+        [[-MAX_POS, MAX_POS]] * 3
+        + [[-MAX_VEL, MAX_VEL]] * 3
+        + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
+        + [[-MAX_ANG, MAX_ANG]] * 3
+    )
 
-    #full_state_ = np.zeros((20))
+    # full_state_ = np.zeros((20))
 
     def s0(self):
-        #self.hidden_state_ = np.zeros((8))
-        #self.hidden_state_[0] = 1.
+        # self.hidden_state_ = np.zeros((8))
+        # self.hidden_state_[0] = 1.
         s_full, term, p_actions = super(HelicopterHover, self).s0()
         s, _ = self._split_state(s_full)
         return s, term, p_actions
@@ -426,7 +468,7 @@ class HelicopterHover(HelicopterHoverExtended):
         return s_observable, s_hidden
 
     def step(self, a):
-        #s_extended = self._augment_state(s)
+        # s_extended = self._augment_state(s)
         r, st, term, p_actions = super(HelicopterHover, self).step(a)
         st, _ = self._split_state(st)
         return (r, st, term, p_actions)

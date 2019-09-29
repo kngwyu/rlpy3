@@ -3,8 +3,13 @@ import numpy as np
 from .Representation import Representation
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
@@ -19,12 +24,17 @@ class TileCoding(Representation):
 
     BIG_INT = 2147483647
 
-    def __init__(self, domain, memory, num_tilings,
-                 resolutions=None,
-                 resolution_matrix=None,
-                 dimensions=None,
-                 safety="super",
-                 seed=1):
+    def __init__(
+        self,
+        domain,
+        memory,
+        num_tilings,
+        resolutions=None,
+        resolution_matrix=None,
+        dimensions=None,
+        safety="super",
+        seed=1,
+    ):
         """
 
         The TileCoding class can represent several types of tilings at the same
@@ -83,27 +93,28 @@ class TileCoding(Representation):
             try:
                 resolutions = tuple(resolutions)
             except TypeError as e:
-                resolutions = (resolutions, )
+                resolutions = (resolutions,)
 
         if resolution_matrix is None:
             # we first need to construct the resolution matrix
             resolution_matrix = np.zeros(
-                (len(self.dimensions), self.domain.statespace_limits.shape[0]))
+                (len(self.dimensions), self.domain.statespace_limits.shape[0])
+            )
             for i, s in enumerate(self.dimensions):
                 for d in s:
                     resolution_matrix[i, d] = resolutions[i]
         resolution_matrix = resolution_matrix.astype("float")
         resolution_matrix[resolution_matrix == 0] = 1e-50
-        self.scaling_matrix = (self.domain.statespace_limits[:, 1] -
-                               self.domain.statespace_limits[:, 0]) / resolution_matrix
+        self.scaling_matrix = (
+            self.domain.statespace_limits[:, 1] - self.domain.statespace_limits[:, 0]
+        ) / resolution_matrix
 
         # now only hashing stuff
         self.seed = seed
         self.safety = safety
         if safety == "super":
             size = self.domain.state_space_dims + 1
-            self.check_data = - \
-                np.ones((self.features_num, size), dtype=np.long)
+            self.check_data = -np.ones((self.features_num, size), dtype=np.long)
         elif safety == "lazy":
             size = 1
         else:
@@ -113,20 +124,25 @@ class TileCoding(Representation):
         self.init_randomization()
 
     def init_randomization(self):
-        self.R = self.random_state.randint(self.BIG_INT // 4,
-            size=self.features_num).astype(np.int)
+        self.R = self.random_state.randint(
+            self.BIG_INT // 4, size=self.features_num
+        ).astype(np.int)
 
         if self.safety == "none":
             try:
                 from . import hashing as h
-                f = lambda self, A: h.physical_addr(A, self.R, self.check_data,
-                                                    self.counts)[0]
-                self._physical_addr = type(TileCoding._physical_addr)(f, self, TileCoding)
+
+                f = lambda self, A: h.physical_addr(
+                    A, self.R, self.check_data, self.counts
+                )[0]
+                self._physical_addr = type(TileCoding._physical_addr)(
+                    f, self, TileCoding
+                )
                 print("Use cython extension for TileCoding hashing trick")
             except Exception as e:
                 print(e)
                 print("Cython extension for TileCoding hashing trick not available")
-        
+
     def phi_nonTerminal(self, s):
 
         phi = np.zeros((self.features_num))
@@ -151,8 +167,12 @@ class TileCoding(Representation):
         # TODO implement in cython if speed needs to be improved
         max = self.features_num if max is None else max
         return (
-            int(self.R[np.mod(A + np.arange(len(A)) * increment, self.features_num)]
-                .sum()) % max
+            int(
+                self.R[
+                    np.mod(A + np.arange(len(A)) * increment, self.features_num)
+                ].sum()
+            )
+            % max
         )
 
     def _physical_addr(self, A):

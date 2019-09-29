@@ -7,39 +7,34 @@ import numpy as np
 import glob
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
 def _thousands(x, pos):
-    'The two args are the value and tick position'
-    return '%1.0fk' % (x * 1e-3)
+    "The two args are the value and tick position"
+    return "%1.0fk" % (x * 1e-3)
+
 
 thousands_formatter = FuncFormatter(_thousands)
 
 #: default labels for result quantities
-default_labels = {"learning_steps": "Learning Steps",
-                  "return": "Average Return",
-                  "discounted_return": "Discounted Return",
-                  "learning_time": "Computation Time"}
+default_labels = {
+    "learning_steps": "Learning Steps",
+    "return": "Average Return",
+    "discounted_return": "Discounted Return",
+    "learning_time": "Computation Time",
+}
 #: default colors used for plotting
-default_colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'purple']
+default_colors = ["b", "g", "r", "c", "m", "y", "k", "purple"]
 #: default markers used for plotting
-default_markers = [
-    'o',
-    'v',
-    '8',
-    's',
-    'p',
-    '*',
-    '<',
-    'h',
-    '^',
-    'H',
-    'D',
-    '>',
-    'd']
+default_markers = ["o", "v", "8", "s", "p", "*", "<", "h", "^", "H", "D", ">", "d"]
 
 
 def thousand_format_xaxis():
@@ -79,7 +74,7 @@ def load_results(path):
     The keys are the seeds of the single runs
     """
     results = {}
-    for fn in glob.glob(os.path.join(path, '*-results.json')):
+    for fn in glob.glob(os.path.join(path, "*-results.json")):
         cur_result = load_single(fn)
         results[cur_result["seed"]] = cur_result
     return results
@@ -89,7 +84,7 @@ def contains_results(path, min_num=1):
     """
     determines whether a directory contains at least min_num results or not
     """
-    return len(glob.glob(os.path.join(path, '*-results.json'))) >= min_num
+    return len(glob.glob(os.path.join(path, "*-results.json"))) >= min_num
 
 
 def avg_quantity(results, quantity, pad=False):
@@ -112,7 +107,7 @@ def avg_quantity(results, quantity, pad=False):
                 if pad:
                     num[i] += 1
                 else:
-                    last_values[k] = 0.
+                    last_values[k] = 0.0
             mean[i] += last_values[k]
         if num[i] > 0:
             mean[i] /= num[i]
@@ -125,7 +120,7 @@ def avg_quantity(results, quantity, pad=False):
                 if pad:
                     num[i] += 1
                 else:
-                    last_values[k] = 0.
+                    last_values[k] = 0.0
             std[i] += (last_values[k] - mean[i]) ** 2
         if num[i] > 0:
 
@@ -147,8 +142,9 @@ def first_close_to_final(x, y, min_rel_proximity=0.05):
             return x[i]
 
 
-def add_first_close_entries(results, new_label="95_time",
-                            x="time", y="return", min_rel_proximity=0.05):
+def add_first_close_entries(
+    results, new_label="95_time", x="time", y="return", min_rel_proximity=0.05
+):
     """
     adds an entry to each result for the time required to get within
     5% of the final quantity.
@@ -177,9 +173,19 @@ class MultiExperimentResults(object):
             self.data[label] = load_results(path)
 
     def plot_avg_sem(
-            self, x, y, pad_x=False, pad_y=False, xbars=False, ybars=True,
-            colors=None, markers=None, xerror_every=1,
-            legend=True, **kwargs):
+        self,
+        x,
+        y,
+        pad_x=False,
+        pad_y=False,
+        xbars=False,
+        ybars=True,
+        colors=None,
+        markers=None,
+        xerror_every=1,
+        legend=True,
+        **kwargs
+    ):
         """
         plots quantity y over x (means and standard error of the mean).
         The quantities are specified by their id strings,
@@ -195,18 +201,24 @@ class MultiExperimentResults(object):
 
         Returns the figure handle of the created plot
         """
-        style = {
-            "linewidth": 2, "alpha": .7, "linestyle": "-", "markersize": 7,
-        }
+        style = {"linewidth": 2, "alpha": 0.7, "linestyle": "-", "markersize": 7}
         if colors is None:
-            colors = dict([(l, default_colors[i % len(default_colors)])
-                          for i, l in enumerate(self.data.keys())])
+            colors = dict(
+                [
+                    (l, default_colors[i % len(default_colors)])
+                    for i, l in enumerate(self.data.keys())
+                ]
+            )
         if markers is None:
-            markers = dict([(l, default_markers[i % len(default_markers)])
-                           for i, l in enumerate(self.data.keys())])
+            markers = dict(
+                [
+                    (l, default_markers[i % len(default_markers)])
+                    for i, l in enumerate(self.data.keys())
+                ]
+            )
         style.update(kwargs)
         min_ = np.inf
-        max_ = - np.inf
+        max_ = -np.inf
         fig = plt.figure()
         for label, results in list(self.data.items()):
             style["color"] = colors[label]
@@ -217,14 +229,26 @@ class MultiExperimentResults(object):
             x_sem = x_std / np.sqrt(x_num)
 
             if xbars:
-                plt.errorbar(x_mean, y_mean, xerr=x_sem, label=label,
-                             ecolor="k", errorevery=xerror_every, **style)
+                plt.errorbar(
+                    x_mean,
+                    y_mean,
+                    xerr=x_sem,
+                    label=label,
+                    ecolor="k",
+                    errorevery=xerror_every,
+                    **style
+                )
             else:
                 plt.plot(x_mean, y_mean, label=label, **style)
 
             if ybars:
-                plt.fill_between(x_mean, y_mean - y_sem, y_mean + y_sem,
-                                 alpha=.3, color=style["color"])
+                plt.fill_between(
+                    x_mean,
+                    y_mean - y_sem,
+                    y_mean + y_sem,
+                    alpha=0.3,
+                    color=style["color"],
+                )
                 max_ = max(np.max(y_mean + y_sem), max_)
                 min_ = min(np.min(y_mean - y_sem), min_)
             else:
@@ -232,7 +256,7 @@ class MultiExperimentResults(object):
                 min_ = min(y_mean.min(), min_)
 
         # adjust visible space
-        y_lim = [min_ - .1 * abs(max_ - min_), max_ + .1 * abs(max_ - min_)]
+        y_lim = [min_ - 0.1 * abs(max_ - min_), max_ + 0.1 * abs(max_ - min_)]
         if min_ != max_:
             plt.ylim(y_lim)
 
@@ -244,17 +268,18 @@ class MultiExperimentResults(object):
 
         if legend:
             box = plt.gca().get_position()
-            plt.gca().set_position([box.x0, box.y0 + box.height * 0.2,
-                                    box.width, box.height * 0.8])
-            legend_handle = plt.legend(loc='upper center',
-                                       bbox_to_anchor=(0.5, -0.15),
-                                       fancybox=True, shadow=True, ncol=2)
+            plt.gca().set_position(
+                [box.x0, box.y0 + box.height * 0.2, box.width, box.height * 0.8]
+            )
+            legend_handle = plt.legend(
+                loc="upper center",
+                bbox_to_anchor=(0.5, -0.15),
+                fancybox=True,
+                shadow=True,
+                ncol=2,
+            )
         return fig
 
 
 def save_figure(figure, filename):
-    figure.savefig(
-        filename,
-        transparent=True,
-        pad_inches=.1,
-        bbox_inches='tight')
+    figure.savefig(filename, transparent=True, pad_inches=0.1, bbox_inches="tight")

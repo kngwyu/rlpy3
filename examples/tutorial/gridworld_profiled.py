@@ -11,6 +11,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 __author__ = "Robert H. Klein"
 from rlpy.Domains import GridWorld
@@ -35,7 +36,7 @@ def make_experiment(exp_id=1, path="./Results/Tutorial/gridworld-qlearning"):
     opt["path"] = path
 
     # Domain:
-    maze = os.path.join(GridWorld.default_map_dir, '4x5.txt')
+    maze = os.path.join(GridWorld.default_map_dir, "4x5.txt")
     domain = GridWorld(maze, noise=0.3)
     opt["domain"] = domain
 
@@ -46,17 +47,23 @@ def make_experiment(exp_id=1, path="./Results/Tutorial/gridworld-qlearning"):
     policy = eGreedy(representation, epsilon=0.2)
 
     # Agent
-    opt["agent"] = Q_Learning(representation=representation, policy=policy,
-                       discount_factor=domain.discount_factor,
-                       initial_learn_rate=0.1,
-                       learn_rate_decay_mode="boyan", boyan_N0=100,
-                       lambda_=0.)
+    opt["agent"] = Q_Learning(
+        representation=representation,
+        policy=policy,
+        discount_factor=domain.discount_factor,
+        initial_learn_rate=0.1,
+        learn_rate_decay_mode="boyan",
+        boyan_N0=100,
+        lambda_=0.0,
+    )
     opt["checks_per_policy"] = 100
     opt["max_steps"] = 2000
     opt["num_policy_checks"] = 10
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from rlpy.Tools.run import run_profiled
-    run_profiled(make_experiment, '.', 'gridworld.pdf')
+
+    run_profiled(make_experiment, ".", "gridworld.pdf")

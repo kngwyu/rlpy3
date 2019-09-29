@@ -5,8 +5,13 @@ import numpy as np
 import inspect
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
@@ -48,5 +53,5 @@ def check_random_trajectory(domain_class):
 
 def check_specifications(domain_class):
     domain = domain_class()
-    for v in ['statespace_limits', 'actions_num', 'episodeCap']:
+    for v in ["statespace_limits", "actions_num", "episodeCap"]:
         assert getattr(domain, v) is not None

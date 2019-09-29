@@ -3,6 +3,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 from rlpy.Domains import HIVTreatment
 from rlpy.Agents import SARSA, Q_Learning
@@ -12,18 +13,23 @@ from rlpy.Experiments import Experiment
 import numpy as np
 from hyperopt import hp
 
-param_space = {'resolution': hp.quniform("resolution", 3, 30, 1),
-               'lambda_': hp.uniform("lambda_", 0., 1.),
-               'boyan_N0': hp.loguniform("boyan_N0", np.log(1e1), np.log(1e5)),
-               'initial_learn_rate': hp.loguniform("initial_learn_rate", np.log(5e-2), np.log(1))}
+param_space = {
+    "resolution": hp.quniform("resolution", 3, 30, 1),
+    "lambda_": hp.uniform("lambda_", 0.0, 1.0),
+    "boyan_N0": hp.loguniform("boyan_N0", np.log(1e1), np.log(1e5)),
+    "initial_learn_rate": hp.loguniform("initial_learn_rate", np.log(5e-2), np.log(1)),
+}
 
 
 def make_experiment(
-        exp_id=1, path="./Results/Temp/{domain}/{agent}/{representation}/",
-        boyan_N0=136,
-        lambda_=0.0985,
-        initial_learn_rate=0.090564,
-        resolution=13., num_rbfs=9019):
+    exp_id=1,
+    path="./Results/Temp/{domain}/{agent}/{representation}/",
+    boyan_N0=136,
+    lambda_=0.0985,
+    initial_learn_rate=0.090564,
+    resolution=13.0,
+    num_rbfs=9019,
+):
     opt = {}
     opt["path"] = path
     opt["exp_id"] = exp_id
@@ -33,20 +39,26 @@ def make_experiment(
 
     domain = HIVTreatment()
     opt["domain"] = domain
-    representation = NonparametricLocalBases(domain,
-                                             kernel=linf_triangle_kernel,
-                                             resolution=resolution,
-                                             normalization=True)
+    representation = NonparametricLocalBases(
+        domain, kernel=linf_triangle_kernel, resolution=resolution, normalization=True
+    )
     policy = eGreedy(representation, epsilon=0.1)
     opt["agent"] = Q_Learning(
-        policy, representation,discount_factor=domain.discount_factor,
-        lambda_=lambda_, initial_learn_rate=initial_learn_rate,
-        learn_rate_decay_mode="boyan", boyan_N0=boyan_N0)
+        policy,
+        representation,
+        discount_factor=domain.discount_factor,
+        lambda_=lambda_,
+        initial_learn_rate=initial_learn_rate,
+        learn_rate_decay_mode="boyan",
+        boyan_N0=boyan_N0,
+    )
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     from rlpy.Tools.run import run_profiled
+
     # run_profiled(make_experiment)
     experiment = make_experiment(1)
     experiment.run(visualize_learning=True)

@@ -6,8 +6,13 @@ from rlpy.Tools import pl, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, c
 from abc import ABCMeta, abstractproperty
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 pi = np.pi
 
@@ -36,7 +41,6 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     """
 
     __author__ = ["Robert H. Klein"]
-
 
     @abstractproperty
     def AVAIL_FORCE(self):
@@ -86,7 +90,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     ACCEL_G = 9.8
 
     #: integration type, can be 'rk4', 'odeint' or 'euler'. Defaults to euler.
-    int_type = 'euler'
+    int_type = "euler"
     #: number of steps for Euler integration
     num_euler_steps = 1
 
@@ -98,7 +102,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     #: Max number of steps per trajectory
     episodeCap = 3000
     #: Discount factor
-    discount_factor = .95
+    discount_factor = 0.95
 
     #: Set to True to enable print statements
     DEBUG = False
@@ -111,15 +115,15 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     domain_ax = None
 
     # Domain visual constants (these DO NOT affect dynamics, purely visual).
-    ACTION_ARROW_LENGTH = 0.4   # length of arrow showing force action on cart
-    PENDULUM_PIVOT_Y = 0     # Y position of pendulum pivot
-    RECT_WIDTH = 0.5   # width of cart rectangle
-    RECT_HEIGHT = 0.4   # height of cart rectangle
+    ACTION_ARROW_LENGTH = 0.4  # length of arrow showing force action on cart
+    PENDULUM_PIVOT_Y = 0  # Y position of pendulum pivot
+    RECT_WIDTH = 0.5  # width of cart rectangle
+    RECT_HEIGHT = 0.4  # height of cart rectangle
     # visual square at cart center of mass
     BLOB_WIDTH = RECT_HEIGHT / 2
-    PEND_WIDTH = 2     # width of pendulum arm rectangle
-    GROUND_WIDTH = 2     # width of ground rectangle
-    GROUND_HEIGHT = 1     # height of ground rectangle
+    PEND_WIDTH = 2  # width of pendulum arm rectangle
+    GROUND_WIDTH = 2  # width of ground rectangle
+    GROUND_HEIGHT = 1  # height of ground rectangle
 
     # Value and policy figure objects + constants
     #
@@ -145,14 +149,25 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         super(CartPoleBase, self).__init__()
 
         self.xTicksLabels = np.around(
-            np.linspace(self.statespace_limits[0, 0] * 180 / pi,
-                        self.statespace_limits[0, 1] * 180 / pi, 5)).astype(int)
+            np.linspace(
+                self.statespace_limits[0, 0] * 180 / pi,
+                self.statespace_limits[0, 1] * 180 / pi,
+                5,
+            )
+        ).astype(int)
         self.yTicksLabels = np.around(
-            np.linspace(self.statespace_limits[1, 0] * 180 / pi,
-                        self.statespace_limits[1, 1] * 180 / pi, 5)).astype(int)
+            np.linspace(
+                self.statespace_limits[1, 0] * 180 / pi,
+                self.statespace_limits[1, 1] * 180 / pi,
+                5,
+            )
+        ).astype(int)
 
     def _isParamsValid(self):
-        if not ((2 * pi / self.dt > self.ANGULAR_RATE_LIMITS[1]) and (2 * pi / self.dt > -self.ANGULAR_RATE_LIMITS[0])):
+        if not (
+            (2 * pi / self.dt > self.ANGULAR_RATE_LIMITS[1])
+            and (2 * pi / self.dt > -self.ANGULAR_RATE_LIMITS[0])
+        ):
             errStr = """
             WARNING:
             If the bound on angular velocity is large compared with
@@ -167,9 +182,21 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             2pi / dt instead of truly remaining stationary (0 rad/s) at goal.
             """
             print(errStr)
-            print('Your selection, dt=', self.dt, 'and limits', self.ANGULAR_RATE_LIMITS, 'Are at risk.')
-            print('Reduce your timestep dt (to increase # timesteps) or reduce angular rate limits so that 2pi / dt > max(AngularRateLimit)')
-            print('Currently, 2pi / dt = ', 2 * pi / self.dt, ', angular rate limits shown above.')
+            print(
+                "Your selection, dt=",
+                self.dt,
+                "and limits",
+                self.ANGULAR_RATE_LIMITS,
+                "Are at risk.",
+            )
+            print(
+                "Reduce your timestep dt (to increase # timesteps) or reduce angular rate limits so that 2pi / dt > max(AngularRateLimit)"
+            )
+            print(
+                "Currently, 2pi / dt = ",
+                2 * pi / self.dt,
+                ", angular rate limits shown above.",
+            )
             return False
 
         return True
@@ -185,24 +212,33 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             This function *does not* affect system dynamics.
 
         """
-        if self.POSITION_LIMITS[0] < -100 * self.LENGTH or self.POSITION_LIMITS[1] > 100 * self.LENGTH:
+        if (
+            self.POSITION_LIMITS[0] < -100 * self.LENGTH
+            or self.POSITION_LIMITS[1] > 100 * self.LENGTH
+        ):
             self.minPosition = 0 - self.RECT_WIDTH / 2
             self.maxPosition = 0 + self.RECT_WIDTH / 2
         else:
             self.minPosition = self.POSITION_LIMITS[0] - self.RECT_WIDTH / 2
             self.maxPosition = self.POSITION_LIMITS[1] + self.RECT_WIDTH / 2
-        self.GROUND_VERTS = np.array([
-            (self.minPosition, -self.RECT_HEIGHT / 2),
-            (self.minPosition, self.RECT_HEIGHT / 2),
-            (self.minPosition - self.GROUND_WIDTH, self.RECT_HEIGHT / 2),
-            (self.minPosition - self.GROUND_WIDTH,
-             self.RECT_HEIGHT / 2 - self.GROUND_HEIGHT),
-            (self.maxPosition + self.GROUND_WIDTH,
-             self.RECT_HEIGHT / 2 - self.GROUND_HEIGHT),
-            (self.maxPosition + self.GROUND_WIDTH, self.RECT_HEIGHT / 2),
-            (self.maxPosition, self.RECT_HEIGHT / 2),
-            (self.maxPosition, -self.RECT_HEIGHT / 2),
-        ])
+        self.GROUND_VERTS = np.array(
+            [
+                (self.minPosition, -self.RECT_HEIGHT / 2),
+                (self.minPosition, self.RECT_HEIGHT / 2),
+                (self.minPosition - self.GROUND_WIDTH, self.RECT_HEIGHT / 2),
+                (
+                    self.minPosition - self.GROUND_WIDTH,
+                    self.RECT_HEIGHT / 2 - self.GROUND_HEIGHT,
+                ),
+                (
+                    self.maxPosition + self.GROUND_WIDTH,
+                    self.RECT_HEIGHT / 2 - self.GROUND_HEIGHT,
+                ),
+                (self.maxPosition + self.GROUND_WIDTH, self.RECT_HEIGHT / 2),
+                (self.maxPosition, self.RECT_HEIGHT / 2),
+                (self.maxPosition, -self.RECT_HEIGHT / 2),
+            ]
+        )
 
     def _getReward(self, a, s=None):
         """
@@ -241,14 +277,15 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
 
         # Add noise to the force action
         if self.force_noise_max > 0:
-            forceAction += self.random_state.uniform(-
-                                                     self.force_noise_max, self.force_noise_max)
+            forceAction += self.random_state.uniform(
+                -self.force_noise_max, self.force_noise_max
+            )
 
         # Now, augment the state with our force action so it can be passed to
         # _dsdt
         s_augmented = np.append(s, forceAction)
 
-        #-------------------------------------------------------------------------#
+        # -------------------------------------------------------------------------#
         # There are several ways of integrating the nonlinear dynamics equations. #
         # For consistency with prior results, we tested the custom integration    #
         # method devloped by Lagoudakis & Parr (2003) for their Pendulum Inverted #
@@ -264,7 +301,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         #                                                                         #
         # Use of these methods is supported by selectively commenting             #
         # sections below.                                                         #
-        #-------------------------------------------------------------------------#
+        # -------------------------------------------------------------------------#
         if self.int_type == "euler":
             int_fun = self.euler_int
         elif self.int_type == "odeint":
@@ -282,22 +319,18 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         # at the ''final timestep'', self.dt
 
         theta = wrap(ns[StateIndex.THETA], -np.pi, np.pi)
-        ns[StateIndex.THETA] = bound(
-            theta,
-            self.ANGLE_LIMITS[0],
-            self.ANGLE_LIMITS[1])
+        ns[StateIndex.THETA] = bound(theta, self.ANGLE_LIMITS[0], self.ANGLE_LIMITS[1])
         ns[StateIndex.THETA_DOT] = bound(
             ns[StateIndex.THETA_DOT],
             self.ANGULAR_RATE_LIMITS[0],
-            self.ANGULAR_RATE_LIMITS[1])
+            self.ANGULAR_RATE_LIMITS[1],
+        )
         ns[StateIndex.X] = bound(
-            ns[StateIndex.X],
-            self.POSITION_LIMITS[0],
-            self.POSITION_LIMITS[1])
+            ns[StateIndex.X], self.POSITION_LIMITS[0], self.POSITION_LIMITS[1]
+        )
         ns[StateIndex.X_DOT] = bound(
-            ns[StateIndex.X_DOT],
-            self.VELOCITY_LIMITS[0],
-            self.VELOCITY_LIMITS[1])
+            ns[StateIndex.X_DOT], self.VELOCITY_LIMITS[0], self.VELOCITY_LIMITS[1]
+        )
 
         return ns
 
@@ -343,8 +376,9 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         sinTheta = np.sin(theta)
         cosTheta = np.cos(theta)
 
-        term1 = force * self._ALPHA_MASS + \
-            m_pendAlphaTimesL * (thetaDot ** 2) * sinTheta
+        term1 = (
+            force * self._ALPHA_MASS + m_pendAlphaTimesL * (thetaDot ** 2) * sinTheta
+        )
         numer = g * sinTheta - cosTheta * term1
         denom = 4.0 * l / 3.0 - m_pendAlphaTimesL * (cosTheta ** 2)
         thetaDotDot = numer / denom
@@ -369,16 +403,17 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             ax = self.policy_fig.add_subplot(111)
             self.policy_img = ax.imshow(
                 piMat,
-                cmap='InvertedPendulumActions',
-                interpolation='nearest',
-                origin='lower',
+                cmap="InvertedPendulumActions",
+                interpolation="nearest",
+                origin="lower",
                 vmin=0,
-                vmax=self.actions_num)
+                vmax=self.actions_num,
+            )
             pl.xticks(self.xTicks, self.xTicksLabels, fontsize=12)
             pl.yticks(self.yTicks, self.yTicksLabels, fontsize=12)
             pl.xlabel(r"$\theta$ (degree)")
             pl.ylabel(r"$\dot{\theta}$ (degree/sec)")
-            pl.title('Policy')
+            pl.title("Policy")
 
         self.policy_img.set_data(piMat)
         self.policy_fig.canvas.draw()
@@ -408,6 +443,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
                                         ' when duplicating domain.')
         return result
     """
+
     def _plot_valfun(self, VMat):
         """
         :returns: handle to the figure
@@ -424,15 +460,16 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             ax = self.valueFunction_fig.add_subplot(111)
             self.valueFunction_img = ax.imshow(
                 VMat,
-                cmap='ValueFunction',
-                interpolation='nearest',
-                origin='lower',
+                cmap="ValueFunction",
+                interpolation="nearest",
+                origin="lower",
                 vmin=minV,
-                vmax=maxV)
+                vmax=maxV,
+            )
             pl.xticks(self.xTicks, self.xTicksLabels, fontsize=12)
             # Don't need the y labels since we share axes on subplot
             pl.xlabel(r"$\theta$ (degree)")
-            pl.title('Value Function')
+            pl.title("Value Function")
 
         norm = colors.Normalize(vmin=VMat.min(), vmax=VMat.max())
         self.valueFunction_img.set_data(VMat)
@@ -449,28 +486,28 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         is displayed as an arrow (not including noise!)
         """
         s = fourDimState
-        if (self.domain_fig is None or self.pendulumArm is None) or \
-           (self.cartBox is None or self.cartBlob is None):  # Need to initialize the figure
+        if (self.domain_fig is None or self.pendulumArm is None) or (
+            self.cartBox is None or self.cartBlob is None
+        ):  # Need to initialize the figure
             self.domain_fig = pl.figure("Domain")
             self.domain_ax = self.domain_fig.add_axes(
-                [0, 0, 1, 1], frameon=True, aspect=1.)
+                [0, 0, 1, 1], frameon=True, aspect=1.0
+            )
             self.pendulumArm = lines.Line2D(
-                [],
-                [],
-                linewidth=self.PEND_WIDTH,
-                color='black')
+                [], [], linewidth=self.PEND_WIDTH, color="black"
+            )
             self.cartBox = mpatches.Rectangle(
-                [0,
-                 self.PENDULUM_PIVOT_Y - self.RECT_HEIGHT / 2],
+                [0, self.PENDULUM_PIVOT_Y - self.RECT_HEIGHT / 2],
                 self.RECT_WIDTH,
                 self.RECT_HEIGHT,
-                alpha=.4)
+                alpha=0.4,
+            )
             self.cartBlob = mpatches.Rectangle(
-                [0,
-                 self.PENDULUM_PIVOT_Y - self.BLOB_WIDTH / 2],
+                [0, self.PENDULUM_PIVOT_Y - self.BLOB_WIDTH / 2],
                 self.BLOB_WIDTH,
                 self.BLOB_WIDTH,
-                alpha=.4)
+                alpha=0.4,
+            )
             self.domain_ax.add_patch(self.cartBox)
             self.domain_ax.add_line(self.pendulumArm)
             self.domain_ax.add_patch(self.cartBlob)
@@ -479,23 +516,25 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             groundPatch = mpatches.PathPatch(groundPath, hatch="//")
             self.domain_ax.add_patch(groundPatch)
             self.timeText = self.domain_ax.text(
-                self.POSITION_LIMITS[1],
-                self.LENGTH,
-                "")
+                self.POSITION_LIMITS[1], self.LENGTH, ""
+            )
             self.rewardText = self.domain_ax.text(
-                self.POSITION_LIMITS[0],
-                self.LENGTH,
-                "")
+                self.POSITION_LIMITS[0], self.LENGTH, ""
+            )
             # Allow room for pendulum to swing without getting cut off on graph
             viewableDistance = self.LENGTH + 0.5
-            if self.POSITION_LIMITS[0] < -100 * self.LENGTH or self.POSITION_LIMITS[1] > 100 * self.LENGTH:
+            if (
+                self.POSITION_LIMITS[0] < -100 * self.LENGTH
+                or self.POSITION_LIMITS[1] > 100 * self.LENGTH
+            ):
                 # We have huge position limits, limit the figure width so
                 # cart is still visible
                 self.domain_ax.set_xlim(-viewableDistance, viewableDistance)
             else:
                 self.domain_ax.set_xlim(
                     self.POSITION_LIMITS[0] - viewableDistance,
-                    self.POSITION_LIMITS[1] + viewableDistance)
+                    self.POSITION_LIMITS[1] + viewableDistance,
+                )
             self.domain_ax.set_ylim(-viewableDistance, viewableDistance)
             # self.domain_ax.set_aspect('equal')
 
@@ -509,11 +548,12 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         pendulumBobY = self.PENDULUM_PIVOT_Y + self.LENGTH * np.cos(curTheta)
 
         if self.DEBUG:
-            print('Pendulum Position: ', pendulumBobX, pendulumBobY)
+            print("Pendulum Position: ", pendulumBobX, pendulumBobY)
 
         # update pendulum arm on figure
         self.pendulumArm.set_data(
-            [curX, pendulumBobX], [self.PENDULUM_PIVOT_Y, pendulumBobY])
+            [curX, pendulumBobX], [self.PENDULUM_PIVOT_Y, pendulumBobY]
+        )
         self.cartBox.set_x(curX - self.RECT_WIDTH / 2)
         self.cartBlob.set_x(curX - self.BLOB_WIDTH / 2)
 
@@ -526,17 +566,29 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         else:  # cw or ccw torque
             if forceAction > 0:  # rightward force
                 self.actionArrow = fromAtoB(
-                    curX - self.ACTION_ARROW_LENGTH - self.RECT_WIDTH / 2, 0,
-                    curX - self.RECT_WIDTH / 2, 0,
-                    'k', "arc3,rad=0",
-                    0, 0, 'simple', ax=self.domain_ax
+                    curX - self.ACTION_ARROW_LENGTH - self.RECT_WIDTH / 2,
+                    0,
+                    curX - self.RECT_WIDTH / 2,
+                    0,
+                    "k",
+                    "arc3,rad=0",
+                    0,
+                    0,
+                    "simple",
+                    ax=self.domain_ax,
                 )
             else:  # leftward force
                 self.actionArrow = fromAtoB(
-                    curX + self.ACTION_ARROW_LENGTH + self.RECT_WIDTH / 2, 0,
-                    curX + self.RECT_WIDTH / 2, 0,
-                    'r', "arc3,rad=0",
-                    0, 0, 'simple', ax=self.domain_ax
+                    curX + self.ACTION_ARROW_LENGTH + self.RECT_WIDTH / 2,
+                    0,
+                    curX + self.RECT_WIDTH / 2,
+                    0,
+                    "r",
+                    "arc3,rad=0",
+                    0,
+                    0,
+                    "simple",
+                    ax=self.domain_ax,
                 )
         self.domain_fig.canvas.draw()
 
@@ -562,14 +614,16 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         thetas = np.linspace(
             self.ANGLE_LIMITS[0] + theta_binWidth / 2,
             self.ANGLE_LIMITS[1] - theta_binWidth / 2,
-            theta_n
+            theta_n,
         )
         theta_dot_n = thetaDotDiscr * granularity
-        theta_dot_binWidth = (self.ANGULAR_RATE_LIMITS[1] - self.ANGULAR_RATE_LIMITS[0]) / theta_dot_n
+        theta_dot_binWidth = (
+            self.ANGULAR_RATE_LIMITS[1] - self.ANGULAR_RATE_LIMITS[0]
+        ) / theta_dot_n
         theta_dots = np.linspace(
             self.ANGULAR_RATE_LIMITS[0] + theta_dot_binWidth / 2,
             self.ANGULAR_RATE_LIMITS[1] - theta_dot_binWidth / 2,
-            theta_dot_n
+            theta_dot_n,
         )
 
         self.xTicks = np.linspace(0.0, thetaDiscr * granularity - 1.0, granularity)
@@ -606,6 +660,7 @@ class StateIndex(object):
     e.g. ``s[StateIndex.THETA]`` is guaranteed to return the angle state.
 
     """
+
     THETA, THETA_DOT = 0, 1
     X, X_DOT = 2, 3
     FORCE = 4  # i.e., action

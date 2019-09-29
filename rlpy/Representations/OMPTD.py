@@ -6,8 +6,13 @@ from rlpy.Tools import className, plt
 from copy import deepcopy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -29,15 +34,22 @@ class OMPTD(Representation):
 
     # Maximum number of features to be expanded on each iteration
     maxBatchDiscovery = 0
-    batchThreshold = 0      # Minimum threshold to add features
+    batchThreshold = 0  # Minimum threshold to add features
     # List of selected features. In this implementation initial features are
     # selected initially by default
     selectedFeatures = None
     remainingFeatures = None  # Array of remaining features
 
     def __init__(
-            self, domain, initial_representation, discretization=20,
-            maxBatchDiscovery=1, batchThreshold=0, bagSize=100000, sparsify=False):
+        self,
+        domain,
+        initial_representation,
+        discretization=20,
+        maxBatchDiscovery=1,
+        batchThreshold=0,
+        bagSize=100000,
+        sparsify=False,
+    ):
         """
         :param domain: the :py:class`~rlpy.Domains.Domain.Domain` associated 
             with the value function we want to learn.
@@ -58,7 +70,7 @@ class OMPTD(Representation):
             See :py:class`~rlpy.Representations.iFDD.iFDD`.
         
         """
-        
+
         self.selectedFeatures = []
         # This is dummy since omptd will not use ifdd in the online fashion
         self.iFDD_ONLINETHRESHOLD = 1
@@ -71,7 +83,8 @@ class OMPTD(Representation):
             initial_representation,
             sparsify=0,
             discretization=discretization,
-            useCache=1)
+            useCache=1,
+        )
         self.bagSize = bagSize
         self.features_num = self.initial_representation.features_num
         self.isDynamic = True
@@ -81,8 +94,7 @@ class OMPTD(Representation):
         self.fillBag()
         self.totalFeatureSize = self.bagSize
         # Add initial features to the selected list
-        self.selectedFeatures = list(range(
-            self.initial_representation.features_num))
+        self.selectedFeatures = list(range(self.initial_representation.features_num))
         # Array of indicies of features that have not been selected
         self.remainingFeatures = np.arange(self.features_num, self.bagSize)
 
@@ -91,9 +103,8 @@ class OMPTD(Representation):
         return F_s[self.selectedFeatures]
 
     def show(self):
-        self.logger.info('Features:\t\t%d' % self.features_num)
-        self.logger.info('Remaining Bag Size:\t%d' %
-                         len(self.remainingFeatures))
+        self.logger.info("Features:\t\t%d" % self.features_num)
+        self.logger.info("Remaining Bag Size:\t%d" % len(self.remainingFeatures))
 
     def showBag(self):
         """
@@ -124,9 +135,9 @@ class OMPTD(Representation):
         # Normalize features
         for f in range(self.totalFeatureSize):
             phi_f = self.fullphi[:, f]
-            norm_phi_f = np.linalg.norm(phi_f)    # L2-Norm of phi_f
+            norm_phi_f = np.linalg.norm(phi_f)  # L2-Norm of phi_f
             if norm_phi_f == 0:
-                norm_phi_f = 1          # This helps to avoid divide by zero
+                norm_phi_f = 1  # This helps to avoid divide by zero
             self.fullphi[:, f] = phi_f / norm_phi_f
 
     def batchDiscover(self, td_errors, phi, states):
@@ -148,7 +159,7 @@ class OMPTD(Representation):
             # No More features to Expand
             return False
 
-        SHOW_RELEVANCES = 0      # Plot the relevances
+        SHOW_RELEVANCES = 0  # Plot the relevances
         self.calculateFullPhiNormalized(states)
 
         relevances = np.zeros(len(self.remainingFeatures))
@@ -181,8 +192,13 @@ class OMPTD(Representation):
             # print "Inspecting %s" % str(list(self.iFDD.getFeature(f).f_set))
             if relevance >= self.batchThreshold:
                 self.logger.debug(
-                    'New Feature %d: %s, Relevance = %0.3f' %
-                    (self.features_num, str(np.sort(list(self.iFDD.getFeature(f).f_set))), relevances[max_index]))
+                    "New Feature %d: %s, Relevance = %0.3f"
+                    % (
+                        self.features_num,
+                        str(np.sort(list(self.iFDD.getFeature(f).f_set))),
+                        relevances[max_index],
+                    )
+                )
                 to_be_deleted.append(max_index)
                 self.selectedFeatures.append(f)
                 self.features_num += 1
@@ -201,21 +217,22 @@ class OMPTD(Representation):
         fashion until the ``bagSize`` limit is reached.
         
         """
-        level_1_features = np.arange(
-            self.initial_representation.features_num)
+        level_1_features = np.arange(self.initial_representation.features_num)
         # We store the dimension corresponding to each feature so we avoid
         # adding pairs of features in the same dimension
         level_1_features_dim = {}
         for i in range(self.initial_representation.features_num):
             level_1_features_dim[i] = np.array(
-                [self.initial_representation.getDimNumber(i)])
+                [self.initial_representation.getDimNumber(i)]
+            )
             # print i,level_1_features_dim[i]
         level_n_features = np.array(level_1_features)
         level_n_features_dim = deepcopy(level_1_features_dim)
         new_id = self.initial_representation.features_num
         self.logger.debug(
-            "Added %d size 1 features to the feature bag." %
-            (self.initial_representation.features_num))
+            "Added %d size 1 features to the feature bag."
+            % (self.initial_representation.features_num)
+        )
 
         # Loop over possible layers that conjunctions can be add. Notice that
         # layer one was already built
@@ -239,14 +256,15 @@ class OMPTD(Representation):
                             added += 1
                             if new_id == self.bagSize:
                                 self.logger.debug(
-                                    "Added %d size %d features to the feature bag." %
-                                    (added, f_size))
+                                    "Added %d size %d features to the feature bag."
+                                    % (added, f_size)
+                                )
                                 return
             level_n_features = next_features
             level_n_features_dim = next_features_dim
             self.logger.debug(
-                "Added %d size %d features to the feature bag." %
-                (added, f_size))
+                "Added %d size %d features to the feature bag." % (added, f_size)
+            )
         self.bagSize = new_id
 
     def featureType(self):

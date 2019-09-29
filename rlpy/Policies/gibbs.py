@@ -3,8 +3,13 @@ from .Policy import DifferentiablePolicy
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
@@ -23,7 +28,7 @@ class GibbsPolicy(DifferentiablePolicy):
         phi = self.representation.phi(s, False)
         res = -np.outer(v, phi)
         res.shape = self.representation.weight_vec.shape
-        res[a * n:(a + 1) * n] += phi
+        res[a * n : (a + 1) * n] += phi
         assert not np.any(np.isnan(res))
         return res
 

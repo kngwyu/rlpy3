@@ -27,4 +27,4 @@ def test_fdcheck_dlogpi():
         a = np.random.choice(domain.possibleActions(s))
         for wv in wvs:
             error = check_grad(f, df, wv, s, a)
-            assert np.abs(error) < 1e-6, 'Error={}'.format(error)
+            assert np.abs(error) < 1e-6, "Error={}".format(error)

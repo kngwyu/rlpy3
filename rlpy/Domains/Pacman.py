@@ -8,8 +8,13 @@ from copy import deepcopy
 import os
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Austin Hays"
 
@@ -58,13 +63,16 @@ class Pacman(Domain):
 
     #: location of layouts shipped with rlpy
     default_layout_dir = os.path.join(
-        __rlpy_location__, "Domains", "PacmanPackage",
-        "layouts")
+        __rlpy_location__, "Domains", "PacmanPackage", "layouts"
+    )
 
-    def __init__(self, noise=.1, timeout=30,
-                 layoutFile=os.path.join(
-                     default_layout_dir, 'trickyClassic.lay'),
-                 numGhostAgents=1000):
+    def __init__(
+        self,
+        noise=0.1,
+        timeout=30,
+        layoutFile=os.path.join(default_layout_dir, "trickyClassic.lay"),
+        numGhostAgents=1000,
+    ):
         """
         layoutFile:
             filename of the map file
@@ -109,8 +117,7 @@ class Pacman(Domain):
             statespace_limits.append([1, self.layout.height - 2])
             statespace_limits.append([0, self._max_scared_time])
 
-        statespace_limits += [[0, 1]] * (
-            self.num_total_food + self.num_total_capsules)
+        statespace_limits += [[0, 1]] * (self.num_total_food + self.num_total_capsules)
         self.statespace_limits = np.array(statespace_limits, dtype="float")
 
     def _set_state(self, s):
@@ -129,12 +136,12 @@ class Pacman(Domain):
         # set ghost position
         num_ghosts = len(agent_states) - 1
         for i in range(1, num_ghosts + 1):
-            part_s = s[(3 * i) - 1:3 * i]
+            part_s = s[(3 * i) - 1 : 3 * i]
             agent_states[i].configuration.pos = (part_s[0], part_s[1])
             agent_states[i].scaredTimer = part_s[2]
 
         # set food and capsules locations
-        s_food = s[(num_ghosts + 1) * 3:]
+        s_food = s[(num_ghosts + 1) * 3 :]
         x = 0
         y = 0
         i = 0
@@ -160,15 +167,14 @@ class Pacman(Domain):
         data = self.game_state.data
         agent_states = self.game_state.data.agentStates
         num_ghosts = len(agent_states) - 1
-        s = np.zeros(
-            2 + num_ghosts * 3 + self.num_total_food + self.num_total_capsules)
+        s = np.zeros(2 + num_ghosts * 3 + self.num_total_food + self.num_total_capsules)
 
         # get pacman position
         s[:2] = agent_states[0].configuration.pos
         # import ipdb; ipdb.set_trace()
         # get ghost info
         for i in range(num_ghosts):
-            s[2 + i * 3: 2 + i * 3 + 2] = agent_states[i + 1].configuration.pos
+            s[2 + i * 3 : 2 + i * 3 + 2] = agent_states[i + 1].configuration.pos
             s[2 + i * 3 + 2] = agent_states[i + 1].scaredTimer
         # get food and capsules status
         i = 2 + num_ghosts * 3
@@ -184,17 +190,20 @@ class Pacman(Domain):
             elif char == "o":
                 coord = (x, self.layout_copy.height - y)
                 if coord in data.capsules:
-                    s[i] = 1.
+                    s[i] = 1.0
                 i += 1
             x += 1
         return s
+
     state = property(_get_state, _set_state)
 
     def showDomain(self, a, s=None):
         if s is not None:
-            errStr = 'ERROR: In Pacman.py, attempted to pass a state (s)'\
-                'to showDomain(); Pacman only supports internal states.'\
-                'If you do pass a state parameter, ensure it is set to None.'
+            errStr = (
+                "ERROR: In Pacman.py, attempted to pass a state (s)"
+                "to showDomain(); Pacman only supports internal states."
+                "If you do pass a state parameter, ensure it is set to None."
+            )
             raise Exception(errStr)
         s = self.game_state
         if self.gameDisplay is None:
@@ -207,9 +216,11 @@ class Pacman(Domain):
             self.gameDisplay.removeAllFood()
             self.gameDisplay.removeAllCapsules()
             self.gameDisplay.food = self.gameDisplay.drawFood(
-                self.gameDisplay.layout.food)
+                self.gameDisplay.layout.food
+            )
             self.gameDisplay.capsules = self.gameDisplay.drawCapsules(
-                self.gameDisplay.layout.capsules)
+                self.gameDisplay.layout.capsules
+            )
         # converts s vector in pacman gamestate instance and updates
         # the display every time pacman or a ghost moves.
         # s.data.food is the correct food matrix
@@ -219,7 +230,8 @@ class Pacman(Domain):
             self.gameDisplay.update(s.data)
             s._foodEaten = None
             s._capsuleEaten = None
-# time.sleep(0.1) # Sleep for 0.1 sec
+
+    # time.sleep(0.1) # Sleep for 0.1 sec
 
     def step(self, a):
         """
@@ -263,7 +275,13 @@ class Pacman(Domain):
         self.game_rules = pacman.ClassicGameRules(timeout=30)
         self.layout_copy = deepcopy(self.layout)
         self.game = self.game_rules.newGame(
-            self.layout_copy, pacman, self.ghosts, DummyGraphics(), self.beQuiet, catchExceptions=False)
+            self.layout_copy,
+            pacman,
+            self.ghosts,
+            DummyGraphics(),
+            self.beQuiet,
+            catchExceptions=False,
+        )
         self.game_state.data.initialize(self.layout_copy, self.numGhostAgents)
         self._cleanup_graphics = True
 
@@ -278,8 +296,7 @@ class Pacman(Domain):
         # makes an array of possible actions pacman can perform at any given
         # state
         possibleActions = []
-        possibleMoves = pacman.GameState.getLegalActions(
-            self.game_state, agentIndex=0)
+        possibleMoves = pacman.GameState.getLegalActions(self.game_state, agentIndex=0)
         for a in possibleMoves:
             possibleActions.append(self.actions.index(a))
         return np.array(possibleActions)
@@ -296,8 +313,9 @@ class Pacman(Domain):
 
     def _defaultSettings(self):
         self.ghostNum = 2
-        self.ghosts = [ghostAgents.RandomGhost(
-            game.Agent) for i in range(self.ghostNum)]
+        self.ghosts = [
+            ghostAgents.RandomGhost(game.Agent) for i in range(self.ghostNum)
+        ]
         self.beQuiet = False
 
     def _tryToLoad(self, fullname):
@@ -309,7 +327,6 @@ class Pacman(Domain):
 
 
 class DummyGraphics(object):
-
     def initialize(self, *arg, **kwargs):
         pass
 

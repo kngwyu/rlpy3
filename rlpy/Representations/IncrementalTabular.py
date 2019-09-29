@@ -4,8 +4,13 @@ import numpy as np
 from copy import deepcopy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -20,17 +25,14 @@ class IncrementalTabular(Representation):
     state at the outset.
 
     """
+
     hash = None
 
     def __init__(self, domain, discretization=20):
         self.hash = {}
         self.features_num = 0
         self.isDynamic = True
-        super(
-            IncrementalTabular,
-            self).__init__(
-            domain,
-            discretization)
+        super(IncrementalTabular, self).__init__(domain, discretization)
 
     def phi_nonTerminal(self, s):
         hash_id = self.hashState(s)
@@ -51,7 +53,7 @@ class IncrementalTabular(Representation):
         return 0; if not, add it to the hash table and return 1.
         
         """
-        
+
         hash_id = self.hashState(s)
         hashVal = self.hash.get(hash_id)
         if hashVal is None:
@@ -66,9 +68,7 @@ class IncrementalTabular(Representation):
         return 0
 
     def __deepcopy__(self, memo):
-        new_copy = IncrementalTabular(
-            self.domain,
-            self.discretization)
+        new_copy = IncrementalTabular(self.domain, self.discretization)
         new_copy.hash = deepcopy(self.hash)
         return new_copy
 

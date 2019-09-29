@@ -4,15 +4,22 @@ import csv
 import os
 from .Domain import Domain
 from rlpy.Tools import plt, __rlpy_location__
+
 try:
     import networkx as nx
 except ImportError:
     import warnings
-    warnings.warn('NetworkX is not installed so SystemAdministrator has no graphics.')
+
+    warnings.warn("NetworkX is not installed so SystemAdministrator has no graphics.")
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = ["Robert H. Klein", "Alborz Geramifard"]
 
@@ -80,12 +87,12 @@ class SystemAdministrator(Domain):
     REBOOT_REWARD = -0.75  # : Penalty applied for a REPAIR action
     # Computer "up" reward implicitly 1; tune other rewards relative to this.
 
-    episodeCap = 200        #: Maximum number of steps
-    discount_factor = .95        #: Discount factor
+    episodeCap = 200  #: Maximum number of steps
+    discount_factor = 0.95  #: Discount factor
 
     # Plotting Variables
-    networkGraph = None     # Graph of network used for visualization
-    networkPos = None       # Position of network graph
+    networkGraph = None  # Graph of network used for visualization
+    networkPos = None  # Position of network graph
 
     # Possible values for each computer
     BROKEN, RUNNING = 0, 1
@@ -94,13 +101,12 @@ class SystemAdministrator(Domain):
     _NUM_VALUES = 2
 
     default_map_dir = os.path.join(
-        __rlpy_location__,
-        "Domains",
-        "SystemAdministratorMaps")
+        __rlpy_location__, "Domains", "SystemAdministratorMaps"
+    )
 
     def __init__(
-            self, networkmapname=os.path.join(
-                default_map_dir, "20MachTutorial.txt")):
+        self, networkmapname=os.path.join(default_map_dir, "20MachTutorial.txt")
+    ):
         """
         :param networkmapname: The name of the file to use as the computer
             network map.  Assumed to be located in the SystemAdministratorMaps
@@ -115,7 +121,8 @@ class SystemAdministrator(Domain):
         # Limits of each dimension of the state space. Each row corresponds to
         # one dimension and has two elements [min, max]
         self.statespace_limits = np.tile(
-            [0, self._NUM_VALUES - 1], (self.computers_num, 1))
+            [0, self._NUM_VALUES - 1], (self.computers_num, 1)
+        )
         super(SystemAdministrator, self).__init__()
 
     def loadNetwork(self, path):
@@ -130,8 +137,8 @@ class SystemAdministrator(Domain):
 
         """
         _Neighbors = []
-        f = open(path, 'r')
-        reader = csv.reader(f, delimiter=',')
+        f = open(path, "r")
+        reader = csv.reader(f, delimiter=",")
         self.computers_num = 0
         for row in reader:
             row = list(map(int, row))
@@ -148,23 +155,18 @@ class SystemAdministrator(Domain):
             self.networkGraph = nx.Graph()
             # enumerate all computer_ids, simulatenously iterating through
             # neighbors list and compstatus
-            for computer_id, (neighbors, compstatus) in enumerate(zip(self.NEIGHBORS, s)):
+            for computer_id, (neighbors, compstatus) in enumerate(
+                zip(self.NEIGHBORS, s)
+            ):
                 # Add a node to network for each computer
                 self.networkGraph.add_node(computer_id, node_color="w")
             for uniqueEdge in self.UNIQUE_EDGES:
-                    self.networkGraph.add_edge(
-                        uniqueEdge[0],
-                        uniqueEdge[1],
-                        edge_color="k")  # Add an edge between each neighbor
+                self.networkGraph.add_edge(
+                    uniqueEdge[0], uniqueEdge[1], edge_color="k"
+                )  # Add an edge between each neighbor
             self.networkPos = nx.circular_layout(self.networkGraph)
-            nx.draw_networkx_nodes(
-                self.networkGraph,
-                self.networkPos,
-                node_color="w")
-            nx.draw_networkx_edges(
-                self.networkGraph,
-                self.networkPos,
-                edges_color="k")
+            nx.draw_networkx_nodes(self.networkGraph, self.networkPos, node_color="w")
+            nx.draw_networkx_edges(self.networkGraph, self.networkPos, edges_color="k")
             nx.draw_networkx_labels(self.networkGraph, self.networkPos)
             plt.show()
         else:
@@ -173,14 +175,19 @@ class SystemAdministrator(Domain):
             redEdges = []
             greenNodes = []
             redNodes = []
-            for computer_id, (neighbors, compstatus) in enumerate(zip(self.NEIGHBORS, s)):
-                if(compstatus == self.RUNNING):
+            for computer_id, (neighbors, compstatus) in enumerate(
+                zip(self.NEIGHBORS, s)
+            ):
+                if compstatus == self.RUNNING:
                     greenNodes.append(computer_id)
                 else:
                     redNodes.append(computer_id)
             # Iterate through all unique edges
             for uniqueEdge in self.UNIQUE_EDGES:
-                if(s[uniqueEdge[0]] == self.RUNNING and s[uniqueEdge[1]] == self.RUNNING):
+                if (
+                    s[uniqueEdge[0]] == self.RUNNING
+                    and s[uniqueEdge[1]] == self.RUNNING
+                ):
                     # Then both computers are working
                     blackEdges.append(uniqueEdge)
                 else:  # If either computer is BROKEN, make the edge red
@@ -192,14 +199,16 @@ class SystemAdministrator(Domain):
                     self.networkPos,
                     nodelist=redNodes,
                     node_color="r",
-                    linewidths=2)
+                    linewidths=2,
+                )
             if greenNodes:
                 nx.draw_networkx_nodes(
                     self.networkGraph,
                     self.networkPos,
                     nodelist=greenNodes,
                     node_color="w",
-                    linewidths=2)
+                    linewidths=2,
+                )
             if blackEdges:
                 nx.draw_networkx_edges(
                     self.networkGraph,
@@ -207,7 +216,8 @@ class SystemAdministrator(Domain):
                     edgelist=blackEdges,
                     edge_color="k",
                     width=2,
-                    style='solid')
+                    style="solid",
+                )
             if redEdges:
                 nx.draw_networkx_edges(
                     self.networkGraph,
@@ -215,7 +225,8 @@ class SystemAdministrator(Domain):
                     edgelist=redEdges,
                     edge_color="k",
                     width=2,
-                    style='dotted')
+                    style="dotted",
+                )
         nx.draw_networkx_labels(self.networkGraph, self.networkPos)
         plt.figure("Domain").canvas.draw()
         plt.figure("Domain").canvas.flush_events()
@@ -223,55 +234,63 @@ class SystemAdministrator(Domain):
     def step(self, a):
         # ns = s[:] # make copy of state so as not to affect original mid-step
         ns = self.state.copy()
-       # print 'action selected',a,s
+        # print 'action selected',a,s
         totalRebootReward = 0
         for computer_id, compstatus in enumerate(self.state):
-            if(a == computer_id):  # Reboot action on this computer
+            if a == computer_id:  # Reboot action on this computer
                 totalRebootReward += self.REBOOT_REWARD
                 # NOTE can break up if-statement below to separate cases
-                if (self.random_state.random_sample() <= self.P_REBOOT_REPAIR):
+                if self.random_state.random_sample() <= self.P_REBOOT_REPAIR:
                     ns[computer_id] = self.RUNNING
                 else:
                     ns[computer_id] = self.BROKEN
             else:  # Transition to new state probabilistically
-                if (compstatus == self.RUNNING):
+                if compstatus == self.RUNNING:
                     # take neighbors of computer_id and sum over each of their
                     # current values
-                    sumOfNeighbors = sum([self.state[i]
-                                         for i in self.NEIGHBORS[computer_id]])
+                    sumOfNeighbors = sum(
+                        [self.state[i] for i in self.NEIGHBORS[computer_id]]
+                    )
                     # TODO this expression should be a function, or something
-                    p_broken = 1.0 - \
-                        (0.45 + 0.5 * (1 + sumOfNeighbors)
-                         / (1 + len(self.NEIGHBORS[computer_id])))
-                    if(self.random_state.random_sample() < p_broken):
+                    p_broken = 1.0 - (
+                        0.45
+                        + 0.5
+                        * (1 + sumOfNeighbors)
+                        / (1 + len(self.NEIGHBORS[computer_id]))
+                    )
+                    if self.random_state.random_sample() < p_broken:
                         ns[computer_id] = self.BROKEN
                 else:
-                    if(self.random_state.random_sample() < self.P_SELF_REPAIR):
+                    if self.random_state.random_sample() < self.P_SELF_REPAIR:
                         ns[computer_id] = self.RUNNING
-        if (self.IS_RING and self.state[0] == self.RUNNING):
+        if self.IS_RING and self.state[0] == self.RUNNING:
             # Per Guestrin, Koller, Parr 2003, rings have enforced asymmetry on
             # one machine
             totalRebootReward += 1
         terminal = False
         self.state = ns.copy()
         return (
-            sum(self.state) +
-            totalRebootReward, ns, terminal, self.possibleActions()
+            sum(self.state) + totalRebootReward,
+            ns,
+            terminal,
+            self.possibleActions(),
         )
         # Returns the triplet [r,ns,t] => Reward, next state, isTerminal
 
     def s0(self):
         # Omits final index
         self.state = np.array(
-            [self.RUNNING for dummy in range(0, self.state_space_dims)])
+            [self.RUNNING for dummy in range(0, self.state_space_dims)]
+        )
         return self.state.copy(), self.isTerminal(), self.possibleActions()
 
     def possibleActions(self):
         s = self.state
         possibleActs = [
-            computer_id for computer_id,
-            compstatus in enumerate(
-                s) if compstatus == self.BROKEN]
+            computer_id
+            for computer_id, compstatus in enumerate(s)
+            if compstatus == self.BROKEN
+        ]
         possibleActs.append(self.computers_num)  # append the no-op action
         return np.array(possibleActs)
 
@@ -287,14 +306,10 @@ class SystemAdministrator(Domain):
         self.UNIQUE_EDGES = []
         for computer_id, neighbors in enumerate(neighborsList):
             for neighbor_id in neighbors:
-                edge = (min(neighbor_id, computer_id),
-                        max(neighbor_id, computer_id))
+                edge = (min(neighbor_id, computer_id), max(neighbor_id, computer_id))
                 found = [
-                    t for t in self.UNIQUE_EDGES if t[
-                        0] == edge[
-                        0] and t[
-                        1] == edge[
-                        1]]
+                    t for t in self.UNIQUE_EDGES if t[0] == edge[0] and t[1] == edge[1]
+                ]
                 if found == []:
                     self.UNIQUE_EDGES.append(edge)
 

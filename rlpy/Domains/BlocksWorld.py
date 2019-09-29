@@ -5,8 +5,13 @@ from rlpy.Tools import nchoosek, factorial, findElemArray2D, plt, FONTSIZE
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -49,7 +54,7 @@ class BlocksWorld(Domain):
     """
 
     #: reward per step
-    STEP_REWARD = -.001
+    STEP_REWARD = -0.001
     #: reward when the tower is completed
     GOAL_REWARD = 1
     #: discount factor
@@ -62,7 +67,7 @@ class BlocksWorld(Domain):
     #: Used to plot the domain
     domain_fig = None
 
-    def __init__(self, blocks=6, towerSize=6, noise=.3):
+    def __init__(self, blocks=6, towerSize=6, noise=0.3):
         self.blocks = blocks
         self.towerSize = towerSize
         self.noise = noise
@@ -74,21 +79,23 @@ class BlocksWorld(Domain):
         self.statespace_limits = np.tile([0, blocks - 1], (blocks, 1))
         # This is the true size of the state space refer to [Geramifard11_ICML]
         self.real_states_num = sum(
-            [nchoosek(blocks,
-                      i) * factorial(blocks - i) * pow(i,
-                                                       blocks - i) for i in range(blocks)])
+            [
+                nchoosek(blocks, i) * factorial(blocks - i) * pow(i, blocks - i)
+                for i in range(blocks)
+            ]
+        )
         # [0 0 1 2 3 .. blocks-2] meaning block 0 on the table and all other stacked on top of e
         self.GOAL_STATE = np.hstack(([0], np.arange(0, blocks - 1)))
         # Make Dimension Names
         self.DimNames = []
         for a in range(blocks):
-            self.DimNames.append(['%d on' % a])
+            self.DimNames.append(["%d on" % a])
         super(BlocksWorld, self).__init__()
 
     def showDomain(self, a=0):
         # Draw the environment
         s = self.state
-        world = np.zeros((self.blocks, self.blocks), 'uint8')
+        world = np.zeros((self.blocks, self.blocks), "uint8")
         undrawn_blocks = np.arange(self.blocks)
         while len(undrawn_blocks):
             A = undrawn_blocks[0]
@@ -107,14 +114,12 @@ class BlocksWorld(Domain):
         if self.domain_fig is None:
             plt.figure("Domain")
             self.domain_fig = plt.imshow(
-                world,
-                cmap='BlocksWorld',
-                origin='lower',
-                interpolation='nearest')  # ,vmin=0,vmax=self.blocks)
+                world, cmap="BlocksWorld", origin="lower", interpolation="nearest"
+            )  # ,vmin=0,vmax=self.blocks)
             plt.xticks(np.arange(self.blocks), fontsize=FONTSIZE)
             plt.yticks(np.arange(self.blocks), fontsize=FONTSIZE)
             # pl.tight_layout()
-            plt.axis('off')
+            plt.axis("off")
             plt.show()
         else:
             self.domain_fig.set_data(world)
@@ -130,7 +135,7 @@ class BlocksWorld(Domain):
         [A, B] = id2vec(a, [self.blocks, self.blocks])
         # print 'taking action %d->%d' % (A,B)
         if not self.validAction(s, A, B):
-            print('State:%s, Invalid move from %d to %d' % (str(s), A, B))
+            print("State:%s, Invalid move from %d to %d" % (str(s), A, B))
             print(self.possibleActions())
             print(id2vec(self.possibleActions(), [self.blocks, self.blocks]))
 
@@ -153,18 +158,18 @@ class BlocksWorld(Domain):
         # return the id of possible actions
         # find empty blocks (nothing on top)
         empty_blocks = [b for b in range(self.blocks) if self.clear(b, s)]
-        actions = [[a,
-                    b] for a in empty_blocks for b in empty_blocks if not self.destination_is_table(
-            a,
-            b) or not self.on_table(a,
-                                    s)]  # condition means if A sits on the table you can not pick it and put it on the table
+        actions = [
+            [a, b]
+            for a in empty_blocks
+            for b in empty_blocks
+            if not self.destination_is_table(a, b) or not self.on_table(a, s)
+        ]  # condition means if A sits on the table you can not pick it and put it on the table
         return np.array([vec2id(x, [self.blocks, self.blocks]) for x in actions])
 
     def validAction(self, s, A, B):
         # Returns true if B and A are both empty.
-        return (
-            (self.clear(A, s)
-             and (self.destination_is_table(A, B) or self.clear(B, s)))
+        return self.clear(A, s) and (
+            self.destination_is_table(A, B) or self.clear(B, s)
         )
 
     def isTerminal(self):
@@ -183,7 +188,7 @@ class BlocksWorld(Domain):
 
     def destination_is_table(self, A, B):
         # See for move A->B, B is table
-        return (A == B)
+        return A == B
 
     def on_table(self, A, s):
         # returns true of A is on the table

@@ -4,8 +4,13 @@ from .Domain import Domain
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -50,9 +55,9 @@ class ChainMDP(Domain):
     # Used for graphical normalization
     MIN_RETURN = 0
     # Used for graphical shifting of arrows
-    SHIFT = .3
+    SHIFT = 0.3
     #:Used for graphical radius of states
-    RADIUS = .5
+    RADIUS = 0.5
     # Stores the graphical pathes for states so that we can later change their
     # colors
     circles = None
@@ -79,16 +84,21 @@ class ChainMDP(Domain):
         s = s[0]
         if self.circles is None:
             fig = plt.figure(1, (self.chainSize * 2, 2))
-            ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1.)
+            ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1.0)
             ax.set_xlim(0, self.chainSize * 2)
             ax.set_ylim(0, 2)
             # Make the last one double circle
             ax.add_patch(
-                mpatches.Circle((1 + 2 * (self.chainSize - 1), self.Y), self.RADIUS * 1.1, fc="w"))
+                mpatches.Circle(
+                    (1 + 2 * (self.chainSize - 1), self.Y), self.RADIUS * 1.1, fc="w"
+                )
+            )
             ax.xaxis.set_visible(False)
             ax.yaxis.set_visible(False)
-            self.circles = [mpatches.Circle((1 + 2 * i, self.Y), self.RADIUS, fc="w")
-                            for i in range(self.chainSize)]
+            self.circles = [
+                mpatches.Circle((1 + 2 * i, self.Y), self.RADIUS, fc="w")
+                for i in range(self.chainSize)
+            ]
             for i in range(self.chainSize):
                 ax.add_patch(self.circles[i])
                 if i != self.chainSize - 1:
@@ -96,29 +106,28 @@ class ChainMDP(Domain):
                         1 + 2 * i + self.SHIFT,
                         self.Y + self.SHIFT,
                         1 + 2 * (i + 1) - self.SHIFT,
-                        self.Y + self.SHIFT)
+                        self.Y + self.SHIFT,
+                    )
                     if i != self.chainSize - 2:
                         fromAtoB(
                             1 + 2 * (i + 1) - self.SHIFT,
                             self.Y - self.SHIFT,
                             1 + 2 * i + self.SHIFT,
                             self.Y - self.SHIFT,
-                            'r')
+                            "r",
+                        )
                 fromAtoB(
-                    .75,
-                    self.Y -
-                    1.5 *
-                    self.SHIFT,
-                    .75,
-                    self.Y +
-                    1.5 *
-                    self.SHIFT,
-                    'r',
-                    connectionstyle='arc3,rad=-1.2')
+                    0.75,
+                    self.Y - 1.5 * self.SHIFT,
+                    0.75,
+                    self.Y + 1.5 * self.SHIFT,
+                    "r",
+                    connectionstyle="arc3,rad=-1.2",
+                )
                 plt.show()
 
-        [p.set_facecolor('w') for p in self.circles]
-        self.circles[s].set_facecolor('k')
+        [p.set_facecolor("w") for p in self.circles]
+        self.circles[s].set_facecolor("k")
         plt.draw()
 
     def step(self, a):
@@ -140,4 +149,4 @@ class ChainMDP(Domain):
 
     def isTerminal(self):
         s = self.state
-        return (s[0] == self.chainSize - 1)
+        return s[0] == self.chainSize - 1

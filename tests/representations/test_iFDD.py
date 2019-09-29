@@ -4,7 +4,7 @@ import rlpy.Domains
 import numpy as np
 import pytest
 
-STDOUT_FILE = 'out.txt'
+STDOUT_FILE = "out.txt"
 JOB_ID = 1
 RANDOM_TEST = 0
 sparsify = True
@@ -16,10 +16,11 @@ def deterministic_test():
     sparsify = True
     domain = rlpy.Domains.SystemAdministrator()
     initialRep = IndependentDiscretizationCompactBinary(domain)
-    rep = iFDD(domain, discovery_threshold, initialRep,
-               debug=0, useCache=1, sparsify=sparsify)
+    rep = iFDD(
+        domain, discovery_threshold, initialRep, debug=0, useCache=1, sparsify=sparsify
+    )
     rep.theta = np.arange(rep.features_num * domain.actions_num) * 10
-    print('Initial [0,1] => ', end=' ')
+    print("Initial [0,1] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 1]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([0, 1]))
@@ -31,43 +32,42 @@ def deterministic_test():
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([21]))
 
-    print('Initial [2,3] => ', end=' ')
+    print("Initial [2,3] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([2, 3]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([2, 3]))
     # rep.showCache()
     # rep.showFeatures()
     # rep.showCache()
-    print('Initial [0,20] => ', end=' ')
+    print("Initial [0,20] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 20]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([0, 20]))
 
-    print('Initial [0,1,20] => ', end=' ')
+    print("Initial [0,1,20] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 1, 20]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([20, 21]))
     rep.showCache()
     # Change the weight for new feature 40
     rep.theta[40] = -100
-    print('Initial [0,20] => ', end=' ')
+    print("Initial [0,20] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 20]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([0, 20]))
 
-    print('discover 0,1,20')
+    print("discover 0,1,20")
     rep.inspectPair(20, rep.features_num - 1, discovery_threshold + 1)
     # rep.showFeatures()
     # rep.showCache()
-    print('Initial [0,1,20] => ', end=' ')
+    print("Initial [0,1,20] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 1, 20]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([22]))
 
     rep.showCache()
-    print('Initial [0,1,2,3,4,5,6,7,8,20] => ', end=' ')
-    ANSWER = np.sort(
-        rep.findFinalActiveFeatures([0, 1, 2, 3, 4, 5, 6, 7, 8, 20]))
+    print("Initial [0,1,2,3,4,5,6,7,8,20] => ", end=" ")
+    ANSWER = np.sort(rep.findFinalActiveFeatures([0, 1, 2, 3, 4, 5, 6, 7, 8, 20]))
     print(ANSWER)
     assert np.array_equal(ANSWER, np.array([2, 3, 4, 5, 6, 7, 8, 22]))
     # rep.showCache()
@@ -80,21 +80,15 @@ def random_test():
     domain = Domains.PST()
     np.random.seed(999999999)
     initialRep = IndependentDiscretizationCompactBinary(domain)
-    rep = iFDD(
-        domain,
-        discovery_threshold,
-        initialRep,
-        debug=0,
-        useCache=1,
-        iFDDPlus=0)
+    rep = iFDD(domain, discovery_threshold, initialRep, debug=0, useCache=1, iFDDPlus=0)
     rep.theta = np.arange(rep.features_num * domain.actions_num) * 10
     n = rep.features_num
     for i in range(TRIALS):
-        phi = np.zeros(n, 'bool')
+        phi = np.zeros(n, "bool")
         for j in range(K):
             ind = np.random.randint(0, n - 1)
             phi[ind] = 1
             threshold = np.random.rand() * 2 - 1
-        print('%d: %0.2f >> %s' % (i + 1, threshold, str(phi.nonzero()[0])))
+        print("%d: %0.2f >> %s" % (i + 1, threshold, str(phi.nonzero()[0])))
         rep.discover(phi, threshold)
     rep.show()

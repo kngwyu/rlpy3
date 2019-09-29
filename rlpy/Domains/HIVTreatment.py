@@ -5,8 +5,13 @@ from scipy.integrate import odeint
 from rlpy.Tools import plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
@@ -44,10 +49,11 @@ class HIVTreatment(Domain):
 
 
     """
+
     state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
     discount_factor = 0.98
     continuous_dims = np.arange(6)
-    actions = np.array([[0., 0.], [.7, 0.], [0., .3], [.7, .3]])
+    actions = np.array([[0.0, 0.0], [0.7, 0.0], [0.0, 0.3], [0.7, 0.3]])
     actions_num = 4
     episodeCap = 200  #: total of 1000 days with a measurement every 5 days
     dt = 5  #: measurement every 5 days
@@ -60,7 +66,7 @@ class HIVTreatment(Domain):
     if logspace:
         statespace_limits = np.array([[-5, 8]] * 6)
     else:
-        statespace_limits = np.array([[0., 1e8]] * 6)
+        statespace_limits = np.array([[0.0, 1e8]] * 6)
 
     def step(self, a):
         self.t += 1
@@ -68,11 +74,10 @@ class HIVTreatment(Domain):
         #    s = np.power(10, s)
 
         eps1, eps2 = self.actions[a]
-        ns = odeint(dsdt, self.state, [0, self.dt],
-                    args=(eps1, eps2), mxstep=1000)[-1]
+        ns = odeint(dsdt, self.state, [0, self.dt], args=(eps1, eps2), mxstep=1000)[-1]
         T1, T2, T1s, T2s, V, E = ns
         # the reward function penalizes treatment because of side-effects
-        reward = - 0.1 * V - 2e4 * eps1 ** 2 - 2e3 * eps2 ** 2 + 1e3 * E
+        reward = -0.1 * V - 2e4 * eps1 ** 2 - 2e3 * eps2 ** 2 + 1e3 * E
         self.state = ns.copy()
         if self.logspace:
             ns = np.log10(ns)
@@ -88,7 +93,7 @@ class HIVTreatment(Domain):
         self.t = 0
         self.episode_data[:] = np.nan
         # non-healthy stable state of the system
-        s = np.array([163573., 5., 11945., 46., 63919., 24.])
+        s = np.array([163573.0, 5.0, 11945.0, 46.0, 63919.0, 24.0])
         self.state = s.copy()
         if self.logspace:
             return np.log10(s), self.isTerminal(), self.possibleActions()
@@ -111,18 +116,14 @@ class HIVTreatment(Domain):
         plt.figure("Domain", figsize=(12, 10))
         if handles is None:
             handles = []
-            f, axes = plt.subplots(
-                n, sharex=True, num="Domain", figsize=(12, 10))
+            f, axes = plt.subplots(n, sharex=True, num="Domain", figsize=(12, 10))
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
                 d = np.arange(self.episodeCap + 1) * 5
                 ax.set_ylabel(names[i])
                 ax.locator_params(tight=True, nbins=4)
-                handles.append(
-                    ax.plot(d,
-                            self.episode_data[i],
-                            color=colors[i])[0])
+                handles.append(ax.plot(d, self.episode_data[i], color=colors[i])[0])
             self._state_graph_handles = handles
             ax.set_xlabel("Days")
         for i in range(n):
@@ -143,16 +144,16 @@ def dsdt(s, t, eps1, eps2):
     lambda2 = 31.98
     d1 = 0.01
     d2 = 0.01
-    f = .34
+    f = 0.34
     k1 = 8e-7
     k2 = 1e-4
-    delta = .7
+    delta = 0.7
     m1 = 1e-5
     m2 = 1e-5
-    NT = 100.
-    c = 13.
-    rho1 = 1.
-    rho2 = 1.
+    NT = 100.0
+    c = 13.0
+    rho1 = 1.0
+    rho2 = 1.0
     lambdaE = 1
     bE = 0.3
     Kb = 100
@@ -164,22 +165,31 @@ def dsdt(s, t, eps1, eps2):
     T1, T2, T1s, T2s, V, E = s
 
     # compute derivatives
-    tmp1 = (1. - eps1) * k1 * V * T1
-    tmp2 = (1. - f * eps1) * k2 * V * T2
+    tmp1 = (1.0 - eps1) * k1 * V * T1
+    tmp2 = (1.0 - f * eps1) * k2 * V * T2
     dT1 = lambda1 - d1 * T1 - tmp1
     dT2 = lambda2 - d2 * T2 - tmp2
     dT1s = tmp1 - delta * T1s - m1 * E * T1s
     dT2s = tmp2 - delta * T2s - m2 * E * T2s
-    dV = (1. - eps2) * NT * delta * (T1s + T2s) - c * V \
-        - ((1. - eps1) * rho1 * k1 * T1 +
-           (1. - f * eps1) * rho2 * k2 * T2) * V
-    dE = lambdaE + bE * (T1s + T2s) / (T1s + T2s + Kb) * E \
-        - d_E * (T1s + T2s) / (T1s + T2s + Kd) * E - deltaE * E
+    dV = (
+        (1.0 - eps2) * NT * delta * (T1s + T2s)
+        - c * V
+        - ((1.0 - eps1) * rho1 * k1 * T1 + (1.0 - f * eps1) * rho2 * k2 * T2) * V
+    )
+    dE = (
+        lambdaE
+        + bE * (T1s + T2s) / (T1s + T2s + Kb) * E
+        - d_E * (T1s + T2s) / (T1s + T2s + Kd) * E
+        - deltaE * E
+    )
 
     return np.array([dT1, dT2, dT1s, dT2s, dV, dE])
+
 
 try:
     from .HIVTreatment_dynamics import dsdt
 except Exception as e:
     print(e)
-    print("Cython extension for HIVTreatment dynamics not available, expect slow runtime")
+    print(
+        "Cython extension for HIVTreatment dynamics not available, expect slow runtime"
+    )

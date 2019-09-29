@@ -1,7 +1,9 @@
-__all__ = ["game",  # noqa
-           "util",
-           "layout",
-           "pacman",
-           "graphicsDisplay",
-           "ghostAgents",
-           "keyboardAgents"]
+__all__ = [
+    "game",  # noqa
+    "util",
+    "layout",
+    "pacman",
+    "graphicsDisplay",
+    "ghostAgents",
+    "keyboardAgents",
+]

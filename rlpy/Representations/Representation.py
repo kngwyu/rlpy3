@@ -8,8 +8,13 @@ import scipy.sparse as sp
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -82,9 +87,9 @@ class Representation(object):
             For discrete dimensions, this parameter is ignored.
         """
 
-        for v in ['features_num']:
+        for v in ["features_num"]:
             if getattr(self, v) is None:
-                raise Exception('Missed domain initialization of ' + v)
+                raise Exception("Missed domain initialization of " + v)
         self.expectedStepCached = {}
         self.setBinsPerDimension(domain, discretization)
         self.domain = domain
@@ -95,20 +100,22 @@ class Representation(object):
             self.weight_vec = np.zeros(self.features_num * self.actions_num)
         except MemoryError as m:
             print(
-                "Unable to allocate weights of size: %d\n" %
-                self.features_num *
-                self.actions_num)
+                "Unable to allocate weights of size: %d\n"
+                % self.features_num
+                * self.actions_num
+            )
             raise m
 
-        self._phi_sa_cache = np.empty(
-            (self.actions_num, self.features_num))
+        self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
         self._arange_cache = np.arange(self.features_num)
-        self.agg_states_num = np.prod(self.bins_per_dim.astype('uint64'))
-        self.logger = logging.getLogger("rlpy.Representations." + self.__class__.__name__)
-        
+        self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
+        self.logger = logging.getLogger(
+            "rlpy.Representations." + self.__class__.__name__
+        )
+
         # a new stream of random numbers for each representation
         self.random_state = np.random.RandomState(seed=seed)
-        
+
     def init_randomization(self):
         """
         Any stochastic behavior in __init__() is broken out into this function
@@ -117,7 +124,7 @@ class Representation(object):
         
         """
         pass
-        
+
     def V(self, s, terminal, p_actions, phi_s=None):
         """ Returns the value of state s under possible actions p_actions.
 
@@ -169,10 +176,8 @@ class Representation(object):
             return np.zeros((self.actions_num))
         weight_vec_prime = self.weight_vec.reshape(-1, self.features_num)
         if self._phi_sa_cache.shape != (self.actions_num, self.features_num):
-            self._phi_sa_cache = np.empty(
-                (self.actions_num, self.features_num))
-        Q = np.multiply(weight_vec_prime, phi_s,
-                        out=self._phi_sa_cache).sum(axis=1)
+            self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
+        Q = np.multiply(weight_vec_prime, phi_s, out=self._phi_sa_cache).sum(axis=1)
         # stacks phi_s in cache
         return Q
 
@@ -214,7 +219,7 @@ class Representation(object):
 
         """
         if terminal or self.features_num == 0:
-            return np.zeros(self.features_num, 'bool')
+            return np.zeros(self.features_num, "bool")
         else:
             return self.phi_nonTerminal(s)
 
@@ -253,26 +258,24 @@ class Representation(object):
         if snippet is True:
             return phi_s, a * self.features_num, (a + 1) * self.features_num
 
-        phi_sa = np.zeros(
-            (self.features_num * self.actions_num),
-            dtype=phi_s.dtype)
+        phi_sa = np.zeros((self.features_num * self.actions_num), dtype=phi_s.dtype)
         if self.features_num == 0:
             return phi_sa
         if len(self._arange_cache) != self.features_num:
             self._arange_cache = np.arange(
-                a * self.features_num,
-                (a + 1) * self.features_num)
+                a * self.features_num, (a + 1) * self.features_num
+            )
         else:
             self._arange_cache += a * self.features_num - self._arange_cache[0]
         phi_sa[self._arange_cache] = phi_s
         # Slower alternatives
         # Alternative 1: Set only non_zeros (Very close on running time with the current solution. In fact it is sometimes better)
-        #nnz_ind = phi_s.nonzero()
-        #phi_sa[nnz_ind+a*self.features_num] = phi_s[nnz_ind]
+        # nnz_ind = phi_s.nonzero()
+        # phi_sa[nnz_ind+a*self.features_num] = phi_s[nnz_ind]
         # Alternative 2: Use of Kron
-        #A = zeros(self.actions_num)
-        #A[a] = 1
-        #F_sa = kron(A,F_s)
+        # A = zeros(self.actions_num)
+        # A[a] = 1
+        # F_sa = kron(A,F_s)
         return phi_sa
 
     def addNewWeight(self):
@@ -280,11 +283,9 @@ class Representation(object):
         Add a new zero weight, corresponding to a newly added feature,
         to all actions.
         """
-        self.weight_vec = addNewElementForAllActions(
-            self.weight_vec,
-            self.actions_num)
+        self.weight_vec = addNewElementForAllActions(self.weight_vec, self.actions_num)
 
-    def hashState(self, s,):
+    def hashState(self, s):
         """
         Returns a unique id for a given state.
         Essentially, enumerate all possible states and return the ID associated
@@ -310,9 +311,12 @@ class Representation(object):
             if d in domain.continuous_dims:
                 self.bins_per_dim[d] = discretization
             else:
-                self.bins_per_dim[d] = domain.statespace_limits[d, 1] - \
-                    domain.statespace_limits[d, 0]
-            self.binWidth_per_dim[d] = (domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]) / self.bins_per_dim[d]
+                self.bins_per_dim[d] = (
+                    domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]
+                )
+            self.binWidth_per_dim[d] = (
+                domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]
+            ) / self.bins_per_dim[d]
 
     def binState(self, s):
         """
@@ -329,8 +333,8 @@ class Representation(object):
         """
         s = np.atleast_1d(s)
         limits = self.domain.statespace_limits
-        assert (np.all(s >= limits[:, 0]))
-        assert (np.all(s <= limits[:, 1]))
+        assert np.all(s >= limits[:, 0])
+        assert np.all(s <= limits[:, 1])
         width = limits[:, 1] - limits[:, 0]
         diff = s - limits[:, 0]
         bs = (diff * self.bins_per_dim / width).astype("uint32")
@@ -454,10 +458,9 @@ class Representation(object):
         bs = self.binState(s)
         shifts = np.hstack((0, np.cumsum(self.bins_per_dim)[:-1]))
         index = bs + shifts
-        return index.astype('uint32')
+        return index.astype("uint32")
 
-    def batchPhi_s_a(self, all_phi_s, all_actions,
-                     all_phi_s_a=None, use_sparse=False):
+    def batchPhi_s_a(self, all_phi_s, all_actions, all_phi_s_a=None, use_sparse=False):
         """
         Builds the feature vector for a series of state-action pairs (s,a)
         using the copy-paste method.
@@ -485,19 +488,17 @@ class Representation(object):
         p, n = all_phi_s.shape
         a_num = self.actions_num
         if use_sparse:
-            phi_s_a = sp.lil_matrix(
-                (p, n * a_num), dtype=all_phi_s.dtype)
+            phi_s_a = sp.lil_matrix((p, n * a_num), dtype=all_phi_s.dtype)
         else:
             phi_s_a = np.zeros((p, n * a_num), dtype=all_phi_s.dtype)
 
         for i in range(a_num):
             rows = np.where(all_actions == i)[0]
             if len(rows):
-                phi_s_a[rows, i * n:(i + 1) * n] = all_phi_s[rows,:]
+                phi_s_a[rows, i * n : (i + 1) * n] = all_phi_s[rows, :]
         return phi_s_a
 
-    def batchBestAction(self, all_s, all_phi_s,
-                        action_mask=None, useSparse=True):
+    def batchBestAction(self, all_s, all_phi_s, action_mask=None, useSparse=True):
         """
         Accepts a batch of states, returns the best action associated with each.
 
@@ -540,11 +541,7 @@ class Representation(object):
         best_action = np.argmax(all_q_s_a, axis=1)
 
         # Calculate the corresponding phi_s_a
-        phi_s_a = self.batchPhi_s_a(
-            all_phi_s,
-            best_action,
-            all_phi_s_a,
-            useSparse)
+        phi_s_a = self.batchPhi_s_a(all_phi_s, best_action, all_phi_s_a, useSparse)
         return best_action, phi_s_a, action_mask
 
     def featureType(self):
@@ -584,24 +581,31 @@ class Representation(object):
         """
         # Hash new state for the incremental tabular case
         self.continuous_state_starting_samples = 10
-        if hasFunction(self, 'addState'):
+        if hasFunction(self, "addState"):
             self.addState(s)
 
         discount_factor = self.domain.discount_factor
-        if hasFunction(self.domain, 'expectedStep'):
+        if hasFunction(self.domain, "expectedStep"):
             p, r, ns, t, p_actions = self.domain.expectedStep(s, a)
             Q = 0
             for j in range(len(p)):
                 if policy is None:
-                    Q += p[j, 0] * (r[j, 0] + discount_factor * self.V(ns[j,:], t[j,:], p_actions[j]))
+                    Q += p[j, 0] * (
+                        r[j, 0]
+                        + discount_factor * self.V(ns[j, :], t[j, :], p_actions[j])
+                    )
                 else:
                     # For some domains such as blocks world, you may want to apply bellman backup to impossible states which may not have any possible actions.
                     # This if statement makes sure that there exist at least
                     # one action in the next state so the bellman backup with
                     # the fixed policy is valid
-                    if len(self.domain.possibleActions(ns[j,:])):
-                        na = policy.pi(ns[j,:], t[j,:], self.domain.possibleActions(ns[j,:]))
-                        Q += p[j, 0] * (r[j, 0] + discount_factor * self.Q(ns[j,:], t[j,:], na))
+                    if len(self.domain.possibleActions(ns[j, :])):
+                        na = policy.pi(
+                            ns[j, :], t[j, :], self.domain.possibleActions(ns[j, :])
+                        )
+                        Q += p[j, 0] * (
+                            r[j, 0] + discount_factor * self.Q(ns[j, :], t[j, :], na)
+                        )
         else:
             # See if they are in cache:
             key = tuple(np.hstack((s, [a])))
@@ -616,8 +620,7 @@ class Representation(object):
                 s = self.stateInTheMiddleOfGrid(s)
                 # print "After:", shout(self,s)
                 if len(self.domain.continuous_dims):
-                    next_states = np.empty(
-                        (ns_samples, self.domain.state_space_dims))
+                    next_states = np.empty((ns_samples, self.domain.state_space_dims))
                     rewards = np.empty(ns_samples)
                     # next states per samples initial state
                     ns_samples_ = ns_samples // self.continuous_state_starting_samples
@@ -629,24 +632,35 @@ class Representation(object):
                             w = self.binWidth_per_dim[d]
                             # Sample each dimension of the new_s within the
                             # cell
-                            new_s[d] = (self.random_state.rand() - .5) * w + s[d]
+                            new_s[d] = (self.random_state.rand() - 0.5) * w + s[d]
                             # If the dimension is discrete make make the
                             # sampled value to be int
                             if not d in self.domain.continuous_dims:
                                 new_s[d] = int(new_s[d])
                         ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
-                        next_states[i * ns_samples_:(i + 1) * ns_samples_,:] = ns
-                        rewards[i * ns_samples_:(i + 1) * ns_samples_] = r
+                        next_states[i * ns_samples_ : (i + 1) * ns_samples_, :] = ns
+                        rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
                 else:
-                    next_states, rewards = self.domain.sampleStep(
-                        s, a, ns_samples)
+                    next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
                 self.expectedStepCached[key] = [next_states, rewards]
             else:
                 next_states, rewards = cacheHit
             if policy is None:
-                Q = np.mean([rewards[i] + discount_factor * self.V(next_states[i,:]) for i in range(ns_samples)])
+                Q = np.mean(
+                    [
+                        rewards[i] + discount_factor * self.V(next_states[i, :])
+                        for i in range(ns_samples)
+                    ]
+                )
             else:
-                Q = np.mean([rewards[i] + discount_factor * self.Q(next_states[i,:], policy.pi(next_states[i,:])) for i in range(ns_samples)])
+                Q = np.mean(
+                    [
+                        rewards[i]
+                        + discount_factor
+                        * self.Q(next_states[i, :], policy.pi(next_states[i, :]))
+                        for i in range(ns_samples)
+                    ]
+                )
         return Q
 
     def Qs_oneStepLookAhead(self, s, ns_samples, policy=None):
@@ -679,8 +693,9 @@ class Representation(object):
             possible *a*, where `|A|` is the number of possible actions from state *s*
         """
         actions = self.domain.possibleActions(s)
-        Qs = np.array([self.Q_oneStepLookAhead(s, a, ns_samples, policy)
-                       for a in actions])
+        Qs = np.array(
+            [self.Q_oneStepLookAhead(s, a, ns_samples, policy) for a in actions]
+        )
         return Qs, actions
 
     def V_oneStepLookAhead(self, s, ns_samples):
@@ -705,8 +720,8 @@ class Representation(object):
 
         :return: The value of being in state *s*, *V(s)*.
         """
-    # The estimated value = max_a Q(s,a) together with the corresponding
-    # action that maximizes the Q function
+        # The estimated value = max_a Q(s,a) together with the corresponding
+        # action that maximizes the Q function
         Qs, actions = self.Qs_oneStepLookAhead(s, ns_samples)
         a_ind = np.argmax(Qs)
         return Qs[a_ind], actions[a_ind]
@@ -729,7 +744,9 @@ class Representation(object):
 
         # Find the value corresponding to each bin number
         for d in range(self.domain.state_space_dims):
-            s[d] = bin2state(s[d], self.bins_per_dim[d], self.domain.statespace_limits[d,:])
+            s[d] = bin2state(
+                s[d], self.bins_per_dim[d], self.domain.statespace_limits[d, :]
+            )
 
         if len(self.domain.continuous_dims) == 0:
             s = s.astype(int)
@@ -750,13 +767,14 @@ class Representation(object):
         """
         s_normalized = s.copy()
         for d in range(self.domain.state_space_dims):
-            s_normalized[d] = closestDiscretization(s[d], self.bins_per_dim[d], self.domain.statespace_limits[d,:])
+            s_normalized[d] = closestDiscretization(
+                s[d], self.bins_per_dim[d], self.domain.statespace_limits[d, :]
+            )
         return s_normalized
-
 
     def episodeTerminated(self):
         pass
-    
+
     def featureLearningRate(self):
         """
         :return: An array or scalar used to adapt the learning rate of each

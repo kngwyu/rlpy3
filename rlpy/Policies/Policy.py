@@ -5,8 +5,13 @@ import logging
 from abc import ABC, abstractmethod
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -31,6 +36,7 @@ class Policy(ABC):
         All new policy implementations should inherit from Policy.
 
     """
+
     representation = None
     DEBUG = False
     # A seeded numpy random number generator
@@ -73,6 +79,7 @@ class Policy(ABC):
         *Abstract Method:* \n Turn off exploration (e.g., epsilon=0 in epsilon-greedy)
         """
         pass
+
     # [turnOffExploration code]
 
     # \b ABSTRACT \b METHOD: Turn exploration on. See code
@@ -90,7 +97,7 @@ class Policy(ABC):
     def printAll(self):
         """ Prints all class information to console. """
         print(className(self))
-        print('=======================================')
+        print("=======================================")
         for property, value in vars(self).items():
             print(property, ": ", value)
 

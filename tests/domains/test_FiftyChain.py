@@ -13,15 +13,18 @@ def _make_experiment(exp_id=1, path="./Results/Tmp/test_FiftyChain"):
 
     ## Representation
     # discretization only needed for continuous state spaces, discarded otherwise
-    representation  = Tabular(domain)
+    representation = Tabular(domain)
 
     ## Policy
     policy = eGreedy(representation, epsilon=0.2)
 
     ## Agent
-    agent = SARSA(representation=representation, policy=policy,
-                  discount_factor=domain.discount_factor,
-                       learn_rate=0.1)
+    agent = SARSA(
+        representation=representation,
+        policy=policy,
+        discount_factor=domain.discount_factor,
+        learn_rate=0.1,
+    )
     checks_per_policy = 3
     max_steps = 50
     num_policy_checks = 3
@@ -31,6 +34,7 @@ def _make_experiment(exp_id=1, path="./Results/Tmp/test_FiftyChain"):
 
 def test_seed():
     check_seed_vis(_make_experiment)
+
 
 def test_errs():
     """ Ensure that we can call custom methods without error """
@@ -43,12 +47,13 @@ def test_errs():
     # [[Test L_inf_distance_to_V_star]]
     exp = _make_experiment(exp_id=1)
     exp.config_logging = False
-    exp.run(visualize_steps=False,
-            visualize_learning=False,
-            visualize_performance=0)
+    exp.run(visualize_steps=False, visualize_learning=False, visualize_performance=0)
     distToVStar = exp.domain.L_inf_distance_to_V_star(exp.agent.representation)
-    assert distToVStar is not np.NAN # must use `is not` because of np.NaN vs np.NAN vs...
+    assert (
+        distToVStar is not np.NAN
+    )  # must use `is not` because of np.NaN vs np.NAN vs...
     assert distToVStar is not np.Inf
+
 
 def test_transitions():
     """
@@ -68,7 +73,7 @@ def test_transitions():
     goals = domain.GOAL_STATES
 
     # Check basic step
-    r,ns,terminal,possibleA = domain.step(left)
+    r, ns, terminal, possibleA = domain.step(left)
     assert ns == 1 and not terminal
     assert np.all(possibleA == np.array([left, right]))  # all actions available
     if ns in goals:
@@ -77,9 +82,9 @@ def test_transitions():
         assert r <= 0
 
     # Check another basic step
-    r,ns,terminal,possibleA = domain.step(left)
+    r, ns, terminal, possibleA = domain.step(left)
     assert ns == 0 and not terminal
-    assert np.all(possibleA == np.array([left, right])) # all actions available
+    assert np.all(possibleA == np.array([left, right]))  # all actions available
     if ns in goals:
         assert r > 0
     else:
@@ -87,22 +92,23 @@ def test_transitions():
 
     # Ensure state does not change or wrap around and that all actions
     # remain availableon corner case, per domain spec
-    r,ns,terminal,possibleA = domain.step(left)
+    r, ns, terminal, possibleA = domain.step(left)
     assert ns == 0 and not terminal
-    assert np.all(possibleA == np.array([left, right])) # all actions available
+    assert np.all(possibleA == np.array([left, right]))  # all actions available
     if ns in goals:
         assert r > 0
     else:
         assert r <= 0
 
     # A final basic step
-    r,ns,terminal,possibleA = domain.step(right)
+    r, ns, terminal, possibleA = domain.step(right)
     assert ns == 1 and not terminal
-    assert np.all(possibleA == np.array([left, right])) # all actions available
+    assert np.all(possibleA == np.array([left, right]))  # all actions available
     if ns in goals:
         assert r > 0
     else:
         assert r <= 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_seed()

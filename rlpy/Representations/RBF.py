@@ -4,8 +4,13 @@ from .Representation import Representation
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -19,14 +24,25 @@ class RBF(Representation):
 
 
     """
+
     state_dimensions = None
     rbfs_mu = None  #: The mean of RBFs
     #: The std dev of the RBFs (uniformly selected between [0, dimension width]
     rbfs_sigma = None
 
-    def __init__(self, domain, num_rbfs=None, state_dimensions=None,
-                 const_feature=True, resolution_min=2., resolution_max=None,
-                 seed=1, normalize=False, grid_bins=None, include_border=False):
+    def __init__(
+        self,
+        domain,
+        num_rbfs=None,
+        state_dimensions=None,
+        const_feature=True,
+        resolution_min=2.0,
+        resolution_max=None,
+        seed=1,
+        normalize=False,
+        grid_bins=None,
+        include_border=False,
+    ):
         """
         :param domain: the :py:class`~rlpy.Domains.Domain.Domain` associated
             with the value function we want to learn.
@@ -70,9 +86,13 @@ class RBF(Representation):
         if self.grid_bins is not None:
             # uniform grid of rbfs
             self.rbfs_mu, self.num_rbfs = self._uniformRBFs(
-                self.grid_bins, domain, include_border)
-            self.rbfs_sigma = np.ones(
-                (self.num_rbfs, self.dims)) * (self.resolution_max + self.resolution_min) / 2
+                self.grid_bins, domain, include_border
+            )
+            self.rbfs_sigma = (
+                np.ones((self.num_rbfs, self.dims))
+                * (self.resolution_max + self.resolution_min)
+                / 2
+            )
 
         self.const_feature = const_feature
         self.features_num = self.num_rbfs
@@ -90,35 +110,34 @@ class RBF(Representation):
             return
         else:
             # uniformly scattered
-            assert(self.num_rbfs is not None)
+            assert self.num_rbfs is not None
             self.rbfs_mu = np.zeros((self.num_rbfs, self.dims))
             self.rbfs_sigma = np.zeros((self.num_rbfs, self.dims))
-            dim_widths = (self.domain.statespace_limits[self.state_dimensions, 1])
+            dim_widths = self.domain.statespace_limits[self.state_dimensions, 1]
 
             for i in range(self.num_rbfs):
                 for d in self.state_dimensions:
                     self.rbfs_mu[i, d] = self.random_state.uniform(
                         self.domain.statespace_limits[d, 0],
-                        self.domain.statespace_limits[d, 1])
+                        self.domain.statespace_limits[d, 1],
+                    )
                     self.rbfs_sigma[i, d] = self.random_state.uniform(
                         dim_widths[d] / self.resolution_max,
-                        dim_widths[d] / self.resolution_min)
+                        dim_widths[d] / self.resolution_min,
+                    )
 
     def phi_nonTerminal(self, s):
         F_s = np.ones(self.features_num)
         if self.state_dimensions is not None:
             s = s[self.state_dimensions]
 
-        exponent = np.sum(
-            .5 * ((s - self.rbfs_mu) / self.rbfs_sigma) ** 2,
-            axis=1
-        )
+        exponent = np.sum(0.5 * ((s - self.rbfs_mu) / self.rbfs_sigma) ** 2, axis=1)
         if self.const_feature:
             F_s[:-1] = np.exp(-exponent)
         else:
             F_s[:] = np.exp(-exponent)
 
-        if self.normalize and F_s.sum() != 0.:
+        if self.normalize and F_s.sum() != 0.0:
             F_s /= F_s.sum()
         return F_s
 
@@ -160,9 +179,11 @@ class RBF(Representation):
             rbfs_num = np.prod(bins_per_dimension[:] - 1)
         all_centers = []
         for d in range(dims):
-            centers = np.linspace(domain.statespace_limits[d, 0],
-                                  domain.statespace_limits[d, 1],
-                                  bins_per_dimension[d] + 1)
+            centers = np.linspace(
+                domain.statespace_limits[d, 0],
+                domain.statespace_limits[d, 1],
+                bins_per_dimension[d] + 1,
+            )
             if not includeBorders:
                 centers = centers[1:-1]  # Exclude the beginning and ending
             all_centers.append(centers.tolist())

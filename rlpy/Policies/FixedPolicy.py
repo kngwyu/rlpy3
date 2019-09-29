@@ -3,9 +3,15 @@ from rlpy.Tools import vec2id
 from .Policy import Policy
 import numpy as np
 from rlpy.Tools import randSet, className
+
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -18,12 +24,12 @@ class BasicPuddlePolicy(Policy):
 
     def pi(self, s, terminal, p_actions):
         # 0 up, 1 down
-        assert(len(s) == 2)
+        assert len(s) == 2
         if 0 not in p_actions:
-            assert(1 in p_actions)
+            assert 1 in p_actions
             return 1
         if 1 not in p_actions:
-            assert(0 in p_actions)
+            assert 0 in p_actions
             return 0
         d = np.ones(2) - s
         if self.random_state.rand() * d.sum() < d[0]:
@@ -44,20 +50,26 @@ class FixedPolicy(Policy):
     """
 
     # The name of the desired policy, where applicable. Otherwise ignored.
-    policyName = ''
+    policyName = ""
     tableOfValues = None
 
-    gridWorldPolicyNames = ['cw_circle', 'ccw_circle']
+    gridWorldPolicyNames = ["cw_circle", "ccw_circle"]
 
-    def __init__(self, representation,
-                 policyName='MISSINGNO', tableOfValues=None, seed=1):
+    def __init__(
+        self, representation, policyName="MISSINGNO", tableOfValues=None, seed=1
+    ):
         self.policyName = policyName
         self.tableOfValues = tableOfValues
         super(FixedPolicy, self).__init__(representation, seed)
 
     supportedDomains = [
-        'InfCartPoleBalance', 'BlocksWorld', 'IntruderMonitoring',
-        'SystemAdministrator', 'MountainCar', 'PST', 'GridWorld',
+        "InfCartPoleBalance",
+        "BlocksWorld",
+        "IntruderMonitoring",
+        "SystemAdministrator",
+        "MountainCar",
+        "PST",
+        "GridWorld",
     ]
 
     def pi(self, s, terminal, p_actions):
@@ -71,20 +83,22 @@ class FixedPolicy(Policy):
             print("ERROR: There is no fixed policy defined for %s" % className(domain))
             return None
 
-        if className(domain) == 'GridWorld':
+        if className(domain) == "GridWorld":
             # Actions are Up, Down, Left, Right
             if not self.policyName in self.gridWorldPolicyNames:
-                print("Error: There is no GridWorld policy with name %s" % self.policyName)
+                print(
+                    "Error: There is no GridWorld policy with name %s" % self.policyName
+                )
                 return None
 
-            if self.policyName == 'cw_circle':
+            if self.policyName == "cw_circle":
                 # Cycle through actions, starting with 0, causing agent to go
                 # in loop
                 if not hasattr(self, "curAction"):
                     # it doesn't exist yet, so initialize it [immediately
                     # incremented]
                     self.curAction = 0
-                while (not(self.curAction in domain.possibleActions(s))):
+                while not (self.curAction in domain.possibleActions(s)):
                     # We can't do something simple because of the order in which actions are defined
                     # must do switch statement
                     if self.curAction == 0:  # up
@@ -96,15 +110,17 @@ class FixedPolicy(Policy):
                     elif self.curAction == 2:  # left
                         self.curAction = 0
                     else:
-                        print('Something terrible happened...got an invalid action on GridWorld Fixed Policy')
-    #                 self.curAction = self.curAction % domain.actions_num
-            elif self.policyName == 'ccw_circle':
+                        print(
+                            "Something terrible happened...got an invalid action on GridWorld Fixed Policy"
+                        )
+            #                 self.curAction = self.curAction % domain.actions_num
+            elif self.policyName == "ccw_circle":
                 # Cycle through actions, starting with 0, causing agent to go
                 # in loop
                 if not hasattr(self, "curAction"):
                     # it doesn't exist yet, so initialize it
                     self.curAction = 1
-                while (not(self.curAction in domain.possibleActions(s))):
+                while not (self.curAction in domain.possibleActions(s)):
                     # We can't do something simple because of the order in which actions are defined
                     # must do switch statement
                     if self.curAction == 3:  # right
@@ -116,23 +132,30 @@ class FixedPolicy(Policy):
                     elif self.curAction == 1:  # down
                         self.curAction = 3
                     else:
-                        print('Something terrible happened...got an invalid action on GridWorld Fixed Policy')
-    #                 self.curAction = self.curAction % domain.actions_num
+                        print(
+                            "Something terrible happened...got an invalid action on GridWorld Fixed Policy"
+                        )
+            #                 self.curAction = self.curAction % domain.actions_num
 
             else:
-                print("Error: No policy defined with name %s, but listed in gridWorldPolicyNames" % self.policyName)
-                print("You need to create a switch statement for the policy name above, or remove it from gridWorldPolicyNames")
+                print(
+                    "Error: No policy defined with name %s, but listed in gridWorldPolicyNames"
+                    % self.policyName
+                )
+                print(
+                    "You need to create a switch statement for the policy name above, or remove it from gridWorldPolicyNames"
+                )
                 return None
             return self.curAction
 
-# Cycle through actions, starting with 0, causing agent to go in other direction
-#             if not hasattr(pi, "curAction"):
-# pi.curAction = domain.actions_num-1  # it doesn't exist yet, so initialize it
-#             if not(pi.curAction in domain.possibleActions(s)):
-#                 pi.curAction -= 1
-#                 if pi.curAction < 0: pi.curAction = domain.actions_num-1
+        # Cycle through actions, starting with 0, causing agent to go in other direction
+        #             if not hasattr(pi, "curAction"):
+        # pi.curAction = domain.actions_num-1  # it doesn't exist yet, so initialize it
+        #             if not(pi.curAction in domain.possibleActions(s)):
+        #                 pi.curAction -= 1
+        #                 if pi.curAction < 0: pi.curAction = domain.actions_num-1
 
-        if className(domain) == 'InfCartPoleBalance':
+        if className(domain) == "InfCartPoleBalance":
             # Fixed policy rotate the pendulum in the opposite direction of the
             # thetadot
             theta, thetadot = s
@@ -140,7 +163,7 @@ class FixedPolicy(Policy):
                 return 2
             else:
                 return 0
-        if className(domain) == 'BlocksWorld':
+        if className(domain) == "BlocksWorld":
             # Fixed policy rotate the blocksworld = Optimal Policy (Always pick the next piece of the tower and move it to the tower
             # Policy: Identify the top of the tower.
             # move the next piece on the tower with 95% chance 5% take a random
@@ -148,7 +171,7 @@ class FixedPolicy(Policy):
 
             # Random Action with some probability
             # TODO fix isTerminal use here
-            if self.random_state.rand() < .3 or domain.isTerminal():
+            if self.random_state.rand() < 0.3 or domain.isTerminal():
                 return randSet(domain.possibleActions(s))
 
             # non-Random Policy
@@ -161,7 +184,9 @@ class FixedPolicy(Policy):
             while True:
                 # Check the next block
                 block = correct_tower_size
-                if (block == 0 and domain.on_table(block, s)) or domain.on(block, block - 1, s):
+                if (block == 0 and domain.on_table(block, s)) or domain.on(
+                    block, block - 1, s
+                ):
                     # This block is on the right position, check the next block
                     correct_tower_size += 1
                 else:
@@ -202,13 +227,13 @@ class FixedPolicy(Policy):
                         return domain.getActionPutAonTable(block)
                     else:
                         return domain.getActionPutAonB(block, block - 1)
-        if className(domain) == 'IntruderMonitoring':
+        if className(domain) == "IntruderMonitoring":
             # Each UAV assign themselves to a target
             # Each UAV finds the closest danger zone to its target and go towards there.
             # If UAVs_num > Target, the rest will hold position
             # Move all agents based on the taken action
-            agents = np.array(s[:domain.NUMBER_OF_AGENTS * 2].reshape(-1, 2))
-            targets = np.array(s[domain.NUMBER_OF_AGENTS * 2:].reshape(-1, 2))
+            agents = np.array(s[: domain.NUMBER_OF_AGENTS * 2].reshape(-1, 2))
+            targets = np.array(s[domain.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2))
             zones = domain.danger_zone_locations
             # Default action is hold
             actions = np.ones(len(agents), dtype=np.integer) * 4
@@ -217,7 +242,8 @@ class FixedPolicy(Policy):
                 # Find cloasest zone (manhattan) to the corresponding target
                 target = targets[i, :]
                 distances = np.sum(
-                    np.abs(np.tile(target, (len(zones), 1)) - zones), axis=1)
+                    np.abs(np.tile(target, (len(zones), 1)) - zones), axis=1
+                )
                 z_row, z_col = zones[np.argmin(distances), :]
                 # find the valid action
                 a_row, a_col = agents[i, :]
@@ -231,20 +257,20 @@ class FixedPolicy(Policy):
                 if a_col < z_col:
                     a = 3  # right
                 actions[i] = a
-#                print "Agent=", agents[i,:]
-#                print "Target", target
-#                print "Zone", zones[argmin(distances),:]
-#                print "Action", a
-#                print '============'
+            #                print "Agent=", agents[i,:]
+            #                print "Target", target
+            #                print "Zone", zones[argmin(distances),:]
+            #                print "Action", a
+            #                print '============'
             return vec2id(actions, np.ones(len(agents), dtype=np.integer) * 5)
-        if className(domain) == 'SystemAdministrator':
+        if className(domain) == "SystemAdministrator":
             # Select a broken computer and reset it
             brokenComputers = np.where(s == 0)[0]
             if len(brokenComputers):
                 return randSet(brokenComputers)
             else:
                 return domain.computers_num
-        if className(domain) == 'MountainCar':
+        if className(domain) == "MountainCar":
             # Accelerate in the direction of the valley
             # WORK IN PROGRESS
             x, xdot = s
@@ -252,7 +278,7 @@ class FixedPolicy(Policy):
                 return 2
             else:
                 return 0
-        if className(domain) == 'PST':
+        if className(domain) == "PST":
             # One stays at comm, n-1 stay at target area. Whenever fuel is
             # lower than reaching the base the move back
             print(s)

@@ -4,8 +4,13 @@ import numpy as np
 import logging
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -42,6 +47,7 @@ class Agent(ABC):
         All new agent implementations should inherit from this class.
 
     """
+
     # The Representation to be used by the Agent
     representation = None
     #: discount factor determining the optimal policy
@@ -129,8 +135,8 @@ class Agent(ABC):
         self.episode_count += 1
 
         # Set eligibility Traces to zero if it is end of the episode
-        if hasattr(self, 'eligibility_trace'):
-                self.eligibility_trace = np.zeros_like(self.eligibility_trace)
+        if hasattr(self, "eligibility_trace"):
+            self.eligibility_trace = np.zeros_like(self.eligibility_trace)
 
 
 class DescentAlgorithm(object):
@@ -142,26 +148,32 @@ class DescentAlgorithm(object):
     # The initial learning rate. Note that initial_learn_rate should be set to
     # 1 for automatic learning rate; otherwise, initial_learn_rate will act as
     # a permanent upper-bound on learn_rate.
-    initial_learn_rate       = 0.1
+    initial_learn_rate = 0.1
     #: The learning rate
-    learn_rate               = 0
+    learn_rate = 0
     #: The eligibility trace, which marks states as eligible for a learning
     #: update. Used by \ref Agents.SARSA.SARSA "SARSA" agent when the
     #: parameter lambda is set. See:
     #: http://www.incompleteideas.net/sutton/book/7/node1.html
-    eligibility_trace   = []
+    eligibility_trace = []
     #: A simple object that records the prints in a file
-    logger              = None
+    logger = None
     #: Used by some learn_rate_decay modes
-    episode_count       = 0
+    episode_count = 0
     # Decay mode of learning rate. Options are determined by valid_decay_modes.
-    learn_rate_decay_mode    = 'dabney'
+    learn_rate_decay_mode = "dabney"
     # Valid selections for the ``learn_rate_decay_mode``.
-    valid_decay_modes   = ['dabney','boyan','const','boyan_const']
+    valid_decay_modes = ["dabney", "boyan", "const", "boyan_const"]
     #  The N0 parameter for boyan learning rate decay
-    boyan_N0            = 1000
+    boyan_N0 = 1000
 
-    def __init__(self, initial_learn_rate = 0.1, learn_rate_decay_mode='dabney', boyan_N0=1000, **kwargs):
+    def __init__(
+        self,
+        initial_learn_rate=0.1,
+        learn_rate_decay_mode="dabney",
+        boyan_N0=1000,
+        **kwargs
+    ):
         """
         :param initial_learn_rate: Initial learning rate to use (where applicable)
 
@@ -174,20 +186,21 @@ class DescentAlgorithm(object):
 
         """
         self.initial_learn_rate = initial_learn_rate
-        self.learn_rate      = initial_learn_rate
+        self.learn_rate = initial_learn_rate
         self.learn_rate_decay_mode = learn_rate_decay_mode.lower()
-        self.boyan_N0   = boyan_N0
+        self.boyan_N0 = boyan_N0
 
         # Note that initial_learn_rate should be set to 1 for automatic learning rate; otherwise,
         # initial_learn_rate will act as a permanent upper-bound on learn_rate.
-        if self.learn_rate_decay_mode == 'dabney':
+        if self.learn_rate_decay_mode == "dabney":
             self.initial_learn_rate = 1.0
             self.learn_rate = 1.0
 
         super(DescentAlgorithm, self).__init__(**kwargs)
 
-    def updateLearnRate(self, phi, phi_prime, eligibility_trace,
-					discount_factor, nnz, terminal):
+    def updateLearnRate(
+        self, phi, phi_prime, eligibility_trace, discount_factor, nnz, terminal
+    ):
         """Computes a new learning rate (learn_rate) for the agent based on
         ``self.learn_rate_decay_mode``.
 
@@ -200,28 +213,35 @@ class DescentAlgorithm(object):
 
         """
 
-        if self.learn_rate_decay_mode == 'dabney':
+        if self.learn_rate_decay_mode == "dabney":
             # We only update learn_rate if this step is non-terminal; else phi_prime becomes
             # zero and the dot product below becomes very large, creating a very
             # small learn_rate
             if not terminal:
                 # Automatic learning rate: [Dabney W. 2012]
                 # http://people.cs.umass.edu/~wdabney/papers/alphaBounds.pdf
-                candid_learn_rate = np.dot(discount_factor * phi_prime - phi,
-                                                   eligibility_trace)
+                candid_learn_rate = np.dot(
+                    discount_factor * phi_prime - phi, eligibility_trace
+                )
                 if candid_learn_rate < 0:
-                    self.learn_rate = np.minimum(self.learn_rate, -1.0 / candid_learn_rate)
-        elif self.learn_rate_decay_mode == 'boyan':
-            self.learn_rate = self.initial_learn_rate * \
-                (self.boyan_N0 + 1.) / \
-                (self.boyan_N0 + (self.episode_count + 1) ** 1.1)
+                    self.learn_rate = np.minimum(
+                        self.learn_rate, -1.0 / candid_learn_rate
+                    )
+        elif self.learn_rate_decay_mode == "boyan":
+            self.learn_rate = (
+                self.initial_learn_rate
+                * (self.boyan_N0 + 1.0)
+                / (self.boyan_N0 + (self.episode_count + 1) ** 1.1)
+            )
             # divide by l1 of the features; note that this method is only called if phi != 0
             self.learn_rate /= np.sum(np.abs(phi))
-        elif self.learn_rate_decay_mode == 'boyan_const':
+        elif self.learn_rate_decay_mode == "boyan_const":
             # New little change from not having +1 for episode count
-            self.learn_rate = self.initial_learn_rate * \
-                (self.boyan_N0 + 1.) / \
-                (self.boyan_N0 + (self.episode_count + 1) ** 1.1)
+            self.learn_rate = (
+                self.initial_learn_rate
+                * (self.boyan_N0 + 1.0)
+                / (self.boyan_N0 + (self.episode_count + 1) ** 1.1)
+            )
         elif self.learn_rate_decay_mode == "const":
             self.learn_rate = self.initial_learn_rate
         else:

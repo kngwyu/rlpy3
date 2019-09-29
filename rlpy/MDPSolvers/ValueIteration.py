@@ -6,8 +6,13 @@ from rlpy.Tools import hhmmss, deltaT, className, clock, l_norm
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
@@ -54,7 +59,9 @@ class ValueIteration(MDPSolver):
 
         # Check for Tabular Representation
         if not self.IsTabularRepresentation():
-            self.logger.error("Value Iteration works only with a tabular representation.")
+            self.logger.error(
+                "Value Iteration works only with a tabular representation."
+            )
             return 0
 
         no_of_states = self.representation.agg_states_num
@@ -75,7 +82,8 @@ class ValueIteration(MDPSolver):
                 for a in self.domain.possibleActions(s):
 
                     # Check for available planning time
-                    if not self.hasTime(): break
+                    if not self.hasTime():
+                        break
 
                     self.BellmanBackup(s, a, ns_samples=self.ns_samples)
                     bellmanUpdates += 1
@@ -84,22 +92,35 @@ class ValueIteration(MDPSolver):
                     if bellmanUpdates % self.log_interval == 0:
                         performance_return, _, _, _ = self.performanceRun()
                         self.logger.info(
-                            '[%s]: BellmanUpdates=%d, Return=%0.4f' %
-                            (hhmmss(deltaT(self.start_time)), bellmanUpdates, performance_return))
+                            "[%s]: BellmanUpdates=%d, Return=%0.4f"
+                            % (
+                                hhmmss(deltaT(self.start_time)),
+                                bellmanUpdates,
+                                performance_return,
+                            )
+                        )
 
             # check for convergence
-            weight_vec_change = l_norm(prev_weight_vec - self.representation.weight_vec, np.inf)
+            weight_vec_change = l_norm(
+                prev_weight_vec - self.representation.weight_vec, np.inf
+            )
             converged = weight_vec_change < self.convergence_threshold
 
             # log the stats
-            performance_return, performance_steps, performance_term, performance_discounted_return = self.performanceRun()
+            performance_return, performance_steps, performance_term, performance_discounted_return = (
+                self.performanceRun()
+            )
             self.logger.info(
-                'PI #%d [%s]: BellmanUpdates=%d, ||delta-weight_vec||=%0.4f, Return=%0.4f, Steps=%d' % (iteration,
-                 hhmmss(deltaT(self.start_time)),
-                 bellmanUpdates,
-                 weight_vec_change,
-                 performance_return,
-                 performance_steps))
+                "PI #%d [%s]: BellmanUpdates=%d, ||delta-weight_vec||=%0.4f, Return=%0.4f, Steps=%d"
+                % (
+                    iteration,
+                    hhmmss(deltaT(self.start_time)),
+                    bellmanUpdates,
+                    weight_vec_change,
+                    performance_return,
+                    performance_steps,
+                )
+            )
 
             # Show the domain and value function
             if self.show:
@@ -115,5 +136,6 @@ class ValueIteration(MDPSolver):
             self.result["discounted_return"].append(performance_discounted_return)
             self.result["iteration"].append(iteration)
 
-        if converged: self.logger.info('Converged!')
+        if converged:
+            self.logger.info("Converged!")
         super(ValueIteration, self).solve()

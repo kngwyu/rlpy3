@@ -8,23 +8,29 @@ import pytest
 
 
 def get_file(fname):
-    return os.path.join(__rlpy_location__, '..', 'tests', fname)
+    return os.path.join(__rlpy_location__, "..", "tests", fname)
 
 
-@pytest.mark.parametrize('domain_class, filename', [
-    (InfCartPoleBalance, get_file('traj_InfiniteCartpoleBalance.npy')),
-    (FiniteCartPoleBalanceOriginal, get_file('traj_FiniteCartpoleBalanceOriginal.npy')),
-])
+@pytest.mark.parametrize(
+    "domain_class, filename",
+    [
+        (InfCartPoleBalance, get_file("traj_InfiniteCartpoleBalance.npy")),
+        (
+            FiniteCartPoleBalanceOriginal,
+            get_file("traj_FiniteCartpoleBalanceOriginal.npy"),
+        ),
+    ],
+)
 def test_trajectory(domain_class, filename):
     traj = np.load(filename, allow_pickle=True)
     traj_now = sample_random_trajectory(domain_class)
     for e1, e2 in zip(traj_now, traj):
         # State
-        assert np.allclose(e1[0], e2[0]), 'now: {}, saved: {}'.format(e1[0], e2[0])
+        assert np.allclose(e1[0], e2[0]), "now: {}, saved: {}".format(e1[0], e2[0])
         # Reward
-        assert e1[-1] == e2[-1], 'now: {}, saved: {}'.format(e1[-1], e2[-1])
+        assert e1[-1] == e2[-1], "now: {}, saved: {}".format(e1[-1], e2[-1])
         # Terminal
-        assert e1[1] == e2[1], 'now: {}, saved: {}'.format(e1[1], e2[1])
+        assert e1[1] == e2[1], "now: {}, saved: {}".format(e1[1], e2[1])
         # Actions
         assert len(e1[2]) == len(e2[2])
         # p_actions

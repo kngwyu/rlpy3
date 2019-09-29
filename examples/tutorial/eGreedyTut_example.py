@@ -13,6 +13,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 from future import standard_library
+
 standard_library.install_aliases()
 __author__ = "Robert H. Klein"
 from rlpy.Domains import GridWorld
@@ -37,31 +38,37 @@ def make_experiment(exp_id=1, path="./Results/Tutorial/gridworld-eGreedyTut"):
     opt["path"] = path
 
     ## Domain:
-    maze = '4x5.txt'
+    maze = "4x5.txt"
     domain = GridWorld(maze, noise=0.3)
     opt["domain"] = domain
 
     ## Representation
     # discretization only needed for continuous state spaces, discarded otherwise
-    representation  = Tabular(domain, discretization=20)
+    representation = Tabular(domain, discretization=20)
 
     ## Policy
     policy = eGreedyTut(representation, epsilon=0.2)
 
     ## Agent
-    opt["agent"] = SARSA(representation=representation, policy=policy,
-                  discount_factor=domain.discount_factor,
-                       initial_learn_rate=0.1)
+    opt["agent"] = SARSA(
+        representation=representation,
+        policy=policy,
+        discount_factor=domain.discount_factor,
+        initial_learn_rate=0.1,
+    )
     opt["checks_per_policy"] = 100
     opt["max_steps"] = 2000
     opt["num_policy_checks"] = 10
     experiment = Experiment(**opt)
     return experiment
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     experiment = make_experiment(1)
-    experiment.run(visualize_steps=False,  # should each learning step be shown?
-                   visualize_learning=True,  # show policy / value function?
-                   visualize_performance=1)  # show performance runs?
+    experiment.run(
+        visualize_steps=False,  # should each learning step be shown?
+        visualize_learning=True,  # show policy / value function?
+        visualize_performance=1,
+    )  # show performance runs?
     experiment.plot()
     experiment.save()

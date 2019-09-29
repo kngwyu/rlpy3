@@ -7,15 +7,22 @@ from .Representation import Representation
 import numpy as np
 from rlpy.Tools.GeneralTools import addNewElementForAllActions
 import matplotlib.pyplot as plt
+
 try:
     from .kernels import batch
 except ImportError:
     from .slow_kernels import batch
+
     print("C-Extensions for kernels not available, expect slow runtime")
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
-__credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
-               "William Dabney", "Jonathan P. How"]
+__credits__ = [
+    "Alborz Geramifard",
+    "Robert H. Klein",
+    "Christoph Dann",
+    "William Dabney",
+    "Jonathan P. How",
+]
 __license__ = "BSD 3-Clause"
 
 
@@ -23,6 +30,7 @@ class LocalBases(Representation):
     """
     abstract base class for representations that use local basis functions
     """
+
     #: centers of bases
     centers = None
     #: widths of bases
@@ -46,7 +54,7 @@ class LocalBases(Representation):
 
     def phi_nonTerminal(self, s):
         v = self.kernel(s, self.centers, self.widths)
-        if self.normalization and not v.sum() == 0.:
+        if self.normalization and not v.sum() == 0.0:
             # normalize such that each vector has a l1 norm of 1
             v /= v.sum()
         return v
@@ -68,15 +76,12 @@ class LocalBases(Representation):
             d1, d2 = self.domain.continuous_dims[:2]
         plt.figure("Feature Dimensions {} and {}".format(d1, d2))
         for i in range(self.centers.shape[0]):
-            plt.plot([self.centers[i, d1]],
-                     [self.centers[i, d2]], "r", marker="x")
+            plt.plot([self.centers[i, d1]], [self.centers[i, d2]], "r", marker="x")
         plt.draw()
 
 
 class NonparametricLocalBases(LocalBases):
-
-    def __init__(self, domain, kernel,
-                 max_similarity=0.9, resolution=5, **kwargs):
+    def __init__(self, domain, kernel, max_similarity=0.9, resolution=5, **kwargs):
         """
         :param domain: domain to learn on.
         :param kernel: function handle to use for kernel function evaluations.
@@ -92,14 +97,11 @@ class NonparametricLocalBases(LocalBases):
         
         """
         self.max_similarity = max_similarity
-        self.common_width = (domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]) / resolution
+        self.common_width = (
+            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
+        ) / resolution
         self.features_num = 0
-        super(
-            NonparametricLocalBases,
-            self).__init__(
-            domain,
-            kernel,
-            **kwargs)
+        super(NonparametricLocalBases, self).__init__(domain, kernel, **kwargs)
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
         norm = self.normalization
@@ -125,15 +127,21 @@ class NonparametricLocalBases(LocalBases):
         # TODO if normalized, use Q estimate for center to fill weight_vec
         new = np.zeros((self.domain.actions_num, 1))
         self.weight_vec = addNewElementForAllActions(
-            self.weight_vec,
-            self.domain.actions_num,
-            new)
+            self.weight_vec, self.domain.actions_num, new
+        )
 
 
 class RandomLocalBases(LocalBases):
-
-    def __init__(self, domain, kernel, num=100, resolution_min=5,
-                 resolution_max=None, seed=1, **kwargs):
+    def __init__(
+        self,
+        domain,
+        kernel,
+        num=100,
+        resolution_min=5,
+        resolution_max=None,
+        seed=1,
+        **kwargs
+    ):
         """
         :param domain: domain to learn on.
         :param kernel: function handle to use for kernel function evaluations.
@@ -150,28 +158,25 @@ class RandomLocalBases(LocalBases):
         
         """
         self.features_num = num
-        self.dim_widths = (domain.statespace_limits[:, 1]
-                      - domain.statespace_limits[:, 0])
+        self.dim_widths = (
+            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
+        )
         self.resolution_max = resolution_max
         self.resolution_min = resolution_min
-        
-        super(
-            RandomLocalBases,
-            self).__init__(
-            domain,
-            kernel,
-            seed=seed,
-            **kwargs)
+
+        super(RandomLocalBases, self).__init__(domain, kernel, seed=seed, **kwargs)
         self.centers = np.zeros((num, len(self.dim_widths)))
         self.widths = np.zeros((num, len(self.dim_widths)))
         self.init_randomization()
-    
+
     def init_randomization(self):
         for i in range(self.features_num):
             for d in range(len(self.dim_widths)):
                 self.centers[i, d] = self.random_state.uniform(
                     self.domain.statespace_limits[d, 0],
-                    self.domain.statespace_limits[d, 1])
+                    self.domain.statespace_limits[d, 1],
+                )
                 self.widths[i, d] = self.random_state.uniform(
                     self.dim_widths[d] / self.resolution_max,
-                    self.dim_widths[d] / self.resolution_min)
+                    self.dim_widths[d] / self.resolution_min,
+                )

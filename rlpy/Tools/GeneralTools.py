@@ -15,7 +15,6 @@ from matplotlib import pyplot as plt
 from matplotlib import patches as mpatches
 from matplotlib import path as mpath
 from mpl_toolkits.mplot3d import axes3d
-pl.ion()
 
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -32,8 +31,9 @@ __author__ = "Alborz Geramifard"
 __rlpy_location__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def use_nogui_backend():
+def nogui_mode():
     mpl.use("agg")
+    pl.ioff()
 
     def _stub(*args, **kwargs):
         pass
@@ -44,8 +44,9 @@ def use_nogui_backend():
 # Try GUI backend first
 try:
     mpl.use("tkAgg")
+    pl.ion()
 except ImportError:
-    use_nogui_backend()
+    nogui_mode()
 
 
 def discrete_sample(p):

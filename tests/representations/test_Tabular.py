@@ -1,10 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-
-standard_library.install_aliases()
 from rlpy.Representations import Tabular
 from rlpy.Domains import GridWorld, InfiniteTrackCartPole
 import numpy as np
@@ -39,9 +32,9 @@ def test_phi_cells():
             phiVec = rep.phi(np.array([r, c]), terminal=False)
             assert sum(phiVec) == 1  # only 1 active feature
             activeInd = np.where(phiVec > 0)
-            assert seenStates[activeInd] != True  # havent seen it before
+            assert seenStates[activeInd][0] != 1  # havent seen it before
             seenStates[activeInd] = True
-    assert np.all(seenStates == True)  # we've covered all states
+    assert np.all(seenStates)  # we've covered all states
 
     # Optionally run some trajectories, make sure nothing changed
 

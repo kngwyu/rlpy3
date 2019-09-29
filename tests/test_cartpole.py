@@ -1,9 +1,7 @@
 import numpy as np
-import pickle
 from rlpy.Domains import FiniteCartPoleBalanceOriginal, InfCartPoleBalance
 from rlpy.Tools import __rlpy_location__
 import os
-import sys
 import pytest
 
 

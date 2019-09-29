@@ -1,12 +1,5 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-
-standard_library.install_aliases()
 from rlpy.Representations import IncrementalTabular
-from rlpy.Domains import GridWorld, InfiniteTrackCartPole
+from rlpy.Domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -41,13 +34,3 @@ def test_cell_expansion():
     numAdded = rep.pre_discover(np.array([0, 0]), terminal, a, s2, terminal)
     assert numAdded == 0
     assert rep.features_num == 2
-
-
-def test_phi_post_expansion():
-    """
-    Ensure correct feature is activated for corresponding state, even after 
-    expansion.  Also tests if weight vector remains aligned with feat vec.
-    
-    """
-    # TODO - could check to make sure weight vector remains aligned with
-    # feat vec, even after expansion

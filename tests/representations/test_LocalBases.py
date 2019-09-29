@@ -1,23 +1,10 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-from future import standard_library
-
-standard_library.install_aliases()
-from past.utils import old_div
 from rlpy.Representations.LocalBases import NonparametricLocalBases, RandomLocalBases
-from rlpy.Domains import GridWorld, InfiniteTrackCartPole
+from rlpy.Domains import InfiniteTrackCartPole
 import numpy as np
-from rlpy.Tools import __rlpy_location__
-import os
-
 try:
-    from rlpy.Representations.kernels import *
+    from rlpy.Representations.kernels import gaussian_kernel
 except ImportError:
-    from rlpy.Representations.slow_kernels import *
-
-    print("C-Extensions for kernels not available, expect slow runtime")
+    from rlpy.Representations.slow_kernels import gaussian_kernel
 
 
 def test_parametric_rep():
@@ -54,10 +41,9 @@ def test_parametric_rep():
         statespace_range = (
             domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
         )
-        assert np.all(
-            old_div(statespace_range, resolution_max) <= rep.widths[0]
-        )  # widths[0] has `state_space_dims` cols
-        assert np.all(rep.widths[0] <= old_div(statespace_range, resolution_min))
+        # widths[0] has `state_space_dims` cols
+        assert np.all(statespace_range / resolution_max <= rep.widths[0])
+        assert np.all(rep.widths[0] <= statespace_range / resolution_min)
 
         phiVecOrigin = rep.phi(np.array([0, 0], dtype=np.float), terminal=False)
         assert np.all(phiVecOrigin >= 0)  # nonnegative feat func values
@@ -152,7 +138,7 @@ def test_nonparametric_rep():
         statespace_range = (
             domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
         )
-        assert np.all(rep.widths == old_div(statespace_range, resolution))
+        assert np.all(rep.widths == statespace_range / resolution)
 
         phiVecOrigin = rep.phi(np.array([0, 0], dtype=np.float), terminal=False)
         assert np.all(phiVecOrigin >= 0)  # nonnegative feat func values

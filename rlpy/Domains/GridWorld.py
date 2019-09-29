@@ -91,13 +91,14 @@ class GridWorld(Domain):
         self.statespace_limits = np.array([[0, self.ROWS - 1], [0, self.COLS - 1]])
         self.NOISE = noise
         self.DimNames = ["Row", "Col"]
+        self.state = self.start_state.copy()
         # 2*self.ROWS*self.COLS, small values can cause problem for some
         # planning techniques
         if not self.episodeCap:
             self.episodeCap = 1000
         else:
             self.episodeCap = episodeCap
-        super(GridWorld, self).__init__()
+        super().__init__()
 
     def showDomain(self, a=0, s=None):
         if s is None:

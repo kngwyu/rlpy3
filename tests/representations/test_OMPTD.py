@@ -1,12 +1,5 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-
-standard_library.install_aliases()
 from rlpy.Representations import OMPTD, IndependentDiscretization
-from rlpy.Domains import GridWorld, InfiniteTrackCartPole
+from rlpy.Domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -14,8 +7,8 @@ import os
 
 def test_bag_creation():
     """
-    Ensure create appropriate # of conjunctions, that they have been 
-    instantiated properly, and there are no duplicates. 
+    Ensure create appropriate # of conjunctions, that they have been
+    instantiated properly, and there are no duplicates.
     """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
     mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
@@ -41,7 +34,6 @@ def test_bag_creation():
 
     # Compute full (including non-discovered) feature vec for a few states
     states = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    s0_unused = domain.s0()  # just to initialize domain.state, etc
     rep.calculateFullPhiNormalized(states)
     phi_states = rep.fullphi
     phi_states[phi_states > 0] = True
@@ -78,13 +70,10 @@ def test_batch_discovery():
     """
     Test feature discovery from features available in bag, and that appropriate
     feats are activiated in later calls to phi_nonterminal()
-    
     """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
     mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapname=mapname)
-
-    s0_unused = domain.s0()  # just to initialize domain.state, etc
 
     initial_representation = IndependentDiscretization(domain)
     maxBatchDiscovery = np.inf
@@ -123,7 +112,6 @@ def test_batch_discovery():
     true_phi_s2 = np.zeros(rep.features_num)
     true_phi_s2[0] = True
     true_phi_s2[6] = True  # TODO - could be [4] depending on axes, check.
-    true_phi_s2[
-        9
-    ] = True  # The conjunction of [0,2] [[note actual id is 11, but in index 10]]
+    # The conjunction of [0,2] [[note actual id is 11, but in index 10]]
+    true_phi_s2[9] = True
     assert np.all(true_phi_s2 == rep.phi_nonTerminal(states[1, :]))

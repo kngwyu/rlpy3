@@ -1,23 +1,12 @@
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from future import standard_library
-
-standard_library.install_aliases()
 from rlpy.Representations import IncrementalTabular
 from rlpy.Domains import PST
 from rlpy.Domains.PST import UAVLocation, ActuatorState, SensorState, UAVAction
 from rlpy.Domains.PST import StateStruct
 from rlpy.Agents.TDControlAgent import SARSA
 import numpy as np
-from rlpy.Tools import __rlpy_location__
-from rlpy.Tools import vec2id, id2vec
-import os
-
+from rlpy.Tools import vec2id
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
-import logging
 from .helpers import check_seed_vis
 
 

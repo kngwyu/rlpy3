@@ -1,26 +1,15 @@
 """Pinball domain for reinforcement learning
 """
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import super
-from builtins import open
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import next
-from builtins import zip
-from builtins import map
-from builtins import range
-from builtins import object
-from past.utils import old_div
 from .Domain import Domain
 import numpy as np
 from itertools import tee
 import itertools
-from tkinter import Tk, Canvas
 import os
+try:
+    from tkinter import Tk, Canvas
+except ImportError:
+    import warnings
+    warnings.warn('TkInter is not found for Pinball.')
 from rlpy.Tools import __rlpy_location__
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -167,8 +156,8 @@ class BallModel(object):
         :param delta_ydot: The change in velocity in the y direction
         :type delta_ydot: float
         """
-        self.xdot += old_div(delta_xdot, 5.0)
-        self.ydot += old_div(delta_ydot, 5.0)
+        self.xdot += delta_xdot / 5
+        self.ydot += delta_ydot / 5
         self.xdot = self._clip(self.xdot)
         self.ydot = self._clip(self.ydot)
 
@@ -304,7 +293,7 @@ class PinballObstacle(object):
         if angle1 > np.pi:
             angle2 -= np.pi
 
-        if np.abs(angle1 - (old_div(np.pi, 2.0))) < np.abs(angle2 - (old_div(np.pi, 2.0))):
+        if np.abs(angle1 - np.pi / 2) < np.abs(angle2 - np.pi / 2):
             return intersect1
         return intersect2
 
@@ -339,8 +328,7 @@ class PinballObstacle(object):
         obstacle_edge = pt_pair[1] - pt_pair[0]
         difference = np.array(ball.position) - pt_pair[0]
 
-        scalar_proj = old_div(difference.dot(
-            obstacle_edge), obstacle_edge.dot(obstacle_edge))
+        scalar_proj = difference.dot(obstacle_edge) / obstacle_edge.dot(obstacle_edge)
         if scalar_proj > 1.0:
             scalar_proj = 1.0
         elif scalar_proj < 0.0:
@@ -360,7 +348,7 @@ class PinballObstacle(object):
             if angle > np.pi:
                 angle = 2 * np.pi - angle
 
-            if angle > old_div(np.pi, 1.99):
+            if angle > np.pi / 1.99:
                 return False
 
             return True

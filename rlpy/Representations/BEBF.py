@@ -1,18 +1,11 @@
 """Bellman-Error Basis Function Representation."""
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-#from rlpy.Tools import
-from builtins import super
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
 import numpy as np
 from .Representation import Representation
-from rlpy.Tools import svm
+try:
+    from sklearn import svm
+except ImportError:
+    import warnings
+    warnings.warn('sklearn is not installed and you cannot use BEBF')
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
@@ -37,7 +30,7 @@ class BEBF(Representation):
 
     Bellman-Error Basis Function Representation. \n
     1. Initial basis function based on immediate reward. \n
-    2. Evaluate r + Q(s', \pi{s'}) - Q(s,a) for all samples. \n
+    2. Evaluate r + Q(s', π{s'}) - Q(s,a) for all samples. \n
     3. Train function approximator on bellman error of present solution above\n
     4. Add the above as a new basis function. \n
     5. Repeat the process using the new basis until the most

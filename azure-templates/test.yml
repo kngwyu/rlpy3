@@ -1,0 +1,17 @@
+parameters:
+  rust_version: nightly
+  python_version: 3.6
+  python_arch: x64
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: ${{ parameters.python_version }}
+      addToPath: true
+      architecture: ${{ parameters.python_arch }}
+
+  - script: |
+      python -m pip install --upgrade pipenv
+      make init
+      make test
+    displayName: Test rlpy3

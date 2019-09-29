@@ -1,17 +1,4 @@
 """Parsing, extracting statistics and plotting of experimental results."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import open
-from builtins import dict
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import range
-from builtins import object
-from past.utils import old_div
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import json
@@ -225,9 +212,9 @@ class MultiExperimentResults(object):
             style["color"] = colors[label]
             style["marker"] = markers[label]
             y_mean, y_std, y_num = avg_quantity(results, y, pad_y)
-            y_sem = old_div(y_std, np.sqrt(y_num))
+            y_sem = y_std / np.sqrt(y_num)
             x_mean, x_std, x_num = avg_quantity(results, x, pad_x)
-            x_sem = old_div(x_std, np.sqrt(x_num))
+            x_sem = x_std / np.sqrt(x_num)
 
             if xbars:
                 plt.errorbar(x_mean, y_mean, xerr=x_sem, label=label,

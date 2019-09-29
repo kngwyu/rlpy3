@@ -1,16 +1,4 @@
 """Kernelized Incremental Feature Dependency Discovery"""
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
-from builtins import object
 import numpy as np
 from .Representation import Representation
 from itertools import combinations
@@ -403,9 +391,7 @@ class KernelizediFDD(Representation):
         candidate.activation_count += phi_s[index1] ** 2 * phi_s[index2] ** 2
         if candidate.activation_count == 0.:
             return 0.
-        rel = old_div(np.abs(candidate.td_error_sum), \
-            np.sqrt(candidate.activation_count))
-        return rel
+        return np.abs(candidate.td_error_sum) / np.sqrt(candidate.activation_count)
 
     def add_base_feature(self, center, dim, Q):
         """

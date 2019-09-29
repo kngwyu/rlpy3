@@ -1,15 +1,4 @@
 """Persistent search and track mission domain."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from builtins import object
-from past.utils import old_div
 from time import sleep
 from rlpy.Tools import plt, vec2id, mpatches, lines, id2vec
 from .Domain import Domain
@@ -236,9 +225,9 @@ class PST(Domain):
         self.subplot_axes.yaxis.set_visible(False)
 
         # Assign coordinates of each possible uav location on figure
-        self.location_coord = [0.5 + (old_div(self.LOCATION_WIDTH, 2)) +
+        self.location_coord = [0.5 + self.LOCATION_WIDTH / 2 +
                                (self.dist_between_locations) * i for i in range(UAVLocation.SIZE - 1)]
-        self.location_coord.append(crashLocationX + old_div(self.LOCATION_WIDTH, 2))
+        self.location_coord.append(crashLocationX + self.LOCATION_WIDTH / 2)
 
          # Create rectangular patches at each of those locations
         self.location_rect_vis = [mpatches.Rectangle(

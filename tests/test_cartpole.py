@@ -1,65 +1,34 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import range
 import numpy as np
 import pickle
-from nose.tools import eq_
+from rlpy.Domains import FiniteCartPoleBalanceOriginal, InfCartPoleBalance
 from rlpy.Tools import __rlpy_location__
 import os
 import sys
+import pytest
 
 
-def test_cartpole():
-    try:
-        from rlpy.Domains import InfCartPoleBalance
-    except ImportError:
-        print("use old Cartpole class!")
-        from rlpy.Domains import Pendulum_InvertedBalance as InfCartPoleBalance
-
-    yield check_traj, InfCartPoleBalance, os.path.join(
-        __rlpy_location__,"..", "tests",
-        "traj_InfiniteCartpoleBalance.pck")
-    try:
-        from rlpy.Domains import FiniteCartPoleBalanceOriginal
-    except ImportError:
-        print("use old Cartpole class!")
-        from rlpy.Domains import CartPoleBalanceOriginal as FiniteCartPoleBalanceOriginal
-
-    yield check_traj, FiniteCartPoleBalanceOriginal, os.path.join(
-        __rlpy_location__, "..","tests",
-        "traj_FiniteCartpoleBalanceOriginal.pck")
+def get_file(fname):
+    return os.path.join(__rlpy_location__, '..', 'tests', fname)
 
 
-def check_traj(domain_class, filename):
-    with open(filename, 'rb') as f:
-        if not sys.version_info[:2] == (2, 7):
-            traj = pickle.load(f, encoding='latin1')
-        else:
-            traj = pickle.load(f)
+@pytest.mark.parametrize('domain_class, filename', [
+    (InfCartPoleBalance, get_file('traj_InfiniteCartpoleBalance.npy')),
+    (FiniteCartPoleBalanceOriginal, get_file('traj_FiniteCartpoleBalanceOriginal.npy')),
+])
+def test_trajectory(domain_class, filename):
+    traj = np.load(filename, allow_pickle=True)
     traj_now = sample_random_trajectory(domain_class)
-    for i, e1, e2 in zip(list(range(len(traj_now))), traj_now, traj):
-        print(i)
-        print(e1[0], e2[0])
-        if not np.allclose(e1[0], e2[0]):  # states
-            print(e1[0], e2[0])
-            assert False
-        eq_(e1[-1], e2[-1])  # reward
-        print("Terminal", e1[1], e2[1])
-        eq_(e1[1], e2[1])  # terminal
-        eq_(len(e1[2]), len(e2[2]))
-        assert np.all([a == b for a, b in zip(e1[2], e2[2])])  # p_actions
-
-
-def save_trajectory(domain_class, filename):
-    traj = sample_random_trajectory(domain_class)
-    with open(filename, 'wb') as f:
-        pickle.dump(traj, f)
+    for e1, e2 in zip(traj_now, traj):
+        # State
+        assert np.allclose(e1[0], e2[0]), 'now: {}, saved: {}'.format(e1[0], e2[0])
+        # Reward
+        assert e1[-1] == e2[-1], 'now: {}, saved: {}'.format(e1[-1], e2[-1])
+        # Terminal
+        assert e1[1] == e2[1], 'now: {}, saved: {}'.format(e1[1], e2[1])
+        # Actions
+        assert len(e1[2]) == len(e2[2])
+        # p_actions
+        assert np.all([a == b for a, b in zip(e1[2], e2[2])])
 
 
 def sample_random_trajectory(domain_class):

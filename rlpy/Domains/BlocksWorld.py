@@ -1,14 +1,4 @@
 """BlocksWorld domain, stacking of blocks to form a tower."""
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
 from .Domain import Domain
 from rlpy.Tools import id2vec, vec2id, findElemArray1D
 from rlpy.Tools import nchoosek, factorial, findElemArray2D, plt, FONTSIZE

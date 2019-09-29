@@ -1,21 +1,14 @@
 """Network administrator task."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from builtins import open
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import map
-from builtins import range
-from rlpy.Tools import plt, nx
 import numpy as np
 import csv
-from .Domain import Domain
 import os
-from rlpy.Tools import __rlpy_location__
+from .Domain import Domain
+from rlpy.Tools import plt, __rlpy_location__
+try:
+    import networkx as nx
+except ImportError:
+    import warnings
+    warnings.warn('NetworkX is not installed so SystemAdministrator has no graphics.')
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",

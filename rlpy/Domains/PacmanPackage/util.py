@@ -1,31 +1,18 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-# util.py
-# -------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and Pieter
-# Abbeel in Spring 2013.
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import input
-from builtins import zip
-from builtins import str
-from builtins import range
-from past.utils import old_div
-from builtins import object
+"""
+ util.py
+ -------
+ Licensing Information: Please do not distribute or publish solutions to this
+ project. You are free to use and extend these projects for educational
+ purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+ John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+ Student side autograding was added by Brad Miller, Nick Hay, and Pieter
+ Abbeel in Spring 2013.
+ For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
+"""
 import sys
 import inspect
 import heapq
 import random
-import io
 
 
 class FixedRandom(object):
@@ -343,13 +330,12 @@ class Counter(dict):
         if total == 0:
             return
         for key in list(self.keys()):
-            self[key] = old_div(self[key], total)
+            self[key] = self[key] / total
 
     def divideAll(self, divisor):
         """
         Divides all counts by divisor
         """
-        divisor = float(divisor)
         for key in self:
             self[key] /= divisor
 

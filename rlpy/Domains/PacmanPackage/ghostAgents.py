@@ -1,25 +1,17 @@
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from __future__ import print_function
-# ghostAgents.py
-# --------------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and Pieter
-# Abbeel in Spring 2013.
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from past.utils import old_div
+"""
+ ghostAgents.py
+ --------------
+ Licensing Information: Please do not distribute or publish solutions to this
+ project. You are free to use and extend these projects for educational
+ purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+ John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+ Student side autograding was added by Brad Miller, Nick Hay, and Pieter
+ Abbeel in Spring 2013.
+ For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
+"""
 from .game import Agent
 from .game import Actions
 from .game import Directions
-import random
 from .util import manhattanDistance
 from . import util
 
@@ -96,8 +88,8 @@ class DirectionalGhost(GhostAgent):
         # Construct distribution
         dist = util.Counter()
         for a in bestActions:
-            dist[a] = old_div(bestProb, len(bestActions))
+            dist[a] = bestProb / len(bestActions)
         for a in legalActions:
-            dist[a] += old_div((1 - bestProb), len(legalActions))
+            dist[a] += (1 - bestProb) / len(legalActions)
         dist.normalize()
         return dist

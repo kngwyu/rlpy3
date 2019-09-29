@@ -9,7 +9,7 @@ from future import standard_library
 standard_library.install_aliases()
 from past.utils import old_div
 from rlpy.Domains.FiniteTrackCartPole import FiniteCartPoleBalanceOriginal, FiniteCartPoleBalanceModern
-from rlpy.Agents import SARSA, Q_LEARNING
+from rlpy.Agents import SARSA, Q_Learning
 from rlpy.Representations import *
 from rlpy.Policies import eGreedy
 from rlpy.Experiments import Experiment
@@ -62,7 +62,7 @@ def make_experiment(
     policy = eGreedy(representation, epsilon=0.1)
     # agent           = SARSA(representation,policy,domain,initial_learn_rate=initial_learn_rate,
     # lambda_=.0, learn_rate_decay_mode="boyan", boyan_N0=boyan_N0)
-    opt["agent"] = Q_LEARNING(
+    opt["agent"] = Q_Learning(
         policy, representation, discount_factor=domain.discount_factor,
         lambda_=lambda_, initial_learn_rate=initial_learn_rate,
         learn_rate_decay_mode="boyan", boyan_N0=boyan_N0)

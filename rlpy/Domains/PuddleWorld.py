@@ -1,13 +1,4 @@
 """Puddle world domain (navigation task)."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from past.utils import old_div
 from .Domain import Domain
 import numpy as np
 import matplotlib.pyplot as plt
@@ -101,7 +92,7 @@ class PuddleWorld(Domain):
         # compute puddle influence
         d = self.puddles[:, 1, :] - self.puddles[:, 0, :]
         denom = (d ** 2).sum(axis=1)
-        g = old_div(((s - self.puddles[:, 0, :]) * d).sum(axis=1), denom)
+        g = ((s - self.puddles[:, 0, :]) * d).sum(axis=1) / denom
         g = np.minimum(g, 1)
         g = np.maximum(g, 0)
         dists = np.sqrt(((self.puddles[:, 0, :] + g * d - s) ** 2).sum(axis=1))

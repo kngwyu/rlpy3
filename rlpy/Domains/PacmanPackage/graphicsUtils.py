@@ -1,31 +1,24 @@
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-# graphicsUtils.py
-# ----------------
-# Licensing Information: Please do not distribute or publish solutions to this
-# project. You are free to use and extend these projects for educational
-# purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
-# John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and Pieter
-# Abbeel in Spring 2013.
-# For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-
-from builtins import dict
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
+"""
+ graphicsUtils.py
+ ----------------
+ Licensing Information: Please do not distribute or publish solutions to this
+ project. You are free to use and extend these projects for educational
+ purposes. The Pacman AI projects were developed at UC Berkeley, primarily by
+ John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+ Student side autograding was added by Brad Miller, Nick Hay, and Pieter
+ Abbeel in Spring 2013.
+ For more info, see http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
+"""
 import sys
-import math
-import random
-import string
 import time
-import types
-import tkinter
+
+try:
+    import tkinter
+    DONT_WAIT = tkinter._tkinter.DONT_WAIT
+except ImportError:
+    import warnings
+    DONT_WAIT = None
+    warnings.warn('TkInter is not found for Pacman.')
 
 _Windows = sys.platform == 'win32'  # True if on Win95/98/NT
 
@@ -40,20 +33,22 @@ _canvas_tsize = 12
 _canvas_tserifs = 0
 
 
+def _dooneevent(arg):
+    return _root_window.dooneevent(arg)
+
+
 def formatColor(r, g, b):
     return '#%02x%02x%02x' % (int(r * 255), int(g * 255), int(b * 255))
 
 
 def colorToVector(color):
-    return (
-        [old_div(int(x, 16), 256.0) for x in [color[1:3], color[3:5], color[5:7]]]
-    )
+    return [int(x, 16) / 256.0 for x in [color[1:3], color[3:5], color[5:7]]]
+
 
 if _Windows:
     _canvas_tfonts = ['times new roman', 'lucida console']
 else:
     _canvas_tfonts = ['times', 'lucidasans-24']
-    pass  # XXX need defaults here
 
 
 def sleep(secs):
@@ -161,10 +156,6 @@ def draw_background():
 
 def _destroy_window(event=None):
     sys.exit(0)
-#    global _root_window
-#    _root_window.destroy()
-#    _root_window = None
-    # print "DESTROY"
 
 
 def end_graphics():
@@ -361,8 +352,8 @@ def _clear_keys(event=None):
     _got_release = None
 
 
-def keys_pressed(d_o_e=lambda arg: _root_window.dooneevent(arg),
-                 d_w=tkinter._tkinter.DONT_WAIT):
+def keys_pressed(d_o_e=_dooneevent,
+                 d_w=DONT_WAIT):
     d_o_e(d_w)
     if _got_release:
         d_o_e(d_w)
@@ -387,8 +378,8 @@ def wait_for_keys():
 
 
 def remove_from_screen(x,
-                       d_o_e=lambda arg: _root_window.dooneevent(arg),
-                       d_w=tkinter._tkinter.DONT_WAIT):
+                       d_o_e=_dooneevent,
+                       d_w=DONT_WAIT):
     _canvas.delete(x)
     d_o_e(d_w)
 
@@ -401,8 +392,8 @@ def _adjust_coords(coord_list, x, y):
 
 
 def move_to(object, x, y=None,
-            d_o_e=lambda arg: _root_window.dooneevent(arg),
-            d_w=tkinter._tkinter.DONT_WAIT):
+            d_o_e=_dooneevent,
+            d_w=DONT_WAIT):
     if y is None:
         try:
             x, y = x
@@ -426,8 +417,8 @@ def move_to(object, x, y=None,
 
 
 def move_by(object, x, y=None,
-            d_o_e=lambda arg: _root_window.dooneevent(arg),
-            d_w=tkinter._tkinter.DONT_WAIT, lift=False):
+            d_o_e=_dooneevent,
+            d_w=DONT_WAIT, lift=False):
     if y is None:
         try:
             x, y = x
@@ -451,14 +442,6 @@ def move_by(object, x, y=None,
         _canvas.tag_raise(object)
 
 
-def writePostscript(filename):
-    "Writes the current canvas to a postscript file."
-    psfile = file(filename, 'w')
-    psfile.write(_canvas.postscript(pageanchor='sw',
-                                    y='0.c',
-                                    x='0.c'))
-    psfile.close()
-
 ghost_shape = [
     (0, - 0.5),
     (0.25, - 0.75),
@@ -479,5 +462,5 @@ if __name__ == '__main__':
     ghost_shape = [(x * 10 + 20, y * 10 + 20) for x, y in ghost_shape]
     g = polygon(ghost_shape, formatColor(1, 1, 1))
     move_to(g, (50, 50))
-    circle((150, 150), 20, formatColor(0.7, 0.3, 0.0), endpoints=[15, - 15])
+    circle((150, 150), 20, formatColor(0.7, 0.3, 0.0), 'red', endpoints=[15, - 15])
     sleep(2)

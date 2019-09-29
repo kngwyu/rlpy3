@@ -1,14 +1,4 @@
 """Gridworld Domain."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-from builtins import super
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from past.utils import old_div
 from rlpy.Tools import plt, FONTSIZE, linearMap
 import numpy as np
 from .Domain import Domain
@@ -172,11 +162,9 @@ class GridWorld(Domain):
                 units='y',
                 cmap='Actions',
                 scale_units="height",
-                scale=old_div(self.ROWS,
-                arrow_ratio),
-                width=-
-                1 *
-                ARROW_WIDTH)
+                scale=self.ROWS / arrow_ratio,
+                width=-ARROW_WIDTH
+            )
             self.upArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS) + self.SHIFT
             Y = np.arange(self.COLS)
@@ -190,11 +178,9 @@ class GridWorld(Domain):
                 units='y',
                 cmap='Actions',
                 scale_units="height",
-                scale=old_div(self.ROWS,
-                arrow_ratio),
-                width=-
-                1 *
-                ARROW_WIDTH)
+                scale=self.ROWS / arrow_ratio,
+                width=-ARROW_WIDTH
+            )
             self.downArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS)
             Y = np.arange(self.COLS) - self.SHIFT
@@ -208,9 +194,9 @@ class GridWorld(Domain):
                 units='x',
                 cmap='Actions',
                 scale_units="width",
-                scale=old_div(self.COLS,
-                arrow_ratio),
-                width=ARROW_WIDTH)
+                scale=self.COLS / arrow_ratio,
+                width=ARROW_WIDTH
+            )
             self.leftArrows_fig.set_clim(vmin=0, vmax=1)
             X = np.arange(self.ROWS)
             Y = np.arange(self.COLS) + self.SHIFT
@@ -224,9 +210,9 @@ class GridWorld(Domain):
                 units='x',
                 cmap='Actions',
                 scale_units="width",
-                scale=old_div(self.COLS,
-                arrow_ratio),
-                width=ARROW_WIDTH)
+                scale=self.COLS / arrow_ratio,
+                width=ARROW_WIDTH
+            )
             self.rightArrows_fig.set_clim(vmin=0, vmax=1)
             plt.show()
         plt.figure("Value Function")

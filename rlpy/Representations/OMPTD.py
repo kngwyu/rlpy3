@@ -1,15 +1,4 @@
 """OMP-TD implementation based on ICML 2012 paper of Wakefield and Parr."""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str
-from builtins import range
-from past.utils import old_div
 from .Representation import Representation
 import numpy as np
 from .iFDD import iFDD
@@ -138,7 +127,7 @@ class OMPTD(Representation):
             norm_phi_f = np.linalg.norm(phi_f)    # L2-Norm of phi_f
             if norm_phi_f == 0:
                 norm_phi_f = 1          # This helps to avoid divide by zero
-            self.fullphi[:, f] = old_div(phi_f, norm_phi_f)
+            self.fullphi[:, f] = phi_f / norm_phi_f
 
     def batchDiscover(self, td_errors, phi, states):
         """

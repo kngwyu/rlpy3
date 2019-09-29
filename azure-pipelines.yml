@@ -1,6 +1,52 @@
 jobs:
+- job: LinuxTest
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  strategy:
+    matrix:
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/test.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
+
+- job: macOSTest
+  pool:
+    vmImage: 'macOS-10.13'
+  strategy:
+    matrix:
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/test.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
+
+- job: WindowsTest
+  pool:
+    vmImage: 'vs2017-win2016'
+  strategy:
+    matrix:
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/test.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
+
 - job: ManyLinux1Wheel
-  pool: {vmImage: 'Ubuntu-16.04'}
+  pool:
+    vmImage: 'Ubuntu-16.04'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   steps:
   - script: |

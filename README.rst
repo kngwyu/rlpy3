@@ -12,6 +12,10 @@ You can download these wheels from `PyPI`_.
 
 .. _PyPI: https://pypi.org/project/rlpy3
 
+To see what was changed, see the new `CHANGELOG`_.
+
+.. _CHANGELOG: ./CHANGELOG_RLPY3.rst
+
 
 Original README: RLPy - Reinforment Learning Framework
 =======================================================

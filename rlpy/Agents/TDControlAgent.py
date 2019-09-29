@@ -1,12 +1,4 @@
 """Control Agents based on TD Learning, i.e., Q-Learning and SARSA"""
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from past.utils import old_div
 from .Agent import Agent, DescentAlgorithm
 from rlpy.Tools import addNewElementForAllActions, count_nonzero
 import numpy as np
@@ -69,8 +61,7 @@ class TDControlAgent(DescentAlgorithm, Agent):
 
         # Set eligibility traces:
         if self.lambda_:
-            expanded = old_div((- len(self.eligibility_trace) + len(phi)), \
-                self.representation.actions_num)
+            expanded = (len(phi) - len(self.eligibility_trace)) // self.representation.actions_num
             if expanded > 0:
                 # Correct the size of eligibility traces (pad with zeros for
                 # new features)

@@ -1,11 +1,5 @@
 """ip-shell functions"""
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-
-from future import standard_library
-standard_library.install_aliases()
+import signal
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
                "William Dabney", "Jonathan P. How"]
@@ -15,6 +9,7 @@ _ip_shell = None
 
 
 def ipshell():
+    global _ip_shell
     if _ip_shell is not None:
         return _ip_shell
 
@@ -30,7 +25,6 @@ def ipshell():
         prompt_config.out_template = 'Out<\\#>: '
     else:
         cfg = Config()
-        nested = 1
     from IPython.frontend.terminal.embed import InteractiveShellEmbed
 
     # Now create an instance of the embeddable shell. The first argument is a
@@ -42,8 +36,6 @@ def ipshell():
                                     exit_msg='Leaving Interpreter, back to program.')
     _ip_shell = ipshell
     return ipshell
-
-import signal
 
 
 def interrupted(signum, frame):

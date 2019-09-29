@@ -1,13 +1,4 @@
 """Cart with a pole domains"""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from past.utils import old_div
 from .Domain import Domain
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
@@ -29,7 +20,7 @@ class FiniteTrackCartPole(CartPoleBase):
     quantities of pendulum (position and velocity) and lateral quantities of
     the cart.
     Not only does this increase the state space relative to
-    \c %InfTrackCartPole, but the cart must remain in a finite interval
+    %InfTrackCartPole, but the cart must remain in a finite interval
     corresponding to a physical rail, which affects valid solutions/policies.
 
 
@@ -44,7 +35,7 @@ class FiniteTrackCartPole(CartPoleBase):
     Actions take the form of force applied to cart; \n
     Positive force acts to the right on the cart. \n
 
-    Note the domain defaults in \c %CartPoleBase.
+    Note the domain defaults in %CartPoleBase.
 
     .. warning::
 
@@ -71,7 +62,7 @@ class FiniteTrackCartPole(CartPoleBase):
     __author__ = ["Robert H. Klein"]
 
     #: Default limits on theta
-    ANGLE_LIMITS = [old_div(-pi, 15.0), old_div(pi, 15.0)]
+    ANGLE_LIMITS = [-pi / 15.0, pi / 15.0]
     #: Default limits on pendulum rate
     ANGULAR_RATE_LIMITS = [-2.0, 2.0]
     #: m - Default limits on cart position [Per RL Community CartPole]
@@ -79,7 +70,7 @@ class FiniteTrackCartPole(CartPoleBase):
     #: m/s - Default limits on cart velocity [per RL Community CartPole]
     VELOCITY_LIMITS = [-6.0, 6.0]
 
-     #: Newtons, N - Force values available as actions
+    #: Newtons, N - Force values available as actions
     AVAIL_FORCE = np.array([-10, 10])
 
     #: kilograms, kg - Mass of the pendulum arm
@@ -89,10 +80,10 @@ class FiniteTrackCartPole(CartPoleBase):
     #: meters, m - Physical length of the pendulum, meters (note the moment-arm lies at half this distance)
     LENGTH = 1.0
     # m - Length of moment-arm to center of mass (= half the pendulum length)
-    MOMENT_ARM = old_div(LENGTH, 2.)
+    MOMENT_ARM = LENGTH / 2
     # 1/kg - Used in dynamics computations, equal to 1 / (MASS_PEND +
     # MASS_CART)
-    _ALPHA_MASS = old_div(1.0, (MASS_CART + MASS_PEND))
+    _ALPHA_MASS = 1.0 / (MASS_CART + MASS_PEND)
     #: seconds, s - Time between steps
     dt = 0.02
     #: Newtons, N - Maximum noise possible, uniformly distributed.  Default 0.
@@ -220,15 +211,12 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
         # There is no specific penalty for failure.
         if s is None:
             s = self.state
-        return (
-            self.GOAL_REWARD if old_div(-pi, 15) < s[StateIndex.THETA] < old_div(pi, 15) else 0
-        )
+        return self.GOAL_REWARD if -pi / 15 < s[StateIndex.THETA] < pi / 15 else 0
 
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return (not (old_div(-pi, 15) < s[StateIndex.THETA] < old_div(pi, 15)) or
-                not (-2.4 < s[StateIndex.X] < 2.4))
+        return not -pi / 15 < s[StateIndex.THETA] < pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
 
 
 class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
@@ -264,8 +252,7 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return (not (old_div(-np.pi, 15) < s[StateIndex.THETA] < old_div(np.pi, 15)) or
-                not (-2.4 < s[StateIndex.X] < 2.4))
+        return not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
 
 
 class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
@@ -301,8 +288,7 @@ class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return (not (old_div(-np.pi, 15) < s[StateIndex.THETA] < old_div(np.pi, 15)) or
-                not (-2.4 < s[StateIndex.X] < 2.4))
+        return not -np.pi / 15 < s[StateIndex.THETA] < np.pi / 15 or not -2.4 < s[StateIndex.X] < 2.4
 
 
 class FiniteCartPoleSwingUp(FiniteTrackCartPole):
@@ -342,7 +328,7 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
         if s is None:
             s = self.state
         return (
-            self.GOAL_REWARD if old_div(-pi, 6) < s[StateIndex.THETA] < old_div(pi, 6) else 0
+            self.GOAL_REWARD if -pi / 6 < s[StateIndex.THETA] < pi / 6 else 0
         )
 
     def isTerminal(self, s=None):
@@ -433,7 +419,7 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
         g = self.ACCEL_G
         ds = np.zeros(4)
         ds[0] = s[1]
-        ds[1] = old_div((2 * m * l * s[2] ** 2 * s3 + 3 * m * g * s3 * c3 + 4 * a - 4 * b * s[1]), (4 * (M + m) - 3 * m * c3 ** 2))
-        ds[2] = old_div((-3 * m * l * s[2] ** 2 * s3 * c3 - 6 * (M + m) * g * s3 - 6 * (a - b * s[1]) * c3), (4 * l * (m + M) - 3 * m * l * c3 ** 2))
+        ds[1] = (2 * m * l * s[2] ** 2 * s3 + 3 * m * g * s3 * c3 + 4 * a - 4 * b * s[1]) / (4 * (M + m) - 3 * m * c3 ** 2)
+        ds[2] = (-3 * m * l * s[2] ** 2 * s3 * c3 - 6 * (M + m) * g * s3 - 6 * (a - b * s[1]) * c3) / (4 * l * (m + M) - 3 * m * l * c3 ** 2)
         ds[3] = s[2]
         return ds

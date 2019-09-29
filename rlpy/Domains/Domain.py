@@ -1,13 +1,4 @@
 """Domain base class"""
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from builtins import object
 import numpy as np
 import logging
 from copy import deepcopy
@@ -89,7 +80,7 @@ class Domain(object):
         # For discrete domains, limits should be extended by half on each side so that the mapping becomes identical with continuous states
         # The original limits will be saved in self.discrete_statespace_limits
         self._extendDiscreteDimensions()
-        if self.continuous_dims == []:
+        if len(self.continuous_dims) == 0:
             self.states_num = int(np.prod(self.statespace_limits[:, 1]
                                   - self.statespace_limits[:, 0]))
         else:

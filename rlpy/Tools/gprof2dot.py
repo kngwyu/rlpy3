@@ -17,24 +17,6 @@
 #
 
 """Generate a dot graph from the output of several profilers."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import next
-from builtins import dict
-from builtins import open
-from builtins import int
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import map
-from builtins import str
-from builtins import range
-from past.builtins import basestring
-from builtins import object
-from past.utils import old_div
 __author__ = "Jose Fonseca"
 __version__ = "1.0"
 agf_TOTAL_TIME = 0
@@ -84,7 +66,7 @@ tol = 2 ** -23
 
 def ratio(numerator, denominator):
     try:
-        ratio = old_div(float(numerator), float(denominator))
+        ratio = numerator / denominator
     except ZeroDivisionError:
         # 0/0 is undefined, but 1.0 yields more useful results
         return 1.0
@@ -556,7 +538,7 @@ class Profile(Object):
                     inevent)
                 assert partial == max(partials.values())
                 assert not total or abs(
-                    1.0 - old_div(partial, (call_ratio * total))) <= 0.001
+                    1.0 - partial / (call_ratio * total)) <= 0.001
 
         return cycle[outevent]
 
@@ -2120,7 +2102,7 @@ class SharkParser(LineParser):
                 raise ParseError('failed to parse', line)
 
             fields = mo.groupdict()
-            prefix = old_div(len(fields.get('prefix', 0)), 2) - 1
+            prefix = len(fields.get('prefix', 0)) // 2 - 1
 
             symbol = str(fields.get('symbol', 0))
             image = str(fields.get('image', 0))
@@ -2723,9 +2705,9 @@ class Theme(object):
         else:
             m2 = l + s - l * s
         m1 = l * 2.0 - m2
-        r = self._hue_to_rgb(m1, m2, h + old_div(1.0, 3.0))
+        r = self._hue_to_rgb(m1, m2, h + 1 / 3)
         g = self._hue_to_rgb(m1, m2, h)
-        b = self._hue_to_rgb(m1, m2, h - old_div(1.0, 3.0))
+        b = self._hue_to_rgb(m1, m2, h - 1 / 3)
 
         # Apply gamma correction
         r **= self.gamma
@@ -2744,13 +2726,13 @@ class Theme(object):
         elif h * 2 < 1.0:
             return m2
         elif h * 3 < 2.0:
-            return m1 + (m2 - m1) * (old_div(2.0, 3.0) - h) * 6.0
+            return m1 + (m2 - m1) * (2 / 3 - h) * 6.0
         else:
             return m1
 
 
 TEMPERATURE_COLORMAP = Theme(
-    mincolor=(old_div(2.0, 3.0), 0.80, 0.25),  # dark blue
+    mincolor=(2 / 3, 0.80, 0.25),  # dark blue
     maxcolor = (0.0, 1.0, 0.5),  # satured red
     gamma = 1.0
 )
@@ -2794,9 +2776,9 @@ class DotWriter(object):
         """Split the function name on multiple lines."""
 
         if len(name) > 32:
-            ratio = old_div(2.0, 3.0)
-            height = max(int(old_div(len(name), (1.0 - ratio)) + 0.5), 1)
-            width = max(old_div(len(name), height), 32)
+            ratio = 2 / 3
+            height = max(int(len(name) / (1.0 - ratio) + 0.5), 1)
+            width = max(len(name) // height, 32)
             # TODO: break lines in symbols
             name = textwrap.fill(name, width, break_long_words=False)
 
@@ -3100,10 +3082,9 @@ class Main(object):
 
         profile = self.profile
         profile.prune(
-            old_div(self.options.node_thres,
-            100.0),
-            old_div(self.options.edge_thres,
-            100.0))
+            self.options.node_thres / 100,
+            self.options.edge_thres / 100,
+        )
 
         if self.options.root:
             rootId = profile.getFunctionId(self.options.root)

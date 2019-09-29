@@ -1,13 +1,4 @@
 """Pendulum base domain."""
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
-
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-from past.utils import old_div
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
 from rlpy.Tools import plt
@@ -79,7 +70,7 @@ class InfTrackCartPole(CartPoleBase):
     __author__ = "Robert H. Klein"
 
     #: Default limits on theta
-    ANGLE_LIMITS = [old_div(-np.pi, 15.0), old_div(np.pi, 15.0)]
+    ANGLE_LIMITS = [-np.pi / 15, np.pi / 15]
     #: Default limits on pendulum rate
     ANGULAR_RATE_LIMITS = [-2.0, 2.0]
     #: m - Default limits on cart position (this state is ignored by the agent)
@@ -98,10 +89,10 @@ class InfTrackCartPole(CartPoleBase):
     # lies at half this distance)
     LENGTH = 1.0
     # m - Length of moment-arm to center of mass (= half the pendulum length)
-    MOMENT_ARM = old_div(LENGTH, 2.)
+    MOMENT_ARM = LENGTH / 2
     # 1/kg - Used in dynamics computations, equal to 1 / (MASS_PEND +
     # MASS_CART)
-    _ALPHA_MASS = old_div(1.0, (MASS_CART + MASS_PEND))
+    _ALPHA_MASS = 1 / (MASS_CART + MASS_PEND)
     # Time between steps
     dt = 0.1
     # Newtons, N - Maximum noise possible, uniformly distributed
@@ -154,9 +145,8 @@ class InfTrackCartPole(CartPoleBase):
         self._plot_state(fourState, a)
 
     def showLearning(self, representation):
-        (thetas, theta_dots) = self._setup_learning(representation)
-
-        pi = np.zeros((len(theta_dots), len(thetas)), 'uint8')
+        thetas, theta_dots = self._setup_learning(representation)
+        pi = np.zeros((len(theta_dots), len(thetas)), np.uint8)
         V = np.zeros((len(theta_dots), len(thetas)))
 
         for row, thetaDot in enumerate(theta_dots):
@@ -168,6 +158,7 @@ class InfTrackCartPole(CartPoleBase):
                 Qs = representation.Qs(s, terminal)
                 # Array of all possible actions at state s
                 As = self.possibleActions(s=s)
+
                 # If multiple optimal actions, pick one randomly
                 a = np.random.choice(As[Qs.max() == Qs])
                 # Assign pi to be an optimal action (which maximizes
@@ -177,10 +168,8 @@ class InfTrackCartPole(CartPoleBase):
                 # action
                 V[row, col] = max(Qs)
 
-        self._plot_policy(pi)
-        self._plot_valfun(V)
-
-#         plt.draw()
+        # self._plot_policy(pi)
+        # self._plot_valfun(V)
 
 
 class InfCartPoleBalance(InfTrackCartPole):
@@ -207,7 +196,7 @@ class InfCartPoleBalance(InfTrackCartPole):
     #: Reward received when the pendulum falls below the horizontal
     FELL_REWARD = -1
     #: Limit on theta (Note that this may affect your representation's discretization)
-    ANGLE_LIMITS = [old_div(-np.pi, 2.0), old_div(np.pi, 2.0)]
+    ANGLE_LIMITS = [-np.pi / 2, np.pi / 2]
     #: Limits on pendulum rate, per 1Link of Lagoudakis & Parr
     ANGULAR_RATE_LIMITS = [
         -2., 2.]  # NOTE that L+P's rate limits [-2,2] are actually unphysically slow, and the pendulum
@@ -237,10 +226,7 @@ class InfCartPoleBalance(InfTrackCartPole):
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
-        return (
-            # per L & P 2003
-            not (old_div(-np.pi, 2.0) < s[StateIndex.THETA] < old_div(np.pi, 2.0))
-        )
+        return not -np.pi / 2.0 < s[StateIndex.THETA] < np.pi / 2.0
 
 
 class InfCartPoleSwingUp(InfTrackCartPole):
@@ -260,7 +246,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     __author__ = "Robert H. Klein"
 
     #: Goal region for reward
-    GOAL_LIMITS = [old_div(-np.pi, 6), old_div(np.pi, 6)]
+    GOAL_LIMITS = [-np.pi / 6, np.pi / 6]
     #: Limits on theta
     ANGLE_LIMITS = [-np.pi, np.pi]
     #: Limits on pendulum rate

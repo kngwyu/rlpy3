@@ -1,5 +1,5 @@
 """Flipboard domain."""
-from rlpy.Tools import plt, id2vec
+from rlpy.Tools import FONTSIZE, id2vec, plt
 from .Domain import Domain
 import numpy as np
 
@@ -53,9 +53,6 @@ class FlipBoard(Domain):
     domain_fig = None
     move_fig = None
 
-    def __init__(self):
-        super(FlipBoard, self).__init__()
-
     def showDomain(self, a=0):
         s = self.state
         # Draw the environment
@@ -79,14 +76,11 @@ class FlipBoard(Domain):
         s = s.reshape((self.BOARD_SIZE, self.BOARD_SIZE))
         self.domain_fig.set_data(s)
         plt.draw()
-        # raw_input()
 
     def step(self, a):
         ns = self.state.copy()
         ns = np.reshape(ns, (self.BOARD_SIZE, -1))
         a_row, a_col = id2vec(a, [self.BOARD_SIZE, self.BOARD_SIZE])
-        # print a_row, a_col
-        # print ns
         ns[a_row, :] = np.logical_not(ns[a_row, :])
         ns[:, a_col] = np.logical_not(ns[:, a_col])
         ns[a_row, a_col] = not ns[a_row, a_col]
@@ -96,7 +90,6 @@ class FlipBoard(Domain):
         else:
             terminal = False
             r = self.STEP_REWARD
-        # sleep(1)
         ns = ns.flatten()
         self.state = ns.copy()
         return r, ns, terminal, self.possibleActions()

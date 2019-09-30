@@ -1,20 +1,7 @@
 """Cart with a pole domains"""
-from .Domain import Domain
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
-import scipy.integrate
-from rlpy.Tools import (
-    pl,
-    mpatches,
-    mpath,
-    fromAtoB,
-    lines,
-    rk4,
-    wrap,
-    bound,
-    colors,
-    plt,
-)
+from rlpy.Tools import pl, plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -123,7 +110,7 @@ class FiniteTrackCartPole(CartPoleBase):
             StateIndex.X_DOT,
         ]
         self.DimNames = ["Theta", "Thetadot", "X", "Xdot"]
-        super(FiniteTrackCartPole, self).__init__()
+        super().__init__()
 
     def step(self, a):
         s = self.state
@@ -148,12 +135,6 @@ class FiniteTrackCartPole(CartPoleBase):
         """
         xSlice = 0.0  # value of x assumed when plotting V and pi
         xDotSlice = 0.0  # value of xDot assumed when plotting V and pi
-
-        warnStr = (
-            "WARNING: showLearning() called with 4-state "
-            "cartpole; only showing slice at (x, xDot) = (%.2f, %.2f)"
-            % (xSlice, xDotSlice)
-        )
 
         (thetas, theta_dots) = self._setup_learning(representation)
 

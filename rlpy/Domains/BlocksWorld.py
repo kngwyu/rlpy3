@@ -79,10 +79,8 @@ class BlocksWorld(Domain):
         self.statespace_limits = np.tile([0, blocks - 1], (blocks, 1))
         # This is the true size of the state space refer to [Geramifard11_ICML]
         self.real_states_num = sum(
-            [
-                nchoosek(blocks, i) * factorial(blocks - i) * pow(i, blocks - i)
-                for i in range(blocks)
-            ]
+            nchoosek(blocks, i) * factorial(blocks - i) * pow(i, blocks - i)
+            for i in range(blocks)
         )
         # [0 0 1 2 3 .. blocks-2] meaning block 0 on the table and all other stacked on top of e
         self.GOAL_STATE = np.hstack(([0], np.arange(0, blocks - 1)))
@@ -90,7 +88,7 @@ class BlocksWorld(Domain):
         self.DimNames = []
         for a in range(blocks):
             self.DimNames.append(["%d on" % a])
-        super(BlocksWorld, self).__init__()
+        super().__init__()
 
     def showDomain(self, a=0):
         # Draw the environment

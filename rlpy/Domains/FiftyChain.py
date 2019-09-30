@@ -21,21 +21,21 @@ class FiftyChain(Domain):
     Random start location, goal is to proceed to nearest reward. \n
     **STATE:** s0 <-> s1 <-> ... <-> s49 \n
     **ACTIONS:** left [0] or right [1] \n
-    Actions succeed with probability .9, otherwise execute opposite action. 
-    Note that the actions [left, right] are available in ALL states, but if 
+    Actions succeed with probability .9, otherwise execute opposite action.
+    Note that the actions [left, right] are available in ALL states, but if
     left is selected in s0 or right in s49, then s remains unchanged. \n
 
     .. note::
         The optimal policy is to always go to the nearest goal
 
-    **REWARD:** of +1 at states 10 and 41 (indices 9 and 40).  Reward is 
+    **REWARD:** of +1 at states 10 and 41 (indices 9 and 40).  Reward is
     obtained when transition out of the reward state, not when first enter. \n
-    
-    Note that this class provides the 
-    function :py:meth`~rlpy.Domains.FiftyChain.L_inf_distance_to_V_star`, which 
-    accepts an arbitrary representation and returns the error between it and 
+
+    Note that this class provides the
+    function :py:meth`~rlpy.Domains.FiftyChain.L_inf_distance_to_V_star`, which
+    accepts an arbitrary representation and returns the error between it and
     the optimal policy.
-    The user can also enforce actions under the optimal policy (ignoring the 
+    The user can also enforce actions under the optimal policy (ignoring the
     agent's policy) by setting ``using_optimal_policy=True`` in FiftyChain.py.
 
     **REFERENCE:**
@@ -142,13 +142,12 @@ class FiftyChain(Domain):
     def __init__(self):
         self.start = 0
         self.statespace_limits = np.array([[0, self.chainSize - 1]])
-        super(FiftyChain, self).__init__()
+        super().__init__()
         # To catch errors
         self.optimal_policy = np.array([-1 for dummy in range(0, self.chainSize)])
         self.storeOptimalPolicy()
-        self.discount_factor = (
-            0.8
-        )  # Set discount_factor to be 0.8 for this domain per L & P 2007
+        # Set discount_factor to be 0.8 for this domain per L & P 2007
+        self.discount_factor = 0.8
 
     def storeOptimalPolicy(self):
         """
@@ -173,19 +172,20 @@ class FiftyChain(Domain):
     def showDomain(self, a=0):
         s = self.state
         # Draw the environment
+        fig = plt.figure("FiftyChain")
         if self.circles is None:
-            plt.figure("Domain")
             self.domain_fig = plt.subplot(3, 1, 1)
             plt.figure(1, (self.chainSize * 2 / 10.0, 2))
             self.domain_fig.set_xlim(0, self.chainSize * 2 / 10.0)
             self.domain_fig.set_ylim(0, 2)
+            # Make the last one double circle
             self.domain_fig.add_patch(
                 mpatches.Circle(
                     (0.2 + 2 / 10.0 * (self.chainSize - 1), self.Y),
                     self.RADIUS * 1.1,
                     fc="w",
                 )
-            )  # Make the last one double circle
+            )
             self.domain_fig.xaxis.set_visible(False)
             self.domain_fig.yaxis.set_visible(False)
             self.circles = [
@@ -200,8 +200,8 @@ class FiftyChain(Domain):
         for p in self.GOAL_STATES:
             self.circles[p].set_facecolor("g")
         self.circles[s].set_facecolor("k")
-        plt.figure("Domain").canvas.draw()
-        plt.figure("Domain").canvas.flush_events()
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
     def showLearning(self, representation):
         allStates = np.arange(0, self.chainSize)

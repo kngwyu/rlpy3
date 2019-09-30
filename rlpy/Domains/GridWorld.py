@@ -103,29 +103,23 @@ class GridWorld(Domain):
     def showDomain(self, a=0, s=None):
         if s is None:
             s = self.state
-
         # Draw the environment
         if self.domain_fig is None:
-            self.agent_fig = plt.figure("Domain")
-            self.domain_fig = plt.imshow(
+            self.domain_fig = plt.figure("GridWorld")
+            plt.imshow(
                 self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
             )
             plt.xticks(np.arange(self.COLS), fontsize=FONTSIZE)
             plt.yticks(np.arange(self.ROWS), fontsize=FONTSIZE)
-            # pl.tight_layout()
             self.agent_fig = plt.gca().plot(
                 s[1], s[0], "kd", markersize=20.0 - self.COLS
             )
             plt.show()
         self.agent_fig.pop(0).remove()
-        self.agent_fig = plt.figure("Domain")
-        # mapcopy = copy(self.map)
-        # mapcopy[s[0],s[1]] = self.AGENT
-        # self.domain_fig.set_data(mapcopy)
         # Instead of '>' you can use 'D', 'o'
         self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.COLS)
-        plt.figure("Domain").canvas.draw()
-        plt.figure("Domain").canvas.flush_events()
+        self.domain_fig.canvas.draw()
+        self.domain_fig.canvas.flush_events()
 
     def showLearning(self, representation):
         if self.valueFunction_fig is None:
@@ -370,7 +364,7 @@ class GridWorld(Domain):
         return p, r, ns, t, pa
 
     def allStates(self):
-        if self.continuous_dims == []:
+        if len(self.continuous_dims) > 0:
             # Recall that discrete dimensions are assumed to be integer
             return (
                 perms(
@@ -380,3 +374,5 @@ class GridWorld(Domain):
                 )
                 + self.discrete_statespace_limits[:, 0]
             )
+        else:
+            return None

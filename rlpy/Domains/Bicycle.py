@@ -29,7 +29,7 @@ class BicycleBalancing(Domain):
     * ``theta:``     angle the handlebars are displaced from normal [rad]
     * ``theta dot:`` angular velocity for theta [rad / s]
     * ``psi:``       angle formed by bicycle frame and x-axis [rad]
-    
+
     [x_b:       x-coordinate where the back tire touches the ground [m]]
     [y_b:       y-coordinate where the back tire touches the ground [m]]
 
@@ -39,7 +39,7 @@ class BicycleBalancing(Domain):
 
     * T in {-2, 0, 2}:      the torque applied to the handlebar
     * d in {-.02, 0, .02}:  displacement of the rider
-    
+
     i.e., 9 actions in total.
 
 
@@ -79,6 +79,10 @@ class BicycleBalancing(Domain):
             [-np.pi, np.pi],
         ]
     )
+
+    def __init__(self):
+        super().__init__()
+        self._state_graph_handles = None
 
     def step(self, a):
         self.t += 1
@@ -182,11 +186,11 @@ class BicycleBalancing(Domain):
         n = self.state_space_dims + 1
         names = list(self.state_names) + ["Action"]
         colors = ["m", "c", "b", "r", "g", "k"]
-        handles = getattr(self, "_state_graph_handles", None)
-        plt.figure("Domain", figsize=(12, 10))
+        handles = self._state_graph_handles
+        fig = plt.figure("Bicycle", figsize=(12, 10))
         if handles is None:
             handles = []
-            f, axes = plt.subplots(n, sharex=True, num="Domain", figsize=(12, 10))
+            f, axes = plt.subplots(n, sharex=True, num="Bicycle", figsize=(12, 10))
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
@@ -201,8 +205,8 @@ class BicycleBalancing(Domain):
             ax = handles[i].axes
             ax.relim()
             ax.autoscale_view()
-        plt.figure("Domain").canvas.draw()
-        plt.figure("Domain").canvas.flush_events()
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
 
 class BicycleRiding(BicycleBalancing):

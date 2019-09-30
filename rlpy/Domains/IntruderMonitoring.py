@@ -92,13 +92,12 @@ class IntruderMonitoring(Domain):
         self.statespace_limits = np.tile(
             _statespace_limits, ((self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS), 1)
         )
-        # self.statespace_limits_non_extended     = tile(_statespace_limits,((self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS),1))
 
         self.actions_num = 5 ** self.NUMBER_OF_AGENTS
         self.ACTION_LIMITS = [5] * self.NUMBER_OF_AGENTS
         self.DimNames = []
 
-        super(IntruderMonitoring, self).__init__()
+        super().__init__()
 
     def setupMap(self, mapname):
         # Load the map as an array
@@ -119,14 +118,13 @@ class IntruderMonitoring(Domain):
 
     def step(self, a):
         """
-        Move all intruders according to 
+        Move all intruders according to
         the :py:meth:`~rlpy.Domains.IntruderMonitoring.IntruderPolicy`, default
         uniform random action.
         Move all agents according to the selected action ``a``.
         Calculate the reward = Number of danger zones being violated by
-        intruders while no agents are present (ie, intruder occupies a danger 
+        intruders while no agents are present (ie, intruder occupies a danger
         cell with no agent simultaneously occupying the cell).
-        
         """
         s = self.state
 
@@ -138,7 +136,7 @@ class IntruderMonitoring(Domain):
 
         # Generate actions for each intruder based on the function
         # IntruderPolicy()
-        intruders = np.array(s[self.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2))
+        intruders = np.array(s[self.NUMBER_OF_AGENTS * 2:].reshape(-1, 2))
         actions = [
             self.IntruderPolicy(intruders[i]) for i in range(self.NUMBER_OF_INTRUDERS)
         ]
@@ -152,7 +150,7 @@ class IntruderMonitoring(Domain):
         ns = bound_vec(ns, self.discrete_statespace_limits)
         # Find agents and intruders after saturation
         agents = ns[: self.NUMBER_OF_AGENTS * 2].reshape(-1, 2)
-        intruders = ns[self.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2)
+        intruders = ns[self.NUMBER_OF_AGENTS * 2:].reshape(-1, 2)
 
         # Reward Calculation
         map = np.zeros((self.ROWS, self.COLS), "bool")
@@ -178,13 +176,12 @@ class IntruderMonitoring(Domain):
 
     def possibleActionsPerAgent(self, s_i):
         """
-        Returns all possible actions for a single (2-D) agent state *s_i* 
+        Returns all possible actions for a single (2-D) agent state *s_i*
         (where the domain state s = [s_0, ... s_i ... s_NUMBER_OF_AGENTS])
-        
+
             1. tile the [R,C] for all actions
             2. add all actions to the results
             3. Find feasible rows and add them as possible actions
-            
         """
         tile_s = np.tile(s_i, [len(self.ACTIONS_PER_AGENT), 1])
         next_states = tile_s + self.ACTIONS_PER_AGENT
@@ -203,19 +200,15 @@ class IntruderMonitoring(Domain):
 
     def printDomain(self, s, a):
         print("--------------")
-
         for i in range(0, self.NUMBER_OF_AGENTS):
-            s_a = s[i * 2 : i * 2 + 2]
+            s_a = s[i * 2: i * 2 + 2]
             aa = id2vec(a, self.ACTION_LIMITS)
-            # print 'Agent {} X: {} Y: {}'.format(i,s_a[0],s_a[1])
             print("Agent {} Location: {} Action {}".format(i, s_a, aa))
         offset = 2 * self.NUMBER_OF_AGENTS
         for i in range(0, self.NUMBER_OF_INTRUDERS):
-            s_i = s[offset + i * 2 : offset + i * 2 + 2]
-            # print 'Intruder {} X: {} Y: {}'.format(i,s_i[0],s_i[1])
+            s_i = s[offset + i * 2: offset + i * 2 + 2]
             print("Intruder", s_i)
         r, ns, terminal = self.step(s, a)
-
         print("Reward ", r)
 
     def IntruderPolicy(self, s_i):
@@ -223,17 +216,16 @@ class IntruderMonitoring(Domain):
         :param s_i: The state of a single agent
             (where the domain state s = [s_0, ... s_i ... s_NUMBER_OF_AGENTS]).
         :returns: a valid actions for the agent in state **s_i** to take.
-        
+
         Default random action among possible.
-        
         """
         return self.random_state.choice(self.possibleActionsPerAgent(s_i))
 
     def showDomain(self, a):
         s = self.state
         # Draw the environment
+        fig = plt.figure("IntruderMonitoring")
         if self.domain_fig is None:
-            plt.figure("Domain")
             self.domain_fig = plt.imshow(
                 self.map,
                 cmap="IntruderMonitoring",
@@ -248,8 +240,8 @@ class IntruderMonitoring(Domain):
             self.ally_fig.pop(0).remove()
             self.intruder_fig.pop(0).remove()
 
-        s_ally = s[0 : self.NUMBER_OF_AGENTS * 2].reshape((-1, 2))
-        s_intruder = s[self.NUMBER_OF_AGENTS * 2 :].reshape((-1, 2))
+        s_ally = s[0: self.NUMBER_OF_AGENTS * 2].reshape((-1, 2))
+        s_intruder = s[self.NUMBER_OF_AGENTS * 2:].reshape((-1, 2))
         self.ally_fig = plt.plot(
             s_ally[:, 1],
             s_ally[:, 0],
@@ -269,5 +261,5 @@ class IntruderMonitoring(Domain):
             markeredgecolor="k",
             markeredgewidth=2,
         )
-        plt.figure("Domain").canvas.draw()
-        plt.figure("Domain").canvas.flush_events()
+        fig.canvas.draw()
+        fig.canvas.flush_events()

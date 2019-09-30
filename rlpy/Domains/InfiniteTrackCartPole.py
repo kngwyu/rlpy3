@@ -1,7 +1,6 @@
 """Pendulum base domain."""
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
-from rlpy.Tools import plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -142,9 +141,8 @@ class InfTrackCartPole(CartPoleBase):
         static; see :class:`Domains.InfiniteTrackCartPole.InfTrackCartPole`.
 
         """
-        fourState = np.append(
-            self.state, np.array([0, 0])
-        )  # 0 cart position and velocity
+        # 0 cart position and velocity
+        fourState = np.append(self.state, np.array([0, 0]))
         self._plot_state(fourState, a)
 
     def showLearning(self, representation):
@@ -201,16 +199,14 @@ class InfCartPoleBalance(InfTrackCartPole):
     #: Limit on theta (Note that this may affect your representation's discretization)
     ANGLE_LIMITS = [-np.pi / 2, np.pi / 2]
     #: Limits on pendulum rate, per 1Link of Lagoudakis & Parr
-    ANGULAR_RATE_LIMITS = [
-        -2.0,
-        2.0,
-    ]  # NOTE that L+P's rate limits [-2,2] are actually unphysically slow, and the pendulum
+    ANGULAR_RATE_LIMITS = [-2.0, 2.0]
+    # NOTE that L+P's rate limits [-2,2] are actually unphysically slow, and the pendulum
     # saturates them frequently when falling; more
     # realistic to use 2*pi.
 
     def __init__(self, episodeCap=3000):
         self.episodeCap = episodeCap
-        super(InfCartPoleBalance, self).__init__()
+        super().__init__()
 
     def s0(self):
         # import ipdb; ipdb.set_trace()
@@ -263,7 +259,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
 
     def __init__(self):
         self.statespace_limits = np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
-        super(InfCartPoleSwingUp, self).__init__()
+        super().__init__()
 
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """

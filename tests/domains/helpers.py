@@ -1,7 +1,7 @@
 import numpy as np
-from rlpy.Tools import plt, use_nogui_backend
+from rlpy.Tools import plt, nogui_mode
 
-use_nogui_backend()
+nogui_mode()
 
 
 def _checkSameExperimentResults(exp1, exp2):

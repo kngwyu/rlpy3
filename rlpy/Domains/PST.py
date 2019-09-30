@@ -17,7 +17,6 @@ __author__ = ["Robert H. Klein", "Alborz Geramifard"]
 
 
 class PST(Domain):
-
     """
     Persistent Search and Track Mission with multiple Unmanned Aerial Vehicle
     (UAV) agents.
@@ -91,7 +90,7 @@ class PST(Domain):
 
     The agent receives: + 20 if an ally with a working sensor is at surveillance
     node while an ally with a working motor is at the communication node,
-    apenalty of - 50 if any UAV crashes and always some small penalty for 
+    apenalty of - 50 if any UAV crashes and always some small penalty for
     burned fuel. \n
 
     **REFERENCE:**
@@ -163,7 +162,6 @@ class PST(Domain):
     # Total distance between location rectangles in plot, computed in init()
     dist_between_locations = 0
 
-    ###
     def __init__(self, NUM_UAV=3):
         """
         :param NUM_UAV: the number of UAVs in the domain
@@ -197,12 +195,13 @@ class PST(Domain):
         self.uav_actuator_vis = None
         self.comms_line = None
         self.dist_between_locations = self.RECT_GAP + self.LOCATION_WIDTH
-        self.DimNames = []
-        [self.DimNames.append("UAV%d-loc" % i) for i in range(NUM_UAV)]
-        [self.DimNames.append("UAV%d-fuel" % i) for i in range(NUM_UAV)]
-        [self.DimNames.append("UAV%d-act" % i) for i in range(NUM_UAV)]
-        [self.DimNames.append("UAV%d-sen" % i) for i in range(NUM_UAV)]
-        super(PST, self).__init__()
+        self.DimNames = (
+            ["UAV{}-loc".format(i) for i in range(NUM_UAV)]
+            + ["UAV{}-fuel".format(i) for i in range(NUM_UAV)]
+            + ["UAV{}-act".format(i) for i in range(NUM_UAV)]
+            + ["UAV{}-sen".format(i) for i in range(NUM_UAV)]
+        )
+        super().__init__()
 
     def showDomain(self, a=0):
         s = self.state
@@ -327,13 +326,6 @@ class PST(Domain):
             )
             for uav_id in range(0, self.NUM_UAV)
         ]
-
-        # The following was executed when we used to check if the environment needed re-drawing: see above.
-        # Remove all UAV circle objects from visualization
-        #        else:
-        #            [self.uav_circ_vis[uav_id].remove() for uav_id in range(0,self.NUM_UAV)]
-        #            [self.uav_text_vis[uav_id].remove() for uav_id in range(0,self.NUM_UAV)]
-        #            [self.uav_sensor_vis[uav_id].remove() for uav_id in range(0,self.NUM_UAV)]
 
         # For each UAV:
         # Draw a circle, with text inside = amt fuel remaining
@@ -486,7 +478,7 @@ class PST(Domain):
         ns = self.struct2State(nsStruct)
         self.state = ns.copy()
 
-        ##### Compute reward #####
+        #: Compute reward
         if self.isCommStatesCovered:
             totalStepReward += self.SURVEIL_REWARD * min(
                 self.NUM_TARGET, self.numHealthySurveil
@@ -520,8 +512,8 @@ class PST(Domain):
         fuelEndInd = 2 * self.NUM_UAV
         actuatorEndInd = 3 * self.NUM_UAV
         sensorEndInd = 4 * self.NUM_UAV
-        locations = s[0 : self.NUM_UAV]
-        fuel = s[self.NUM_UAV : fuelEndInd]
+        locations = s[0: self.NUM_UAV]
+        fuel = s[self.NUM_UAV: fuelEndInd]
         actuator = s[fuelEndInd:actuatorEndInd]
         sensor = s[actuatorEndInd:sensorEndInd]
 
@@ -614,8 +606,7 @@ class PST(Domain):
         limits = np.tile(maxValue, (1, lenX))[0]
         self.vecList2idHelper(
             x, actionIDs, 0, curActionList, maxValue, limits
-        )  # TODO remove self
-
+        )
         return actionIDs
 
     def vecList2idHelper(self, x, actionIDs, ind, curActionList, maxValue, limits):
@@ -638,7 +629,7 @@ class PST(Domain):
             else:
                 self.vecList2idHelper(
                     x, actionIDs, ind + 1, partialActionAssignment, maxValue, limits
-                )  # TODO remove self
+                )
 
     def isTerminal(self):
         sStruct = self.state2Struct(self.state)

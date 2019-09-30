@@ -81,9 +81,9 @@ if __name__ == "__main__":
     path = "./Results/Temp/{domain}/{agent}/{representation}/"
     experiment = make_experiment(1, path=path)
     experiment.run(
-        visualize_steps=False,  # should each learning step be shown?
+        visualize_steps=True,  # should each learning step be shown?
         visualize_learning=True,  # show performance runs?
-        visualize_performance=True,
+        visualize_performance=1,
     )  # show value function?
     experiment.plot()
     experiment.save()

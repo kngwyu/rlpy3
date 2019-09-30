@@ -114,7 +114,7 @@ class HelicopterHoverExtended(Domain):
     def __init__(self, noise_level=1.0, discount_factor=0.95):
         self.noise_level = noise_level
         self.discount_factor = discount_factor
-        super(HelicopterHoverExtended, self).__init__()
+        super().__init__()
 
     def s0(self):
         self.state = np.zeros((20))
@@ -248,7 +248,7 @@ class HelicopterHoverExtended(Domain):
         pos, vel, ang_rate, ori_bases, _ = self._state_in_world(s)
         coords = np.zeros((3, 3, 2)) + pos[None, :, None]
         coords[:, :, 1] += ori_bases * 4
-        u, v = np.mgrid[0 : 2 * np.pi : 10j, 0:2:1.0]
+        u, v = np.mgrid[0: 2 * np.pi: 10j, 0: 2: 1]
 
         # rotor coordinates
         coord = np.zeros([3] + list(u.shape))
@@ -268,7 +268,7 @@ class HelicopterHoverExtended(Domain):
 
         style = dict(fc="r", ec="r", lw=2.0, head_width=0.05, head_length=0.1)
         if self.domain_fig is None:
-            self.domain_fig = plt.figure(figsize=(12, 8))
+            self.domain_fig = plt.figure("HelicopterHover", figsize=(12, 8))
             # action axes
             ax1 = plt.subplot2grid((1, 3), (0, 0), frameon=False)
             ax1.get_xaxis().set_visible(False)
@@ -289,11 +289,11 @@ class HelicopterHoverExtended(Domain):
             arr3 = ax1.arrow(0, 1.5, a[2], 0, **style)
             # main rotor throttle
             arr4 = ax1.arrow(1.5, 0, 0, a[3], **style)
-            ax1.set_aspect("equal")
 
             self.action_arrows = (arr1, arr2, arr3, arr4)
             self.action_ax = ax1
-            # ax = self.domain_fig.gca(projection='3d')
+            self.action_ax.set_aspect("equal")
+
             ax = plt.subplot2grid((1, 3), (0, 1), colspan=2, projection="3d")
             ax.view_init(elev=np.pi)
             # print origin
@@ -350,7 +350,6 @@ class HelicopterHoverExtended(Domain):
                 coord_side[0], coord_side[1], coord_side[2], color="k"
             )
             self._ax = ax
-            ax.set_aspect("equal")
             lim = 5  # self.MAX_POS
             ax.set_xlim(-lim, lim)
             ax.set_ylim(-lim, lim)
@@ -383,7 +382,6 @@ class HelicopterHoverExtended(Domain):
             self._wframe_side = ax.plot_wireframe(
                 coord_side[0], coord_side[1], coord_side[2], color="k"
             )
-            ax.set_aspect("equal")
             lim = 5  # self.MAX_POS
             ax.set_xlim(-lim, lim)
             ax.set_ylim(-lim, lim)

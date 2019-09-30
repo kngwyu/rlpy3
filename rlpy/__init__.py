@@ -7,4 +7,4 @@ import rlpy.Policies
 import rlpy.Representations
 
 
-__version__ = '2.0.0a0'
+__version__ = "2.0.0a0"

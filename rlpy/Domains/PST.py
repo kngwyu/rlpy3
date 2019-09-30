@@ -512,8 +512,8 @@ class PST(Domain):
         fuelEndInd = 2 * self.NUM_UAV
         actuatorEndInd = 3 * self.NUM_UAV
         sensorEndInd = 4 * self.NUM_UAV
-        locations = s[0: self.NUM_UAV]
-        fuel = s[self.NUM_UAV: fuelEndInd]
+        locations = s[0 : self.NUM_UAV]
+        fuel = s[self.NUM_UAV : fuelEndInd]
         actuator = s[fuelEndInd:actuatorEndInd]
         sensor = s[actuatorEndInd:sensorEndInd]
 
@@ -604,9 +604,7 @@ class PST(Domain):
         lenX = len(x)
         # eg [3,3,3,3] # TODO redundant computation
         limits = np.tile(maxValue, (1, lenX))[0]
-        self.vecList2idHelper(
-            x, actionIDs, 0, curActionList, maxValue, limits
-        )
+        self.vecList2idHelper(x, actionIDs, 0, curActionList, maxValue, limits)
         return actionIDs
 
     def vecList2idHelper(self, x, actionIDs, ind, curActionList, maxValue, limits):

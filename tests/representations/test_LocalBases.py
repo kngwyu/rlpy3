@@ -1,6 +1,7 @@
 from rlpy.Representations.LocalBases import NonparametricLocalBases, RandomLocalBases
 from rlpy.Domains import InfiniteTrackCartPole
 import numpy as np
+
 try:
     from rlpy.Representations.kernels import gaussian_kernel
 except ImportError:

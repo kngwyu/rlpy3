@@ -248,7 +248,7 @@ class HelicopterHoverExtended(Domain):
         pos, vel, ang_rate, ori_bases, _ = self._state_in_world(s)
         coords = np.zeros((3, 3, 2)) + pos[None, :, None]
         coords[:, :, 1] += ori_bases * 4
-        u, v = np.mgrid[0: 2 * np.pi: 10j, 0: 2: 1]
+        u, v = np.mgrid[0 : 2 * np.pi : 10j, 0:2:1]
 
         # rotor coordinates
         coord = np.zeros([3] + list(u.shape))

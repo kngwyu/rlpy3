@@ -58,8 +58,9 @@ class CheckingBuildExt(build_ext):
                     raise Exception(
                         "Cython-generated file '{}' not found."
                         "Cython is required to compile rlpy from a development branch."
-                        "Please install Cython or download a release package of rlpy.".
-                        format(src)
+                        "Please install Cython or download a release package of rlpy.".format(
+                            src
+                        )
                     )
 
     def build_extensions(self):
@@ -241,7 +242,7 @@ else:
 here = os.path.abspath(os.path.dirname(__file__))
 
 with io.open(os.path.join(here, "rlpy/__init__.py"), "rt", encoding="utf8") as f:
-    VERSION = re.search(r"__version__ = \'(.*?)\'", f.read()).group(1)
+    VERSION = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
 
 
 with io.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
@@ -250,7 +251,7 @@ with io.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
 
 REQUIRES_PYTHON = ">=3.5.0"
 
-REQUIRED = ["numpy >= 1.15", "scipy >= 1.3", "matplotlib >= 3.1", "joblib"]
+REQUIRED = ["numpy>=1.15", "scipy>=1.3", "matplotlib>=3.1", "click>=6.0", "joblib"]
 
 EXTRA = {"systemadmin": "networkx", "bebf": "scikit-learn"}
 

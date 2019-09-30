@@ -1,4 +1,4 @@
-from rlpy.Agents import LSPI, NaturalActorCritic, Q_Learning, SARSA
+from rlpy.Agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
 from rlpy.Policies import eGreedy, GibbsPolicy
 from rlpy import Representations
 from rlpy.Representations import (
@@ -8,6 +8,7 @@ from rlpy.Representations import (
     KernelizediFDD,
     RBF,
     Tabular,
+    TileCoding,
 )
 
 
@@ -53,13 +54,33 @@ def tabular_sarsa(domain, discretization=20, lambda_=0.3):
     return SARSA(policy, tabular, domain.discount_factor, lambda_=lambda_)
 
 
-def ifdd_q(
+def tile_ggq(domain, res_mat, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100):
+    tile = TileCoding(
+        domain,
+        memory=2000,
+        num_tilings=[1] * res_mat.shape[0],
+        resolution_matrix=res_mat,
+        safety="none",
+    )
+    return Greedy_GQ(
+        eGreedy(tile, epsilon=0.1),
+        tile,
+        discount_factor=domain.discount_factor,
+        lambda_=lambda_,
+        initial_learn_rate=initial_learn_rate,
+        boyan_N0=boyan_N0,
+    )
+
+
+def _ifdd_q_common(
+        agent_class,
     domain,
     discretization=20,
     threshold=1.0,
     lambda_=0.3,
     initial_learn_rate=0.1,
     boyan_N0=100,
+    ifddplus=1.0,
 ):
     ifdd = iFDD(
         domain,
@@ -68,9 +89,9 @@ def ifdd_q(
             domain, discretization=discretization
         ),
         useCache=True,
-        iFDDPlus=True,
+        iFDDPlus=ifddplus,
     )
-    return Q_Learning(
+    return agent_class(
         eGreedy(ifdd, epsilon=0.1),
         ifdd,
         discount_factor=domain.discount_factor,
@@ -79,6 +100,18 @@ def ifdd_q(
         learn_rate_decay_mode="boyan",
         boyan_N0=boyan_N0,
     )
+
+
+def ifdd_ggq(*args, **kwargs):
+    return _ifdd_q_common(Greedy_GQ, *args, **kwargs)
+
+
+def ifdd_q(*args, **kwargs):
+    return _ifdd_q_common(Q_Learning, *args, **kwargs)
+
+
+def ifdd_sarsa(*args, **kwargs):
+    return _ifdd_q_common(SARSA, *args, **kwargs)
 
 
 def ifddk_q(

@@ -34,6 +34,6 @@ if __name__ == "__main__":
         DOMAIN,
         select_agent,
         default_max_steps=MAX_STEPS,
-        default_num_policy_checks=10,
-        default_checks_per_policy=50,
+        default_num_policy_checks=30,
+        default_checks_per_policy=1,
     )

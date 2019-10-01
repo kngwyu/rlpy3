@@ -42,16 +42,21 @@ class FlipBoard(Domain):
 
     """
 
-    discount_factor = 1
     BOARD_SIZE = 4
     STEP_REWARD = -1
-    episodeCap = 100  # Set by the domain = min(100,rows*cols)
-    actions_num = BOARD_SIZE ** 2
-    statespace_limits = np.tile([0, 1], (BOARD_SIZE ** 2, 1))
 
     # Visual Stuff
     domain_fig = None
     move_fig = None
+
+    def __init__(self):
+        boards_num = self.BOARD_SIZE ** 2
+        super().__init__(
+            actions_num=boards_num,
+            statespace_limits=np.tile([0, 1], (boards_num, 1)),
+            discount_factor=1.0,
+            episodeCap=min(100, boards_num),
+        )
 
     def showDomain(self, a=0):
         s = self.state

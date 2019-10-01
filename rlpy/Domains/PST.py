@@ -103,9 +103,6 @@ class PST(Domain):
 
     """
 
-    episodeCap = 1000  # : Maximum number of steps per episode
-    discount_factor = 0.9  #: Discount factor
-
     # Domain constants
     FULL_FUEL = 10  #: Number of fuel units at start
     #: Probability that an actuator fails on this timestep for a given UAV
@@ -171,15 +168,13 @@ class PST(Domain):
         self.NUM_UAV = NUM_UAV
         # Number of states (LOC, FUEL...) * NUM_UAV
         self.states_num = NUM_UAV * UAVIndex.SIZE
-        # Number of Actions: ADVANCE, RETREAT, LOITER
-        self.actions_num = pow(UAVAction.SIZE, NUM_UAV)
         locations_lim = np.array(np.tile([0, UAVLocation.SIZE - 1], (NUM_UAV, 1)))
         fuel_lim = np.array(np.tile([0, self.FULL_FUEL], (NUM_UAV, 1)))
         actuator_lim = np.array(np.tile([0, ActuatorState.SIZE - 1], (NUM_UAV, 1)))
         sensor_lim = np.array(np.tile([0, SensorState.SIZE - 1], (NUM_UAV, 1)))
         # Limits of each dimension of the state space. Each row corresponds to
         # one dimension and has two elements [min, max]
-        self.statespace_limits = np.vstack(
+        statespace_limits = np.vstack(
             [locations_lim, fuel_lim, actuator_lim, sensor_lim]
         )
         # eg [3,3,3,3], number of possible actions
@@ -201,7 +196,13 @@ class PST(Domain):
             + ["UAV{}-act".format(i) for i in range(NUM_UAV)]
             + ["UAV{}-sen".format(i) for i in range(NUM_UAV)]
         )
-        super().__init__()
+        super().__init__(
+            # Number of Actions: ADVANCE, RETREAT, LOITER
+            actions_num=pow(UAVAction.SIZE, NUM_UAV),
+            statespace_limits=statespace_limits,
+            episodeCap=1000,
+            discount_factor=0.9,
+        )
 
     def showDomain(self, a=0):
         s = self.state

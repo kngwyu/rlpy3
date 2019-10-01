@@ -135,6 +135,7 @@ class TileCoding(Representation):
 
                 def _physical_addr(self, A):
                     h.physical_addr(A, self.R, self.check_data, self.counts)[0]
+
                 self._physical_addr = types.MethodType(_physical_addr, self)
                 print("Use cython extension for TileCoding hashing trick")
             except Exception as e:

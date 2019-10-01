@@ -64,10 +64,7 @@ class Acrobot(Domain):
         see the AcrobotLegacy class.
     """
 
-    episodeCap = 1000
     dt = 0.2
-    continuous_dims = np.arange(4)
-    discount_factor = 1.0
 
     LINK_LENGTH_1 = 1.0  # [m]
     LINK_LENGTH_2 = 1.0  # [m]
@@ -83,15 +80,21 @@ class Acrobot(Domain):
     AVAIL_TORQUE = [-1.0, 0.0, +1]
 
     torque_noise_max = 0.0
-    statespace_limits = np.array(
-        [[-np.pi, np.pi]] * 2 + [[-MAX_VEL_1, MAX_VEL_1]] + [[-MAX_VEL_2, MAX_VEL_2]]
-    )
 
     #: use dynamics equations from the nips paper or the book
     book_or_nips = "book"
     action_arrow = None
     domain_fig = None
-    actions_num = 3
+
+    def __init__(self):
+        st_max = np.array([np.pi, np.pi, self.MAX_VEL_1, self.MAX_VEL_2])
+        super().__init__(
+            actions_num=3,
+            statespace_limits=np.stack((-st_max, st_max), axis=1),
+            discount_factor=1.0,
+            continuous_dims=np.arange(4),
+            episodeCap=1000,
+        )
 
     def s0(self):
         self.state = np.zeros((4))

@@ -65,7 +65,6 @@ class ChainMDP(Domain):
     chainSize = 0
     # Y values used for drawing circles
     Y = 1
-    actions_num = 2
 
     def __init__(self, chainSize=2):
         """
@@ -74,9 +73,11 @@ class ChainMDP(Domain):
         self.chainSize = chainSize
         self.start = 0
         self.goal = chainSize - 1
-        self.statespace_limits = np.array([[0, chainSize - 1]])
-        self.episodeCap = 2 * chainSize
-        super().__init__()
+        super().__init__(
+            actions_num=2,
+            statespace_limits=np.array([[0, chainSize - 1]]),
+            episodeCap=2 * chainSize,
+        )
 
     def showDomain(self, a=0):
         # Draw the environment

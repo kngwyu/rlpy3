@@ -76,8 +76,6 @@ class Pinball(Domain):
         self.NOISE = noise
         self.configuration = configuration
         self.screen = None
-        self.episodeCap = episodeCap
-        self.actions_num = 5
         self.actions = [
             PinballModel.ACC_X,
             PinballModel.DEC_Y,
@@ -85,11 +83,14 @@ class Pinball(Domain):
             PinballModel.ACC_Y,
             PinballModel.ACC_NONE,
         ]
-        self.statespace_limits = np.array(
-            [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
+        super().__init__(
+            actions_num=len(self.actions),
+            statespace_limits=np.array(
+                [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
+            ),
+            continuous_dims=[4],
+            episodeCap=episodeCap,
         )
-        self.continuous_dims = [4]
-        super().__init__()
         self.environment = PinballModel(
             self.configuration, random_state=self.random_state
         )

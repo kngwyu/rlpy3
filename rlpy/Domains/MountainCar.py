@@ -32,10 +32,6 @@ class MountainCar(Domain):
     Based on `RL-Community Java Implementation <http://library.rl-community.org/wiki/Mountain_Car_(Java)>`_
     """
 
-    actions_num = 3
-    state_space_dims = 2
-    continuous_dims = [0, 1]
-
     XMIN = -1.2  # : Lower bound on domain position
     XMAX = 0.6  #: Upper bound on domain position
     XDOTMIN = -0.07  # : Lower bound on car velocity
@@ -52,8 +48,6 @@ class MountainCar(Domain):
     gravityFactor = -0.0025
     #: Hill peaks are generated as sinusoid; this is freq. of that sinusoid.
     hillPeakFrequency = 3.0
-    # discount_factor = .9
-    episodeCap = 10000  # : Maximum number of steps before terminating episode
 
     # Used for visual stuff:
     domain_fig = None
@@ -66,13 +60,19 @@ class MountainCar(Domain):
     CAR_WIDTH = 0.1
     ARROW_LENGTH = 0.2
 
-    def __init__(self, noise=0):
+    def __init__(self, noise=0, discount_factor=0.9):
         """
         :param noise: Magnitude of noise (times accelerationFactor) in stochastic velocity changes
 
         """
-        self.statespace_limits = np.array(
-            [[self.XMIN, self.XMAX], [self.XDOTMIN, self.XDOTMAX]]
+        super().__init__(
+            actions_num=3,
+            statespace_limits=np.array(
+                [[self.XMIN, self.XMAX], [self.XDOTMIN, self.XDOTMAX]]
+            ),
+            continuous_dims=[0, 1],
+            discount_factor=discount_factor,
+            episodeCap=10000,
         )
         self.noise = noise
         # Visual stuff:
@@ -82,14 +82,13 @@ class MountainCar(Domain):
         self.yTicksLabels = np.linspace(self.XDOTMIN, self.XDOTMAX, 5)
         self.MIN_RETURN = (
             self.STEP_REWARD
-            * (1 - self.discount_factor ** self.episodeCap)
-            / (1 - self.discount_factor)
-            if self.discount_factor != 1
+            * (1 - discount_factor ** self.episodeCap)
+            / (1 - discount_factor)
+            if discount_factor != 1
             else self.STEP_REWARD * self.episodeCap
         )
         self.MAX_RETURN = 0
         self.DimNames = ["X", "Xdot"]
-        super().__init__()
 
     def step(self, a):
         """

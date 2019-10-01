@@ -92,25 +92,27 @@ class FiniteTrackCartPole(CartPoleBase):
     #: Newtons, N - Maximum noise possible, uniformly distributed.  Default 0.
     force_noise_max = 0.0
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         # Limits of each dimension of the state space.
         # Each row corresponds to one dimension and has two elements [min, max]
-        self.statespace_limits = np.array(
-            [
-                self.ANGLE_LIMITS,
-                self.ANGULAR_RATE_LIMITS,
-                self.POSITION_LIMITS,
-                self.VELOCITY_LIMITS,
-            ]
+        super().__init__(
+            statespace_limits=np.array(
+                [
+                    self.ANGLE_LIMITS,
+                    self.ANGULAR_RATE_LIMITS,
+                    self.POSITION_LIMITS,
+                    self.VELOCITY_LIMITS,
+                ]
+            ),
+            continuous_dims=[
+                StateIndex.THETA,
+                StateIndex.THETA_DOT,
+                StateIndex.X,
+                StateIndex.X_DOT,
+            ],
+            **kwargs
         )
-        self.continuous_dims = [
-            StateIndex.THETA,
-            StateIndex.THETA_DOT,
-            StateIndex.X,
-            StateIndex.X_DOT,
-        ]
         self.DimNames = ["Theta", "Thetadot", "X", "Xdot"]
-        super().__init__()
 
     def step(self, a):
         s = self.state
@@ -198,11 +200,8 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
 
     """
 
-    #: Discount factor
-    discount_factor = 0.999
-
     def __init__(self):
-        super(FiniteCartPoleBalance, self).__init__()
+        super().__init__(discount_factor=0.999)
 
     def s0(self):
         # Returns the initial state, pendulum vertical
@@ -245,7 +244,7 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
 
     def __init__(self, good_reward=0.0):
         self.good_reward = good_reward
-        super(FiniteCartPoleBalanceOriginal, self).__init__()
+        super().__init__()
 
     def s0(self):
         self.state = np.zeros(4)
@@ -282,9 +281,6 @@ class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
     AVAIL_FORCE = np.array([-10.0, 0.0, 10.0])
     #: Newtons, N - Maximum noise possible, uniformly distributed
     force_noise_max = 1.0
-
-    def __init__(self):
-        super(FiniteCartPoleBalanceModern, self).__init__()
 
     def s0(self):
         self.state = np.array([self.random_state.randn() * 0.01, 0.0, 0.0, 0.0])
@@ -331,7 +327,7 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
     # saturates them frequently when falling; more realistic to use 2*pi.
 
     def __init__(self):
-        super(FiniteCartPoleSwingUp, self).__init__()
+        super().__init__()
 
     def s0(self):
         # Returns the initial state, pendulum vertical
@@ -384,7 +380,7 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
     B = 0.1
 
     def __init__(self):
-        super(FiniteCartPoleSwingUpFriction, self).__init__()
+        super().__init__()
 
     def _getReward(self, a, s=None):
         if s is None:

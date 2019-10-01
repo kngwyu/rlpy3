@@ -94,27 +94,38 @@ class HelicopterHoverExtended(Domain):
 
     dt = 0.01  #: length of one timestep
     continuous_dims = np.arange(20)
-    statespace_limits_full = np.array(
-        [[-MAX_POS, MAX_POS]] * 3
-        + [[-MAX_VEL, MAX_VEL]] * 3
-        + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
-        + [[-MAX_ANG, MAX_ANG]] * 4
-        + [[-2.0, 2.0]] * 6
-        + [[0, episodeCap]]
-    )
-    statespace_limits = statespace_limits_full
 
     # create all combinations of possible actions
     _action_bounds = np.array([[-2.0, 2.0]] * 4)
     # maximum action: 2
     _actions_dim = np.array([[-0.2, -0.05, 0.05, 0.2]] * 3 + [[0.0, 0.15, 0.3, 0.5]])
     actions = cartesian(list(_actions_dim))  #: all possible actions
-    actions_num = np.prod(actions.shape[0])
 
-    def __init__(self, noise_level=1.0, discount_factor=0.95):
+    def __init__(
+        self,
+        statespace_limits=None,
+        continuous_dims=np.arange(20),
+        noise_level=1.0,
+        discount_factor=0.95,
+        episodeCap=6000,
+    ):
+        self.statespace_limits_full = np.array(
+            [[-self.MAX_POS, self.MAX_POS]] * 3
+            + [[-self.MAX_VEL, self.MAX_VEL]] * 3
+            + [[-self.MAX_ANG_RATE, self.MAX_ANG_RATE]] * 3
+            + [[-self.MAX_ANG, self.MAX_ANG]] * 4
+            + [[-2.0, 2.0]] * 6
+            + [[0, episodeCap]]
+        )
         self.noise_level = noise_level
-        self.discount_factor = discount_factor
-        super().__init__()
+        if statespace_limits is None:
+            statespace_limits = self.statespace_limits_full
+        super().__init__(
+            actions_num = np.prod(self.actions.shape[0]),
+            statespace_limits=statespace_limits,
+            discount_factor=discount_factor,
+            episodeCap=episodeCap,
+        )
 
     def s0(self):
         self.state = np.zeros((20))
@@ -439,15 +450,17 @@ class HelicopterHover(HelicopterHoverExtended):
     MAX_ANG = 1.0
     WIND_MAX = 5.0
 
-    continuous_dims = np.arange(12)
-    statespace_limits = np.array(
-        [[-MAX_POS, MAX_POS]] * 3
-        + [[-MAX_VEL, MAX_VEL]] * 3
-        + [[-MAX_ANG_RATE, MAX_ANG_RATE]] * 3
-        + [[-MAX_ANG, MAX_ANG]] * 3
-    )
-
-    # full_state_ = np.zeros((20))
+    def __init__(self):
+        st_max = np.array(
+            [self.MAX_POS] * 3
+            + [self.MAX_VEL] * 3
+            + [self.MAX_ANG_RATE] * 3
+            + [self.MAX_ANG] * 3
+        )
+        statespace_limits = np.stack((-st_max, st_max), axis=1)
+        super().__init__(
+            statespace_limits=statespace_limits, continuous_dims=np.arange(12)
+        )
 
     def s0(self):
         # self.hidden_state_ = np.zeros((8))

@@ -39,23 +39,22 @@ class PuddleWorld(Domain):
 
     """
 
-    discount_factor = 1.0  # discout factor
     domain_fig = None
     valfun_fig = None
     polfun_fig = None
 
-    episodeCap = 1000
+    actions = 0.05 * np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype=np.float)
     puddles = np.array([[[0.1, 0.75], [0.45, 0.75]], [[0.45, 0.4], [0.45, 0.8]]])
-    continuous_dims = np.arange(2)
-    statespace_limits = np.array([[0.0, 1.0]] * 2)
-
-    actions = 0.05 * np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype="float")
-    actions_num = 4
 
     def __init__(self, noise_level=0.01, discount_factor=1.0):
+        super().__init__(
+            actions_num=len(self.actions),
+            statespace_limits=np.array([[0.0, 1.0]] * 2),
+            continuous_dims=np.arange(2),
+            episodeCap=1000,
+            discount_factor=discount_factor,
+        )
         self.noise_level = noise_level
-        self.discount_factor = discount_factor
-        super(PuddleWorld, self).__init__()
         self.reward_map = np.zeros((100, 100))
         self.val_map = np.zeros((100, 100))
         self.pi_map = np.zeros((100, 100))

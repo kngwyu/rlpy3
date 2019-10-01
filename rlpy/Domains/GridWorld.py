@@ -47,18 +47,13 @@ class GridWorld(Domain):
 
     """
 
-    map = start_state = goal = None
     # Used for graphics to show the domain
     agent_fig = upArrows_fig = downArrows_fig = leftArrows_fig = None
     rightArrows_fig = domain_fig = valueFunction_fig = None
-    #: Number of rows and columns of the map
-    ROWS = COLS = 0
     #: Reward constants
     GOAL_REWARD = +1
     PIT_REWARD = -1
     STEP_REWARD = -0.001
-    #: Set by the domain = min(100,rows*cols)
-    episodeCap = None
     #: Movement Noise
     NOISE = 0
     # Used for graphical normalization
@@ -68,8 +63,6 @@ class GridWorld(Domain):
     MIN_RETURN = -1
     # Used for graphical shifting of arrows
     SHIFT = 0.1
-
-    actions_num = 4
     # Constants in the map
     EMPTY, BLOCKED, START, GOAL, PIT, AGENT = list(range(6))
     #: Up, Down, Left, Right
@@ -87,18 +80,17 @@ class GridWorld(Domain):
         if self.map.ndim == 1:
             self.map = self.map[np.newaxis, :]
         self.start_state = np.argwhere(self.map == self.START)[0]
+        #: Number of rows and columns of the map
         self.ROWS, self.COLS = np.shape(self.map)
-        self.statespace_limits = np.array([[0, self.ROWS - 1], [0, self.COLS - 1]])
         self.NOISE = noise
         self.DimNames = ["Row", "Col"]
         self.state = self.start_state.copy()
-        # 2*self.ROWS*self.COLS, small values can cause problem for some
-        # planning techniques
-        if not self.episodeCap:
-            self.episodeCap = 1000
-        else:
-            self.episodeCap = episodeCap
-        super().__init__()
+        super().__init__(
+            actions_num=4,
+            statespace_limits=np.array([[0, self.ROWS - 1], [0, self.COLS - 1]]),
+            # 2*W*H, small values can cause problem for some planning techniques
+            episodeCap=1000 if episodeCap is None else episodeCap,
+        )
 
     def showDomain(self, a=0, s=None):
         if s is None:

@@ -121,7 +121,7 @@ class HelicopterHoverExtended(Domain):
         if statespace_limits is None:
             statespace_limits = self.statespace_limits_full
         super().__init__(
-            actions_num = np.prod(self.actions.shape[0]),
+            actions_num=np.prod(self.actions.shape[0]),
             statespace_limits=statespace_limits,
             discount_factor=discount_factor,
             episodeCap=episodeCap,

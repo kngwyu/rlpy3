@@ -1,5 +1,6 @@
 """Tile Coding Representation"""
 import numpy as np
+import types
 from .Representation import Representation
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -130,14 +131,11 @@ class TileCoding(Representation):
 
         if self.safety == "none":
             try:
-                from . import hashing as h
+                from rlpy.Representations import hashing as h
 
-                f = lambda self, A: h.physical_addr(
-                    A, self.R, self.check_data, self.counts
-                )[0]
-                self._physical_addr = type(TileCoding._physical_addr)(
-                    f, self, TileCoding
-                )
+                def _physical_addr(self, A):
+                    h.physical_addr(A, self.R, self.check_data, self.counts)[0]
+                self._physical_addr = types.MethodType(_physical_addr, self)
                 print("Use cython extension for TileCoding hashing trick")
             except Exception as e:
                 print(e)

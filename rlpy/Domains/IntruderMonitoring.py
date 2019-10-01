@@ -136,7 +136,7 @@ class IntruderMonitoring(Domain):
 
         # Generate actions for each intruder based on the function
         # IntruderPolicy()
-        intruders = np.array(s[self.NUMBER_OF_AGENTS * 2:].reshape(-1, 2))
+        intruders = np.array(s[self.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2))
         actions = [
             self.IntruderPolicy(intruders[i]) for i in range(self.NUMBER_OF_INTRUDERS)
         ]
@@ -150,7 +150,7 @@ class IntruderMonitoring(Domain):
         ns = bound_vec(ns, self.discrete_statespace_limits)
         # Find agents and intruders after saturation
         agents = ns[: self.NUMBER_OF_AGENTS * 2].reshape(-1, 2)
-        intruders = ns[self.NUMBER_OF_AGENTS * 2:].reshape(-1, 2)
+        intruders = ns[self.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2)
 
         # Reward Calculation
         map = np.zeros((self.ROWS, self.COLS), "bool")
@@ -201,12 +201,12 @@ class IntruderMonitoring(Domain):
     def printDomain(self, s, a):
         print("--------------")
         for i in range(0, self.NUMBER_OF_AGENTS):
-            s_a = s[i * 2: i * 2 + 2]
+            s_a = s[i * 2 : i * 2 + 2]
             aa = id2vec(a, self.ACTION_LIMITS)
             print("Agent {} Location: {} Action {}".format(i, s_a, aa))
         offset = 2 * self.NUMBER_OF_AGENTS
         for i in range(0, self.NUMBER_OF_INTRUDERS):
-            s_i = s[offset + i * 2: offset + i * 2 + 2]
+            s_i = s[offset + i * 2 : offset + i * 2 + 2]
             print("Intruder", s_i)
         r, ns, terminal = self.step(s, a)
         print("Reward ", r)
@@ -240,8 +240,8 @@ class IntruderMonitoring(Domain):
             self.ally_fig.pop(0).remove()
             self.intruder_fig.pop(0).remove()
 
-        s_ally = s[0: self.NUMBER_OF_AGENTS * 2].reshape((-1, 2))
-        s_intruder = s[self.NUMBER_OF_AGENTS * 2:].reshape((-1, 2))
+        s_ally = s[0 : self.NUMBER_OF_AGENTS * 2].reshape((-1, 2))
+        s_intruder = s[self.NUMBER_OF_AGENTS * 2 :].reshape((-1, 2))
         self.ally_fig = plt.plot(
             s_ally[:, 1],
             s_ally[:, 0],

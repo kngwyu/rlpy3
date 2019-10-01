@@ -135,12 +135,12 @@ class Pacman(Domain):
         # set ghost position
         num_ghosts = len(agent_states) - 1
         for i in range(1, num_ghosts + 1):
-            part_s = s[(3 * i) - 1: 3 * i]
+            part_s = s[(3 * i) - 1 : 3 * i]
             agent_states[i].configuration.pos = (part_s[0], part_s[1])
             agent_states[i].scaredTimer = part_s[2]
 
         # set food and capsules locations
-        s_food = s[(num_ghosts + 1) * 3:]
+        s_food = s[(num_ghosts + 1) * 3 :]
         x = 0
         y = 0
         i = 0
@@ -173,7 +173,7 @@ class Pacman(Domain):
         # import ipdb; ipdb.set_trace()
         # get ghost info
         for i in range(num_ghosts):
-            s[2 + i * 3: 2 + i * 3 + 2] = agent_states[i + 1].configuration.pos
+            s[2 + i * 3 : 2 + i * 3 + 2] = agent_states[i + 1].configuration.pos
             s[2 + i * 3 + 2] = agent_states[i + 1].scaredTimer
         # get food and capsules status
         i = 2 + num_ghosts * 3

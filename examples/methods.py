@@ -73,7 +73,7 @@ def tile_ggq(domain, res_mat, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100)
 
 
 def _ifdd_q_common(
-        agent_class,
+    agent_class,
     domain,
     discretization=20,
     threshold=1.0,

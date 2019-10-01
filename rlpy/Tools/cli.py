@@ -8,7 +8,7 @@ def get_experiment(
     default_max_steps=1000,
     default_num_policy_checks=10,
     default_checks_per_policy=10,
-    **kwargs
+    agent_options=[],
 ):
     @click.group()
     @click.option(
@@ -50,8 +50,9 @@ def get_experiment(
         checks_per_policy,
         log_interval,
         log_dir,
+        **kwargs,
     ):
-        agent = agent_selector(agent, seed)
+        agent = agent_selector(agent, seed, **kwargs)
         ctx.obj["experiment"] = Experiment(
             agent,
             domain,
@@ -61,8 +62,13 @@ def get_experiment(
             checks_per_policy=checks_per_policy,
             log_interval=log_interval,
             log_dir=log_dir,
-            **kwargs
+            **kwargs,
         )
+
+    for opt in agent_options:
+        if not isinstance(opt, click.Option):
+            raise ValueError("Every item of agent_options must be click.Option!")
+        experiment.params.append(agent_options)
 
     @experiment.command(help="Train the agent")
     @click.option(
@@ -79,11 +85,11 @@ def get_experiment(
     @click.option(
         "--visualize-steps", is_flag=True, help="Visualize all steps during learning"
     )
-    @click.option(
-        "--plot-result", is_flag=True, help="Visualize the result"
-    )
+    @click.option("--plot-result", is_flag=True, help="Visualize the result")
     @click.pass_context
-    def train(ctx, visualize_performance, visualize_learning, visualize_steps, plot_result):
+    def train(
+        ctx, visualize_performance, visualize_learning, visualize_steps, plot_result
+    ):
         exp = ctx.obj["experiment"]
         exp.run(visualize_performance, visualize_learning, visualize_steps)
         if plot_result:

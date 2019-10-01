@@ -50,8 +50,6 @@ class FiftyChain(Domain):
     GOAL_REWARD = 1
     #: Indices of states with rewards
     GOAL_STATES = [9, 40]
-    #: Set by the domain = min(100,rows*cols)
-    episodeCap = 50
     # Used for graphical normalization
     MAX_RETURN = 2.5
     # Used for graphical normalization
@@ -67,7 +65,6 @@ class FiftyChain(Domain):
     chainSize = 50
     # Y values used for drawing circles
     Y = 1
-    actions_num = 2
     #: Probability of taking the other (unselected) action
     p_action_failure = 0.1
     V_star = [
@@ -140,14 +137,17 @@ class FiftyChain(Domain):
 
     # Constants in the map
     def __init__(self):
+        super().__init__(
+            actions_num=2,
+            statespace_limits=np.array([[0, self.chainSize - 1]]),
+            # Set discount_factor to be 0.8 for this domain per L & P 2007
+            discount_factor=0.8,
+            episodeCap=50,
+        )
         self.start = 0
-        self.statespace_limits = np.array([[0, self.chainSize - 1]])
-        super().__init__()
         # To catch errors
         self.optimal_policy = np.array([-1 for dummy in range(0, self.chainSize)])
         self.storeOptimalPolicy()
-        # Set discount_factor to be 0.8 for this domain per L & P 2007
-        self.discount_factor = 0.8
 
     def storeOptimalPolicy(self):
         """

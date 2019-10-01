@@ -44,8 +44,6 @@ class Swimmer(Domain):
     """
 
     dt = 0.03
-    episodeCap = 1000
-    discount_factor = 0.98
 
     def __init__(self, d=3, k1=7.5, k2=0.3):
         """
@@ -81,18 +79,21 @@ class Swimmer(Domain):
         self.angles[-self.d - 2 :] = True
 
         self.actions = cartesian((d - 1) * [[-2.0, 0.0, 2]])
-        self.actions_num = len(self.actions)
 
-        self.statespace_limits = (
+        statespace_limits = np.array(
             [[-15, 15]] * 2
             + [[-np.pi, np.pi]] * (d - 1)
             + [[-2, 2]] * 2
             + [[-np.pi * 2, np.pi * 2]] * d
         )
-        self.statespace_limits = np.array(self.statespace_limits)
-        self.continuous_dims = list(range(self.statespace_limits.shape[0]))
+        super().__init__(
+            actions_num=len(self.actions),
+            statespace_limits=statespace_limits,
+            continuous_dims=np.arange(statespace_limits.shape[0]),
+            episodeCap=1000,
+            discount_factor=0.98,
+        )
         self.swimmer_lines = None
-        super().__init__()
 
     def s0(self):
         self.theta = np.zeros(self.d)

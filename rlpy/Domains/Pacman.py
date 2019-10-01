@@ -58,8 +58,6 @@ class Pacman(Domain):
     _max_scared_time = 39
 
     actions = ["Stop", "North", "East", "South", "West"]
-    actions_num = 5
-    episodeCap = 1000
 
     #: location of layouts shipped with rlpy
     default_layout_dir = os.path.join(
@@ -100,11 +98,14 @@ class Pacman(Domain):
         self.timerswitch = False
         self.savedtimer = None
         self.gameDisplay = None
-        self._set_statespace_limits()
-        super().__init__()
+        super().__init__(
+            actions_num=len(self.actions),
+            statespace_limits=self._statespace_limits(),
+            episodeCap=1000,
+        )
 
-    def _set_statespace_limits(self):
-        # Makes an array of limits for each dimension in the state vector.
+    def _statespace_limits(self):
+        # Makes an sarray of limits for each dimension in the state vector.
         statespace_limits = []
         # adds pacman x, y locations
         statespace_limits.append([1, self.layout.width - 2])
@@ -117,7 +118,7 @@ class Pacman(Domain):
             statespace_limits.append([0, self._max_scared_time])
 
         statespace_limits += [[0, 1]] * (self.num_total_food + self.num_total_capsules)
-        self.statespace_limits = np.array(statespace_limits, dtype="float")
+        return np.array(statespace_limits, dtype=np.float)
 
     def _set_state(self, s):
         """

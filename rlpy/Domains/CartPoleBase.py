@@ -3,7 +3,7 @@ from .Domain import Domain
 import numpy as np
 import scipy.integrate
 from rlpy.Tools import pl, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, colors
-from abc import ABCMeta, abstractproperty
+from abc import ABCMeta, abstractmethod
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -42,47 +42,58 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
 
     __author__ = ["Robert H. Klein"]
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def AVAIL_FORCE(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def ANGULAR_RATE_LIMITS(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def dt(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def POSITION_LIMITS(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def ANGLE_LIMITS(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def LENGTH(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def VELOCITY_LIMITS(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def force_noise_max(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def _ALPHA_MASS(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def MASS_PEND(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def MOMENT_ARM(self):
         pass
 
@@ -96,13 +107,6 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
 
     #: Reward received on each step the pendulum is in the goal region
     GOAL_REWARD = 1
-
-    # Domain constants
-
-    #: Max number of steps per trajectory
-    episodeCap = 3000
-    #: Discount factor
-    discount_factor = 0.95
 
     #: Set to True to enable print statements
     DEBUG = False
@@ -133,20 +137,26 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     policy_fig = None
     policy_img = None
 
-    def __init__(self):
+    def __init__(
+        self,
+        statespace_limits,
+        discount_factor=0.95,
+        episodeCap=3000,
+        continuous_dims=None,
+    ):
         """
         Setup the required domain constants.
         """
-        # Number of Actions
-        self.actions_num = len(self.AVAIL_FORCE)
-
-        if not self._isParamsValid():
-            # For now, continue execution with warnings.
-            # Optionally halt execution here.
-            pass
-
+        self._checkParamsValid()
         self._assignGroundVerts()
-        super(CartPoleBase, self).__init__()
+
+        super().__init__(
+            len(self.AVAIL_FORCE),
+            statespace_limits,
+            discount_factor=discount_factor,
+            episodeCap=episodeCap,
+            continuous_dims=continuous_dims,
+        )
 
         self.xTicksLabels = np.around(
             np.linspace(
@@ -163,7 +173,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             )
         ).astype(int)
 
-    def _isParamsValid(self):
+    def _checkParamsValid(self):
         if not (
             (2 * pi / self.dt > self.ANGULAR_RATE_LIMITS[1])
             and (2 * pi / self.dt > -self.ANGULAR_RATE_LIMITS[0])
@@ -181,25 +191,20 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             the pendulum to spin with angular rate in multiples of
             2pi / dt instead of truly remaining stationary (0 rad/s) at goal.
             """
-            print(errStr)
-            print(
-                "Your selection, dt=",
-                self.dt,
-                "and limits",
-                self.ANGULAR_RATE_LIMITS,
-                "Are at risk.",
-            )
-            print(
-                "Reduce your timestep dt (to increase # timesteps) or reduce angular rate limits so that 2pi / dt > max(AngularRateLimit)"
-            )
-            print(
-                "Currently, 2pi / dt = ",
-                2 * pi / self.dt,
-                ", angular rate limits shown above.",
-            )
-            return False
+            import warnings
 
-        return True
+            warnings.warn(
+                errStr
+                + "\n"
+                + "Your selection, dt= {} and limits {} are at risk.\n".format(
+                    self.dt, self.ANGULAR_RATE_LIMITS
+                ),
+                +"Reduce your timestep dt (to increase # timesteps) or reduce angular"
+                + "rate limits so that 2pi / dt > max(AngularRateLimit).\n"
+                + "Currently, 2pi / dt = {}, angular rate limits shown above.".format(
+                    2 * pi / self.dt
+                ),
+            )
 
     # Assigns the GROUND_VERTS array, placed here to avoid cluttered code in
     # init.

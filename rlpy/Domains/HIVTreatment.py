@@ -51,22 +51,29 @@ class HIVTreatment(Domain):
     """
 
     state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
-    discount_factor = 0.98
-    continuous_dims = np.arange(6)
     actions = np.array([[0.0, 0.0], [0.7, 0.0], [0.0, 0.3], [0.7, 0.3]])
-    actions_num = 4
-    episodeCap = 200  #: total of 1000 days with a measurement every 5 days
     dt = 5  #: measurement every 5 days
-    logspace = True  #: whether observed states are in log10 space or not
     #: only update the graphs in showDomain every x steps
     show_domain_every = 20
-    # store samples of current episode for drawing
-    episode_data = np.zeros((7, episodeCap + 1))
 
-    if logspace:
-        statespace_limits = np.array([[-5, 8]] * 6)
-    else:
-        statespace_limits = np.array([[0.0, 1e8]] * 6)
+    def __init__(self, logspace=True):
+        """
+        :params logspace: whether observed states are in log10 space or not
+        """
+        self.logspace = logspace
+        if logspace:
+            statespace_limits = np.array([[-5, 8]] * 6)
+        else:
+            statespace_limits = np.array([[0.0, 1e8]] * 6)
+        super().__init__(
+            actions_num=4,
+            statespace_limits=statespace_limits,
+            episodeCap=200,  #: total of 1000 days with a measurement every 5 days
+            discount_factor=0.98,
+            continuous_dims=np.arange(6),
+        )
+        # store samples of current episode for drawing
+        self.episode_data = np.zeros((7, self.episodeCap + 1))
 
     def step(self, a):
         self.t += 1

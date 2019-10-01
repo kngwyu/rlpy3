@@ -35,10 +35,6 @@ class RCCar(Domain):
 
     """
 
-    actions_num = 9
-    state_space_dims = 4
-    continuous_dims = np.arange(state_space_dims)
-
     ROOM_WIDTH = 3  # in meters
     ROOM_HEIGHT = 2  # in meters
     XMIN = -ROOM_WIDTH / 2
@@ -57,8 +53,6 @@ class RCCar(Domain):
     GOAL = [0.5, 0.5]
     GOAL_RADIUS = 0.1
     actions = np.outer([-1, 0, 1], [-1, 0, 1])
-    discount_factor = 0.9
-    episodeCap = 10000
     delta_t = 0.1  # time between steps
     CAR_LENGTH = 0.3  # L on the webpage
     CAR_WIDTH = 0.15
@@ -74,7 +68,7 @@ class RCCar(Domain):
     car_fig = None
 
     def __init__(self, noise=0):
-        self.statespace_limits = np.array(
+        statespace_limits = np.array(
             [
                 [self.XMIN, self.XMAX],
                 [self.YMIN, self.YMAX],
@@ -83,7 +77,13 @@ class RCCar(Domain):
             ]
         )
         self.noise = noise
-        super().__init__()
+        super().__init__(
+            actions_num=9,
+            statespace_limits=statespace_limits,
+            continuous_dims=np.arange(statespace_limits.shape[0]),
+            discount_factor=0.9,
+            episodeCap=10000,
+        )
 
     def step(self, a):
         x, y, speed, heading = self.state

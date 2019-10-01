@@ -15,7 +15,6 @@ __license__ = "BSD 3-Clause"
 
 
 class Domain(object):
-
     """
     The Domain controls the environment in which the
     :py:class:`~rlpy.Agents.Agent.Agent` resides as well as the reward function the
@@ -56,45 +55,51 @@ class Domain(object):
 
     """
 
-    #: The discount factor by which rewards are reduced
-    discount_factor = 0.9
-    #: The number of possible states in the domain
-    states_num = 0  # was None
-    #: The number of Actions the agent can perform
-    actions_num = 0  # was None
-    #: Limits of each dimension of the state space. Each row corresponds to one dimension and has two elements [min, max]
-    statespace_limits = []  # was None
-    #: Limits of each dimension of a discrete state space. This is the same as statespace_limits, without the extra -.5, +.5 added to each dimension
-    discrete_statespace_limits = []  # was None
-    #: Number of dimensions of the state space
-    state_space_dims = 0  # was None
-    #: List of the continuous dimensions of the domain
-    continuous_dims = []
-    #: The cap used to bound each episode (return to state 0 after)
-    episodeCap = None
-    #: A simple object that records the prints in a file
-    logger = None
-    # A seeded numpy random number generator
-    random_state = None
-
-    def __init__(self):
-        self.logger = logging.getLogger("rlpy.Domains." + self.__class__.__name__)
-        self.state_space_dims = len(self.statespace_limits)
-        # To make sure type of discount_factor is float. This will later on be used in
-        # LSPI to force A matrix to be float
-        self.discount_factor = float(self.discount_factor)
-        # For discrete domains, limits should be extended by half on each side so that the mapping becomes identical with continuous states
-        # The original limits will be saved in self.discrete_statespace_limits
-        self._extendDiscreteDimensions()
-        if len(self.continuous_dims) == 0:
+    def __init__(
+        self,
+        actions_num,
+        statespace_limits,
+        discount_factor=0.9,
+        continuous_dims=None,
+        episodeCap=None,
+        random_state=None,
+    ):
+        """
+        :param actions_num: The number of Actions the agent can perform
+        :param discount_factor: The discount factor by which rewards are reduced
+        :param statespace_limits: Limits of each dimension of the state space.
+        Each row corresponds to one dimension and has two elements [min, max]
+        :param state_space_dims: Number of dimensions of the state space
+        :param continuous_dims: List of the continuous dimensions of the domain
+        :param episodeCap: The cap used to bound each episode (return to state 0 after)
+        :param random_state: A seeded numpy random number generator
+        """
+        self.actions_num = actions_num
+        self.statespace_limits = statespace_limits
+        self.discount_factor = float(discount_factor)
+        if continuous_dims is None:
             self.states_num = int(
                 np.prod(self.statespace_limits[:, 1] - self.statespace_limits[:, 0])
             )
+            self.continuous_dims = []
         else:
             self.states_num = np.inf
+            self.continuous_dims = continuous_dims
 
-        # a new stream of random numbers for each domain
-        self.random_state = np.random.RandomState()
+        self.episodeCap = episodeCap
+
+        if random_state is None:
+            self.random_state = np.random.RandomState()
+        else:
+            self.random_state = random_state
+
+        self.state_space_dims = self.statespace_limits.shape[0]
+        # For discrete domains, limits should be extended by half on each side so that
+        # the mapping becomes identical with continuous states.
+        # The original limits will be saved in self.discrete_statespace_limits.
+        self._extendDiscreteDimensions()
+
+        self.logger = logging.getLogger("rlpy.Domains." + self.__class__.__name__)
 
     def init_randomization(self):
         """

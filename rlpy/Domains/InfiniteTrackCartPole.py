@@ -104,14 +104,13 @@ class InfTrackCartPole(CartPoleBase):
 
     int_type = "rk4"
 
-    def __init__(self):
-        # Limits of each dimension of the state space.
-        # Each row corresponds to one dimension and has two elements [min, max]
-        self.statespace_limits = np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
-        self.continuous_dims = [StateIndex.THETA, StateIndex.THETA_DOT]
+    def __init__(self, **kwargs):
         self.DimNames = ["Theta", "Thetadot"]
-
-        super(InfTrackCartPole, self).__init__()
+        super().__init__(
+            statespace_limits=np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS]),
+            continuous_dims=[StateIndex.THETA, StateIndex.THETA_DOT],
+            **kwargs
+        )
 
     def s0(self):
         # Defined by children
@@ -205,8 +204,7 @@ class InfCartPoleBalance(InfTrackCartPole):
     # realistic to use 2*pi.
 
     def __init__(self, episodeCap=3000):
-        self.episodeCap = episodeCap
-        super().__init__()
+        super().__init__(episodeCap=episodeCap)
 
     def s0(self):
         # import ipdb; ipdb.set_trace()
@@ -252,14 +250,9 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     ANGLE_LIMITS = [-np.pi, np.pi]
     #: Limits on pendulum rate
     ANGULAR_RATE_LIMITS = [-3 * np.pi, 3 * np.pi]
-    #: Max number of steps per trajectory
-    episodeCap = 300
-    #: Discount factor
-    discount_factor = 0.90
 
     def __init__(self):
-        self.statespace_limits = np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS])
-        super().__init__()
+        super().__init__(discount_factor=0.9, episodeCap=300)
 
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """

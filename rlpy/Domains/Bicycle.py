@@ -60,28 +60,21 @@ class BicycleBalancing(Domain):
         r"$\dot{\theta}$",
         r"$\psi",
     )
-    discount_factor = 0.98
-    continuous_dims = np.arange(5)
     #: only update the graphs in showDomain every x steps
     show_domain_every = 20
-    actions = np.array(list(product([-2, 0, 2], [-0.02, 0.0, 0.02])))
-    actions_num = len(actions)
-    episodeCap = 50000  #: Total episode duration is ``episodeCap * dt`` sec.
-    # store samples of current episode for drawing
-    episode_data = np.zeros((6, episodeCap + 1))
     dt = 0.01  #: Frequency is ``1 / dt``.
-    statespace_limits = np.array(
-        [
-            [-np.pi * 12 / 180, np.pi * 12 / 180],
-            [-np.pi, np.pi],
-            [-np.pi * 80 / 180, np.pi * 80 / 180],
-            [-np.pi, np.pi],
-            [-np.pi, np.pi],
-        ]
-    )
 
     def __init__(self):
-        super().__init__()
+        self.actions = np.array(list(product([-2, 0, 2], [-0.02, 0.0, 0.02])))
+        smax = np.array([np.pi * 12 / 180, np.pi, np.pi * 80 / 180, np.pi, np.pi])
+        super().__init__(
+            actions_num=self.actions.shape[0],
+            statespace_limits=np.stack((-smax, smax), axis=1),
+            discount_factor=0.98,
+            continuous_dims=np.arange(5),
+            episodeCap=50000,
+        )
+        self.episode_data = np.zeros((6, self.episodeCap + 1))
         self._state_graph_handles = None
 
     def step(self, a):

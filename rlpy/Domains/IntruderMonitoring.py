@@ -56,17 +56,13 @@ class IntruderMonitoring(Domain):
     """
 
     map = None
-    #: Number of rows and columns of the map
-    ROWS = COLS = 0
     #: Number of Cooperating agents
     NUMBER_OF_AGENTS = 0
     #: Number of Intruders
     NUMBER_OF_INTRUDERS = 0
     NUMBER_OF_DANGER_ZONES = 0
-    discount_factor = 0.8
     #: Rewards
     INTRUSION_PENALTY = -1.0
-    episodeCap = 100  # Episode Cap
 
     # Constants in the map
     EMPTY, INTRUDER, AGENT, DANGER = range(4)
@@ -84,20 +80,22 @@ class IntruderMonitoring(Domain):
     )
 
     def __init__(self, mapname=os.path.join(default_map_dir, "4x4_2A_3I.txt")):
-
         self.setupMap(mapname)
         self.state_space_dims = 2 * (self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS)
 
         _statespace_limits = np.vstack([[0, self.ROWS - 1], [0, self.COLS - 1]])
-        self.statespace_limits = np.tile(
+        statespace_limits = np.tile(
             _statespace_limits, ((self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS), 1)
         )
-
-        self.actions_num = 5 ** self.NUMBER_OF_AGENTS
         self.ACTION_LIMITS = [5] * self.NUMBER_OF_AGENTS
         self.DimNames = []
 
-        super().__init__()
+        super().__init__(
+            actions_num=5 ** self.NUMBER_OF_AGENTS,
+            statespace_limits=statespace_limits,
+            discount_factor=0.8,
+            episodeCap=100,
+        )
 
     def setupMap(self, mapname):
         # Load the map as an array

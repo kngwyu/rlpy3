@@ -17,7 +17,6 @@ __author__ = "Alborz Geramifard"
 
 
 class BlocksWorld(Domain):
-
     """
     Classical BlocksWorld Domain [Winograd, 1971].
 
@@ -68,15 +67,18 @@ class BlocksWorld(Domain):
     domain_fig = None
 
     def __init__(self, blocks=6, towerSize=6, noise=0.3):
+        super().__init__(
+            actions_num=blocks ** 2,
+            # Block i is on top of what?
+            # if block i is on top of block i => block i is on top of table
+            statespace_limits=np.tile([0, blocks - 1], (blocks, 1)),
+            discount_factor=1.0,
+            episodeCap=1000,
+        )
         self.blocks = blocks
         self.towerSize = towerSize
         self.noise = noise
         self.TABLE = blocks + 1
-        self.actions_num = blocks * blocks
-        self.discount_factor = 1
-        # Block i is on top of what? if block i is on top of block i => block i
-        # is on top of table
-        self.statespace_limits = np.tile([0, blocks - 1], (blocks, 1))
         # This is the true size of the state space refer to [Geramifard11_ICML]
         self.real_states_num = sum(
             nchoosek(blocks, i) * factorial(blocks - i) * pow(i, blocks - i)
@@ -88,7 +90,6 @@ class BlocksWorld(Domain):
         self.DimNames = []
         for a in range(blocks):
             self.DimNames.append(["%d on" % a])
-        super().__init__()
 
     def showDomain(self, a=0):
         # Draw the environment

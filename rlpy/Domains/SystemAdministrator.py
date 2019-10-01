@@ -87,9 +87,6 @@ class SystemAdministrator(Domain):
     REBOOT_REWARD = -0.75  # : Penalty applied for a REPAIR action
     # Computer "up" reward implicitly 1; tune other rewards relative to this.
 
-    episodeCap = 200  #: Maximum number of steps
-    discount_factor = 0.95  #: Discount factor
-
     # Plotting Variables
     networkGraph = None  # Graph of network used for visualization
     networkPos = None  # Position of network graph
@@ -115,23 +112,23 @@ class SystemAdministrator(Domain):
         path = networkmapname
         self.IS_RING = "ring.txt" in networkmapname.lower()
         self.loadNetwork(path)
-        # TODO Need a check here for degenerate
-        # Number of Actions, including no-op
-        self.actions_num = self.computers_num + 1
-        # Limits of each dimension of the state space. Each row corresponds to
-        # one dimension and has two elements [min, max]
-        self.statespace_limits = np.tile(
-            [0, self._NUM_VALUES - 1], (self.computers_num, 1)
+        super().__init__(
+            # TODO Need a check here for degenerate number of Actions, including no-op
+            actions_num=self.computers_num + 1,
+            statespace_limits=np.tile(
+                [0, self._NUM_VALUES - 1], (self.computers_num, 1)
+            ),
+            episodeCap=200,
+            discount_factor=0.95,
         )
-        super(SystemAdministrator, self).__init__()
 
     def loadNetwork(self, path):
         """
         :param path: Path to the map file, of form
             \'/Domains/SystemAdministratorMaps/mapname.txt\'
-            
-        Sets the internal variables ``_Neighbors`` and ``_Edges``, where each 
-        cell of ``_Neighbors`` is a list containing the neighbors of computer 
+
+        Sets the internal variables ``_Neighbors`` and ``_Edges``, where each
+        cell of ``_Neighbors`` is a list containing the neighbors of computer
         node <i> at index <i>, and ``_Edges`` is a list of tuples (node1, node2)
         where node1 and node2 share an edge and node1 < node2.
 

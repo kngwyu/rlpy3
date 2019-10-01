@@ -30,7 +30,6 @@ __author__ = [
 
 
 class Pinball(Domain):
-
     """
     The goal of this domain is to maneuver a small ball on a plate into a hole.
     The plate may contain obstacles which should be avoided.

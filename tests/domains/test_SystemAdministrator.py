@@ -66,11 +66,11 @@ def test_seed():
 def test_errs():
     """ Ensure that we can call custom methods without error """
 
-    default_map_dir = os.path.join(
+    DEFAULT_MAP_DIR = os.path.join(
         __rlpy_location__, "Domains", "SystemAdministratorMaps"
     )
     domain = SystemAdministrator(
-        networkmapname=os.path.join(default_map_dir, "20MachTutorial.txt")
+        networkmapname=os.path.join(DEFAULT_MAP_DIR, "20MachTutorial.txt")
     )
 
     # loadNetwork() is called by __init__
@@ -83,11 +83,11 @@ def test_transitions():
     """
     # [[manually set state, manually turn off stochasticity ie deterministic,
     # and observe transitions, reward, etc.]]
-    default_map_dir = os.path.join(
+    DEFAULT_MAP_DIR = os.path.join(
         __rlpy_location__, "Domains", "SystemAdministratorMaps"
     )
     domain = SystemAdministrator(
-        networkmapname=os.path.join(default_map_dir, "5Machines.txt")
+        networkmapname=os.path.join(DEFAULT_MAP_DIR, "5Machines.txt")
     )
     dummyS = domain.s0()
     up = domain.RUNNING  # shorthand

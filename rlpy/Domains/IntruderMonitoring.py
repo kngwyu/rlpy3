@@ -75,11 +75,11 @@ class IntruderMonitoring(Domain):
     intruder_fig = None
 
     #: directory with maps shipped with rlpy
-    default_map_dir = os.path.join(
+    DEFAULT_MAP_DIR = os.path.join(
         __rlpy_location__, "Domains", "IntruderMonitoringMaps"
     )
 
-    def __init__(self, mapname=os.path.join(default_map_dir, "4x4_2A_3I.txt")):
+    def __init__(self, mapname=os.path.join(DEFAULT_MAP_DIR, "4x4_2A_3I.txt")):
         self.setupMap(mapname)
         self.state_space_dims = 2 * (self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS)
 

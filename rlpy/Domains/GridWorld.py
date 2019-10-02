@@ -1,9 +1,11 @@
 """Gridworld Domain."""
-from rlpy.Tools import plt, FONTSIZE, linearMap
 import numpy as np
-from .Domain import Domain
+import itertools
+from rlpy.Tools import plt, FONTSIZE, linearMap
 from rlpy.Tools import __rlpy_location__, findElemArray1D, perms
 import os
+
+from .Domain import Domain
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -47,15 +49,10 @@ class GridWorld(Domain):
 
     """
 
-    # Used for graphics to show the domain
-    agent_fig = upArrows_fig = downArrows_fig = leftArrows_fig = None
-    rightArrows_fig = domain_fig = valueFunction_fig = None
     #: Reward constants
     GOAL_REWARD = +1
     PIT_REWARD = -1
     STEP_REWARD = -0.001
-    #: Movement Noise
-    NOISE = 0
     # Used for graphical normalization
     MAX_RETURN = 1
     RMAX = MAX_RETURN
@@ -64,15 +61,22 @@ class GridWorld(Domain):
     # Used for graphical shifting of arrows
     SHIFT = 0.1
     # Constants in the map
-    EMPTY, BLOCKED, START, GOAL, PIT, AGENT = list(range(6))
+    EMPTY, BLOCKED, START, GOAL, PIT, AGENT = range(6)
     #: Up, Down, Left, Right
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
-    default_map_dir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+
+    # Keys to access arrow figures
+    ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
+
+    @classmethod
+    def default_map(cls, name="4x5.txt"):
+        return os.path.join(cls.DEFAULT_MAP_DIR, name)
 
     def __init__(
         self,
-        mapname=os.path.join(default_map_dir, "4x5.txt"),
+        mapname=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
         noise=0.1,
         episodeCap=None,
     ):
@@ -81,16 +85,22 @@ class GridWorld(Domain):
             self.map = self.map[np.newaxis, :]
         self.start_state = np.argwhere(self.map == self.START)[0]
         #: Number of rows and columns of the map
-        self.ROWS, self.COLS = np.shape(self.map)
-        self.NOISE = noise
+        self.rows, self.cols = np.shape(self.map)
+        #: Movement noise
+        self.noise = noise
         self.DimNames = ["Row", "Col"]
         self.state = self.start_state.copy()
         super().__init__(
             actions_num=4,
-            statespace_limits=np.array([[0, self.ROWS - 1], [0, self.COLS - 1]]),
+            statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
             # 2*W*H, small values can cause problem for some planning techniques
             episodeCap=1000 if episodeCap is None else episodeCap,
         )
+        # Used for graphics to show the domain
+        self.domain_fig = None
+        self.agent_fig = None
+        self.valueFunction_fig = None
+        self.arrow_figs = {}
 
     def showDomain(self, a=0, s=None):
         if s is None:
@@ -101,21 +111,42 @@ class GridWorld(Domain):
             plt.imshow(
                 self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
             )
-            plt.xticks(np.arange(self.COLS), fontsize=FONTSIZE)
-            plt.yticks(np.arange(self.ROWS), fontsize=FONTSIZE)
+            plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
+            plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
             self.agent_fig = plt.gca().plot(
-                s[1], s[0], "kd", markersize=20.0 - self.COLS
+                s[1], s[0], "kd", markersize=20.0 - self.cols
             )
             plt.show()
         self.agent_fig.pop(0).remove()
         # Instead of '>' you can use 'D', 'o'
-        self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.COLS)
+        self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.cols)
         self.domain_fig.canvas.draw()
         self.domain_fig.canvas.flush_events()
 
+    def _init_arrow(self, name, x, y):
+        arrow_ratio = 0.4
+        Max_Ratio_ArrowHead_to_ArrowLength = 0.25
+        ARROW_WIDTH = 0.5 * Max_Ratio_ArrowHead_to_ArrowLength / 5.0
+        is_y = name in ["UP", "DOWN"]
+        c = np.zeros(x.shape)
+        c[0, 0] = 1
+        self.arrow_figs[name] = plt.quiver(
+            y,
+            x,
+            np.ones(x.shape),
+            np.ones(x.shape),
+            c,
+            units="y" if is_y else "x",
+            cmap="Actions",
+            scale_units="height" if is_y else "width",
+            scale=(self.rows if is_y else self.cols) / arrow_ratio,
+            width=-ARROW_WIDTH if is_y else ARROW_WIDTH,
+        )
+        self.arrow_figs[name].set_clim(vmin=0, vmax=1)
+
     def showLearning(self, representation):
+        plt.figure("Value Function")
         if self.valueFunction_fig is None:
-            plt.figure("Value Function")
             self.valueFunction_fig = plt.imshow(
                 self.map,
                 cmap="ValueFunction",
@@ -123,149 +154,61 @@ class GridWorld(Domain):
                 vmin=self.MIN_RETURN,
                 vmax=self.MAX_RETURN,
             )
-            plt.xticks(np.arange(self.COLS), fontsize=12)
-            plt.yticks(np.arange(self.ROWS), fontsize=12)
+            plt.xticks(np.arange(self.cols), fontsize=12)
+            plt.yticks(np.arange(self.rows), fontsize=12)
             # Create quivers for each action. 4 in total
-            X = np.arange(self.ROWS) - self.SHIFT
-            Y = np.arange(self.COLS)
-            X, Y = np.meshgrid(X, Y)
-            DX = DY = np.ones(X.shape)
-            C = np.zeros(X.shape)
-            C[0, 0] = 1  # Making sure C has both 0 and 1
-            # length of arrow/width of bax. Less then 0.5 because each arrow is
-            # offset, 0.4 looks nice but could be better/auto generated
-            arrow_ratio = 0.4
-            Max_Ratio_ArrowHead_to_ArrowLength = 0.25
-            ARROW_WIDTH = 0.5 * Max_Ratio_ArrowHead_to_ArrowLength / 5.0
-            self.upArrows_fig = plt.quiver(
-                Y,
-                X,
-                DY,
-                DX,
-                C,
-                units="y",
-                cmap="Actions",
-                scale_units="height",
-                scale=self.ROWS / arrow_ratio,
-                width=-ARROW_WIDTH,
-            )
-            self.upArrows_fig.set_clim(vmin=0, vmax=1)
-            X = np.arange(self.ROWS) + self.SHIFT
-            Y = np.arange(self.COLS)
-            X, Y = np.meshgrid(X, Y)
-            self.downArrows_fig = plt.quiver(
-                Y,
-                X,
-                DY,
-                DX,
-                C,
-                units="y",
-                cmap="Actions",
-                scale_units="height",
-                scale=self.ROWS / arrow_ratio,
-                width=-ARROW_WIDTH,
-            )
-            self.downArrows_fig.set_clim(vmin=0, vmax=1)
-            X = np.arange(self.ROWS)
-            Y = np.arange(self.COLS) - self.SHIFT
-            X, Y = np.meshgrid(X, Y)
-            self.leftArrows_fig = plt.quiver(
-                Y,
-                X,
-                DY,
-                DX,
-                C,
-                units="x",
-                cmap="Actions",
-                scale_units="width",
-                scale=self.COLS / arrow_ratio,
-                width=ARROW_WIDTH,
-            )
-            self.leftArrows_fig.set_clim(vmin=0, vmax=1)
-            X = np.arange(self.ROWS)
-            Y = np.arange(self.COLS) + self.SHIFT
-            X, Y = np.meshgrid(X, Y)
-            self.rightArrows_fig = plt.quiver(
-                Y,
-                X,
-                DY,
-                DX,
-                C,
-                units="x",
-                cmap="Actions",
-                scale_units="width",
-                scale=self.COLS / arrow_ratio,
-                width=ARROW_WIDTH,
-            )
-            self.rightArrows_fig.set_clim(vmin=0, vmax=1)
+            xshift = [-self.SHIFT, self.SHIFT, 0, 0]
+            yshift = [0, 0, -self.SHIFT, self.SHIFT]
+            for name, xshift, yshift in zip(self.ARROW_NAMES, xshift, yshift):
+                x = np.arange(self.rows) + xshift
+                y = np.arange(self.cols) + yshift
+                self._init_arrow(name, *np.meshgrid(x, y))
             plt.show()
-        plt.figure("Value Function")
-        V = np.zeros((self.ROWS, self.COLS))
+        V = np.zeros((self.rows, self.cols))
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
-        Mask = np.ones((self.COLS, self.ROWS, self.actions_num), dtype="bool")
-        arrowSize = np.zeros((self.COLS, self.ROWS, self.actions_num), dtype="float")
+        Mask = np.ones((self.cols, self.rows, self.actions_num), dtype="bool")
+        arrowSize = np.zeros((self.cols, self.rows, self.actions_num), dtype="float")
         # 0 = suboptimal action, 1 = optimal action
-        arrowColors = np.zeros((self.COLS, self.ROWS, self.actions_num), dtype="uint8")
-        for r in range(self.ROWS):
-            for c in range(self.COLS):
-                if self.map[r, c] == self.BLOCKED:
-                    V[r, c] = 0
-                if self.map[r, c] == self.GOAL:
-                    V[r, c] = self.MAX_RETURN
-                if self.map[r, c] == self.PIT:
-                    V[r, c] = self.MIN_RETURN
-                if self.map[r, c] == self.EMPTY or self.map[r, c] == self.START:
-                    s = np.array([r, c])
-                    As = self.possibleActions(s)
-                    terminal = self.isTerminal(s)
-                    Qs = representation.Qs(s, terminal)
-                    bestA = representation.bestActions(s, terminal, As)
-                    V[r, c] = max(Qs[As])
-                    Mask[c, r, As] = False
-                    arrowColors[c, r, bestA] = 1
-
-                    for i in range(len(As)):
-                        a = As[i]
-                        Q = Qs[i]
-                        value = linearMap(Q, self.MIN_RETURN, self.MAX_RETURN, 0, 1)
-                        arrowSize[c, r, a] = value
+        arrowColors = np.zeros((self.cols, self.rows, self.actions_num), dtype="uint8")
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if self.map[r, c] == self.BLOCKED:
+                V[r, c] = 0
+            elif self.map[r, c] == self.GOAL:
+                V[r, c] = self.MAX_RETURN
+            elif self.map[r, c] == self.PIT:
+                V[r, c] = self.MIN_RETURN
+            elif self.map[r, c] == self.EMPTY or self.map[r, c] == self.START:
+                s = np.array([r, c])
+                As = self.possibleActions(s)
+                terminal = self.isTerminal(s)
+                Qs = representation.Qs(s, terminal)
+                bestA = representation.bestActions(s, terminal, As)
+                V[r, c] = max(Qs[As])
+                Mask[c, r, As] = False
+                arrowColors[c, r, bestA] = 1
+                for a, Q in zip(As, Qs):
+                    value = linearMap(Q, self.MIN_RETURN, self.MAX_RETURN, 0, 1)
+                    arrowSize[c, r, a] = value
         # Show Value Function
         self.valueFunction_fig.set_data(V)
-        # Show Policy Up Arrows
-        DX = arrowSize[:, :, 0]
-        DY = np.zeros((self.ROWS, self.COLS))
-        DX = np.ma.masked_array(DX, mask=Mask[:, :, 0])
-        DY = np.ma.masked_array(DY, mask=Mask[:, :, 0])
-        C = np.ma.masked_array(arrowColors[:, :, 0], mask=Mask[:, :, 0])
-        self.upArrows_fig.set_UVC(DY, DX, C)
-        # Show Policy Down Arrows
-        DX = -arrowSize[:, :, 1]
-        DY = np.zeros((self.ROWS, self.COLS))
-        DX = np.ma.masked_array(DX, mask=Mask[:, :, 1])
-        DY = np.ma.masked_array(DY, mask=Mask[:, :, 1])
-        C = np.ma.masked_array(arrowColors[:, :, 1], mask=Mask[:, :, 1])
-        self.downArrows_fig.set_UVC(DY, DX, C)
-        # Show Policy Left Arrows
-        DX = np.zeros((self.ROWS, self.COLS))
-        DY = -arrowSize[:, :, 2]
-        DX = np.ma.masked_array(DX, mask=Mask[:, :, 2])
-        DY = np.ma.masked_array(DY, mask=Mask[:, :, 2])
-        C = np.ma.masked_array(arrowColors[:, :, 2], mask=Mask[:, :, 2])
-        self.leftArrows_fig.set_UVC(DY, DX, C)
-        # Show Policy Right Arrows
-        DX = np.zeros((self.ROWS, self.COLS))
-        DY = arrowSize[:, :, 3]
-        DX = np.ma.masked_array(DX, mask=Mask[:, :, 3])
-        DY = np.ma.masked_array(DY, mask=Mask[:, :, 3])
-        C = np.ma.masked_array(arrowColors[:, :, 3], mask=Mask[:, :, 3])
-        self.rightArrows_fig.set_UVC(DY, DX, C)
+        # Show Policy for arrows
+        for i, name in enumerate(self.ARROW_NAMES):
+            flip = -1 if name in ["DOWN", "LEFT"] else 1
+            if name in ["UP", "DOWN"]:
+                dx, dy = flip * arrowSize[:, :, i], np.zeros((self.rows, self.cols))
+            else:
+                dx, dy = np.zeros((self.rows, self.cols)), flip * arrowSize[:, :, i]
+            dx = np.ma.masked_array(dx, mask=Mask[:, :, i])
+            dy = np.ma.masked_array(dy, mask=Mask[:, :, i])
+            c = np.ma.masked_array(arrowColors[:, :, i], mask=Mask[:, :, i])
+            self.arrow_figs[name].set_UVC(dy, dx, c)
         plt.draw()
 
     def step(self, a):
         r = self.STEP_REWARD
         ns = self.state.copy()
-        if self.random_state.random_sample() < self.NOISE:
+        if self.random_state.random_sample() < self.noise:
             # Random Move
             a = self.random_state.choice(self.possibleActions())
 
@@ -275,9 +218,9 @@ class GridWorld(Domain):
         # Check bounds on state values
         if (
             ns[0] < 0
-            or ns[0] == self.ROWS
+            or ns[0] == self.rows
             or ns[1] < 0
-            or ns[1] == self.COLS
+            or ns[1] == self.cols
             or self.map[ns[0], ns[1]] == self.BLOCKED
         ):
             ns = self.state.copy()
@@ -315,9 +258,9 @@ class GridWorld(Domain):
             ns = s + self.ACTIONS[a]
             if (
                 ns[0] < 0
-                or ns[0] == self.ROWS
+                or ns[0] == self.rows
                 or ns[1] < 0
-                or ns[1] == self.COLS
+                or ns[1] == self.cols
                 or self.map[int(ns[0]), int(ns[1])] == self.BLOCKED
             ):
                 continue
@@ -335,8 +278,8 @@ class GridWorld(Domain):
         k = len(actions)
         # Make Probabilities
         intended_action_index = findElemArray1D(a, actions)
-        p = np.ones((k, 1)) * self.NOISE / (k * 1.0)
-        p[intended_action_index, 0] += 1 - self.NOISE
+        p = np.ones((k, 1)) * self.noise / (k * 1.0)
+        p[intended_action_index, 0] += 1 - self.noise
         # Make next states
         ns = np.tile(s, (k, 1)).astype(int)
         actions = self.ACTIONS[actions]

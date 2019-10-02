@@ -97,12 +97,12 @@ class SystemAdministrator(Domain):
     # number defined above
     _NUM_VALUES = 2
 
-    default_map_dir = os.path.join(
+    DEFAULT_MAP_DIR = os.path.join(
         __rlpy_location__, "Domains", "SystemAdministratorMaps"
     )
 
     def __init__(
-        self, networkmapname=os.path.join(default_map_dir, "20MachTutorial.txt")
+        self, networkmapname=os.path.join(DEFAULT_MAP_DIR, "20MachTutorial.txt")
     ):
         """
         :param networkmapname: The name of the file to use as the computer

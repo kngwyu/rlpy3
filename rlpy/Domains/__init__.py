@@ -1,3 +1,4 @@
+from .any_reward_grid_world import AnyRewardGridWorld
 from .HelicopterHover import HelicopterHover, HelicopterHoverExtended
 from .HIVTreatment import HIVTreatment
 from .PuddleWorld import PuddleWorld

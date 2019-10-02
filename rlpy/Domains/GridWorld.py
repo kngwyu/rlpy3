@@ -72,6 +72,11 @@ class GridWorld(Domain):
     def default_map(cls, name="4x5.txt"):
         return os.path.join(cls.DEFAULT_MAP_DIR, name)
 
+    def _load_map(self, mapfile):
+        self.map = np.loadtxt(mapfile, dtype=np.uint8)
+        if self.map.ndim == 1:
+            self.map = self.map[np.newaxis, :]
+
     def __init__(
         self,
         mapfile=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
@@ -79,9 +84,7 @@ class GridWorld(Domain):
         random_start=False,
         episodeCap=1000,
     ):
-        self.map = np.loadtxt(mapfile, dtype=np.uint8)
-        if self.map.ndim == 1:
-            self.map = self.map[np.newaxis, :]
+        self._load_map(mapfile)
         self.random_start = random_start
         #: Number of rows and columns of the map
         self.rows, self.cols = np.shape(self.map)
@@ -123,7 +126,7 @@ class GridWorld(Domain):
             self.agent_fig = self.domain_fig.gca().plot(
                 s[1], s[0], "kd", markersize=20.0 - self.cols
             )
-            plt.show()
+            self.domain_fig.show()
         self.agent_fig.pop(0).remove()
         # Instead of '>' you can use 'D', 'o'
         self.agent_fig = self.domain_fig.gca().plot(
@@ -214,8 +217,15 @@ class GridWorld(Domain):
             self.arrow_figs[name].set_UVC(dy, dx, c)
         self.vf_fig.canvas.draw()
 
+    def _reward(self, next_state, _terminal):
+        if self.map[next_state[0], next_state[1]] == self.GOAL:
+            return self.GOAL_REWARD
+        elif self.map[next_state[0], next_state[1]] == self.PIT:
+            return self.PIT_REWARD
+        else:
+            return self.STEP_REWARD
+
     def step(self, a):
-        r = self.STEP_REWARD
         ns = self.state.copy()
         if self.random_state.random_sample() < self.noise:
             # Random Move
@@ -237,14 +247,9 @@ class GridWorld(Domain):
             # If in bounds, update the current state
             self.state = ns.copy()
 
-        # Compute the reward
-        if self.map[ns[0], ns[1]] == self.GOAL:
-            r = self.GOAL_REWARD
-        if self.map[ns[0], ns[1]] == self.PIT:
-            r = self.PIT_REWARD
-
         terminal = self.isTerminal()
-        return r, ns, terminal, self.possibleActions()
+        reward = self._reward(ns, terminal)
+        return reward, ns, terminal, self.possibleActions()
 
     def s0(self):
         self.state = self._sample_start()

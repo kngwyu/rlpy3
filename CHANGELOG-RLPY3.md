@@ -19,5 +19,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 * Some visualizing codes are fixed by [#4](https://github.com/kngwyu/rlpy3/pull/4).
 
 ### Changed
+* `Domain` has no class variable by [#8](https://github.com/kngwyu/rlpy3/pull/2).
 * Now the package doesn't depend on future by [#2](https://github.com/kngwyu/rlpy3/pull/2).
 * All packages are formatted by black by [#3](https://github.com/kngwyu/rlpy3/pull/3).

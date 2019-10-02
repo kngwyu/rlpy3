@@ -1,12 +1,10 @@
 from rlpy.Domains import GridWorld
 from rlpy.Tools import run_experiment
-import os
 
 import methods
 
 
-MAZE = os.path.join(GridWorld.default_map_dir, "4x5.txt")
-DOMAIN = GridWorld(MAZE, noise=0.3)
+DOMAIN = GridWorld(GridWorld.default_map("4x5.txt"), noise=0.3)
 MAX_STEPS = 10000
 
 
@@ -27,7 +25,6 @@ if __name__ == "__main__":
     run_experiment(
         DOMAIN,
         select_agent,
-        plot_result=True,
         default_max_steps=MAX_STEPS,
         default_num_policy_checks=10,
         default_checks_per_policy=50,

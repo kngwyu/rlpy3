@@ -79,8 +79,8 @@ The integrity of the module is always tested with a statement of the form
 For
 example, the code::
 
-    mapname=os.path.join(mapDir, "4x5.txt") # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt") # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
     rep = Tabular(domain, discretization=100)
     assert rep.features_num == 20
     rep = Tabular(domain, discretization=5)

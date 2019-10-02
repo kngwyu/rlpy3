@@ -11,8 +11,8 @@ def test_bag_creation():
     instantiated properly, and there are no duplicates.
     """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     initial_representation = IndependentDiscretization(domain)
     maxBatchDiscovery = np.inf
@@ -72,8 +72,8 @@ def test_batch_discovery():
     feats are activiated in later calls to phi_nonterminal()
     """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     initial_representation = IndependentDiscretization(domain)
     maxBatchDiscovery = np.inf

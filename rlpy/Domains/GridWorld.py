@@ -20,7 +20,6 @@ __author__ = "Alborz Geramifard"
 
 
 class GridWorld(Domain):
-
     """
     The GridWorld domain simulates a path-planning problem for a mobile robot
     in an environment with obstacles. The goal of the agent is to
@@ -66,7 +65,6 @@ class GridWorld(Domain):
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
     DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
 
@@ -76,31 +74,40 @@ class GridWorld(Domain):
 
     def __init__(
         self,
-        mapname=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
+        mapfile=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
         noise=0.1,
-        episodeCap=None,
+        random_start=False,
+        episodeCap=1000,
     ):
-        self.map = np.loadtxt(mapname, dtype=np.uint8)
+        self.map = np.loadtxt(mapfile, dtype=np.uint8)
         if self.map.ndim == 1:
             self.map = self.map[np.newaxis, :]
-        self.start_state = np.argwhere(self.map == self.START)[0]
+        self.random_start = random_start
         #: Number of rows and columns of the map
         self.rows, self.cols = np.shape(self.map)
-        #: Movement noise
-        self.noise = noise
-        self.DimNames = ["Row", "Col"]
-        self.state = self.start_state.copy()
         super().__init__(
             actions_num=4,
             statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
             # 2*W*H, small values can cause problem for some planning techniques
-            episodeCap=1000 if episodeCap is None else episodeCap,
+            episodeCap=episodeCap,
         )
+        #: Movement noise
+        self.noise = noise
+        self.DimNames = ["Row", "Col"]
+        self.state = self._sample_start()
         # Used for graphics to show the domain
-        self.domain_fig = None
-        self.agent_fig = None
-        self.valueFunction_fig = None
+        self.domain_fig, self.agent_fig = None, None
+        self.vf_fig, self.vf_axes, self.vf_img = None, None, None
         self.arrow_figs = {}
+
+    def _sample_start(self):
+        starts = np.argwhere(self.map == self.START)
+        if self.random_start:
+            idx = self.random_state.randint(len(starts))
+        else:
+            idx = 0
+        self.start_state = starts[idx]
+        return self.start_state.copy()
 
     def showDomain(self, a=0, s=None):
         if s is None:
@@ -113,15 +120,16 @@ class GridWorld(Domain):
             )
             plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
             plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
-            self.agent_fig = plt.gca().plot(
+            self.agent_fig = self.domain_fig.gca().plot(
                 s[1], s[0], "kd", markersize=20.0 - self.cols
             )
             plt.show()
         self.agent_fig.pop(0).remove()
         # Instead of '>' you can use 'D', 'o'
-        self.agent_fig = plt.gca().plot(s[1], s[0], "k>", markersize=20.0 - self.cols)
+        self.agent_fig = self.domain_fig.gca().plot(
+            s[1], s[0], "k>", markersize=20.0 - self.cols
+        )
         self.domain_fig.canvas.draw()
-        self.domain_fig.canvas.flush_events()
 
     def _init_arrow(self, name, x, y):
         arrow_ratio = 0.4
@@ -130,7 +138,7 @@ class GridWorld(Domain):
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
-        self.arrow_figs[name] = plt.quiver(
+        self.arrow_figs[name] = self.vf_axes.quiver(
             y,
             x,
             np.ones(x.shape),
@@ -145,9 +153,10 @@ class GridWorld(Domain):
         self.arrow_figs[name].set_clim(vmin=0, vmax=1)
 
     def showLearning(self, representation):
-        plt.figure("Value Function")
-        if self.valueFunction_fig is None:
-            self.valueFunction_fig = plt.imshow(
+        if self.vf_axes is None:
+            self.vf_fig = plt.figure("Value Function")
+            self.vf_axes = self.vf_fig.add_subplot(1, 1, 1)
+            self.vf_img = self.vf_axes.imshow(
                 self.map,
                 cmap="ValueFunction",
                 interpolation="nearest",
@@ -155,7 +164,7 @@ class GridWorld(Domain):
                 vmax=self.MAX_RETURN,
             )
             plt.xticks(np.arange(self.cols), fontsize=12)
-            plt.yticks(np.arange(self.rows), fontsize=12)
+            plt.xticks(np.arange(self.cols), fontsize=12)
             # Create quivers for each action. 4 in total
             xshift = [-self.SHIFT, self.SHIFT, 0, 0]
             yshift = [0, 0, -self.SHIFT, self.SHIFT]
@@ -163,7 +172,7 @@ class GridWorld(Domain):
                 x = np.arange(self.rows) + xshift
                 y = np.arange(self.cols) + yshift
                 self._init_arrow(name, *np.meshgrid(x, y))
-            plt.show()
+            self.vf_fig.show()
         V = np.zeros((self.rows, self.cols))
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
@@ -191,7 +200,7 @@ class GridWorld(Domain):
                     value = linearMap(Q, self.MIN_RETURN, self.MAX_RETURN, 0, 1)
                     arrowSize[c, r, a] = value
         # Show Value Function
-        self.valueFunction_fig.set_data(V)
+        self.vf_img.set_data(V)
         # Show Policy for arrows
         for i, name in enumerate(self.ARROW_NAMES):
             flip = -1 if name in ["DOWN", "LEFT"] else 1
@@ -203,7 +212,7 @@ class GridWorld(Domain):
             dy = np.ma.masked_array(dy, mask=Mask[:, :, i])
             c = np.ma.masked_array(arrowColors[:, :, i], mask=Mask[:, :, i])
             self.arrow_figs[name].set_UVC(dy, dx, c)
-        plt.draw()
+        self.vf_fig.canvas.draw()
 
     def step(self, a):
         r = self.STEP_REWARD
@@ -238,7 +247,7 @@ class GridWorld(Domain):
         return r, ns, terminal, self.possibleActions()
 
     def s0(self):
-        self.state = self.start_state.copy()
+        self.state = self._sample_start()
         return self.state, self.isTerminal(), self.possibleActions()
 
     def isTerminal(self, s=None):

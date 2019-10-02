@@ -1153,15 +1153,14 @@ def rk4(derivs, y0, t, *args, **kwargs):
 # matplotlib configs
 createColorMaps()
 DEFAULT_FONTS = {
-    'family': 'sans-serif',
-    'weight': 'normal',
+    "weight": "bold",
     "size": 14,
-    "sans-serif": ["Source Sans Pro",  "Helvetica"],
+    "sans-serif": ["Source Han Sans JP", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
-rc("axes", labelsize=16)
-rc("xtick", labelsize=16)
-rc("ytick", labelsize=16)
+rc("axes", labelsize=18)
+rc("xtick", labelsize=18)
+rc("ytick", labelsize=18)
 # rc('text',usetex=False)
 
 # Colors

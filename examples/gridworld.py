@@ -4,7 +4,7 @@ from rlpy.Tools import run_experiment
 import methods
 
 
-DOMAIN = GridWorld(GridWorld.default_map("4x5.txt"), noise=0.3)
+DOMAIN = GridWorld(GridWorld.default_map("4x5.txt"), random_start=True, noise=0.3)
 MAX_STEPS = 10000
 
 

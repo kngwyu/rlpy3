@@ -99,8 +99,8 @@ class GridWorld(Domain):
         self.DimNames = ["Row", "Col"]
         self.state = self._sample_start()
         # Used for graphics to show the domain
-        self.domain_fig, self.agent_fig = None, None
-        self.vf_fig, self.vf_axes, self.vf_img = None, None, None
+        self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
+        self.vf_fig, self.vf_ax, self.vf_img = None, None, None
         self.arrow_figs = {}
 
     def _sample_start(self):
@@ -112,26 +112,29 @@ class GridWorld(Domain):
         self.start_state = starts[idx]
         return self.start_state.copy()
 
+    def _show_map(self):
+        self.domain_ax.imshow(
+            self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
+        )
+
     def showDomain(self, a=0, s=None):
         if s is None:
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
             self.domain_fig = plt.figure("GridWorld")
-            plt.imshow(
-                self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
-            )
+            self.domain_ax = self.domain_fig.add_subplot(1, 1, 1)
+            self._show_map()
             plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
             plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
-            self.agent_fig = self.domain_fig.gca().plot(
-                s[1], s[0], "kd", markersize=20.0 - self.cols
-            )
+            self.agent_fig = self.domain_ax.plot(
+                s[1], s[0], "k>", markersize=20.0 - self.cols
+            )[0]
             self.domain_fig.show()
-        self.agent_fig.pop(0).remove()
-        # Instead of '>' you can use 'D', 'o'
-        self.agent_fig = self.domain_fig.gca().plot(
+        self.agent_fig.remove()
+        self.agent_fig = self.domain_ax.plot(
             s[1], s[0], "k>", markersize=20.0 - self.cols
-        )
+        )[0]
         self.domain_fig.canvas.draw()
 
     def _init_arrow(self, name, x, y):
@@ -141,7 +144,7 @@ class GridWorld(Domain):
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
-        self.arrow_figs[name] = self.vf_axes.quiver(
+        self.arrow_figs[name] = self.vf_ax.quiver(
             y,
             x,
             np.ones(x.shape),
@@ -156,18 +159,18 @@ class GridWorld(Domain):
         self.arrow_figs[name].set_clim(vmin=0, vmax=1)
 
     def showLearning(self, representation):
-        if self.vf_axes is None:
+        if self.vf_ax is None:
             self.vf_fig = plt.figure("Value Function")
-            self.vf_axes = self.vf_fig.add_subplot(1, 1, 1)
-            self.vf_img = self.vf_axes.imshow(
+            self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
+            self.vf_img = self.vf_ax.imshow(
                 self.map,
-                cmap="ValueFunction",
+                cmap="ValueFunction-New",
                 interpolation="nearest",
                 vmin=self.MIN_RETURN,
                 vmax=self.MAX_RETURN,
             )
             plt.xticks(np.arange(self.cols), fontsize=12)
-            plt.xticks(np.arange(self.cols), fontsize=12)
+            plt.yticks(np.arange(self.rows), fontsize=12)
             # Create quivers for each action. 4 in total
             xshift = [-self.SHIFT, self.SHIFT, 0, 0]
             yshift = [0, 0, -self.SHIFT, self.SHIFT]

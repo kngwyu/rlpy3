@@ -4,20 +4,19 @@ from rlpy.Tools import run_experiment
 import methods
 
 
-DOMAIN = BicycleRiding()
 MAX_STEPS = 150000
 
 
-def select_agent(name, _seed):
+def select_agent(name, domain, _seed):
     if name is None or name == "lspi":
-        return methods.tabular_lspi(DOMAIN, MAX_STEPS)
+        return methods.tabular_lspi(domain, MAX_STEPS)
     elif name == "nac":
-        return methods.tabular_nac(DOMAIN)
+        return methods.tabular_nac(domain)
     elif name == "tabular-q":
-        return methods.tabular_q(DOMAIN, initial_learn_rate=0.9)
+        return methods.tabular_q(domain, initial_learn_rate=0.9)
     elif name == "kifddk-q":
         return methods.kifdd_q(
-            DOMAIN,
+            domain,
             11.6543336229,
             threshold=88044,
             lambda_=0.43982644088,
@@ -31,7 +30,7 @@ def select_agent(name, _seed):
 
 if __name__ == "__main__":
     run_experiment(
-        DOMAIN,
+        BicycleRiding(),
         select_agent,
         default_max_steps=MAX_STEPS,
         default_num_policy_checks=30,

@@ -113,9 +113,14 @@ class GridWorld(Domain):
         return self.start_state.copy()
 
     def _show_map(self):
+        cmap = plt.get_cmap("GridWorld")
         self.domain_ax.imshow(
-            self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
+            self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
+        self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
+        self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
+        self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
+        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.2, 1.1))
 
     def showDomain(self, a=0, s=None):
         if s is None:

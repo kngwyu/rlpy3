@@ -33,7 +33,7 @@ if __name__ == "__main__":
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[
-            click.Option(["--map", "map_"], type=str, default="6x6guided"),
+            click.Option(["--map", "map_"], type=str, default="4x5"),
             click.Option(["--noise"], type=float, default=0.1),
         ],
     )

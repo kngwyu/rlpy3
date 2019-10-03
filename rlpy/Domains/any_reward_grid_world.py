@@ -87,6 +87,6 @@ class AnyRewardGridWorld(GridWorld):
                 star[i][1] += r
             patch = mpl.patches.Polygon(star, color=cmap(reward))
             self.domain_ax.add_patch(patch)
-        self.domain_ax.plot([0.0], [0.0], color=cmap(1.0), label="+ reward")
-        self.domain_ax.plot([0.0], [0.0], color=cmap(0.0), label="- reward")
-        self.domain_ax.legend(fontsize=12)
+        self.domain_ax.plot([0.0], [0.0], color=cmap(1.0), label="+ Reward")
+        self.domain_ax.plot([0.0], [0.0], color=cmap(0.0), label="- Reward")
+        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.2, 1.1))

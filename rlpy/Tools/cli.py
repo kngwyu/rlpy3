@@ -66,7 +66,7 @@ def get_experiment(
             num_policy_checks=num_policy_checks,
             checks_per_policy=checks_per_policy,
             log_interval=log_interval,
-            log_dir=log_dir,
+            path=log_dir,
             **kwargs,
         )
 

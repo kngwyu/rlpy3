@@ -59,3 +59,47 @@ jobs:
     inputs:
       pathtoPublish: wheelhouse
       artifactName: Wheels
+
+- job: macOSWheel
+  pool:
+    vmImage: 'macOS-10.13'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  strategy:
+    matrix:
+        Python35:
+          PYTHON_VERSION: '3.5'
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/wheel.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: wheelhouse
+        artifactName: Wheels
+
+- job: WindowsWheel
+  pool:
+    vmImage: 'vs2017-win2016'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  strategy:
+    matrix:
+        Python35:
+          PYTHON_VERSION: '3.5'
+        Python36:
+          PYTHON_VERSION: '3.6'
+        Python37:
+          PYTHON_VERSION: '3.7'
+    maxParallel: 2
+  steps:
+    - template: azure-templates/wheel.yml
+      parameters:
+        python_version: $(PYTHON_VERSION)
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: wheelhouse
+        artifactName: Wheels

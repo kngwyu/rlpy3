@@ -1,0 +1,18 @@
+parameters:
+  rust_version: nightly
+  python_version: 3.6
+  python_arch: x64
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: ${{ parameters.python_version }}
+      addToPath: true
+      architecture: ${{ parameters.python_arch }}
+
+  - bash: |
+      python -m pip install --upgrade pip setuptools wheel cython
+      mkdir wheelhouse
+      python setup.py bdist_wheel
+      mv dist/*.whl ../wheelhouse
+    displayName: Build rlpy3 wheel

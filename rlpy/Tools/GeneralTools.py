@@ -1157,7 +1157,7 @@ createColorMaps()
 DEFAULT_FONTS = {
     "weight": "normal",
     "size": 14,
-    "sans-serif": ["Source Han Sans", "Source Han Sans JP", "Helvetica", "DejaVu Sans"],
+    "sans-serif": ["Source Han Sans JP", "Source Sans Pro", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
 

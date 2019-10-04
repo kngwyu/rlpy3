@@ -98,6 +98,13 @@ class GridWorld(Domain):
         self.noise = noise
         self.DimNames = ["Row", "Col"]
         self.state = self._sample_start()
+        # map name for showing
+        mapfname = os.path.basename(mapfile)
+        dot_pos = mapfname.find(".")
+        if dot_pos == -1:
+            self.mapname = mapfname
+        else:
+            self.mapname = mapfname[:dot_pos]
         # Used for graphics to show the domain
         self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
         self.vf_fig, self.vf_ax, self.vf_img = None, None, None
@@ -133,7 +140,7 @@ class GridWorld(Domain):
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            self.domain_fig = plt.figure("GridWorld")
+            self.domain_fig = plt.figure("GridWorld: {}".format(self.mapname))
             ratio = self.rows / self.cols
             self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
             self._show_map()

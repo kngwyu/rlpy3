@@ -1,7 +1,7 @@
 """AnyRewardGridworld Domain."""
 import itertools
 import numpy as np
-from rlpy.Tools import __rlpy_location__, plt
+from rlpy.Tools import __rlpy_location__, plt, with_bold_fonts
 import os
 
 from .GridWorld import GridWorld
@@ -58,8 +58,7 @@ class AnyRewardGridWorld(GridWorld):
                 ma = max(ma, self.reward_map[r, c])
         return mi, ma
 
-    def _show_map(self):
-        super()._show_map()
+    def _show_numbers(self):
         cmap = plt.get_cmap("ValueFunction-New")
         rw_min, rw_max = self._rew_range()
         for r, c in itertools.product(range(self.rows), range(self.cols)):
@@ -74,3 +73,8 @@ class AnyRewardGridWorld(GridWorld):
             else:
                 continue
             self.domain_ax.text(c - 0.2, r + 0.1, str(raw_reward), color=color)
+
+    def _show_map(self):
+        super()._show_map()
+        with with_bold_fonts():
+            self._show_numbers()

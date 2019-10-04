@@ -1,4 +1,5 @@
 """General Tools for use throughout RLPy"""
+import contextlib
 import datetime
 from itertools import combinations, chain
 import numpy as np
@@ -1152,12 +1153,29 @@ def rk4(derivs, y0, t, *args, **kwargs):
 
 # matplotlib configs
 createColorMaps()
+
 DEFAULT_FONTS = {
-    "weight": "bold",
+    "weight": "normal",
     "size": 14,
-    "sans-serif": ["Source Han Sans JP", "Helvetica", "DejaVu Sans"],
+    "sans-serif": ["Source Han Sans", "Source Han Sans JP", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
+
+
+@contextlib.contextmanager
+def with_type1_fonts():
+    rc("font", **{"sans-serif": ["Dejavu Sans"]})
+    yield
+    rc("font", **DEFAULT_FONTS)
+
+
+@contextlib.contextmanager
+def with_bold_fonts():
+    rc("font", weight="bold")
+    yield
+    rc("font", weight="normal")
+
+
 rc("axes", labelsize=18)
 rc("xtick", labelsize=18)
 rc("ytick", labelsize=18)

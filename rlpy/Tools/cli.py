@@ -90,15 +90,22 @@ def get_experiment(
     @click.option(
         "--visualize-steps", is_flag=True, help="Visualize all steps during learning"
     )
-    @click.option("--plot-result", is_flag=True, help="Visualize the result")
+    @click.option("--plot-save", is_flag=True, help="Save the result figure")
+    @click.option("--plot-show", is_flag=True, help="Show the result figure")
     @click.pass_context
     def train(
-        ctx, visualize_performance, visualize_learning, visualize_steps, plot_result
+        ctx,
+        visualize_performance,
+        visualize_learning,
+        visualize_steps,
+        plot_save,
+        plot_show,
     ):
         exp = ctx.obj["experiment"]
         exp.run(visualize_performance, visualize_learning, visualize_steps)
-        if plot_result:
-            exp.plot()
+        if plot_save or plot_show:
+            exp.plot(save=plot_save, show=plot_show)
+        exp.save()
 
     return experiment
 

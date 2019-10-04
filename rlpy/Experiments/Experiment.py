@@ -4,10 +4,7 @@ from rlpy.Tools import plt
 import numpy as np
 from copy import deepcopy
 import re
-import argparse
-from rlpy.Tools import deltaT, clock, hhmmss
-from rlpy.Tools import className, checkNCreateDirectory
-from rlpy.Tools import printClass
+from rlpy.Tools import checkNCreateDirectory, className, clock, deltaT, clock, hhmmss, printClass, with_type1_fonts
 import rlpy.Tools.results
 
 # from rlpy.Tools import lower
@@ -492,12 +489,7 @@ class Experiment(object):
         self.results = rlpy.Tools.results.load_single(results_fn)
         return self.results
 
-    def plot(self, y="return", x="learning_steps", save=False):
-        """Plots the performance of the experiment
-        This function has only limited capabilities.
-        For more advanced plotting of results consider
-        :py:class:`Tools.Merger.Merger`.
-        """
+    def _plot_impl(self, y="return", x="learning_steps", save=False, show=True):
         labels = rlpy.Tools.results.default_labels
         performance_fig = plt.figure("Performance")
         res = self.result
@@ -515,11 +507,21 @@ class Experiment(object):
         plt.ylabel(ylabel, fontsize=16)
         if save:
             path = os.path.join(
-                self.full_path, "{:3}-performance.pdf".format(self.exp_id)
+                self.full_path, "{:03}-performance.pdf".format(self.exp_id)
             )
             performance_fig.savefig(path, transparent=True, pad_inches=0.1)
-        plt.ioff()
-        plt.show()
+        if show:
+            plt.ioff()
+            plt.show()
+
+    def plot(self, y="return", x="learning_steps", save=False, show=False):
+        """Plots the performance of the experiment
+        This function has only limited capabilities.
+        For more advanced plotting of results consider
+        :py:class:`Tools.Merger.Merger`.
+        """
+        with with_type1_fonts():
+            self._plot_impl()
 
     def compile_path(self, path):
         """

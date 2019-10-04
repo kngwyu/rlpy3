@@ -7,9 +7,17 @@ import methods
 MAX_STEPS = 10000
 
 
-def select_domain(map_="6x6guided", noise=0.1, **kwargs):
+def select_domain(
+    map_="6x6guided", noise=0.1, step_penalty=1.0, episode_cap=20, **kwargs
+):
     map_ = AnyRewardGridWorld.default_map(map_ + ".txt")
-    return AnyRewardGridWorld(map_, random_start=True, noise=noise)
+    return AnyRewardGridWorld(
+        map_,
+        random_start=True,
+        noise=noise,
+        step_penalty=step_penalty,
+        episodeCap=episode_cap,
+    )
 
 
 def select_agent(name, domain, _seed, epsilon=0.1, **kwargs):
@@ -36,5 +44,7 @@ if __name__ == "__main__":
             click.Option(["--map", "map_"], type=str, default="6x6guided"),
             click.Option(["--noise"], type=float, default=0.1),
             click.Option(["--epsilon"], type=float, default=0.1),
+            click.Option(["--step-penalty"], type=float, default=1.0),
+            click.Option(["--episode-cap"], type=int, default=20),
         ],
     )

@@ -4,7 +4,16 @@ from rlpy.Tools import plt
 import numpy as np
 from copy import deepcopy
 import re
-from rlpy.Tools import checkNCreateDirectory, className, clock, deltaT, clock, hhmmss, printClass, with_type1_fonts
+from rlpy.Tools import (
+    checkNCreateDirectory,
+    className,
+    clock,
+    deltaT,
+    clock,
+    hhmmss,
+    printClass,
+    with_type1_fonts,
+)
 import rlpy.Tools.results
 
 # from rlpy.Tools import lower

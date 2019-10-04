@@ -4,8 +4,6 @@ from rlpy.Tools.cli import run_experiment
 
 import methods
 
-MAX_STEPS = 10000
-
 
 def select_domain(
     map_="6x6guided", noise=0.1, step_penalty=1.0, episode_cap=20, **kwargs
@@ -20,9 +18,9 @@ def select_domain(
     )
 
 
-def select_agent(name, domain, _seed, epsilon=0.1, **kwargs):
+def select_agent(name, domain, max_steps, _seed, epsilon=0.1, **kwargs):
     if name is None or name == "lspi":
-        return methods.tabular_lspi(domain, MAX_STEPS)
+        return methods.tabular_lspi(domain, max_steps)
     elif name == "nac":
         return methods.tabular_nac(domain)
     elif name == "tabular-q":
@@ -37,7 +35,7 @@ if __name__ == "__main__":
     run_experiment(
         select_domain,
         select_agent,
-        default_max_steps=MAX_STEPS,
+        default_max_steps=10000,
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[

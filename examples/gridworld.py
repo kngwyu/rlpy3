@@ -4,17 +4,15 @@ from rlpy.Tools.cli import run_experiment
 
 import methods
 
-MAX_STEPS = 10000
-
 
 def select_domain(map_="4x5", **kwargs):
     map_ = GridWorld.default_map(map_ + ".txt")
     return GridWorld(map_, random_start=True, noise=0.1)
 
 
-def select_agent(name, domain, _seed, **kwargs):
+def select_agent(name, domain, max_steps, _seed, **kwargs):
     if name is None or name == "lspi":
-        return methods.tabular_lspi(domain, MAX_STEPS)
+        return methods.tabular_lspi(domain, max_steps)
     elif name == "nac":
         return methods.tabular_nac(domain)
     elif name == "tabular-q":
@@ -29,7 +27,7 @@ if __name__ == "__main__":
     run_experiment(
         select_domain,
         select_agent,
-        default_max_steps=MAX_STEPS,
+        default_max_steps=10000,
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[

@@ -57,7 +57,7 @@ def get_experiment(
             domain = domain_or_domain_selector
         else:
             domain = domain_or_domain_selector(**kwargs)
-        agent = agent_selector(agent, domain, seed, **kwargs)
+        agent = agent_selector(agent, domain, max_steps, seed, **kwargs)
         ctx.obj["experiment"] = Experiment(
             agent,
             domain,

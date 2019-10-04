@@ -19,12 +19,18 @@ def tabular_lspi(domain, max_steps, discretization=20):
 
 
 def tabular_nac(
-    domain, discretization=20, forgetting_rate=0.3, lambda_=0.7, learn_rate=0.1
+    domain,
+    gamma=0.9,
+    discretization=20,
+    forgetting_rate=0.3,
+    lambda_=0.7,
+    learn_rate=0.1,
 ):
     tabular = Tabular(domain, discretization=discretization)
     return NaturalActorCritic(
         GibbsPolicy(tabular),
         tabular,
+        discount_factor=gamma,
         forgetting_rate=forgetting_rate,
         min_steps_between_updates=100,
         max_steps_between_updates=1000,

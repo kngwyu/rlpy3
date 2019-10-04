@@ -120,7 +120,12 @@ class GridWorld(Domain):
         self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
         self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
         self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
-        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.2, 1.1))
+        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
+
+    def _set_ticks(self, ax):
+        ax.get_xaxis().set_ticks_position("top")
+        plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
+        plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
 
     def showDomain(self, a=0, s=None):
         if s is None:
@@ -130,8 +135,7 @@ class GridWorld(Domain):
             self.domain_fig = plt.figure("GridWorld")
             self.domain_ax = self.domain_fig.add_subplot(1, 1, 1)
             self._show_map()
-            plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
-            plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
+            self._set_ticks(self.domain_ax)
             self.agent_fig = self.domain_ax.plot(
                 s[1], s[0], "k>", markersize=20.0 - self.cols
             )[0]
@@ -167,15 +171,16 @@ class GridWorld(Domain):
         if self.vf_ax is None:
             self.vf_fig = plt.figure("Value Function")
             self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
+            cmap = plt.get_cmap("ValueFunction-New")
             self.vf_img = self.vf_ax.imshow(
                 self.map,
-                cmap="ValueFunction-New",
+                cmap=cmap,
                 interpolation="nearest",
                 vmin=self.MIN_RETURN,
                 vmax=self.MAX_RETURN,
             )
-            plt.xticks(np.arange(self.cols), fontsize=12)
-            plt.yticks(np.arange(self.rows), fontsize=12)
+            self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
+            self._set_ticks(self.vf_ax)
             # Create quivers for each action. 4 in total
             xshift = [-self.SHIFT, self.SHIFT, 0, 0]
             yshift = [0, 0, -self.SHIFT, self.SHIFT]

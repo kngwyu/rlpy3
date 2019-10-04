@@ -1,31 +1,13 @@
 """AnyRewardGridworld Domain."""
 import itertools
 import numpy as np
-from rlpy.Tools import __rlpy_location__, mpl, plt
+from rlpy.Tools import __rlpy_location__, plt
 import os
 
 from .GridWorld import GridWorld
 
 __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"
-
-
-def _star():
-    to_rad = np.pi / 180
-
-    def rotm(angle):
-        th = angle * to_rad
-        return np.array([[np.cos(th), np.sin(th)], [-np.sin(th), np.cos(th)]])
-
-    def pentagon(unit):
-        return np.array([rotm(i * 72).dot(unit) for i in range(5)])
-
-    p1 = pentagon(np.array([0.0, 0.5]))
-    p2 = pentagon(np.array([0.0, 0.5 * 0.5 * np.cos(36 * to_rad)])) * -1
-    res = []
-    for i in range(5):
-        res += [p1[i], p2[(i + 3) % 5]]
-    return np.array(res)
 
 
 class AnyRewardGridWorld(GridWorld):
@@ -61,10 +43,6 @@ class AnyRewardGridWorld(GridWorld):
             episodeCap=episodeCap,
         )
         self.step_penalty = step_penalty
-
-    def s0(self):
-        self.state = self._sample_start()
-        return self.state, self.isTerminal(), self.possibleActions()
 
     def _reward(self, next_state, terminal):
         reward = self.reward_map[next_state[0], next_state[1]]

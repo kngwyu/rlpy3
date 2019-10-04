@@ -34,11 +34,16 @@ def tabular_nac(
 
 
 def tabular_q(
-    domain, discretization=20, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100
+    domain,
+    epsilon=0.1,
+    discretization=20,
+    lambda_=0.3,
+    initial_learn_rate=0.1,
+    boyan_N0=100,
 ):
     tabular = Tabular(domain, discretization=discretization)
     return Q_Learning(
-        eGreedy(tabular, epsilon=0.1),
+        eGreedy(tabular, epsilon=epsilon),
         tabular,
         discount_factor=domain.discount_factor,
         lambda_=lambda_,
@@ -116,6 +121,7 @@ def ifdd_sarsa(*args, **kwargs):
 
 def ifddk_q(
     domain,
+    epsilon=0.1,
     discretization=20,
     threshold=1.0,
     lambda_=0.3,
@@ -134,7 +140,7 @@ def ifddk_q(
         lambda_=lambda_,
     )
     return Q_Learning(
-        eGreedy(ifddk, epsilon=0.1),
+        eGreedy(ifddk, epsilon=epsilon),
         ifddk,
         discount_factor=domain.discount_factor,
         lambda_=lambda_,

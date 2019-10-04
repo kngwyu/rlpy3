@@ -8,8 +8,8 @@ import os
 def test_cell_expansion():
     """ Ensure start with 0 cells, add one for each state uniquely. """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     rep = IncrementalTabular(domain, discretization=100)
     assert rep.features_num == 0  # start with 0 cells

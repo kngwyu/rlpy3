@@ -8,8 +8,8 @@ import os
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     rep = IndependentDiscretization(domain, discretization=100)
     assert rep.features_num == 9
@@ -20,8 +20,8 @@ def test_number_of_cells():
 def test_phi_cells():
     """ Ensure correct features are activated for corresponding state """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     rep = IndependentDiscretization(domain)
 

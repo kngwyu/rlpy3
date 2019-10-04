@@ -10,8 +10,8 @@ import os
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     memory = 30  # Determines number of feats; it is the size of cache
     num_tilings = [2]  # has 2 tilings

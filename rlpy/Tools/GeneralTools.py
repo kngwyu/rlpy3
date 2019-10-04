@@ -278,33 +278,33 @@ def createColorMaps():
     Create and register the colormaps to be used in domain visualizations.
 
     """
-
-    # Make Grid World ColorMap
-    mycmap = colors.ListedColormap(["w", ".75", "b", "g", "r", "k"], "GridWorld")
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(["r", "k"], "fiftyChainActions")
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(["b", "r"], "FlipBoard")
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(["w", ".75", "b", "r"], "IntruderMonitoring")
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(
-        ["w", "b", "g", "r", "m", (1, 1, 0), "k"], "BlocksWorld"
+    cm.register_cmap(
+        cmap=colors.ListedColormap(
+            ["w", ".75", "xkcd:bright blue", "xkcd:green", "xkcd:scarlet", "k"],
+            "GridWorld",
+        )
     )
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap([".5", "k"], "Actions")
-    cm.register_cmap(cmap=mycmap)
-    # mycmap = make_colormap({0:(.8,.7,0), 1: 'w', 2:(0,0,1)})  # orange to
-    # blue
-    mycmap = make_colormap({0: "r", 1: "w", 2: "g"})  # red to blue
-    cm.register_cmap(cmap=mycmap, name="ValueFunction")
-    mycmap = colors.ListedColormap(["r", "w", "k"], "InvertedPendulumActions")
-    cm.register_cmap(cmap=mycmap)
-
-    mycmap = colors.ListedColormap(["r", "w", "k"], "MountainCarActions")
-    cm.register_cmap(cmap=mycmap)
-    mycmap = colors.ListedColormap(["r", "w", "k", "b"], "4Actions")
-    cm.register_cmap(cmap=mycmap)
+    cm.register_cmap(cmap=colors.ListedColormap(["r", "k"], "fiftyChainActions"))
+    cm.register_cmap(cmap=colors.ListedColormap(["b", "r"], "FlipBoard"))
+    cm.register_cmap(
+        cmap=colors.ListedColormap(["w", ".75", "b", "r"], "IntruderMonitoring")
+    )
+    cm.register_cmap(
+        cmap=colors.ListedColormap(
+            ["w", "b", "g", "r", "m", (1, 1, 0), "k"], "BlocksWorld"
+        )
+    )
+    cm.register_cmap(cmap=colors.ListedColormap([".5", "k"], "Actions"))
+    cm.register_cmap(cmap=make_colormap({0: "r", 1: "w", 2: "g"}), name="ValueFunction")
+    cm.register_cmap(
+        cmap=make_colormap({0: "xkcd:scarlet", 1: "w", 2: "xkcd:green"}),
+        name="ValueFunction-New",
+    )
+    cm.register_cmap(
+        cmap=colors.ListedColormap(["r", "w", "k"], "InvertedPendulumActions")
+    )
+    cm.register_cmap(cmap=colors.ListedColormap(["r", "w", "k"], "MountainCarActions"))
+    cm.register_cmap(cmap=colors.ListedColormap(["r", "w", "k", "b"], "4Actions"))
 
 
 def make_colormap(colors):
@@ -1153,15 +1153,14 @@ def rk4(derivs, y0, t, *args, **kwargs):
 # matplotlib configs
 createColorMaps()
 DEFAULT_FONTS = {
-    'family': 'sans-serif',
-    'weight': 'normal',
+    "weight": "bold",
     "size": 14,
-    "sans-serif": ["Source Sans Pro",  "Helvetica"],
+    "sans-serif": ["Source Han Sans JP", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
-rc("axes", labelsize=16)
-rc("xtick", labelsize=16)
-rc("ytick", labelsize=16)
+rc("axes", labelsize=18)
+rc("xtick", labelsize=18)
+rc("ytick", labelsize=18)
 # rc('text',usetex=False)
 
 # Colors

@@ -1,23 +1,22 @@
 from rlpy.Domains import PuddleWorld
-from rlpy.Tools import run_experiment
+from rlpy.Tools.cli import run_experiment
 
 import methods
 
 
-DOMAIN = PuddleWorld()
 MAX_STEPS = 40000
 
 
-def select_agent(name, seed):
+def select_agent(name, domain, seed):
     if name is None or name == "lspi":
-        return methods.tabular_lspi(DOMAIN, MAX_STEPS)
+        return methods.tabular_lspi(domain, MAX_STEPS)
     elif name == "tabular-q":
-        return methods.tabular_q(DOMAIN)
+        return methods.tabular_q(domain)
     elif name == "tabular-sarsa":
-        return methods.tabular_sarsa(DOMAIN)
+        return methods.tabular_sarsa(domain)
     elif name == "ifdd-q":
         return methods.ifdd_q(
-            DOMAIN,
+            domain,
             discretization=18,
             lambda_=0.42,
             boyan_N0=202,
@@ -25,7 +24,7 @@ def select_agent(name, seed):
         )
     elif name == "kifdd-q":
         return methods.kifdd_q(
-            DOMAIN,
+            domain,
             8.567677,
             threshold=0.0807,
             lambda_=0.52738,
@@ -34,7 +33,7 @@ def select_agent(name, seed):
         )
     elif name == "rbfs-q":
         return methods.rbf_q(
-            DOMAIN,
+            domain,
             seed,
             num_rbfs=96,
             resolution=21,
@@ -48,7 +47,7 @@ def select_agent(name, seed):
 
 if __name__ == "__main__":
     run_experiment(
-        DOMAIN,
+        PuddleWorld(),
         select_agent,
         default_max_steps=MAX_STEPS,
         default_num_policy_checks=20,

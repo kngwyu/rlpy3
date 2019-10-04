@@ -8,8 +8,8 @@ import os
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
     mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
-    mapname = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
-    domain = GridWorld(mapname=mapname)
+    mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
+    domain = GridWorld(mapfile=mapfile)
 
     rep = IndependentDiscretizationCompactBinary(domain, discretization=100)
     assert rep.features_num == 9 + 1

@@ -1,14 +1,15 @@
 import click
+from rlpy.Domains.Domain import Domain
 from rlpy.Experiments import Experiment
 
 
 def get_experiment(
-    domain,
+    domain_or_domain_selector,
     agent_selector,
     default_max_steps=1000,
     default_num_policy_checks=10,
     default_checks_per_policy=10,
-    agent_options=[],
+    other_options=[],
 ):
     @click.group()
     @click.option(
@@ -52,7 +53,11 @@ def get_experiment(
         log_dir,
         **kwargs,
     ):
-        agent = agent_selector(agent, seed, **kwargs)
+        if isinstance(domain_or_domain_selector, Domain):
+            domain = domain_or_domain_selector
+        else:
+            domain = domain_or_domain_selector(**kwargs)
+        agent = agent_selector(agent, domain, seed, **kwargs)
         ctx.obj["experiment"] = Experiment(
             agent,
             domain,
@@ -61,14 +66,14 @@ def get_experiment(
             num_policy_checks=num_policy_checks,
             checks_per_policy=checks_per_policy,
             log_interval=log_interval,
-            log_dir=log_dir,
+            path=log_dir,
             **kwargs,
         )
 
-    for opt in agent_options:
+    for opt in other_options:
         if not isinstance(opt, click.Option):
             raise ValueError("Every item of agent_options must be click.Option!")
-        experiment.params.append(agent_options)
+        experiment.params.append(opt)
 
     @experiment.command(help="Train the agent")
     @click.option(

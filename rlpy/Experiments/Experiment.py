@@ -523,14 +523,14 @@ class Experiment(object):
             plt.ioff()
             plt.show()
 
-    def plot(self, y="return", x="learning_steps", save=False, show=False):
+    def plot(self, y="return", x="learning_steps", save=False, show=True):
         """Plots the performance of the experiment
         This function has only limited capabilities.
         For more advanced plotting of results consider
         :py:class:`Tools.Merger.Merger`.
         """
         with with_type1_fonts():
-            self._plot_impl()
+            self._plot_impl(y, x, save, show)
 
     def compile_path(self, path):
         """

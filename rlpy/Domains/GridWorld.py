@@ -117,10 +117,11 @@ class GridWorld(Domain):
         self.domain_ax.imshow(
             self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
+        self.domain_ax.plot([0.0], [0.0], color=cmap(1), label="Block")
         self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
         self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
         self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
-        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
+        self.domain_ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1.2, 1.1))
 
     def _set_ticks(self, ax):
         ax.get_xaxis().set_ticks_position("top")
@@ -133,7 +134,8 @@ class GridWorld(Domain):
         # Draw the environment
         if self.domain_fig is None:
             self.domain_fig = plt.figure("GridWorld")
-            self.domain_ax = self.domain_fig.add_subplot(1, 1, 1)
+            ratio = self.rows / self.cols
+            self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
             self._show_map()
             self._set_ticks(self.domain_ax)
             self.agent_fig = self.domain_ax.plot(

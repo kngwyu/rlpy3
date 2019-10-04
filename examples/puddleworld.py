@@ -4,12 +4,9 @@ from rlpy.Tools.cli import run_experiment
 import methods
 
 
-MAX_STEPS = 40000
-
-
-def select_agent(name, domain, seed):
+def select_agent(name, domain, max_steps, seed):
     if name is None or name == "lspi":
-        return methods.tabular_lspi(domain, MAX_STEPS)
+        return methods.tabular_lspi(domain, max_steps)
     elif name == "tabular-q":
         return methods.tabular_q(domain)
     elif name == "tabular-sarsa":
@@ -49,7 +46,7 @@ if __name__ == "__main__":
     run_experiment(
         PuddleWorld(),
         select_agent,
-        default_max_steps=MAX_STEPS,
+        default_max_steps=40000,
         default_num_policy_checks=20,
         default_checks_per_policy=100,
     )

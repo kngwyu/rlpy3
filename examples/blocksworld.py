@@ -6,14 +6,11 @@ from rlpy.Tools.cli import run_experiment
 import methods
 
 
-MAX_STEPS = 100000
-
-
 def select_domain(blocks=6, noise=0.3, **kwargs):
     return BlocksWorld(blocks=blocks, noise=noise)
 
 
-def select_agent(name, domain, _seed, lambda_=0.1, **kwargs):
+def select_agent(name, domain, _max_steps, _seed, lambda_=0.1, **kwargs):
     if name is None or name == "tabular-q":
         return methods.tabular_q(domain, initial_learn_rate=0.9)
     elif name == "ifdd-ggq":
@@ -80,7 +77,7 @@ if __name__ == "__main__":
     run_experiment(
         select_domain,
         select_agent,
-        default_max_steps=MAX_STEPS,
+        default_max_steps=100000,
         default_num_policy_checks=20,
         default_checks_per_policy=1,
         other_options=[

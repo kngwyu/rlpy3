@@ -1,31 +1,13 @@
 """AnyRewardGridworld Domain."""
 import itertools
 import numpy as np
-from rlpy.Tools import __rlpy_location__, mpl, plt
+from rlpy.Tools import __rlpy_location__, plt
 import os
 
 from .GridWorld import GridWorld
 
 __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"
-
-
-def _star():
-    to_rad = np.pi / 180
-
-    def rotm(angle):
-        th = angle * to_rad
-        return np.array([[np.cos(th), np.sin(th)], [-np.sin(th), np.cos(th)]])
-
-    def pentagon(unit):
-        return np.array([rotm(i * 72).dot(unit) for i in range(5)])
-
-    p1 = pentagon(np.array([0.0, 0.5]))
-    p2 = pentagon(np.array([0.0, 0.5 * 0.5 * np.cos(36 * to_rad)])) * -1
-    res = []
-    for i in range(5):
-        res += [p1[i], p2[(i + 3) % 5]]
-    return np.array(res)
 
 
 class AnyRewardGridWorld(GridWorld):
@@ -62,31 +44,33 @@ class AnyRewardGridWorld(GridWorld):
         )
         self.step_penalty = step_penalty
 
-    def s0(self):
-        self.state = self._sample_start()
-        return self.state, self.isTerminal(), self.possibleActions()
-
     def _reward(self, next_state, terminal):
         reward = self.reward_map[next_state[0], next_state[1]]
         if not terminal:
             reward -= self.step_penalty
         return reward
 
-    def _show_map(self):
-        self.domain_ax.imshow(
-            self.map, cmap="GridWorld", interpolation="nearest", vmin=0, vmax=5
-        )
-        cmap = plt.get_cmap("ValueFunction-New")
+    def _rew_range(self):
+        mi, ma = 100, -100
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if self.map[r, c] != self.EMPTY or self.reward_map[r, c] == 0:
+            if self.map[r, c] == self.EMPTY:
+                mi = min(mi, self.reward_map[r, c])
+                ma = max(ma, self.reward_map[r, c])
+        return mi, ma
+
+    def _show_map(self):
+        super()._show_map()
+        cmap = plt.get_cmap("ValueFunction-New")
+        rw_min, rw_max = self._rew_range()
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if self.reward_map[r, c] == 0:
                 continue
-            reward = (self.reward_map[r, c] + 10) / 20
-            star = -_star() * 0.8
-            for i in range(star.shape[0]):
-                star[i][0] += c
-                star[i][1] += r
-            patch = mpl.patches.Polygon(star, color=cmap(reward))
-            self.domain_ax.add_patch(patch)
-        self.domain_ax.plot([0.0], [0.0], color=cmap(1.0), label="+ Reward")
-        self.domain_ax.plot([0.0], [0.0], color=cmap(0.0), label="- Reward")
-        self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.2, 1.1))
+            raw_reward = self.reward_map[r, c]
+            if self.map[r, c] == self.EMPTY:
+                reward = (self.reward_map[r, c] - rw_min) / (rw_max - rw_min)
+                color = cmap(reward)
+            elif self.map[r, c] == self.GOAL or self.PIT:
+                color = "w"
+            else:
+                continue
+            self.domain_ax.text(c - 0.2, r + 0.1, str(raw_reward), color=color)

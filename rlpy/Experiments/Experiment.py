@@ -9,10 +9,10 @@ from rlpy.Tools import (
     className,
     clock,
     deltaT,
-    clock,
     hhmmss,
     printClass,
-    with_type1_fonts,
+    with_pdf_fonts,
+    MARKER,
 )
 import rlpy.Tools.results
 
@@ -502,7 +502,7 @@ class Experiment(object):
         labels = rlpy.Tools.results.default_labels
         performance_fig = plt.figure("Performance")
         res = self.result
-        plt.plot(res[x], res[y], "-bo", lw=3, markersize=10)
+        plt.plot(res[x], res[y], lw=2, markersize=4, marker=MARKER[0])
         plt.xlim(0, res[x][-1] * 1.01)
         y_arr = np.array(res[y])
         m = y_arr.min()
@@ -529,7 +529,7 @@ class Experiment(object):
         For more advanced plotting of results consider
         :py:class:`Tools.Merger.Merger`.
         """
-        with with_type1_fonts():
+        with with_pdf_fonts():
             self._plot_impl(y, x, save, show)
 
     def compile_path(self, path):
@@ -546,23 +546,14 @@ class Experiment(object):
             else:
                 obj = "self." + v
 
-            if len(
-                [
-                    x
-                    for x in [
-                        "self.domain",
-                        "self.agent",
-                        "self.agent.policy",
-                        "self.agent.representation",
-                    ]
-                    if x == obj.lower()
-                ]
-            ):
-                replacements[v] = eval("className(%s)" % obj)
+            if obj.lower() in [
+                "self.domain",
+                "self.agent",
+                "self.agent.policy",
+                "self.agent.representation",
+            ]:
+                replacements[v] = "className({})".format(obj)
             else:
-                try:
-                    replacements[v] = str(eval("%s" % v))
-                except:
-                    print("Warning: Could not interpret path variable", repr(v))
+                replacements[v] = str(v)
 
         return path.format(**replacements)

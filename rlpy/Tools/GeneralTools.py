@@ -34,7 +34,7 @@ __rlpy_location__ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def nogui_mode():
     mpl.use("agg")
-    pl.ioff()
+    plt.ioff()
 
     def _stub(*args, **kwargs):
         pass
@@ -45,7 +45,7 @@ def nogui_mode():
 # Try GUI backend first
 try:
     mpl.use("tkAgg")
-    pl.ion()
+    plt.ion()
 except ImportError:
     nogui_mode()
 
@@ -1160,10 +1160,11 @@ DEFAULT_FONTS = {
     "sans-serif": ["Source Han Sans JP", "Source Sans Pro", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
+rc("pdf", fonttype=42)
 
 
 @contextlib.contextmanager
-def with_type1_fonts():
+def with_pdf_fonts():
     rc("font", **{"sans-serif": ["Dejavu Sans"]})
     yield
     rc("font", **DEFAULT_FONTS)
@@ -1176,10 +1177,13 @@ def with_bold_fonts():
     rc("font", weight="normal")
 
 
-rc("axes", labelsize=18)
-rc("xtick", labelsize=18)
-rc("ytick", labelsize=18)
+rc("axes", labelsize=12)
+rc("xtick", labelsize=12)
+rc("ytick", labelsize=12)
 # rc('text',usetex=False)
+
+# Markers
+MARKER = ['o', 's', 'D', '^', '*', 'x', 'p', '+', 'v', '|']
 
 # Colors
 PURPLE = "\033[95m"

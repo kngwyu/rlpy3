@@ -202,11 +202,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
 
         # The policy is maintained as separate copy of the representation.
         # This way as the representation is updated the policy remains intact
-        policy = eGreedy(
-            deepcopy(self.representation),
-            epsilon=0,
-            forcedDeterministicAmongBestActions=True,
-        )
+        policy = eGreedy(deepcopy(self.representation), epsilon=0, deterministic=True)
 
         while self.hasTime() and not converged:
 

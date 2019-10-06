@@ -37,17 +37,14 @@ class Policy(ABC):
 
     """
 
-    representation = None
     DEBUG = False
-    # A seeded numpy random number generator
-    random_state = None
 
     def __init__(self, representation, seed=1):
         """
         :param representation: the :py:class:`~rlpy.Representations.Representation.Representation`
             to use in learning the value function.
-
         """
+
         self.representation = representation
         # An object to record the print outs in a file
         self.logger = logging.getLogger("rlpy.Policies." + self.__class__.__name__)

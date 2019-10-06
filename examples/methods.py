@@ -42,6 +42,8 @@ def tabular_nac(
 def tabular_q(
     domain,
     epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
     discretization=20,
     lambda_=0.3,
     initial_learn_rate=0.1,
@@ -49,7 +51,12 @@ def tabular_q(
 ):
     tabular = Tabular(domain, discretization=discretization)
     return Q_Learning(
-        eGreedy(tabular, epsilon=epsilon),
+        eGreedy(
+            tabular,
+            epsilon=epsilon,
+            epsilon_decay=epsilon_decay,
+            epsilon_min=epsilon_min,
+        ),
         tabular,
         discount_factor=domain.discount_factor,
         lambda_=lambda_,

@@ -128,7 +128,7 @@ class GridWorld(Domain):
         self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
         self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
         self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
-        self.domain_ax.legend(fontsize=12, loc='upper right', bbox_to_anchor=(1.2, 1.1))
+        self.domain_ax.legend(fontsize=12, loc="upper right", bbox_to_anchor=(1.2, 1.1))
 
     def _set_ticks(self, ax):
         ax.get_xaxis().set_ticks_position("top")

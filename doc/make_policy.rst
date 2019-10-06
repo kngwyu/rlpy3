@@ -116,7 +116,7 @@ have explored the entire domain.
            # Temporarily stores value of ``epsilon`` when exploration disabled
            old_epsilon     = None 
            # bool, used to avoid random selection among actions with the same values
-           forcedDeterministicAmongBestActions = None
+           deterministic = None
 
 #. Copy the ``__init__()`` declaration from ``Policy.py`` and add needed parameters. 
    In the function body, assign them and log them.
@@ -124,12 +124,12 @@ have explored the entire domain.
    Here the parameters are the probability of 
    selecting a random action, ``epsilon``, and how to handle the case where 
    multiple best actions exist, ie with the same 
-   value, ``forcedDeterministicAmongBestActions``::
+   value, ``deterministic``::
 
            def __init__(self,representation, epsilon = .1,
-              forcedDeterministicAmongBestActions = False, seed=1):
+              deterministic = False, seed=1):
                self.epsilon = epsilon
-               self.forcedDeterministicAmongBestActions = forcedDeterministicAmongBestActions
+               self.deterministic = deterministic
                super(eGreedyTut,self).__init__(representation)
 
 
@@ -137,7 +137,7 @@ have explored the entire domain.
    an action index for any given state and possible action inputs.
    Here, with probability epsilon, take a random action among the possible.
    Otherwise, pick an action with the highest expected value (depending on
-   ``self.forcedDeterministicAmongBestActions``, either pick randomly from among
+   ``self.deterministic``, either pick randomly from among
    the best actions or always select the one with lowest index::
 
            def pi(self,s, terminal, p_actions):
@@ -147,7 +147,7 @@ have explored the entire domain.
                    return self.random_state.choice(p_actions)
                else:
                    b_actions = self.representation.bestActions(s, terminal, p_actions)
-                   if self.forcedDeterministicAmongBestActions:
+                   if self.deterministic:
                        return b_actions[0]
                    else:
                        return self.random_state.choice(b_actions)

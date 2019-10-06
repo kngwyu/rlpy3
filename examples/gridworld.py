@@ -18,7 +18,7 @@ def select_agent(name, domain, max_steps, _seed, **kwargs):
     elif name == "tabular-q":
         return methods.tabular_q(domain, initial_learn_rate=0.11)
     elif name == "ifddk-q":
-        return methods.tabular_q(domain, initial_learn_rate=0.11)
+        return methods.ifddk_q(domain, initial_learn_rate=0.11)
     else:
         raise NotImplementedError("Method {} is not supported".format(name))
 

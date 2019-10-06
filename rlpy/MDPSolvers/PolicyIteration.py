@@ -215,9 +215,7 @@ class PolicyIteration(MDPSolver):
 
         # Initialize the policy
         policy = eGreedy(
-            deepcopy(self.representation),
-            epsilon=0,
-            forcedDeterministicAmongBestActions=True,
+            deepcopy(self.representation), epsilon=0, deterministic=True
         )  # Copy the representation so that the weight change during the evaluation does not change the policy
 
         # Setup the number of policy changes to 1 so the while loop starts

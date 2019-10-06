@@ -18,15 +18,28 @@ def select_domain(
     )
 
 
-def select_agent(name, domain, max_steps, _seed, epsilon=0.1, **kwargs):
+def select_agent(
+    name, domain, max_steps, _seed, epsilon=0.1, epsilon_decay=False, **kwargs
+):
+    if epsilon_decay:
+        eps_decay = (epsilon - 0.1) / max_steps * 0.9
+        eps_min = 0.1
+    else:
+        eps_decay, eps_min = 0.0, 0.0
     if name is None or name == "lspi":
         return methods.tabular_lspi(domain, max_steps)
     elif name == "nac":
         return methods.tabular_nac(domain)
     elif name == "tabular-q":
-        return methods.tabular_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
+        return methods.tabular_q(
+            domain,
+            epsilon=epsilon,
+            epsilon_decay=eps_decay,
+            epsilon_min=eps_min,
+            initial_learn_rate=0.5,
+        )
     elif name == "ifddk-q":
-        return methods.tabular_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
+        return methods.ifddk_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
     else:
         raise NotImplementedError("Method {} is not supported".format(name))
 
@@ -42,6 +55,7 @@ if __name__ == "__main__":
             click.Option(["--map", "map_"], type=str, default="6x6guided"),
             click.Option(["--noise"], type=float, default=0.1),
             click.Option(["--epsilon"], type=float, default=0.1),
+            click.Option(["--epsilon-decay"], is_flag=True),
             click.Option(["--step-penalty"], type=float, default=1.0),
             click.Option(["--episode-cap"], type=int, default=20),
         ],

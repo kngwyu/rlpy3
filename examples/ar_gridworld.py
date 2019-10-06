@@ -6,7 +6,7 @@ import methods
 
 
 def select_domain(
-    map_="6x6guided", noise=0.1, step_penalty=1.0, episode_cap=20, **kwargs
+    map_="6x6guided", noise=0.1, step_penalty=0.5, episode_cap=20, **kwargs
 ):
     map_ = AnyRewardGridWorld.default_map(map_ + ".txt")
     return AnyRewardGridWorld(
@@ -56,7 +56,7 @@ if __name__ == "__main__":
             click.Option(["--noise"], type=float, default=0.1),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-decay"], is_flag=True),
-            click.Option(["--step-penalty"], type=float, default=1.0),
+            click.Option(["--step-penalty"], type=float, default=0.5),
             click.Option(["--episode-cap"], type=int, default=20),
         ],
     )

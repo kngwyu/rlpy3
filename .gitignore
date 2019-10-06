@@ -5,6 +5,7 @@ rlpy/Representations/FastCythonKiFDD.cpp
 rlpy/Representations/hashing.c
 rlpy/Representations/kernels.cpp
 rlpy/Domains/HIVTreatment_dynamics.c
+**/Result
 *.so
 *.swp
 .project

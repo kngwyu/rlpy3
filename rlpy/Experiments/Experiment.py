@@ -1,26 +1,25 @@
 """Standard Experiment for Learning Control in RL."""
-import logging
-from rlpy.Tools import plt
-import numpy as np
+from collections import defaultdict
 from copy import deepcopy
+import json
+import logging
+import numpy as np
+import os
 import re
+import warnings
+import rlpy.Tools.results
 from rlpy.Tools import (
     checkNCreateDirectory,
     className,
     clock,
     deltaT,
     hhmmss,
+    ipshell,
+    plt,
     printClass,
     with_pdf_fonts,
     MARKER,
 )
-import rlpy.Tools.results
-
-# from rlpy.Tools import lower
-import os
-import rlpy.Tools.ipshell
-import json
-from collections import defaultdict
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -68,35 +67,11 @@ class Experiment(object):
     """
 
     #: The Main Random Seed used to generate other random seeds (we use a different seed for each experiment id)
-    mainSeed = 999999999
+    MAIN_SEED = 999999999
     #: Maximum number of runs used for averaging, specified so that enough
     #: random seeds are generated
-    maxRuns = 1000
-    # Array of random seeds. This is used to make sure all jobs start with
-    # the same random seed
-    randomSeeds = np.random.RandomState(mainSeed).randint(1, mainSeed, maxRuns)
-
-    #: ID of the current experiment (main seed used for calls to np.rand)
-    exp_id = 1
-
-    # The domain to be tested on
-    domain = None
-    # The agent to be tested
-    agent = None
-
-    #: A 2-d numpy array that stores all generated results.The purpose of a run
-    #: is to fill this array. Size is stats_num x num_policy_checks.
+    MAX_RUNS = 1000
     result = None
-    #: The name of the file used to store the data
-    output_filename = ""
-    # A simple object that records the prints in a file
-    logger = None
-
-    max_steps = 0  # Total number of interactions
-    # Number of Performance Checks uniformly scattered along timesteps of the
-    # experiment
-    num_policy_checks = 0
-    log_interval = 0  # Number of seconds between log prints to console
 
     log_template = "{total_steps: >6}: E[{elapsed}]-R[{remaining}]: Return={totreturn: >10.4g}, Steps={steps: >4}, Features = {num_feat}"
     performance_log_template = "{total_steps: >6}: >>> E[{elapsed}]-R[{remaining}]: Return={totreturn: >10.4g}, Steps={steps: >4}, Features = {num_feat}"
@@ -106,7 +81,7 @@ class Experiment(object):
         agent,
         domain,
         exp_id=1,
-        max_steps=max_steps,
+        max_steps=1000,
         config_logging=True,
         num_policy_checks=10,
         log_interval=1,
@@ -147,6 +122,14 @@ class Experiment(object):
         self.log_interval = log_interval
         self.config_logging = config_logging
         self.path = path
+        #: The name of the file used to store the data
+        self.output_filename = ""
+        # Array of random seeds. This is used to make sure all jobs start with
+        # the same random seed
+        self.randomSeeds = np.random.RandomState(self.MAIN_SEED).randint(
+            1, self.MAIN_SEED, self.MAX_RUNS
+        )
+        self.result = defaultdict(list)
         if stat_bins_per_state_dim > 0:
             self.state_counts_learn = np.zeros(
                 (domain.statespace_limits.shape[0], stat_bins_per_state_dim),
@@ -164,7 +147,6 @@ class Experiment(object):
         checkNCreateDirectory(self.full_path + "/")
         self.logger.info("Output:\t\t\t%s/%s" % (self.full_path, self.output_filename))
         # TODO set up logging to file for rlpy loggers
-
         self.log_filename = "{:0>3}.log".format(self.exp_id)
         if self.config_logging:
             rlpy_logger = logging.getLogger("rlpy")
@@ -254,7 +236,8 @@ class Experiment(object):
         if visualize:
             self.performance_domain.showDomain(a)
         self.agent.policy.turnOnExploration()
-        # This hidden state is for domains (such as the noise in the helicopter domain) that include unobservable elements that are evolving over time
+        # This hidden state is for domains (such as the noise in the helicopter domain)
+        # that include unobservable elements that are evolving over time
         # Ideally the domain should be formulated as a POMDP but we are trying
         # to accomodate them as an MDP
 
@@ -268,7 +251,8 @@ class Experiment(object):
 
     def _gather_transition_statistics(self, s, a, sn, r, learning=False):
         """
-        This function can be used in subclasses to collect statistics about the transitions
+        This function can be used in subclasses to collect statistics
+        about the transitions
         """
         if hasattr(self, "state_counts_learn") and learning:
             counts = self.state_counts_learn
@@ -425,12 +409,6 @@ class Experiment(object):
         :param episode_number: (int)
                         number of episodes used in learning so far
         """
-        # TODO resolve this hack
-        if className(self.agent) == "PolicyEvaluation":
-            # Policy Evaluation Case
-            self.result = self.agent.STATS
-            return
-
         random_state = np.random.get_state()
         # random_state_domain = copy(self.domain.random_state)
         elapsedTime = deltaT(self.start_time)

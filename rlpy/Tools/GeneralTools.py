@@ -1183,7 +1183,7 @@ rc("ytick", labelsize=12)
 # rc('text',usetex=False)
 
 # Markers
-MARKER = ['o', 's', 'D', '^', '*', 'x', 'p', '+', 'v', '|']
+MARKER = ["o", "s", "D", "^", "*", "x", "p", "+", "v", "|"]
 
 # Colors
 PURPLE = "\033[95m"

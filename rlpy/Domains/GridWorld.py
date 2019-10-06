@@ -188,7 +188,7 @@ class GridWorld(Domain):
                 vmin=self.MIN_RETURN,
                 vmax=self.MAX_RETURN,
             )
-            self.domain_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
+            self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
             self._set_ticks(self.vf_ax)
             # Create quivers for each action. 4 in total
             xshift = [-self.SHIFT, self.SHIFT, 0, 0]

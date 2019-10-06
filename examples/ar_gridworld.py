@@ -19,11 +19,11 @@ def select_domain(
 
 
 def select_agent(
-    name, domain, max_steps, _seed, epsilon=0.1, epsilon_decay=False, **kwargs
+    name, domain, max_steps, _seed, epsilon=0.1, epsilon_min=None, **kwargs
 ):
-    if epsilon_decay:
-        eps_decay = (epsilon - 0.1) / max_steps * 0.9
-        eps_min = 0.1
+    if epsilon_min is not None:
+        eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
+        eps_min = epsilon_min
     else:
         eps_decay, eps_min = 0.0, 0.0
     if name is None or name == "lspi":
@@ -55,7 +55,7 @@ if __name__ == "__main__":
             click.Option(["--map", "map_"], type=str, default="6x6guided"),
             click.Option(["--noise"], type=float, default=0.1),
             click.Option(["--epsilon"], type=float, default=0.1),
-            click.Option(["--epsilon-decay"], is_flag=True),
+            click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--step-penalty"], type=float, default=0.5),
             click.Option(["--episode-cap"], type=int, default=20),
         ],

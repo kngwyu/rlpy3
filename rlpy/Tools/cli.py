@@ -78,6 +78,7 @@ def get_experiment(
     @experiment.command(help="Train the agent")
     @click.option(
         "--visualize-performance",
+        "--show-performance",
         "-VP",
         default=0,
         type=int,
@@ -85,12 +86,14 @@ def get_experiment(
     )
     @click.option(
         "--visualize-learning",
+        "--show-learning",
         "-VL",
         is_flag=True,
         help="Visualize of the learning status before each evaluation",
     )
     @click.option(
         "--visualize-steps",
+        "--show-steps",
         "-VS",
         is_flag=True,
         help="Visualize all steps during learning",

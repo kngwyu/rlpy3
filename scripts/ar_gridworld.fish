@@ -1,4 +1,4 @@
-for map in {6x6guided, 6x6sparse, 6x6liar, 6x6spelunky}
+for map in {6x6guided, 6x6sparse, 6x6liar, 6x6spelunky, 6x6speguided}
     pipenv run python ../examples/ar_gridworld.py \
             --agent=tabular-q \
             --log-dir="Result/$map-ep01" \

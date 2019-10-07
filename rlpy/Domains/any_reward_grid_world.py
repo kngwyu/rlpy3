@@ -51,11 +51,15 @@ class AnyRewardGridWorld(GridWorld):
         return reward
 
     def _rew_range(self):
-        mi, ma = 100, -100
+        mi, ma = 1000, -1000
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if self.map[r, c] == self.EMPTY:
                 mi = min(mi, self.reward_map[r, c])
                 ma = max(ma, self.reward_map[r, c])
+        if mi == 1000:
+            mi = min(self.reward_map[r, c])
+        if ma == -1000:
+            ma = max(self.reward_map[r, c])
         return mi, ma
 
     def _show_numbers(self):
@@ -66,7 +70,10 @@ class AnyRewardGridWorld(GridWorld):
                 continue
             raw_reward = self.reward_map[r, c]
             if self.map[r, c] == self.EMPTY:
-                reward = (self.reward_map[r, c] - rw_min) / (rw_max - rw_min)
+                if rw_max > rw_min:
+                    reward = (self.reward_map[r, c] - rw_min) / (rw_max - rw_min)
+                else:
+                    reward = 0.7
                 color = cmap(reward)
             elif self.map[r, c] == self.GOAL or self.PIT:
                 color = "w"

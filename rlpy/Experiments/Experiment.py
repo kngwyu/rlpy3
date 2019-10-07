@@ -18,7 +18,7 @@ from rlpy.Tools import (
     plt,
     printClass,
     with_pdf_fonts,
-    MARKER,
+    MARKERS,
 )
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -480,7 +480,7 @@ class Experiment(object):
         labels = rlpy.Tools.results.default_labels
         performance_fig = plt.figure("Performance")
         res = self.result
-        plt.plot(res[x], res[y], lw=2, markersize=4, marker=MARKER[0])
+        plt.plot(res[x], res[y], lw=2, markersize=4, marker=MARKERS[0])
         plt.xlim(0, res[x][-1] * 1.01)
         y_arr = np.array(res[y])
         m = y_arr.min()

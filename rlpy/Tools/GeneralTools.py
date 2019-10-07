@@ -1183,7 +1183,17 @@ rc("ytick", labelsize=12)
 # rc('text',usetex=False)
 
 # Markers
-MARKER = ["o", "s", "D", "^", "*", "x", "p", "+", "v", "|"]
+MARKERS = ["o", "s", "D", "^", "*", "x", "p", "+", "v", "|"]
+COLOR_LS = [
+    [102, 120, 173],
+    [118, 167, 125],
+    [198, 113, 113],
+    [230, 169, 132],
+    [169, 193, 213],
+    [192, 197, 182],
+    [210, 180, 226],
+]
+COLORS = [[shade / 255.0 for shade in rgb] for rgb in COLOR_LS]
 
 # Colors
 PURPLE = "\033[95m"

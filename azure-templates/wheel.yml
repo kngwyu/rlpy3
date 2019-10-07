@@ -12,7 +12,7 @@ steps:
 
   - bash: |
       python -m pip install --upgrade pip setuptools wheel cython
-      mkdir wheelhouse
       python setup.py bdist_wheel
-      mv dist/*.whl ../wheelhouse
+      mkdir wheelhouse
+      mv dist/*.whl ./wheelhouse
     displayName: Build rlpy3 wheel

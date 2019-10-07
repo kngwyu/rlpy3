@@ -4,18 +4,38 @@
 .. _Azure: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=3&branchName=master
 
 Why Fork?
-======================================
+===============
 This is my fork of RLPy.
-Since the PyPI version of RLPy is not compatible with the latest numpy C-API,
-I forked the repo and am building ManyLinux wheels for Python3 on Azure.
-You can download these wheels from `PyPI`_.
+
+RLPy is a good reinforcement learning library that has some great features
+like custom representation classes and value function viewers.
+However, it is no longer maintained and the PyPI version of RLPy is not
+compatible with the latest numpy C-API, which causes runtime errors.
+
+So I decided to fork the repository and provide a maintained version of
+RLPy only for Python>=3.5, named RLPy3.
+You can download wheels of RLPy3 from `PyPI`_.
 
 .. _PyPI: https://pypi.org/project/rlpy3
 
-In addition, I pushed lots of refactoring and bug fixes.
+In addition, I pushed lots of refactorings, bug fixes, and new environments
+such as `AnyRewardGridWorld`_.
 To see what was changed, see the new `CHANGELOG`_.
 
-.. _CHANGELOG: ./CHANGELOG_RLPY3.md
+.. _CHANGELOG: ./CHANGELOG.md
+.. _AnyRewardGridWorld: ./rlpy/Domains/any_reward_grid_world.py
+
+Screenshots
+===============
+.. figure:: pictures/GridWorld4x5Domain.png
+
+   An agent that explores `GridWorld`_.
+
+.. figure:: pictures/GridWorld4x5Value.png
+
+   Value function of the agent.
+
+.. _GridWorld: ./rlpy/Domains/GridWorld.py
 
 
 Original README: RLPy - Reinforment Learning Framework

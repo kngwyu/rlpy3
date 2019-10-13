@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 * Now all tests pass by [#2](https://github.com/kngwyu/rlpy3/pull/2).
-* Work without tkinter(for CI testinf/SSH).
+* Work without tkinter(for CI testing/SSH).
 * Some visualizing codes are fixed by [#4](https://github.com/kngwyu/rlpy3/pull/4).
 
 ### Changed

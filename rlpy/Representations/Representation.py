@@ -21,7 +21,7 @@ __author__ = "Alborz Geramifard"
 
 class Representation(object):
     """
-    The Representation is the :py:class:`~rlpy.Agents.Agent.Agent`'s model of the
+    The Representation is the :py:class:`~rlpy.agents.Agent.Agent`'s model of the
     value function associated with a :py:class:`~rlpy.Domains.Domain.Domain`.
 
     As the Agent interacts with the Domain, it receives updates in the form of
@@ -29,7 +29,7 @@ class Representation(object):
     The Agent passes these quantities to its Representation, which is
     responsible for maintaining the value function usually in some
     lower-dimensional feature space.
-    Agents can later query the Representation for the value of being in a state
+    agents can later query the Representation for the value of being in a state
     *V(s)* or the value of taking an action in a particular state
     ( known as the Q-function, *Q(s,a)* ).
 

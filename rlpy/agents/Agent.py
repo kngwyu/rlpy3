@@ -26,7 +26,7 @@ class Agent(ABC):
     timesteps.
     At each Experiment timestep the Agent receives some observations from the Domain
     which it uses to update the value function Representation of the Domain
-    (ie, on each call to its :py:meth:`~rlpy.Agents.Agent.Agent.learn` function).
+    (ie, on each call to its :py:meth:`~rlpy.agents.Agent.Agent.learn` function).
     The Policy is used to select an action to perform.
     This process (observe, update, act) repeats until some goal or fail state,
     determined by the Domain, is reached. At this point the
@@ -34,8 +34,8 @@ class Agent(ABC):
     whether the agent starts over or has its current policy tested
     (without any exploration).
 
-    :py:class:`~rlpy.Agents.Agent.Agent` is a base class that provides the basic
-    framework for all RL Agents. It provides the methods and attributes that
+    :py:class:`~rlpy.agents.Agent.Agent` is a base class that provides the basic
+    framework for all RL agents. It provides the methods and attributes that
     allow child classes to interact with the
     :py:class:`~rlpy.Domains.Domain.Domain`,
     :py:class:`~rlpy.Representations.Representation.Representation`,
@@ -55,7 +55,7 @@ class Agent(ABC):
     #: The policy to be used by the agent
     policy = None
     #: The eligibility trace, which marks states as eligible for a learning
-    #: update. Used by \ref Agents.SARSA.SARSA "SARSA" agent when the
+    #: update. Used by \ref agents.SARSA.SARSA "SARSA" agent when the
     #: parameter lambda is set. See:
     #: http://www.incompleteideas.net/sutton/book/7/node1.html
     eligibility_trace = []
@@ -87,7 +87,7 @@ class Agent(ABC):
         self.representation = representation
         self.policy = policy
         self.discount_factor = discount_factor
-        self.logger = logging.getLogger("rlpy.Agents." + self.__class__.__name__)
+        self.logger = logging.getLogger("rlpy.agents." + self.__class__.__name__)
 
         # a new stream of random numbers for each agent
         self.random_state = np.random.RandomState(seed=seed)
@@ -152,7 +152,7 @@ class DescentAlgorithm(object):
     #: The learning rate
     learn_rate = 0
     #: The eligibility trace, which marks states as eligible for a learning
-    #: update. Used by \ref Agents.SARSA.SARSA "SARSA" agent when the
+    #: update. Used by \ref agents.SARSA.SARSA "SARSA" agent when the
     #: parameter lambda is set. See:
     #: http://www.incompleteideas.net/sutton/book/7/node1.html
     eligibility_trace = []

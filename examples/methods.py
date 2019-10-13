@@ -1,4 +1,4 @@
-from rlpy.Agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
+from rlpy.agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
 from rlpy.Policies import eGreedy, GibbsPolicy
 from rlpy import Representations
 from rlpy.Representations import (

@@ -1,4 +1,4 @@
-"""An abstract class for Batch Learning Agents"""
+"""An abstract class for Batch Learning agents"""
 from .Agent import Agent
 import numpy as np
 

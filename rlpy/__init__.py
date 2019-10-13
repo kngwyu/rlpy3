@@ -1,4 +1,4 @@
-import rlpy.Agents
+import rlpy.agents
 import rlpy.Tools
 import rlpy.Domains
 import rlpy.MDPSolvers

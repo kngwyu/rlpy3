@@ -2,8 +2,8 @@ from rlpy.Representations.Representation import Representation
 import numpy as np
 import logging
 from rlpy.Policies import eGreedy
-from rlpy.Agents import SARSA, Q_Learning
-from rlpy.Agents import Greedy_GQ
+from rlpy.agents import SARSA, Q_Learning
+from rlpy.agents import Greedy_GQ
 
 
 class MockRepresentation(Representation):

@@ -17,7 +17,7 @@ __license__ = "BSD 3-Clause"
 class Domain(object):
     """
     The Domain controls the environment in which the
-    :py:class:`~rlpy.Agents.Agent.Agent` resides as well as the reward function the
+    :py:class:`~rlpy.agents.Agent.Agent` resides as well as the reward function the
     Agent is subject to.
 
     The Agent interacts with the Domain in discrete timesteps called
@@ -33,7 +33,7 @@ class Domain(object):
     completed its goal or failed.
     The :py:class:`~rlpy.Experiments.Experiment.Experiment` controls this cycle.
 
-    Because Agents are designed to be agnostic to the Domain that they are
+    Because agents are designed to be agnostic to the Domain that they are
     acting within and the problem they are trying to solve, the Domain needs
     to completely describe everything related to the task. Therefore, the
     Domain must not only define the observations that the Agent receives,

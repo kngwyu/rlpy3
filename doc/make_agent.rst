@@ -5,7 +5,7 @@
 Creating a New Agent
 ====================
 
-This tutorial describes the standard RLPy :class:`~rlpy.Agents.Agent.Agent` interface,
+This tutorial describes the standard RLPy :class:`~rlpy.agents.Agent.Agent` interface,
 and illustrates a brief example of creating a new learning agent.
 
 .. Below taken directly from Agent.py
@@ -17,7 +17,7 @@ In a typical Experiment, the Agent interacts with the Domain in discrete
 timesteps.
 At each Experiment timestep the Agent receives some observations from the Domain
 which it uses to update the value function Representation of the Domain
-(ie, on each call to its :func:`~rlpy.Agents.Agent.Agent.learn` function).
+(ie, on each call to its :func:`~rlpy.agents.Agent.Agent.learn` function).
 The Policy is used to select an action to perform.
 This process (observe, update, act) repeats until some goal or fail state,
 determined by the Domain, is reached. At this point the
@@ -33,15 +33,15 @@ whether the agent starts over or has its current policy tested
 Requirements 
 ------------
 
-* Each learning agent must be a subclass of :class:`~rlpy.Agents.Agent.Agent` 
+* Each learning agent must be a subclass of :class:`~rlpy.agents.Agent.Agent` 
   and call 
-  the :func:`~rlpy.Agents.Agent.Agent.__init__` function of the Agent superclass.
+  the :func:`~rlpy.agents.Agent.Agent.__init__` function of the Agent superclass.
 
 * Accordingly, each Agent must be instantiated with a Representation, 
   Policy, and Domain in the ``__init__()`` function
 
 * Any randomization that occurs at object construction *MUST* occur in
-  the :func:`~rlpy.Agents.Agent.Agent.init_randomization` function, 
+  the :func:`~rlpy.agents.Agent.Agent.init_randomization` function, 
   which can be called by ``__init__()``.
 
 * Any random calls should use ``self.random_state``, not ``random()`` or 
@@ -57,11 +57,11 @@ REQUIRED Instance Variables
 
 REQUIRED Functions
 """"""""""""""""""
-:func:`~rlpy.Agents.Agent.Agent.learn` - called on every timestep (see documentation)
+:func:`~rlpy.agents.Agent.Agent.learn` - called on every timestep (see documentation)
 
   .. Note:: 
 
-      The Agent *MUST* call the (inherited) :func:`~rlpy.Agents.Agent.Agent.episodeTerminated`
+      The Agent *MUST* call the (inherited) :func:`~rlpy.agents.Agent.Agent.episodeTerminated`
       function after learning if the transition led to a terminal state
       (ie, ``learn()`` will return ``isTerminal=True``)
 
@@ -83,7 +83,7 @@ Additional Information
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.Agents.Agent.Agent` for functions provided by the superclass.
+* See :class:`~rlpy.agents.Agent.Agent` for functions provided by the superclass.
 
 
 
@@ -109,7 +109,7 @@ this TD error, weighted by a factor called the *learning rate*.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.Agents.Agent import Agent, DescentAlgorithm
+        from rlpy.agents.Agent import Agent, DescentAlgorithm
         import numpy
 
 #. Declare the class, create needed members variables (here a learning rate),
@@ -210,7 +210,7 @@ Please use the following header at the top of each file::
 
 * If you installed RLPy in a writeable directory, the className of the new 
   agent can be added to
-  the ``__init__.py`` file in the ``Agents/`` directory.
+  the ``__init__.py`` file in the ``agents/`` directory.
   (This allows other files to import the new agent).
 
 * If available, please include a link or reference to the publication associated 

@@ -1,6 +1,6 @@
 from rlpy.Representations import Tabular
 from rlpy.Domains import ChainMDP
-from rlpy.Agents.TDControlAgent import SARSA
+from rlpy.agents.TDControlAgent import SARSA
 
 import numpy as np
 

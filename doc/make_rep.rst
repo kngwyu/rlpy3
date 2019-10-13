@@ -16,9 +16,9 @@ value function associated with a :py:class:`~rlpy.Domains.Domain.Domain`,
 usually in some lower-dimensional feature space.
 
 The Agent receives observations from the Domain on each step and calls 
-its :func:`~rlpy.Agents.Agent.Agent.learn` function, which is responsible for updating the
+its :func:`~rlpy.agents.Agent.Agent.learn` function, which is responsible for updating the
 Representation accordingly.
-Agents can later query the Representation for the value of being in a state
+agents can later query the Representation for the value of being in a state
 *V(s)* or the value of taking an action in a particular state
 ( known as the Q-function, *Q(s,a)* ).
 

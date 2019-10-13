@@ -1,6 +1,6 @@
 from rlpy.Representations import Tabular
 from rlpy.Domains.InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSwingUp
-from rlpy.Agents.TDControlAgent import SARSA
+from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
 from .helpers import check_seed_vis
 from rlpy.Policies import eGreedy

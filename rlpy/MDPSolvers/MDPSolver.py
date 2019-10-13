@@ -192,7 +192,7 @@ class MDPSolver(ABC):
         - R: (#samples) x (1) float
         - T: (#samples) x (1) bool
 
-        See :py:meth:`~rlpy.Agents.Agent.Agent.Q_MC` and :py:meth:`~rlpy.Agents.Agent.Agent.MC_episode`
+        See :py:meth:`~rlpy.agents.Agent.Agent.Q_MC` and :py:meth:`~rlpy.agents.Agent.Agent.MC_episode`
         """
         domain = self.representation.domain
         S = np.empty(

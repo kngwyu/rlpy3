@@ -19,7 +19,7 @@ __author__ = "Alborz Geramifard"
 class Policy(ABC):
 
     """The Policy determines the discrete action that an
-    :py:class:`~rlpy.Agents.Agent.Agent` will take  given its
+    :py:class:`~rlpy.agents.Agent.Agent` will take  given its
     :py:class:`~rlpy.Representations.Representation.Representation`.
 
     The Agent learns about the :py:class:`~rlpy.Domains.Domain.Domain`

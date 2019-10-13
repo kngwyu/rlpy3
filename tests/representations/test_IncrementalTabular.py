@@ -1,5 +1,5 @@
 from rlpy.Representations import IncrementalTabular
-from rlpy.Domains import GridWorld
+from rlpy.domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -7,7 +7,7 @@ import os
 
 def test_cell_expansion():
     """ Ensure start with 0 cells, add one for each state uniquely. """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 

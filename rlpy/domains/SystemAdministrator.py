@@ -98,7 +98,7 @@ class SystemAdministrator(Domain):
     _NUM_VALUES = 2
 
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "Domains", "SystemAdministratorMaps"
+        __rlpy_location__, "domains", "SystemAdministratorMaps"
     )
 
     def __init__(
@@ -125,7 +125,7 @@ class SystemAdministrator(Domain):
     def loadNetwork(self, path):
         """
         :param path: Path to the map file, of form
-            \'/Domains/SystemAdministratorMaps/mapname.txt\'
+            \'/domains/SystemAdministratorMaps/mapname.txt\'
 
         Sets the internal variables ``_Neighbors`` and ``_Edges``, where each
         cell of ``_Neighbors`` is a list containing the neighbors of computer

@@ -44,7 +44,7 @@ class RBF(Representation):
         include_border=False,
     ):
         """
-        :param domain: the :py:class`~rlpy.Domains.Domain.Domain` associated
+        :param domain: the :py:class`~rlpy.domains.Domain.Domain` associated
             with the value function we want to learn.
         :param num_rbfs: (Optional) Number of RBFs to use for fnctn
             approximation.  *THIS IS IGNORED* if grid_bins != None, and is

@@ -51,7 +51,7 @@ class Pacman(Domain):
 
     See the original `source code (zipped) <https://courses.edx.org/static/content-berkeley-cs188x~2013_Spring/projects/reinforcement/reinforcement.zip>`_
 
-    For more details of the domain see the original package in the `Domains/PacmanPackage` folder.
+    For more details of the domain see the original package in the `domains/PacmanPackage` folder.
 
     """
 
@@ -61,7 +61,7 @@ class Pacman(Domain):
 
     #: location of layouts shipped with rlpy
     default_layout_dir = os.path.join(
-        __rlpy_location__, "Domains", "PacmanPackage", "layouts"
+        __rlpy_location__, "domains", "PacmanPackage", "layouts"
     )
 
     def __init__(

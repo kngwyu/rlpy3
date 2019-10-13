@@ -16,7 +16,7 @@ class AnyRewardGridWorld(GridWorld):
 
     # directory of maps shipped with rlpy
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "Domains", "AnyRewardGridWorldMaps"
+        __rlpy_location__, "domains", "AnyRewardGridWorldMaps"
     )
 
     def _load_map(self, mapfile):

@@ -41,7 +41,7 @@ class Experiment(object):
     and later testing its ability to do so based on what it has learned.
     This cycle forms a loop that the experiment defines and controls. First
     the agent is repeatedly tasked with solving a problem determined by the
-    :py:class:`~Domains.Domain.Domain`, restarting after some termination
+    :py:class:`~domains.Domain.Domain`, restarting after some termination
     condition is reached.
     (The sequence of steps between terminations is known as an *episode*.)
 
@@ -92,7 +92,7 @@ class Experiment(object):
     ):
         """
         :param agent: the :py:class:`~agents.Agent.Agent` to use for learning the task.
-        :param domain: the problem :py:class:`~Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~domains.Domain.Domain` to learn
         :param exp_id: ID of this experiment (main seed used for calls to np.rand)
         :param max_steps: Total number of interactions (steps) before experiment termination.
 

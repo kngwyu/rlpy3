@@ -70,7 +70,7 @@ class BEBF(Representation):
         self, domain, discretization=20, batchThreshold=10 ** -3, svm_epsilon=0.1
     ):
         """
-        :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.Domain.Domain` to learn
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         :param batchThreshold: Threshold below which no more features are added

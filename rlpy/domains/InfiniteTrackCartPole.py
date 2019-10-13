@@ -35,7 +35,7 @@ class InfTrackCartPole(CartPoleBase):
         In the literature, this domain is often referred as a ``Pendulum`` and
         is often accompanied by misleading or even incorrect diagrams.
         However, the cited underlying dynamics correspond to a pendulum on a
-        cart (:class:`Domains.CartPoleBase.CartPoleBase`), with
+        cart (:class:`domains.CartPoleBase.CartPoleBase`), with
         cart position and velocity ignored and unbounded
         (but **still impacting the pendulum dynamics**).
 
@@ -137,7 +137,7 @@ class InfTrackCartPole(CartPoleBase):
         Display the 4-d state of the cartpole and arrow indicating current
         force action (not including noise!).
         Note that for 2-D systems the cartpole is still displayed, but appears
-        static; see :class:`Domains.InfiniteTrackCartPole.InfTrackCartPole`.
+        static; see :class:`domains.InfiniteTrackCartPole.InfTrackCartPole`.
 
         """
         # 0 cart position and velocity
@@ -237,7 +237,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
 
     Pendulum starts straight down, ``theta = pi``.  The task is to swing it up,
     after which the problem reduces to
-    :class:`Domains.InfiniteTrackCartPole.InfCartPoleBalance`, though
+    :class:`domains.InfiniteTrackCartPole.InfCartPoleBalance`, though
     with (possibly) different domain constants defined below.
 
     """

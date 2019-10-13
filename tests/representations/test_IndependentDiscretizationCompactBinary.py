@@ -1,5 +1,5 @@
 from rlpy.Representations import IndependentDiscretizationCompactBinary
-from rlpy.Domains import GridWorld, SystemAdministrator
+from rlpy.domains import GridWorld, SystemAdministrator
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -7,7 +7,7 @@ import os
 
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 
@@ -19,7 +19,7 @@ def test_number_of_cells():
 
 def test_compact_binary():
     """ Test representation on domain with some binary dimensions """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "SystemAdministratorMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "SystemAdministratorMaps")
     mapname = os.path.join(mapDir, "20MachTutorial.txt")  # expect 20+1 = 21 states
     domain = SystemAdministrator(networkmapname=mapname)
 

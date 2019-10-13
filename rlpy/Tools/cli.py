@@ -1,5 +1,5 @@
 import click
-from rlpy.Domains.Domain import Domain
+from rlpy.domains.Domain import Domain
 from rlpy.Experiments import Experiment
 
 

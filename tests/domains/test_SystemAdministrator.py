@@ -1,5 +1,5 @@
 from rlpy.Representations import IncrementalTabular
-from rlpy.Domains import SystemAdministrator
+from rlpy.domains import SystemAdministrator
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
 from rlpy.Tools import __rlpy_location__
@@ -67,7 +67,7 @@ def test_errs():
     """ Ensure that we can call custom methods without error """
 
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "Domains", "SystemAdministratorMaps"
+        __rlpy_location__, "domains", "SystemAdministratorMaps"
     )
     domain = SystemAdministrator(
         networkmapname=os.path.join(DEFAULT_MAP_DIR, "20MachTutorial.txt")
@@ -84,7 +84,7 @@ def test_transitions():
     # [[manually set state, manually turn off stochasticity ie deterministic,
     # and observe transitions, reward, etc.]]
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "Domains", "SystemAdministratorMaps"
+        __rlpy_location__, "domains", "SystemAdministratorMaps"
     )
     domain = SystemAdministrator(
         networkmapname=os.path.join(DEFAULT_MAP_DIR, "5Machines.txt")

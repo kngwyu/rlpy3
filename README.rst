@@ -23,7 +23,7 @@ such as `AnyRewardGridWorld`_.
 To see what was changed, see the new `CHANGELOG`_.
 
 .. _CHANGELOG: ./CHANGELOG.md
-.. _AnyRewardGridWorld: ./rlpy/Domains/any_reward_grid_world.py
+.. _AnyRewardGridWorld: ./rlpy/domains/any_reward_grid_world.py
 
 Screenshots
 ===============
@@ -35,7 +35,7 @@ Screenshots
 
    Value function of the agent.
 
-.. _GridWorld: ./rlpy/Domains/GridWorld.py
+.. _GridWorld: ./rlpy/domains/GridWorld.py
 
 
 Original README: RLPy - Reinforment Learning Framework

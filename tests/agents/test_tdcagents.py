@@ -9,7 +9,7 @@ from rlpy.agents import Greedy_GQ
 class MockRepresentation(Representation):
     def __init__(self):
         """
-        :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.Domain.Domain` to learn
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """

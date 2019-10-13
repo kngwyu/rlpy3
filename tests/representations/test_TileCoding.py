@@ -2,14 +2,14 @@
 TODO - test hashing function
 """
 from rlpy.Representations import TileCoding
-from rlpy.Domains import GridWorld
+from rlpy.domains import GridWorld
 from rlpy.Tools import __rlpy_location__
 import os
 
 
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 

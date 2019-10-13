@@ -64,7 +64,7 @@ class GridWorld(Domain):
     #: Up, Down, Left, Right
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
-    DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
 

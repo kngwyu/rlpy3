@@ -1,5 +1,5 @@
 import click
-from rlpy.Domains import AnyRewardGridWorld
+from rlpy.domains import AnyRewardGridWorld
 from rlpy.Tools.cli import run_experiment
 
 import methods

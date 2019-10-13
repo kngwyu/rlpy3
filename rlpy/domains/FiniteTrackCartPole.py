@@ -232,7 +232,7 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
     Reinforcement learning: An introduction.
     Cambridge: MIT press, 1998.
 
-    See :class:`Domains.FiniteTrackCartPole.FiniteCartPoleBalance` \n
+    See :class:`domains.FiniteTrackCartPole.FiniteCartPoleBalance` \n
 
     .. note::
 
@@ -269,7 +269,7 @@ class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
     """
     A more realistic version of balancing with 3 actions (left, right, none)
     instead of the default (left, right), and nonzero, uniform noise in actions.\n
-    See :class:`Domains.FiniteTrackCartPole.FiniteCartPoleBalance`.\n
+    See :class:`domains.FiniteTrackCartPole.FiniteCartPoleBalance`.\n
 
     Note that the start state has some noise.
 
@@ -316,7 +316,7 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
     hold it there, collapsing the problem to InfCartPoleBalance
     but with much tighter bounds on the goal region.
 
-    See parent class :class:`Domains.FiniteTrackCartPole.FiniteTrackCartPole` for more information.
+    See parent class :class:`domains.FiniteTrackCartPole.FiniteTrackCartPole` for more information.
 
     """
 
@@ -349,7 +349,7 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
 
     """
     Modifies ``CartPole`` dynamics to include friction. \n
-    This domain is a child of :class:`Domains.FiniteTrackCartPole.FiniteCartPoleSwingUp`.
+    This domain is a child of :class:`domains.FiniteTrackCartPole.FiniteCartPoleSwingUp`.
 
     """
 

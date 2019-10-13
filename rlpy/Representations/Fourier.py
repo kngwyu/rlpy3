@@ -28,7 +28,7 @@ class Fourier(Representation):
 
     def __init__(self, domain, order=3, scaling=False):
         """
-        :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.Domain.Domain` to learn
         :param order: The degree of approximation to use in the Fourier series
             (eg 3rd order, 5th order, etc).  See reference paper in class API.
 

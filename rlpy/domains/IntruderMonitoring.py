@@ -44,7 +44,7 @@ class IntruderMonitoring(Domain):
     By Default, intruder policy is uniform random.
 
     Map of the world contains fixed number of danger zones. Maps are simple text files
-    contained in the ``Domains/IntruderMonitoringMaps/`` directory.
+    contained in the ``domains/IntruderMonitoringMaps/`` directory.
 
     **REWARD:** \n
     -1 for every visit of an intruder to a danger zone with no camera present.
@@ -76,7 +76,7 @@ class IntruderMonitoring(Domain):
 
     #: directory with maps shipped with rlpy
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "Domains", "IntruderMonitoringMaps"
+        __rlpy_location__, "domains", "IntruderMonitoringMaps"
     )
 
     def __init__(self, mapname=os.path.join(DEFAULT_MAP_DIR, "4x4_2A_3I.txt")):
@@ -117,7 +117,7 @@ class IntruderMonitoring(Domain):
     def step(self, a):
         """
         Move all intruders according to
-        the :py:meth:`~rlpy.Domains.IntruderMonitoring.IntruderPolicy`, default
+        the :py:meth:`~rlpy.domains.IntruderMonitoring.IntruderPolicy`, default
         uniform random action.
         Move all agents according to the selected action ``a``.
         Calculate the reward = Number of danger zones being violated by

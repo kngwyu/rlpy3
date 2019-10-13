@@ -1,6 +1,6 @@
 from rlpy.Representations import iFDD
 from rlpy.Representations import IndependentDiscretizationCompactBinary
-from rlpy import Domains
+from rlpy import domains
 import numpy as np
 
 STDOUT_FILE = "out.txt"
@@ -13,7 +13,7 @@ discovery_threshold = 1
 def test_deterministic():
     discovery_threshold = 1
     sparsify = True
-    domain = Domains.SystemAdministrator()
+    domain = domains.SystemAdministrator()
     initialRep = IndependentDiscretizationCompactBinary(domain)
     rep = iFDD(
         domain, discovery_threshold, initialRep, debug=0, useCache=1, sparsify=sparsify

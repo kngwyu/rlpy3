@@ -12,7 +12,7 @@ and illustrates a brief example of creating a new value function representation.
 .. Below taken directly from Representation.py
 
 The Representation is the approximation of the
-value function associated with a :py:class:`~rlpy.Domains.Domain.Domain`,
+value function associated with a :py:class:`~rlpy.domains.Domain.Domain`,
 usually in some lower-dimensional feature space.
 
 The Agent receives observations from the Domain on each step and calls 

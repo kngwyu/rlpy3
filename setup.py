@@ -98,7 +98,7 @@ class CheckSDist(sdist):
 
     _pyxfiles = [
         "rlpy/Representations/hashing.pyx",
-        "rlpy/Domains/HIVTreatment_dynamics.pyx",
+        "rlpy/domains/HIVTreatment_dynamics.pyx",
         "rlpy/Representations/kernels.pyx",
     ]
 
@@ -193,8 +193,8 @@ extensions = [
         include_dirs=["rlpy/Representations"],
     ),
     Extension(
-        "rlpy.Domains.HIVTreatment_dynamics",
-        ["rlpy/Domains/HIVTreatment_dynamics.pyx"],
+        "rlpy.domains.HIVTreatment_dynamics",
+        ["rlpy/domains/HIVTreatment_dynamics.pyx"],
         include_dirs=["rlpy/Representations"],
     ),
     Extension(
@@ -281,26 +281,6 @@ setup(
     + " Education and Research: Python3 Fork",
     long_description=LONG_DESCRIPTION,
     include_package_data=True,
-    data_files=[
-        ("rlpy/Domains/GridWorldMaps", glob.glob("./rlpy/Domains/GridWorldMaps/*.txt")),
-        (
-            "rlpy/Domains/IntruderMonitoringMaps",
-            glob.glob("./rlpy/Domains/IntruderMonitoringMaps/*.txt"),
-        ),
-        (
-            "rlpy/Domains/SystemAdministratorMaps",
-            glob.glob("./rlpy/Domains/SystemAdministratorMaps/*.txt"),
-        ),
-        (
-            "rlpy/Domains/PinballConfigs",
-            glob.glob("./rlpy/Domains/PinballConfigs/*.cfg"),
-        ),
-        (
-            "rlpy/Domains/PacmanPackage/layouts",
-            glob.glob("./rlpy/Domains/PacmanPackage/layouts/*.lay"),
-        ),
-        ("rlpy/Policies", glob.glob("./rlpy/Policies/*.mat")),
-    ],
     packages=find_packages(exclude=["tests", "tests.*"]),
     python_requires=REQUIRES_PYTHON,
     install_requires=REQUIRED,

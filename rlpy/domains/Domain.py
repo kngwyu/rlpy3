@@ -21,7 +21,7 @@ class Domain(object):
     Agent is subject to.
 
     The Agent interacts with the Domain in discrete timesteps called
-    *episodes* (see :py:meth:`~rlpy.Domains.Domain.Domain.step`).
+    *episodes* (see :py:meth:`~rlpy.domains.Domain.Domain.step`).
     At each step, the Agent informs the Domain what indexed action it wants to
     perform.  The Domain then calculates the effects this action has on the
     environment and updates its internal state accordingly.
@@ -41,13 +41,13 @@ class Domain(object):
     relationships between the three.
 
     The Domain class is a base clase that provides the basic framework for all
-    Domains. It provides the methods and attributes that allow child classes
+    domains. It provides the methods and attributes that allow child classes
     to interact with the Agent and Experiment classes within the RLPy library.
-    Domains should also provide methods that provide visualization of the
+    domains should also provide methods that provide visualization of the
     Domain itself and of the Agent's learning
-    (:py:meth:`~rlpy.Domains.Domain.Domain.showDomain` and
-    :py:meth:`~rlpy.Domains.Domain.Domain.showLearning` respectively) \n
-    All new domain implementations should inherit from :py:class:`~rlpy.Domains.Domain.Domain`.
+    (:py:meth:`~rlpy.domains.Domain.Domain.showDomain` and
+    :py:meth:`~rlpy.domains.Domain.Domain.showLearning` respectively) \n
+    All new domain implementations should inherit from :py:class:`~rlpy.domains.Domain.Domain`.
 
     .. note::
         Though the state *s* can take on almost any value, if a dimension is not
@@ -99,7 +99,7 @@ class Domain(object):
         # The original limits will be saved in self.discrete_statespace_limits.
         self._extendDiscreteDimensions()
 
-        self.logger = logging.getLogger("rlpy.Domains." + self.__class__.__name__)
+        self.logger = logging.getLogger("rlpy.domains." + self.__class__.__name__)
 
     def init_randomization(self):
         """
@@ -128,8 +128,8 @@ Gamma:      {self.discount_factor}
         Shows a visualization of the current state of the domain and that of
         learning.
 
-        See :py:meth:`~rlpy.Domains.Domain.Domain.showDomain()` and
-        :py:meth:`~rlpy.Domains.Domain.Domain.showLearning()`,
+        See :py:meth:`~rlpy.domains.Domain.Domain.showDomain()` and
+        :py:meth:`~rlpy.domains.Domain.Domain.showLearning()`,
         both called by this method.
 
         .. note::
@@ -216,9 +216,9 @@ Gamma:      {self.discount_factor}
 
         .. note::
 
-            Domains often specify stochastic internal state transitions, such
+            domains often specify stochastic internal state transitions, such
             that the result of a (state,action) pair might vary on different
-            calls (see also the :py:meth:`~rlpy.Domains.Domain.Domain.sampleStep`
+            calls (see also the :py:meth:`~rlpy.domains.Domain.Domain.sampleStep`
             method).
             Be sure to look at unique noise parameters of each domain if you
             require deterministic transitions.
@@ -230,7 +230,7 @@ Gamma:      {self.discount_factor}
 
             The action *a* **must** be an integer >= 0, and might better be
             called the "actionID".  See the class description
-            :py:class:`~rlpy.Domains.Domain.Domain` above.
+            :py:class:`~rlpy.domains.Domain.Domain` above.
 
         :return: The tuple (r, ns, t, p_actions) =
             (Reward [value], next observed state, isTerminal [boolean])
@@ -288,7 +288,7 @@ Gamma:      {self.discount_factor}
         deterministic transitions will yield an identical result regardless
         of *num_samples*, since repeatedly sampling a (state,action) pair
         will always yield the same tuple (r,ns,terminal).
-        See :py:meth:`~rlpy.Domains.Domain.Domain.step`.
+        See :py:meth:`~rlpy.domains.Domain.Domain.step`.
 
         :param a: The action to attempt
         :param num_samples: The number of next states and rewards to be sampled.

@@ -37,7 +37,7 @@ class Agent(ABC):
     :py:class:`~rlpy.agents.Agent.Agent` is a base class that provides the basic
     framework for all RL agents. It provides the methods and attributes that
     allow child classes to interact with the
-    :py:class:`~rlpy.Domains.Domain.Domain`,
+    :py:class:`~rlpy.domains.Domain.Domain`,
     :py:class:`~rlpy.Representations.Representation.Representation`,
     :py:class:`~rlpy.Policies.Policy.Policy`, and
     :py:class:`~rlpy.Experiments.Experiment.Experiment` classes within the

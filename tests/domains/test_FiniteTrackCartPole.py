@@ -1,6 +1,6 @@
 import numpy as np
 from rlpy.Representations import IncrementalTabular
-from rlpy.Domains.FiniteTrackCartPole import (
+from rlpy.domains.FiniteTrackCartPole import (
     FiniteCartPoleBalance,
     FiniteCartPoleSwingUp,
     FiniteCartPoleBalanceModern,

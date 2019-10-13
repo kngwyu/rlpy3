@@ -52,12 +52,12 @@ class Pinball(Domain):
 
     .. seealso::
         G.D. Konidaris and A.G. Barto:
-        *Skill Discovery in Continuous Reinforcement Learning Domains using Skill Chaining.*
+        *Skill Discovery in Continuous Reinforcement Learning domains using Skill Chaining.*
         Advances in Neural Information Processing Systems 22, pages 1015-1023, December 2009.
     """
 
     #: default location of config files shipped with rlpy
-    default_config_dir = os.path.join(__rlpy_location__, "Domains", "PinballConfigs")
+    default_config_dir = os.path.join(__rlpy_location__, "domains", "PinballConfigs")
 
     def __init__(
         self,

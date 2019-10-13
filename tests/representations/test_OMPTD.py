@@ -1,5 +1,5 @@
 from rlpy.Representations import OMPTD, IndependentDiscretization
-from rlpy.Domains import GridWorld
+from rlpy.domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -10,7 +10,7 @@ def test_bag_creation():
     Ensure create appropriate # of conjunctions, that they have been
     instantiated properly, and there are no duplicates.
     """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 
@@ -71,7 +71,7 @@ def test_batch_discovery():
     Test feature discovery from features available in bag, and that appropriate
     feats are activiated in later calls to phi_nonterminal()
     """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 

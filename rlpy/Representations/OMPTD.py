@@ -51,7 +51,7 @@ class OMPTD(Representation):
         sparsify=False,
     ):
         """
-        :param domain: the :py:class`~rlpy.Domains.Domain.Domain` associated 
+        :param domain: the :py:class`~rlpy.domains.Domain.Domain` associated 
             with the value function we want to learn.
         :param initial_representation: The initial set of features available. 
             OMP-TD does not dynamically introduce any features of its own, 

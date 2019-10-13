@@ -32,7 +32,7 @@ class FiftyChain(Domain):
     obtained when transition out of the reward state, not when first enter. \n
 
     Note that this class provides the
-    function :py:meth`~rlpy.Domains.FiftyChain.L_inf_distance_to_V_star`, which
+    function :py:meth`~rlpy.domains.FiftyChain.L_inf_distance_to_V_star`, which
     accepts an arbitrary representation and returns the error between it and
     the optimal policy.
     The user can also enforce actions under the optimal policy (ignoring the

@@ -15,7 +15,7 @@ The Policy determines the discrete action that an
 :py:class:`~rlpy.agents.Agent.Agent` will take  given its current value function
 :py:class:`~rlpy.Representations.Representation.Representation`.
 
-The Agent learns about the :py:class:`~rlpy.Domains.Domain.Domain`
+The Agent learns about the :py:class:`~rlpy.domains.Domain.Domain`
 as the two interact.
 At each step, the Agent passes information about its current state
 to the Policy; the Policy uses this to decide what discrete action the

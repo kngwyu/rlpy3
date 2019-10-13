@@ -22,7 +22,7 @@ __author__ = "Alborz Geramifard"
 class Representation(object):
     """
     The Representation is the :py:class:`~rlpy.agents.Agent.Agent`'s model of the
-    value function associated with a :py:class:`~rlpy.Domains.Domain.Domain`.
+    value function associated with a :py:class:`~rlpy.domains.Domain.Domain`.
 
     As the Agent interacts with the Domain, it receives updates in the form of
     state, action, reward, next state, next action. \n
@@ -82,7 +82,7 @@ class Representation(object):
 
     def __init__(self, domain, discretization=20, seed=1):
         """
-        :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.Domain.Domain` to learn
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
@@ -301,7 +301,7 @@ class Representation(object):
         """
         Set the number of bins for each dimension of the domain.
         Continuous spaces will be slices using the ``discretization`` parameter.
-        :param domain: the problem :py:class:`~rlpy.Domains.Domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.Domain.Domain` to learn
         :param discretization: The number of bins a continuous domain should be sliced into.
 
         """

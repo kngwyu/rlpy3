@@ -1,5 +1,5 @@
 from rlpy.Representations import Fourier
-from rlpy.Domains import InfiniteTrackCartPole
+from rlpy.domains import InfiniteTrackCartPole
 import numpy as np
 
 

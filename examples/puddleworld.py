@@ -1,4 +1,4 @@
-from rlpy.Domains import PuddleWorld
+from rlpy.domains import PuddleWorld
 from rlpy.Tools.cli import run_experiment
 
 import methods

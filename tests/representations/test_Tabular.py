@@ -1,5 +1,5 @@
 from rlpy.Representations import Tabular
-from rlpy.Domains import GridWorld, InfiniteTrackCartPole
+from rlpy.domains import GridWorld, InfiniteTrackCartPole
 import numpy as np
 from rlpy.Tools import __rlpy_location__
 import os
@@ -7,7 +7,7 @@ import os
 
 def test_number_of_cells():
     """ Ensure create appropriate # of cells (despite ``discretization``) """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 
@@ -19,7 +19,7 @@ def test_number_of_cells():
 
 def test_phi_cells():
     """ Ensure correct feature is activated for corresponding state """
-    mapDir = os.path.join(__rlpy_location__, "Domains", "GridWorldMaps")
+    mapDir = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     mapfile = os.path.join(mapDir, "4x5.txt")  # expect 4*5 = 20 states
     domain = GridWorld(mapfile=mapfile)
 

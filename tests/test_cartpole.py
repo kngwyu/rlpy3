@@ -12,11 +12,8 @@ def get_file(fname):
 @pytest.mark.parametrize(
     "domain_class, filename",
     [
-        (InfCartPoleBalance, get_file("traj_InfiniteCartpoleBalance.npy")),
-        (
-            FiniteCartPoleBalanceOriginal,
-            get_file("traj_FiniteCartpoleBalanceOriginal.npy"),
-        ),
+        (InfCartPoleBalance, get_file("traj_infinite_cartpole_balance.npy")),
+        (FiniteCartPoleBalanceOriginal, get_file("traj_finite_cartpole_balance.npy")),
     ],
 )
 def test_trajectory(domain_class, filename):

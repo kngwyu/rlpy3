@@ -2,12 +2,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import logging
-from rlpy.tools import (
-    className,
-    deltaT,
-    vec2id,
-    checkNCreateDirectory,
-)
+from rlpy.tools import className, deltaT, vec2id, checkNCreateDirectory
 from collections import defaultdict
 import os
 import json

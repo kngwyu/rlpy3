@@ -1,6 +1,12 @@
 from rlpy.representations import IncrementalTabular
 from rlpy.domains import PST
-from rlpy.domains.pst import UAVLocation, ActuatorState, SensorState, UAVAction, StateStruct
+from rlpy.domains.pst import (
+    UAVLocation,
+    ActuatorState,
+    SensorState,
+    UAVAction,
+    StateStruct,
+)
 from rlpy.agents import SARSA
 import numpy as np
 from rlpy.tools import vec2id
@@ -47,7 +53,7 @@ def test_errs():
     """ Ensure that we can call custom methods without error """
 
     domain = PST(NUM_UAV=2)
-    dummyState = domain.s0()
+    _ = domain.s0()
 
     # state2Struct
     rlpy_state = [1, 2, 9, 3, 1, 0, 1, 1]
@@ -96,7 +102,7 @@ def test_transitions():
 
     # Test p=1 actuator failure when not at base
     domain = PST(NUM_UAV=NUM_UAV)
-    dummyS = domain.s0()
+    _ = domain.s0()
 
     domain.P_ACT_FAIL = 0.0
     domain.P_SENSOR_FAIL = 1.0
@@ -245,12 +251,12 @@ def test_transitions():
     # Since reward based on "s" not "ns", also pickup reward from prev step
     actionVec = np.array([UAVAction.RETREAT, UAVAction.RETREAT])
     a = vec2id(actionVec, actionLimits)
-    r, ns, t, possA = domain.step(a)
+    r, ns, is_terminated, possA = domain.step(a)
     assert np.array_equiv(
         ns,
         domain.properties2StateVec(
             locs - 1, fuel - 5, np.array([1, 1]), np.array([1, 1])
         ),
     )
-    assert t == True
+    assert is_terminated
     assert r == domain.CRASH_REWARD + domain.SURVEIL_REWARD

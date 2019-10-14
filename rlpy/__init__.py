@@ -2,7 +2,7 @@ import rlpy.agents
 import rlpy.Tools
 import rlpy.domains
 import rlpy.MDPSolvers
-import rlpy.Experiments
+import rlpy.experiments
 import rlpy.policies
 import rlpy.representations
 

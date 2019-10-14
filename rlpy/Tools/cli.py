@@ -1,6 +1,6 @@
 import click
 from rlpy.domains.Domain import Domain
-from rlpy.Experiments import Experiment
+from rlpy.experiments import Experiment
 
 
 def get_experiment(

@@ -4,7 +4,7 @@ from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
 from .helpers import check_seed_vis
 from rlpy.policies import eGreedy
-from rlpy.Experiments import Experiment
+from rlpy.experiments import Experiment
 
 
 def _make_experiment(domain, exp_id=1, path="./Results/Tmp/test_InfTrackCartPole"):

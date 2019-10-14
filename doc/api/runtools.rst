@@ -1,4 +1,4 @@
-Tools.run - Running Experiments in Batch
+Tools.run - Running experiments in Batch
 ----------------------------------------
 
 .. automodule:: rlpy.Tools.run

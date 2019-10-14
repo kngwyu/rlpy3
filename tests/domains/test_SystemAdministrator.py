@@ -5,7 +5,7 @@ import numpy as np
 from rlpy.Tools import __rlpy_location__
 
 from rlpy.policies import eGreedy
-from rlpy.Experiments import Experiment
+from rlpy.experiments import Experiment
 
 from .helpers import check_seed_vis
 import os

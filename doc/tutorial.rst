@@ -220,8 +220,8 @@ machines.
 The content of `infTrackCartPole_tabular.py` is very similar but
 differs in the definition of the representation parameter of the agent.
 Compared to our first example,
-the experiment is now executed by calling its :func:`Experiments.Experiment.run_from_commandline` method.
-This is a wrapper around :func:`Experiments.Experiment.run` and allows to specify the options for
+the experiment is now executed by calling its :func:`experiments.Experiment.run_from_commandline` method.
+This is a wrapper around :func:`experiments.Experiment.run` and allows to specify the options for
 visualization during the execution with command line arguments. You can for
 example run::
 
@@ -267,7 +267,7 @@ In order to properly assess the quality of the learning algorithm using this
 representation, we need to average over several independent learning sequences.
 This means we need to execute the experiment with different seeds.
 
-Running Experiments in Batch
+Running experiments in Batch
 ----------------------------
 
 The module :mod:`Tools.run` provides several functions that are helpful for
@@ -301,9 +301,9 @@ Analyzing Results
 -----------------
 
 Running experiments via :func:`Tools.run.run` automatically saves the results 
-to the specified path. If we run an :class:`Experiments.Experiment` instance
+to the specified path. If we run an :class:`experiments.Experiment` instance
 directly, we can store the results on disc with the
-:func:`Experiments.Experiment.save` method. The outcomes are then stored in
+:func:`experiments.Experiment.save` method. The outcomes are then stored in
 the directory that is passed during initialization. The filename has the format
 `XXX-results.json` where `XXX` is the id / seed of the experiment. The results
 are stored in the JSON format that look for example like::

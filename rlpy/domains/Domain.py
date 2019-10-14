@@ -31,7 +31,7 @@ class Domain(object):
 
     This process repeats until the Domain determines that the Agent has either
     completed its goal or failed.
-    The :py:class:`~rlpy.Experiments.Experiment.Experiment` controls this cycle.
+    The :py:class:`~rlpy.experiments.Experiment.Experiment` controls this cycle.
 
     Because agents are designed to be agnostic to the Domain that they are
     acting within and the problem they are trying to solve, the Domain needs

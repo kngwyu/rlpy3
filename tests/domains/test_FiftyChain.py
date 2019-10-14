@@ -3,7 +3,7 @@ from rlpy.representations import Tabular
 from rlpy.domains import FiftyChain
 from rlpy.agents.TDControlAgent import SARSA
 from rlpy.policies import eGreedy
-from rlpy.Experiments import Experiment
+from rlpy.experiments import Experiment
 from .helpers import check_seed_vis
 
 

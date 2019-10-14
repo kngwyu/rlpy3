@@ -118,7 +118,7 @@ class Experiment(object):
         self.domain = domain
         self.max_steps = max_steps
         self.num_policy_checks = num_policy_checks
-        self.logger = logging.getLogger("rlpy.Experiments.Experiment")
+        self.logger = logging.getLogger("rlpy.experiments.Experiment")
         self.log_interval = log_interval
         self.config_logging = config_logging
         self.path = path

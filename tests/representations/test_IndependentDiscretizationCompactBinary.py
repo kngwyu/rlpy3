@@ -1,4 +1,4 @@
-from rlpy.Representations import IndependentDiscretizationCompactBinary
+from rlpy.representations import IndependentDiscretizationCompactBinary
 from rlpy.domains import GridWorld, SystemAdministrator
 import numpy as np
 from rlpy.Tools import __rlpy_location__

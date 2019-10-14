@@ -1,8 +1,8 @@
 doc/_build/*
 build/*
 Results/*
-rlpy/Representations/*.cpp
-rlpy/Representations/*.c
+rlpy/representations/*.cpp
+rlpy/representations/*.c
 rlpy/domains/*.c
 *.cpp
 *.so

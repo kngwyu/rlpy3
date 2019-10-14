@@ -131,7 +131,7 @@ class TileCoding(Representation):
 
         if self.safety == "none":
             try:
-                from rlpy.Representations import hashing as h
+                from rlpy.representations import hashing as h
 
                 def _physical_addr(self, A):
                     h.physical_addr(A, self.R, self.check_data, self.counts)[0]

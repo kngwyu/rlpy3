@@ -110,7 +110,7 @@ class Representation(object):
         self._arange_cache = np.arange(self.features_num)
         self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
         self.logger = logging.getLogger(
-            "rlpy.Representations." + self.__class__.__name__
+            "rlpy.representations." + self.__class__.__name__
         )
 
         # a new stream of random numbers for each representation
@@ -135,7 +135,7 @@ class Representation(object):
             If the feature vector phi(s) has already been cached,
             pass it here as input so that it need not be computed again.
 
-        See :py:meth:`~rlpy.Representations.Representation.Representation.Qs`.
+        See :py:meth:`~rlpy.representations.Representation.Representation.Qs`.
         """
 
         if phi_s is None:
@@ -163,7 +163,7 @@ class Representation(object):
 
         .. note::
             This function is distinct
-            from :py:meth:`~rlpy.Representations.Representation.Representation.Q`,
+            from :py:meth:`~rlpy.representations.Representation.Representation.Q`,
             which computes the Q function for an (s,a) pair. \n
             Instead, this function ``Qs()`` computes all Q function values
             (for all possible actions) at a given state *s*.
@@ -202,7 +202,7 @@ class Representation(object):
 
     def phi(self, s, terminal):
         """
-        Returns :py:meth:`~rlpy.Representations.Representation.Representation.phi_nonTerminal`
+        Returns :py:meth:`~rlpy.representations.Representation.Representation.phi_nonTerminal`
         for a given representation, or a zero feature vector in a terminal state.
 
         :param s: The state for which to compute the feature vector
@@ -322,7 +322,7 @@ class Representation(object):
         """
         Returns a vector where each element is the zero-indexed bin number
         corresponding with the given state.
-        (See :py:meth:`~rlpy.Representations.Representation.Representation.hashState`)
+        (See :py:meth:`~rlpy.representations.Representation.Representation.hashState`)
         Note that this vector will have the same dimensionality as *s*.
 
         (Note: This method is binary compact; the negative case of binary features is
@@ -348,7 +348,7 @@ class Representation(object):
         If *phi_s* [the feature vector at state *s*] is given, it is used to
         speed up code by preventing re-computation within this function.
 
-        See :py:meth:`~rlpy.Representations.Representation.Representation.bestAction`
+        See :py:meth:`~rlpy.representations.Representation.Representation.bestAction`
 
         :param s: The given state
         :param terminal: Whether or not the state *s* is a terminal one.
@@ -366,13 +366,13 @@ class Representation(object):
         """
         Identifies and adds ("discovers") new features for this adaptive
         representation BEFORE having obtained the TD-Error.
-        For example, see :py:class:`~rlpy.Representations.IncrementalTabular.IncrementalTabular`.
+        For example, see :py:class:`~rlpy.representations.IncrementalTabular.IncrementalTabular`.
         In that class, a new feature is added anytime a novel state is observed.
 
         .. note::
             For adaptive representations that require access to TD-Error to
             determine which features to add next,
-            use :py:meth:`~rlpy.Representations.Representation.Representation.post_discover`
+            use :py:meth:`~rlpy.representations.Representation.Representation.post_discover`
             instead.
 
         :param s: The state
@@ -390,13 +390,13 @@ class Representation(object):
         """
         Identifies and adds ("discovers") new features for this adaptive
         representation AFTER having obtained the TD-Error.
-        For example, see :py:class:`~rlpy.Representations.iFDD.iFDD`.
+        For example, see :py:class:`~rlpy.representations.iFDD.iFDD`.
         In that class, a new feature is added based on regions of high TD-Error.
 
         .. note::
             For adaptive representations that do not require access to TD-Error
             to determine which features to add next, you may
-            use :py:meth:`~rlpy.Representations.Representation.Representation.pre_discover`
+            use :py:meth:`~rlpy.representations.Representation.Representation.pre_discover`
             instead.
 
         :param s: The state
@@ -417,7 +417,7 @@ class Representation(object):
         If *phi_s* [the feature vector at state *s*] is given, it is used to
         speed up code by preventing re-computation within this function.
 
-        See :py:meth:`~rlpy.Representations.Representation.Representation.bestActions`
+        See :py:meth:`~rlpy.representations.Representation.Representation.bestActions`
 
         :param s: The given state
         :param terminal: Whether or not the state *s* is a terminal one.
@@ -437,7 +437,7 @@ class Representation(object):
         """ *Abstract Method* \n
         Returns the feature vector evaluated at state *s* for non-terminal
         states; see
-        function :py:meth:`~rlpy.Representations.Representation.Representation.phi`
+        function :py:meth:`~rlpy.representations.Representation.Representation.phi`
         for the general case.
 
         :param s: The given state
@@ -466,7 +466,7 @@ class Representation(object):
         using the copy-paste method.
 
         .. note::
-            See :py:meth:`~rlpy.Representations.Representation.Representation.phi_sa`
+            See :py:meth:`~rlpy.representations.Representation.Representation.phi_sa`
             for more information.
 
         :param all_phi_s: The feature vectors evaluated at a series of states.
@@ -503,7 +503,7 @@ class Representation(object):
         Accepts a batch of states, returns the best action associated with each.
 
         .. note::
-            See :py:meth:`~rlpy.Representations.Representation.Representation.bestAction`
+            See :py:meth:`~rlpy.representations.Representation.Representation.bestAction`
 
         :param all_s: An array of all the states to consider.
         :param all_phi_s: The feature vectors evaluated at a series of states.

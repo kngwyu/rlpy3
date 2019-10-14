@@ -1,4 +1,4 @@
-from rlpy.Representations import IndependentDiscretization
+from rlpy.representations import IndependentDiscretization
 from rlpy.domains import GridWorld, InfiniteTrackCartPole
 import numpy as np
 from rlpy.Tools import __rlpy_location__

@@ -38,7 +38,7 @@ class Agent(ABC):
     framework for all RL agents. It provides the methods and attributes that
     allow child classes to interact with the
     :py:class:`~rlpy.domains.Domain.Domain`,
-    :py:class:`~rlpy.Representations.Representation.Representation`,
+    :py:class:`~rlpy.representations.Representation.Representation`,
     :py:class:`~rlpy.Policies.Policy.Policy`, and
     :py:class:`~rlpy.Experiments.Experiment.Experiment` classes within the
     RLPy library.

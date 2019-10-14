@@ -1,7 +1,7 @@
 """
 TODO - test hashing function
 """
-from rlpy.Representations import TileCoding
+from rlpy.representations import TileCoding
 from rlpy.domains import GridWorld
 from rlpy.Tools import __rlpy_location__
 import os

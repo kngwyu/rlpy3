@@ -1,4 +1,4 @@
-from rlpy.Representations import IncrementalTabular
+from rlpy.representations import IncrementalTabular
 from rlpy.domains import SystemAdministrator
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np

@@ -1,4 +1,4 @@
-from rlpy.Representations.Representation import Representation
+from rlpy.representations.Representation import Representation
 import numpy as np
 import logging
 from rlpy.Policies import eGreedy

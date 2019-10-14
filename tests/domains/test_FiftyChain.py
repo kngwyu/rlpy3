@@ -1,5 +1,5 @@
 import numpy as np
-from rlpy.Representations import Tabular
+from rlpy.representations import Tabular
 from rlpy.domains import FiftyChain
 from rlpy.agents.TDControlAgent import SARSA
 from rlpy.Policies import eGreedy

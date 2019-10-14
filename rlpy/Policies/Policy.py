@@ -20,7 +20,7 @@ class Policy(ABC):
 
     """The Policy determines the discrete action that an
     :py:class:`~rlpy.agents.Agent.Agent` will take  given its
-    :py:class:`~rlpy.Representations.Representation.Representation`.
+    :py:class:`~rlpy.representations.Representation.Representation`.
 
     The Agent learns about the :py:class:`~rlpy.domains.Domain.Domain`
     as the two interact.
@@ -41,7 +41,7 @@ class Policy(ABC):
 
     def __init__(self, representation, seed=1):
         """
-        :param representation: the :py:class:`~rlpy.Representations.Representation.Representation`
+        :param representation: the :py:class:`~rlpy.representations.Representation.Representation`
             to use in learning the value function.
         """
 

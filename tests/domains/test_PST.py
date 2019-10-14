@@ -1,4 +1,4 @@
-from rlpy.Representations import IncrementalTabular
+from rlpy.representations import IncrementalTabular
 from rlpy.domains import PST
 from rlpy.domains.PST import UAVLocation, ActuatorState, SensorState, UAVAction
 from rlpy.domains.PST import StateStruct

@@ -1,4 +1,4 @@
-from rlpy.Representations import Fourier
+from rlpy.representations import Fourier
 from rlpy.domains import InfiniteTrackCartPole
 import numpy as np
 

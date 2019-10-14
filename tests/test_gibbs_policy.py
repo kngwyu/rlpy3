@@ -1,5 +1,5 @@
 from rlpy.domains import GridWorld
-from rlpy.Representations import Tabular
+from rlpy.representations import Tabular
 from scipy.optimize import check_grad, approx_fprime
 from rlpy.Policies.gibbs import GibbsPolicy
 import numpy as np

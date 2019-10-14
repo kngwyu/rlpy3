@@ -1,11 +1,11 @@
-from rlpy.Representations.LocalBases import NonparametricLocalBases, RandomLocalBases
+from rlpy.representations.LocalBases import NonparametricLocalBases, RandomLocalBases
 from rlpy.domains import InfiniteTrackCartPole
 import numpy as np
 
 try:
-    from rlpy.Representations.kernels import gaussian_kernel
+    from rlpy.representations.kernels import gaussian_kernel
 except ImportError:
-    from rlpy.Representations.slow_kernels import gaussian_kernel
+    from rlpy.representations.slow_kernels import gaussian_kernel
 
 
 def test_parametric_rep():

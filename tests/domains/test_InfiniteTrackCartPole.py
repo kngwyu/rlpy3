@@ -1,4 +1,4 @@
-from rlpy.Representations import Tabular
+from rlpy.representations import Tabular
 from rlpy.domains.InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSwingUp
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np

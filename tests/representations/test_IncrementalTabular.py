@@ -1,4 +1,4 @@
-from rlpy.Representations import IncrementalTabular
+from rlpy.representations import IncrementalTabular
 from rlpy.domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__

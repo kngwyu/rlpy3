@@ -1,4 +1,4 @@
-from rlpy.Representations import Tabular
+from rlpy.representations import Tabular
 from rlpy.domains import GridWorld, InfiniteTrackCartPole
 import numpy as np
 from rlpy.Tools import __rlpy_location__

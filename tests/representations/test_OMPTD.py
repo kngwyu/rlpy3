@@ -1,4 +1,4 @@
-from rlpy.Representations import OMPTD, IndependentDiscretization
+from rlpy.representations import OMPTD, IndependentDiscretization
 from rlpy.domains import GridWorld
 import numpy as np
 from rlpy.Tools import __rlpy_location__

@@ -1,5 +1,5 @@
-from rlpy.Representations import iFDD
-from rlpy.Representations import IndependentDiscretizationCompactBinary
+from rlpy.representations import iFDD
+from rlpy.representations import IndependentDiscretizationCompactBinary
 from rlpy import domains
 import numpy as np
 

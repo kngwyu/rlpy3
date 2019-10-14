@@ -97,9 +97,9 @@ class CheckSDist(sdist):
     """Custom sdist that ensures Cython has compiled all pyx files to c."""
 
     _pyxfiles = [
-        "rlpy/Representations/hashing.pyx",
+        "rlpy/representations/hashing.pyx",
         "rlpy/domains/HIVTreatment_dynamics.pyx",
-        "rlpy/Representations/kernels.pyx",
+        "rlpy/representations/kernels.pyx",
     ]
 
     def initialize_options(self):
@@ -183,29 +183,29 @@ else:
     CMD_CLASS["build_src"] = DummyBuildSrc
 
 # always cythonize if C-files are not present
-USE_CYTHON = not os.path.exists("rlpy/Representations/hashing.c") or os.getenv(
+USE_CYTHON = not os.path.exists("rlpy/representations/hashing.c") or os.getenv(
     "USE_CYTHON", False
 )
 extensions = [
     Extension(
-        "rlpy.Representations.hashing",
-        ["rlpy/Representations/hashing.pyx"],
-        include_dirs=["rlpy/Representations"],
+        "rlpy.representations.hashing",
+        ["rlpy/representations/hashing.pyx"],
+        include_dirs=["rlpy/representations"],
     ),
     Extension(
         "rlpy.domains.HIVTreatment_dynamics",
         ["rlpy/domains/HIVTreatment_dynamics.pyx"],
-        include_dirs=["rlpy/Representations"],
+        include_dirs=["rlpy/representations"],
     ),
     Extension(
-        "rlpy.Representations.kernels",
+        "rlpy.representations.kernels",
         [
-            "rlpy/Representations/kernels.pyx",
-            "rlpy/Representations/c_kernels.cc",
-            "rlpy/Representations/c_kernels.pxd",
+            "rlpy/representations/kernels.pyx",
+            "rlpy/representations/c_kernels.cc",
+            "rlpy/representations/c_kernels.pxd",
         ],
         language="c++",
-        include_dirs=["rlpy.Representations"],
+        include_dirs=["rlpy.representations"],
     ),
     Extension(
         "rlpy.Tools._transformations", ["rlpy/Tools/transformations.c"], include_dirs=[]

@@ -58,7 +58,7 @@ class IndependentDiscretizationCompactBinary(Representation):
 
     def activeInitialFeaturesCompactBinary(self, s):
         """
-        Same as :py:meth:`~rlpy.Representations.Representation.activeInitialFeatures`
+        Same as :py:meth:`~rlpy.representations.Representation.activeInitialFeatures`
         except that for binary dimensions (taking values 0,1) only the 
         ``1`` value will have a corresponding feature; ``0`` is expressed by 
         that feature being inactive.

@@ -67,7 +67,7 @@ class OMPTD(Representation):
         :param bagSize: The maximum number of features available for 
             consideration.
         :param sparsify: (Boolean)
-            See :py:class`~rlpy.Representations.iFDD.iFDD`.
+            See :py:class`~rlpy.representations.iFDD.iFDD`.
         
         """
 

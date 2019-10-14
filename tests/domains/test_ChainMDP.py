@@ -1,4 +1,4 @@
-from rlpy.Representations import Tabular
+from rlpy.representations import Tabular
 from rlpy.domains import ChainMDP
 from rlpy.agents.TDControlAgent import SARSA
 

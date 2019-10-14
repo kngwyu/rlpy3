@@ -68,9 +68,9 @@ REQUIRED Functions
   .. Note::
 
       The ``learn()`` function *MUST* call the 
-      :func:`~rlpy.Representations.Representation.Representation.pre_discover`
+      :func:`~rlpy.representations.Representation.Representation.pre_discover`
       function at its beginning, and 
-      :func:`~rlpy.Representations.Representation.Representation.post_discover`
+      :func:`~rlpy.representations.Representation.Representation.post_discover`
       at its end.  This allows adaptive representations to add new features
       (no effect on fixed ones).
 

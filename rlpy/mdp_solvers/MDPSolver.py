@@ -93,7 +93,7 @@ class MDPSolver(ABC):
         self.exp_id = job_id
         self.representation = representation
         self.domain = domain
-        self.logger = logging.getLogger("rlpy.MDPSolvers." + self.__class__.__name__)
+        self.logger = logging.getLogger("rlpy.mdp_solvers." + self.__class__.__name__)
         self.ns_samples = ns_samples
         self.planning_time = planning_time
         self.project_path = project_path

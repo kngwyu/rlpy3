@@ -6,7 +6,7 @@ Creating a New Policy
 =====================
 
 This tutorial describes the standard 
-RLPy :class:`~rlpy.Policies.Policy.Policy` interface,
+RLPy :class:`~rlpy.policies.Policy.Policy` interface,
 and illustrates a brief example of creating a new problem domain.
 
 .. Below taken directly from Policy.py
@@ -19,7 +19,7 @@ The Agent learns about the :py:class:`~rlpy.domains.Domain.Domain`
 as the two interact.
 At each step, the Agent passes information about its current state
 to the Policy; the Policy uses this to decide what discrete action the
-Agent should perform next (see :py:meth:`~rlpy.Policies.Policy.Policy.pi`) \n
+Agent should perform next (see :py:meth:`~rlpy.policies.Policy.Policy.pi`) \n
 
 
 .. warning::
@@ -34,12 +34,12 @@ Agent should perform next (see :py:meth:`~rlpy.Policies.Policy.Policy.pi`) \n
 
 Requirements 
 ------------
-* Each Policy must be a subclass of :class:`~rlpy.Policies.Policy.Policy` and call 
-  the :func:`~rlpy.Policies.Policy.Policy.__init__` function of the 
+* Each Policy must be a subclass of :class:`~rlpy.policies.Policy.Policy` and call 
+  the :func:`~rlpy.policies.Policy.Policy.__init__` function of the 
   Policy superclass.
 
 * Any randomization that occurs at object construction *MUST* occur in
-  the :func:`~rlpy.Policies.Policy.Policy.init_randomization()` function, 
+  the :func:`~rlpy.policies.Policy.Policy.init_randomization()` function, 
   which can be called by ``__init__()``.
 
 * Any random calls should use ``self.random_state``, not ``random()`` 
@@ -55,7 +55,7 @@ REQUIRED Instance Variables
 
 REQUIRED Functions
 """"""""""""""""""
-#. :py:meth:`~rlpy.Policies.Policy.Policy.pi` - accepts the current state *s*,
+#. :py:meth:`~rlpy.policies.Policy.Policy.pi` - accepts the current state *s*,
    whether or not *s* is *terminal*, and an array of possible actions 
    indices *p_actions* and returns an action index for the Agent to take.
 
@@ -66,8 +66,8 @@ Policies which have an explicit exploratory component (eg epsilon-greedy)
 **MUST** override the functions below to prevent exploratory behavior
 when evaluating the policy (which would skew results)
 
-#. :py:meth:`~rlpy.Policies.Policy.Policy.turnOffExploration`
-#. :py:meth:`~rlpy.Policies.Policy.Policy.turnOnExploration`
+#. :py:meth:`~rlpy.policies.Policy.Policy.turnOffExploration`
+#. :py:meth:`~rlpy.policies.Policy.Policy.turnOnExploration`
 
 
 Additional Information
@@ -78,7 +78,7 @@ Additional Information
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.Policies.Policy.Policy` for functions 
+* See :class:`~rlpy.policies.Policy.Policy` for functions 
   provided by the superclass. 
 
 
@@ -100,7 +100,7 @@ have explored the entire domain.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.Policies.Policy import Policy
+        from rlpy.policies.Policy import Policy
         import numpy as np
 
 #. Declare the class, create needed members variables, and write a 
@@ -205,7 +205,7 @@ Please use the following header at the top of each file::
 
 * If you installed RLPy in a writeable directory, the className of the new 
   policy can be added to 
-  the ``__init__.py`` file in the ``Policies/`` directory.
+  the ``__init__.py`` file in the ``policies/`` directory.
   (This allows other files to import the new policy).
 
 * If available, please include a link or reference to the publication associated 

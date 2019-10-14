@@ -3,7 +3,7 @@ from .Domain import Domain
 import numpy as np
 from rlpy.Tools import mpl, plt, rk4, cartesian, colors
 
-from rlpy.Policies.SwimmerPolicy import SwimmerPolicy
+from rlpy.policies.SwimmerPolicy import SwimmerPolicy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

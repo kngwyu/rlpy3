@@ -26,7 +26,7 @@ class Policy(ABC):
     as the two interact.
     At each step, the Agent passes information about its current state
     to the Policy; the Policy uses this to decide what discrete action the
-    Agent should perform next (see :py:meth:`~rlpy.Policies.Policy.Policy.pi`) \n
+    Agent should perform next (see :py:meth:`~rlpy.policies.Policy.Policy.pi`) \n
 
     The Policy class is a base class that provides the basic framework for all
     policies. It provides the methods and attributes that allow child classes
@@ -47,7 +47,7 @@ class Policy(ABC):
 
         self.representation = representation
         # An object to record the print outs in a file
-        self.logger = logging.getLogger("rlpy.Policies." + self.__class__.__name__)
+        self.logger = logging.getLogger("rlpy.policies." + self.__class__.__name__)
         # a new stream of random numbers for each domain
         self.random_state = np.random.RandomState(seed=seed)
 
@@ -85,7 +85,7 @@ class Policy(ABC):
     def turnOnExploration(self):
         """
         *Abstract Method:* \n
-        If :py:meth:`~rlpy.Policies.Policy.Policy.turnOffExploration` was called
+        If :py:meth:`~rlpy.policies.Policy.Policy.turnOffExploration` was called
         previously, reverse its effects (e.g. restore epsilon to its previous,
         possibly nonzero, value).
         """

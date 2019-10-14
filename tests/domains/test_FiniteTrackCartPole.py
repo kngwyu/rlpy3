@@ -6,7 +6,7 @@ from rlpy.domains.FiniteTrackCartPole import (
     FiniteCartPoleBalanceModern,
 )
 from rlpy.agents.TDControlAgent import SARSA
-from rlpy.Policies import eGreedy
+from rlpy.policies import eGreedy
 from rlpy.Experiments import Experiment
 from .helpers import check_seed_vis
 

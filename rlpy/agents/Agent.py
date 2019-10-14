@@ -39,7 +39,7 @@ class Agent(ABC):
     allow child classes to interact with the
     :py:class:`~rlpy.domains.Domain.Domain`,
     :py:class:`~rlpy.representations.Representation.Representation`,
-    :py:class:`~rlpy.Policies.Policy.Policy`, and
+    :py:class:`~rlpy.policies.Policy.Policy`, and
     :py:class:`~rlpy.Experiments.Experiment.Experiment` classes within the
     RLPy library.
 
@@ -71,7 +71,7 @@ class Agent(ABC):
 
         :param representation: the :py:class:`~rlpy.Representation.Representation.Representation`
             to use in learning the value function.
-        :param policy: the :py:class:`~rlpy.Policies.Policy.Policy` to use when selecting actions.
+        :param policy: the :py:class:`~rlpy.policies.Policy.Policy` to use when selecting actions.
         :param discount_factor: the discount factor of the optimal policy which should be
             learned
         :param initial_learn_rate: Initial learning rate to use (where applicable)

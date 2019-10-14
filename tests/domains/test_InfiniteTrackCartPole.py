@@ -3,7 +3,7 @@ from rlpy.domains.InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSw
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
 from .helpers import check_seed_vis
-from rlpy.Policies import eGreedy
+from rlpy.policies import eGreedy
 from rlpy.Experiments import Experiment
 
 

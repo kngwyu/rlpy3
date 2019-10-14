@@ -1,7 +1,7 @@
 from rlpy.representations.Representation import Representation
 import numpy as np
 import logging
-from rlpy.Policies import eGreedy
+from rlpy.policies import eGreedy
 from rlpy.agents import SARSA, Q_Learning
 from rlpy.agents import Greedy_GQ
 

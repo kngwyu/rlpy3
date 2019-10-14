@@ -3,7 +3,7 @@ import rlpy.Tools
 import rlpy.domains
 import rlpy.MDPSolvers
 import rlpy.Experiments
-import rlpy.Policies
+import rlpy.policies
 import rlpy.representations
 
 

@@ -5,7 +5,7 @@ state space. Once the errors are bounded, the policy is changed.
 from .MDPSolver import MDPSolver
 from rlpy.Tools import className, deltaT, hhmmss, clock, l_norm
 from copy import deepcopy
-from rlpy.Policies import eGreedy
+from rlpy.policies import eGreedy
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

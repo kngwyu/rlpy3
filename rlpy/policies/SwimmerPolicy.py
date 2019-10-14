@@ -19,7 +19,7 @@ class SwimmerPolicy(Policy):
         In Advances in Neural Information Processing Systems.
     """
 
-    default_location = os.path.join(__rlpy_location__, "Policies", "swimmer3.mat")
+    default_location = os.path.join(__rlpy_location__, "policies", "swimmer3.mat")
 
     def __init__(self, representation, filename=default_location, epsilon=0.1, seed=1):
         super(SwimmerPolicy, self).__init__(representation, seed)

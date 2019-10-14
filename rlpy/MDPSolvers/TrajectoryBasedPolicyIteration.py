@@ -20,7 +20,7 @@ from rlpy.Tools import (
     padZeros,
     l_norm,
 )
-from rlpy.Policies import eGreedy
+from rlpy.policies import eGreedy
 import numpy as np
 from copy import deepcopy
 

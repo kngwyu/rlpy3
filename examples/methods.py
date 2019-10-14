@@ -1,5 +1,5 @@
 from rlpy.agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
-from rlpy.Policies import eGreedy, GibbsPolicy
+from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
 from rlpy.representations import (
     iFDD,

@@ -1,2 +1,2 @@
-from .Experiment import Experiment
-from .MDPSolverExperiment import MDPSolverExperiment
+from .experiment import Experiment
+from .mdpsolver_experiment import MDPSolverExperiment

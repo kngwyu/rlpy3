@@ -5,7 +5,7 @@
 Creating a New Domain
 =====================
 
-This tutorial describes the standard RLPy 
+This tutorial describes the standard RLPy
 :class:`~rlpy.domains.Domain.Domain` interface,
 and illustrates a brief example of creating a new problem domain.
 
@@ -26,7 +26,7 @@ is reset to its initial state.
 
 This process repeats until the Domain determines that the Agent has either
 completed its goal or failed.
-The :py:class:`~rlpy.experiments.Experiment.Experiment` controls this cycle.
+The :py:class:`~rlpy.experiments.experiment.Experiment` controls this cycle.
 
 Because agents are designed to be agnostic to the Domain that they are
 acting within and the problem they are trying to solve, the Domain needs

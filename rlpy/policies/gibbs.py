@@ -1,5 +1,5 @@
 """Gibbs policy"""
-from .Policy import DifferentiablePolicy
+from .policy import DifferentiablePolicy
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

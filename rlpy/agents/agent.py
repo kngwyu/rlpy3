@@ -30,7 +30,7 @@ class Agent(ABC):
     The Policy is used to select an action to perform.
     This process (observe, update, act) repeats until some goal or fail state,
     determined by the Domain, is reached. At this point the
-    :py:class:`~rlpy.experiments.Experiment.Experiment` determines
+    :py:class:`~rlpy.experiments.experiment.Experiment` determines
     whether the agent starts over or has its current policy tested
     (without any exploration).
 
@@ -40,7 +40,7 @@ class Agent(ABC):
     :py:class:`~rlpy.domains.Domain.Domain`,
     :py:class:`~rlpy.representations.Representation.Representation`,
     :py:class:`~rlpy.policies.Policy.Policy`, and
-    :py:class:`~rlpy.experiments.Experiment.Experiment` classes within the
+    :py:class:`~rlpy.experiments.experiment.Experiment` classes within the
     RLPy library.
 
     .. note::

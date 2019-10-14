@@ -1,5 +1,5 @@
 """Uniform Random policy"""
-from .Policy import Policy
+from .policy import Policy
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

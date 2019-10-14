@@ -197,12 +197,12 @@ A Slightly More Challenging Domain: Inverted Pole Balancing
 
 We will now look at how to run experiments in batch and how to analyze and
 compare the performance of different methods on the same task. To this end, we
-compare different value function representations on the Cart-Pole Balancing task 
+compare different value function representations on the Cart-Pole Balancing task
 with an infinite track. The task is to keep a pole balanced upright. The pole
 is mounted on a cart which we can either push to the left or right.
 
 The experimental setup is specified in `examples/tutorial/infTrackCartPole_tabular.py` with
-a tabular representation and in `examples/tutorial/infTrackCartPole_rbfs.py` with radial 
+a tabular representation and in `examples/tutorial/infTrackCartPole_rbfs.py` with radial
 basis functions (RBFs). The content of `infTrackCartPole_rbfs.py` is
 
 .. literalinclude:: ../examples/tutorial/infTrackCartPole_rbfs.py
@@ -210,8 +210,8 @@ basis functions (RBFs). The content of `infTrackCartPole_rbfs.py` is
    :linenos:
 
 Again, as the first GridWorld example, the main content of the file is a
-`make_experiment` function which takes an id, a path and some more optional 
-parameters and returns an :class:`Experiment.Experiment` instance. 
+`make_experiment` function which takes an id, a path and some more optional
+parameters and returns an :class:`experiment.Experiment` instance.
 This is the standard format of
 an RLPy experiment description and will allow us to run it in parallel on
 several cores on one computer or even on a computing cluster with numerous

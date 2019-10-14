@@ -2,7 +2,7 @@
 from .Domain import Domain
 import numpy as np
 import rlpy.tools.transformations as trans
-from rlpy.tools.GeneralTools import cartesian
+from rlpy.tools.general_tools import cartesian
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, Circle, Ellipse
 from mpl_toolkits.mplot3d import proj3d

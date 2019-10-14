@@ -1,5 +1,4 @@
-from .eGreedy import eGreedy
-from .UniformRandom import UniformRandom
+from .e_greedy import eGreedy
+from .uniform_random import UniformRandom
 from .gibbs import GibbsPolicy
-from .FixedPolicy import FixedPolicy
-from .FixedPolicy import BasicPuddlePolicy
+from .fixed_policies import BasicPuddlePolicy, FixedPolicy

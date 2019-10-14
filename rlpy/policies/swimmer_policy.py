@@ -1,4 +1,4 @@
-from .Policy import Policy
+from .policy import Policy
 
 import numpy as np
 from scipy.io import loadmat

@@ -31,7 +31,7 @@ class Domain(object):
 
     This process repeats until the Domain determines that the Agent has either
     completed its goal or failed.
-    The :py:class:`~rlpy.experiments.Experiment.Experiment` controls this cycle.
+    The :py:class:`~rlpy.experiments.experiment.Experiment` controls this cycle.
 
     Because agents are designed to be agnostic to the Domain that they are
     acting within and the problem they are trying to solve, the Domain needs
@@ -195,8 +195,8 @@ Gamma:      {self.discount_factor}
         .. note::
 
             *These actions must be integers*; internally they may be handled
-            using other datatypes.  See :py:meth:`~rlpy.tools.GeneralTools.vec2id`
-            and :py:meth:`~rlpy.tools.GeneralTools.id2vec` for converting between
+            using other datatypes.  See :py:meth:`~rlpy.tools.general_tools.vec2id`
+            and :py:meth:`~rlpy.tools.general_tools.id2vec` for converting between
             integers and multidimensional quantities.
 
         """

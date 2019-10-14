@@ -1,6 +1,6 @@
 """Standard Experiment for Learning Control in RL"""
 import rlpy.tools.ipshell
-from .Experiment import Experiment
+from .experiment import Experiment
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

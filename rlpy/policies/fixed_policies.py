@@ -1,6 +1,6 @@
 """Fixed policy. Encodes fixed policies for particular domains."""
 from rlpy.tools import vec2id
-from .Policy import Policy
+from .policy import Policy
 import numpy as np
 from rlpy.tools import randSet, className
 

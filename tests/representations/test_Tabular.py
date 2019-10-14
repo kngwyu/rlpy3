@@ -1,5 +1,5 @@
 from rlpy.representations import Tabular
-from rlpy.domains import GridWorld, InfiniteTrackCartPole
+from rlpy.domains import GridWorld, infinite_track_cartpole as inf_cp
 import numpy as np
 from rlpy.tools import __rlpy_location__
 import os
@@ -42,7 +42,7 @@ def test_phi_cells():
 def test_continuous_discr():
     """ Ensure correct discretization in continuous state spaces """
     # NOTE - if possible, test a domain with mixed discr/continuous
-    domain = InfiniteTrackCartPole.InfTrackCartPole()  # 2 continuous dims
+    domain = inf_cp.InfTrackCartPole()  # 2 continuous dims
     rep = Tabular(domain, discretization=20)
     assert rep.features_num == 400
     rep = Tabular(domain, discretization=50)

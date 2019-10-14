@@ -1,5 +1,5 @@
-from rlpy.representations.LocalBases import NonparametricLocalBases, RandomLocalBases
-from rlpy.domains import InfiniteTrackCartPole
+from rlpy.representations import NonparametricLocalBases, RandomLocalBases
+from rlpy.domains import infinite_track_cartpole as inf_cp
 import numpy as np
 
 try:
@@ -17,7 +17,7 @@ def test_parametric_rep():
     for normalization in [False, True]:  # verify everything with/out norm
 
         kernel = gaussian_kernel
-        domain = InfiniteTrackCartPole.InfTrackCartPole()  # 2 continuous dims
+        domain = inf_cp.InfTrackCartPole()  # 2 continuous dims
         discretization = 20  # not used
         num = 1  # number of basis functions to use IN EACH DIMENSION
         resolution_min = 1
@@ -61,7 +61,7 @@ def test_visual():
     """ Test 2-D basis func visualization. """
     kernel = gaussian_kernel
     normalization = False
-    domain = InfiniteTrackCartPole.InfTrackCartPole()  # 2 continuous dims
+    domain = inf_cp.InfTrackCartPole()  # 2 continuous dims
     discretization = 20  # not used
     num = 1  # number of basis functions to use
     resolution_min = 1
@@ -88,7 +88,7 @@ def test_nonparametric_rep():
 
         kernel = gaussian_kernel
         normalization = False
-        domain = InfiniteTrackCartPole.InfTrackCartPole()  # 2 continuous dims
+        domain = inf_cp.InfTrackCartPole()  # 2 continuous dims
         discretization = 20  # not used
         resolution = 2
         # Start by making it impossible to add feats:

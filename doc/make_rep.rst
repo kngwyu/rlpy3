@@ -6,13 +6,13 @@ Creating a New Representation
 =============================
 
 This tutorial describes the standard RLPy 
-:class:`~rlpy.representations.Representation.Representation` interface,
+:class:`~rlpy.representations.Representation` interface,
 and illustrates a brief example of creating a new value function representation.
 
 .. Below taken directly from Representation.py
 
 The Representation is the approximation of the
-value function associated with a :py:class:`~rlpy.domains.Domain.Domain`,
+value function associated with a :py:class:`~rlpy.domains.domain.Domain`,
 usually in some lower-dimensional feature space.
 
 The Agent receives observations from the Domain on each step and calls 
@@ -35,8 +35,8 @@ Requirements
 ------------
 
 * Each Representation must be a subclass of 
-  :class:`~rlpy.representations.Representation.Representation` and call the 
-  :func:`~rlpy.representations.Representation.Representation.__init__` function 
+  :class:`~rlpy.representations.Representation` and call the 
+  :func:`~rlpy.representations.Representation.__init__` function 
   of the Representation superclass.
 
 * Accordingly, each Representation must be instantiated with
@@ -73,11 +73,11 @@ REQUIRED Functions
 """"""""""""""""""
 The new Representation *MUST* define two functions:
 
-#. :func:`~rlpy.representations.Representation.Representation.phi_nonTerminal`,
+#. :func:`~rlpy.representations.Representation.phi_nonTerminal`,
    (see linked documentation), which returns a vector of feature function 
    values associated with a particular state.
 
-#. :func:`~rlpy.representations.Representation.Representation.featureType`,
+#. :func:`~rlpy.representations.Representation.featureType`,
    (see linked documentation), which returns the data type of the underlying
    feature functions (eg "float" or "bool").
 
@@ -88,9 +88,9 @@ representations whose feature functions may change over the course of execution
 one or both functions below as needed.
 Note that ``self.isDynamic`` should = ``True``.
 
-#. :func:`~rlpy.representations.Representation.Representation.pre_discover`
+#. :func:`~rlpy.representations.Representation.pre_discover`
 
-#. :func:`~rlpy.representations.Representation.Representation.post_discover`
+#. :func:`~rlpy.representations.Representation.post_discover`
 
 Additional Information
 ----------------------
@@ -100,7 +100,7 @@ Additional Information
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.representations.Representation.Representation` for functions 
+* See :class:`~rlpy.representationsRepresentation` for functions 
   provided by the superclass, especially before defining 
   helper functions which might be redundant.
 
@@ -132,7 +132,7 @@ are discretized.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.representations.Representation import Representation
+        from rlpy.representations import Representation
         import numpy as np
         from copy import deepcopy
 

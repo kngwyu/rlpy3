@@ -1,16 +1,15 @@
-from .Tabular import Tabular
-from .IncrementalTabular import IncrementalTabular
-from .IndependentDiscretization import IndependentDiscretization
-from .IndependentDiscretizationCompactBinary import (
+from .bebf import BEBF
+from .fourier import Fourier
+from .ifdd import iFDD, iFDDK
+from .incremental_tabular import IncrementalTabular
+from .independent_discretization import IndependentDiscretization
+from .independent_discretization_compact_binary import (
     IndependentDiscretizationCompactBinary,
 )
-from .RBF import RBF
-from .iFDD import iFDD, iFDDK
-from .Fourier import Fourier
-from .BEBF import BEBF
-from .OMPTD import OMPTD
-from .TileCoding import TileCoding
-
-from .KernelizediFDD import linf_triangle_kernel, gaussian_kernel, KernelizediFDD
-from .LocalBases import RandomLocalBases
-from .LocalBases import NonparametricLocalBases
+from .kernelized_ifdd import linf_triangle_kernel, gaussian_kernel, KernelizediFDD
+from .local_bases import NonparametricLocalBases, RandomLocalBases
+from .omptd import OMPTD
+from .rbf import RBF
+from .representation import Representation
+from .tabular import Tabular
+from .tile_coding import TileCoding

@@ -1,5 +1,5 @@
 from rlpy.representations import Tabular
-from rlpy.domains.InfiniteTrackCartPole import InfCartPoleBalance, InfCartPoleSwingUp
+from rlpy.domains import InfCartPoleBalance, InfCartPoleSwingUp
 from rlpy.agents import SARSA
 import numpy as np
 from .helpers import check_seed_vis

@@ -1,7 +1,6 @@
 from rlpy.representations import IncrementalTabular
 from rlpy.domains import PST
-from rlpy.domains.PST import UAVLocation, ActuatorState, SensorState, UAVAction
-from rlpy.domains.PST import StateStruct
+from rlpy.domains.pst import UAVLocation, ActuatorState, SensorState, UAVAction, StateStruct
 from rlpy.agents import SARSA
 import numpy as np
 from rlpy.tools import vec2id
@@ -19,19 +18,18 @@ def _make_experiment(exp_id=1, path="./Results/Tmp/test_PST"):
     @param id: number used to seed the random number generators
     @param path: output directory where logs and results are stored
     """
-
-    ## Domain:
+    # Domain:
     NUM_UAV = 3
     domain = PST(NUM_UAV=NUM_UAV)
 
-    ## Representation
+    # Representation
     # discretization only needed for continuous state spaces, discarded otherwise
     representation = IncrementalTabular(domain)
 
-    ## Policy
+    # Policy
     policy = eGreedy(representation, epsilon=0.1)
 
-    ## Agent
+    # Agent
     agent = SARSA(
         representation=representation,
         policy=policy,

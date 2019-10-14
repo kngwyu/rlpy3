@@ -1,6 +1,6 @@
 """Nosetests for testing the domains and their methods."""
 import rlpy.domains
-from rlpy.domains.Domain import Domain
+from rlpy.domains.domain import Domain
 import numpy as np
 import inspect
 

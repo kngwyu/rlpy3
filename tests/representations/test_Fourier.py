@@ -1,12 +1,12 @@
 from rlpy.representations import Fourier
-from rlpy.domains import InfiniteTrackCartPole
+from rlpy.domains import infinite_track_cartpole as inf_cp
 import numpy as np
 
 
 def test_Fourier_order():
     """ Ensure rep of appropriate order is created """
 
-    domain = InfiniteTrackCartPole.InfTrackCartPole()  # 2 continuous dims
+    domain = inf_cp.InfTrackCartPole()  # 2 continuous dims
 
     order = 3
     rep = Fourier(domain, order=order)

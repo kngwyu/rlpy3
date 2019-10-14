@@ -4,7 +4,7 @@ import numpy as np
 from rlpy.tools import __rlpy_location__, plt, with_bold_fonts
 import os
 
-from .GridWorld import GridWorld
+from .grid_world import GridWorld
 
 __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"

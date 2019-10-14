@@ -3,5 +3,5 @@
 Representation
 --------------
 
-.. autoclass:: rlpy.representations.Representation.Representation
+.. autoclass:: rlpy.representations.Representation
     :members:

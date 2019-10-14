@@ -13,9 +13,9 @@ and illustrates a brief example of creating a new problem domain.
 
 The Policy determines the discrete action that an
 :py:class:`~rlpy.agents.agent.Agent` will take  given its current value function
-:py:class:`~rlpy.representations.Representation.Representation`.
+:py:class:`~rlpy.representations.Representation`.
 
-The Agent learns about the :py:class:`~rlpy.domains.Domain.Domain`
+The Agent learns about the :py:class:`~rlpy.domains.domain.Domain`
 as the two interact.
 At each step, the Agent passes information about its current state
 to the Policy; the Policy uses this to decide what discrete action the

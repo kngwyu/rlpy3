@@ -3,5 +3,5 @@
 Domain
 ------
 
-.. autoclass:: rlpy.domains.Domain.Domain
+.. autoclass:: rlpy.domains.domain.Domain
     :members:

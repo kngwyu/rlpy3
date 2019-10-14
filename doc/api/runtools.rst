@@ -1,13 +1,13 @@
-Tools.run - Running experiments in Batch
+tools.run - Running experiments in Batch
 ----------------------------------------
 
-.. automodule:: rlpy.Tools.run
+.. automodule:: rlpy.tools.run
     :members:
     :undoc-members:
 
-Tools.results - Analyzing results
+tools.results - Analyzing results
 ---------------------------------
 
-.. automodule:: rlpy.Tools.results
+.. automodule:: rlpy.tools.results
     :members:
     :undoc-members:

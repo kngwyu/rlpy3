@@ -1,7 +1,7 @@
 from rlpy.representations import Tabular
 from rlpy.domains import GridWorld, InfiniteTrackCartPole
 import numpy as np
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 import os
 
 

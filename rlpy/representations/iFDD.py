@@ -5,9 +5,9 @@ iFDD implementation based on ICML 2011 paper
 from copy import deepcopy
 import numpy as np
 
-from rlpy.Tools import printClass, PriorityQueueWithNovelty
-from rlpy.Tools import powerset, combinations, addNewElementForAllActions
-from rlpy.Tools import plt
+from rlpy.tools import printClass, PriorityQueueWithNovelty
+from rlpy.tools import powerset, combinations, addNewElementForAllActions
+from rlpy.tools import plt
 from .Representation import Representation
 import warnings
 from collections import defaultdict

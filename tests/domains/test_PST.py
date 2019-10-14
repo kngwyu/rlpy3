@@ -4,7 +4,7 @@ from rlpy.domains.PST import UAVLocation, ActuatorState, SensorState, UAVAction
 from rlpy.domains.PST import StateStruct
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
-from rlpy.Tools import vec2id
+from rlpy.tools import vec2id
 from rlpy.policies import eGreedy
 from rlpy.experiments import Experiment
 from .helpers import check_seed_vis

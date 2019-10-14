@@ -2,7 +2,7 @@
 from .Domain import Domain
 import numpy as np
 import scipy.integrate
-from rlpy.Tools import pl, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, colors
+from rlpy.tools import pl, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, colors
 from abc import ABCMeta, abstractmethod
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

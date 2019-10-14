@@ -1,5 +1,5 @@
 """Simple Chain MDP domain."""
-from rlpy.Tools import plt, mpatches, fromAtoB
+from rlpy.tools import plt, mpatches, fromAtoB
 from .Domain import Domain
 import numpy as np
 

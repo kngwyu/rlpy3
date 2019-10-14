@@ -1,6 +1,6 @@
 """Persistent search and track mission domain."""
 from time import sleep
-from rlpy.Tools import plt, vec2id, mpatches, lines, id2vec
+from rlpy.tools import plt, vec2id, mpatches, lines, id2vec
 from .Domain import Domain
 import numpy as np
 
@@ -584,7 +584,7 @@ class PST(Domain):
             np.array(self.vecList2id(validActions, UAVAction.SIZE))
         )
 
-    # TODO place this in Tools
+    # TODO place this in tools
     def vecList2id(self, x, maxValue):
         """
         Returns a list of unique id's based on possible permutations of a list of integer lists.

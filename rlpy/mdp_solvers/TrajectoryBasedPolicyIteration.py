@@ -8,7 +8,7 @@
       Since the algorithm toss out the samples, convergence is hardly reached because the policy may alternate.
 """
 from .MDPSolver import MDPSolver
-from rlpy.Tools import (
+from rlpy.tools import (
     className,
     hhmmss,
     deltaT,

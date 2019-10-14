@@ -195,8 +195,8 @@ Gamma:      {self.discount_factor}
         .. note::
 
             *These actions must be integers*; internally they may be handled
-            using other datatypes.  See :py:meth:`~rlpy.Tools.GeneralTools.vec2id`
-            and :py:meth:`~rlpy.Tools.GeneralTools.id2vec` for converting between
+            using other datatypes.  See :py:meth:`~rlpy.tools.GeneralTools.vec2id`
+            and :py:meth:`~rlpy.tools.GeneralTools.id2vec` for converting between
             integers and multidimensional quantities.
 
         """

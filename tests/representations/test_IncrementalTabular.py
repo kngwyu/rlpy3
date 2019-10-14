@@ -1,7 +1,7 @@
 from rlpy.representations import IncrementalTabular
 from rlpy.domains import GridWorld
 import numpy as np
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 import os
 
 

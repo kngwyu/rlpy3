@@ -1,5 +1,5 @@
 """Standard Experiment for Learning Control in RL"""
-import rlpy.Tools.ipshell
+import rlpy.tools.ipshell
 from .Experiment import Experiment
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -47,6 +47,6 @@ class MDPSolverExperiment(Experiment):
 
         """
         if debug_on_sigurg:
-            rlpy.Tools.ipshell.ipdb_on_SIGURG()
+            rlpy.tools.ipshell.ipdb_on_SIGURG()
 
         self.agent.solve()

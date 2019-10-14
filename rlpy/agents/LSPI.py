@@ -1,6 +1,6 @@
 """Least-Squares Policy Iteration [Lagoudakis and Parr 2003]."""
 from .BatchAgent import BatchAgent
-import rlpy.Tools as Tools
+import rlpy.tools as tools
 import numpy as np
 from scipy import sparse as sp
 
@@ -160,7 +160,7 @@ class LSPI(BatchAgent):
         while added_feature and re_iteration <= self.re_iterations:
             re_iteration += 1
             # Some Prints
-            if Tools.hasFunction(self.representation, "batchDiscover"):
+            if tools.hasFunction(self.representation, "batchDiscover"):
                 self.logger.info(
                     "-----------------\nRepresentation Expansion iteration #%d\n-----------------"
                     % re_iteration
@@ -171,7 +171,7 @@ class LSPI(BatchAgent):
             # loop
             td_errors = self.policyIteration()
             # Add new Features
-            if Tools.hasFunction(self.representation, "batchDiscover"):
+            if tools.hasFunction(self.representation, "batchDiscover"):
                 added_feature = self.representation.batchDiscover(
                     td_errors,
                     self.all_phi_s[: self.samples_count, :],
@@ -190,7 +190,7 @@ class LSPI(BatchAgent):
 
         Returns the TD error for each sample based on the latest weights and next actions.
         """
-        start_time = Tools.clock()
+        start_time = tools.clock()
         weight_diff = self.tol_epsilon + 1  # So that the loop starts
         lspi_iteration = 0
         self.best_performance = -np.inf
@@ -211,7 +211,7 @@ class LSPI(BatchAgent):
             # Find the best action for each state given the current value function
             # Notice if actions have the same value the first action is
             # selected in the batch mode
-            iteration_start_time = Tools.clock()
+            iteration_start_time = tools.clock()
             bestAction, self.all_phi_ns_new_na, action_mask = self.representation.batchBestAction(
                 self.data_ns[: self.samples_count, :],
                 self.all_phi_ns,
@@ -228,8 +228,8 @@ class LSPI(BatchAgent):
                 F2 = self.all_phi_ns_new_na[: self.samples_count, :]
                 A = np.dot(F1.T, F1 - discount_factor * F2)
 
-            A = Tools.regularize(A)
-            new_weight_vec, solve_time = Tools.solveLinear(A, self.b)
+            A = tools.regularize(A)
+            new_weight_vec, solve_time = tools.solveLinear(A, self.b)
 
             # Calculate TD_Errors
             ####################
@@ -247,16 +247,16 @@ class LSPI(BatchAgent):
                 "%d: %0.0f(s), ||w1-w2|| = %0.4f, Sparsity=%0.1f%%, %d Features"
                 % (
                     lspi_iteration + 1,
-                    Tools.deltaT(iteration_start_time),
+                    tools.deltaT(iteration_start_time),
                     weight_diff,
-                    Tools.sparsity(A),
+                    tools.sparsity(A),
                     self.representation.features_num,
                 )
             )
             lspi_iteration += 1
 
         self.logger.info(
-            "Total Policy Iteration Time = %0.0f(s)" % Tools.deltaT(start_time)
+            "Total Policy Iteration Time = %0.0f(s)" % tools.deltaT(start_time)
         )
         return td_errors
 
@@ -264,7 +264,7 @@ class LSPI(BatchAgent):
         """Run the LSTD algorithm on the collected data, and update the
         policy parameters.
         """
-        start_time = Tools.clock()
+        start_time = tools.clock()
 
         if not self.fixedRep:
             # build phi_s and phi_ns for all samples
@@ -303,19 +303,19 @@ class LSPI(BatchAgent):
                 self.b = np.dot(F1.T, R).reshape(-1, 1)
                 self.A = np.dot(F1.T, F1 - discount_factor * F2)
 
-        A = Tools.regularize(self.A)
+        A = tools.regularize(self.A)
 
         # Calculate weight_vec
-        self.representation.weight_vec, solve_time = Tools.solveLinear(A, self.b)
+        self.representation.weight_vec, solve_time = tools.solveLinear(A, self.b)
 
         # log solve time only if takes more than 1 second
         if solve_time > 1:
             self.logger.info(
                 "Total LSTD Time = %0.0f(s), Solve Time = %0.0f(s)"
-                % (Tools.deltaT(start_time), solve_time)
+                % (tools.deltaT(start_time), solve_time)
             )
         else:
-            self.logger.info("Total LSTD Time = %0.0f(s)" % (Tools.deltaT(start_time)))
+            self.logger.info("Total LSTD Time = %0.0f(s)" % (tools.deltaT(start_time)))
 
     def store_samples(self, s, a, r, ns, na, terminal):
         """Process one transition instance."""

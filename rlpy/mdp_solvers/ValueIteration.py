@@ -2,7 +2,7 @@
 Performs full Bellman Backup on a given s,a pair by sweeping through the state space
 """
 from .MDPSolver import MDPSolver
-from rlpy.Tools import hhmmss, deltaT, className, clock, l_norm
+from rlpy.tools import hhmmss, deltaT, className, clock, l_norm
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

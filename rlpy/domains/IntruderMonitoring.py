@@ -1,9 +1,9 @@
 """Intruder monitoring task."""
-from rlpy.Tools import plt, id2vec, bound_vec
+from rlpy.tools import plt, id2vec, bound_vec
 import numpy as np
 from .Domain import Domain
 import os
-from rlpy.Tools import __rlpy_location__, FONTSIZE
+from rlpy.tools import __rlpy_location__, FONTSIZE
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

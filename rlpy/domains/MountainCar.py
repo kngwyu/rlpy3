@@ -1,6 +1,6 @@
 """Classic mountain car task."""
-from rlpy.Tools import plt, bound, fromAtoB
-from rlpy.Tools import lines
+from rlpy.tools import plt, bound, fromAtoB
+from rlpy.tools import lines
 from .Domain import Domain
 import numpy as np
 

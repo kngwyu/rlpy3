@@ -7,8 +7,8 @@ import numpy as np
 import os
 import re
 import warnings
-import rlpy.Tools.results
-from rlpy.Tools import (
+import rlpy.tools.results
+from rlpy.tools import (
     checkNCreateDirectory,
     className,
     clock,
@@ -306,7 +306,7 @@ class Experiment(object):
         """
 
         if debug_on_sigurg:
-            rlpy.Tools.ipshell.ipdb_on_SIGURG()
+            rlpy.tools.ipshell.ipdb_on_SIGURG()
         self.performance_domain = deepcopy(self.domain)
         self.seed_components()
 
@@ -473,11 +473,11 @@ class Experiment(object):
         and the results array otherwise.
         """
         results_fn = os.path.join(self.full_path, self.output_filename)
-        self.results = rlpy.Tools.results.load_single(results_fn)
+        self.results = rlpy.tools.results.load_single(results_fn)
         return self.results
 
     def _plot_impl(self, y="return", x="learning_steps", save=False, show=True):
-        labels = rlpy.Tools.results.default_labels
+        labels = rlpy.tools.results.default_labels
         performance_fig = plt.figure("Performance")
         res = self.result
         plt.plot(res[x], res[y], lw=2, markersize=4, marker=MARKERS[0])
@@ -505,7 +505,7 @@ class Experiment(object):
         """Plots the performance of the experiment
         This function has only limited capabilities.
         For more advanced plotting of results consider
-        :py:class:`Tools.Merger.Merger`.
+        :py:class:`tools.Merger.Merger`.
         """
         with with_pdf_fonts():
             self._plot_impl(y, x, save, show)

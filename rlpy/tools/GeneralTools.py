@@ -115,7 +115,7 @@ def count_nonzero(arr):
     *arr*, such that only individual elements are examined. \n
     Some versions of numpy's count_nonzero only strictly compare each element;
     e.g. ``numpy.count_nonzero([[1,2,3,4,5], [6,7,8,9]])`` returns 2, while
-    ``Tools.count_nonzero([[1,2,3,4,5], [6,7,8,9]])`` returns 9.
+    ``tools.count_nonzero([[1,2,3,4,5], [6,7,8,9]])`` returns 9.
 
     """
 
@@ -610,7 +610,7 @@ def vec2id2(x, limits):
     .. note::
 
         This implementation is half as fast
-        as :py:meth:`~rlpy.Tools.GeneralTools.vec2id`.
+        as :py:meth:`~rlpy.tools.GeneralTools.vec2id`.
 
     """
     if isinstance(x, int):
@@ -630,7 +630,7 @@ def vec2id(x, limits):
 
     .. note::
 
-        See :py:meth:`~rlpy.Tools.GeneralTools.id2vec`, the inverse function.
+        See :py:meth:`~rlpy.tools.GeneralTools.id2vec`, the inverse function.
 
     .. warning::
 
@@ -661,7 +661,7 @@ def id2vec(_id, limits):
 
      .. note::
 
-        See :py:meth:`~rlpy.Tools.GeneralTools.vec2id`, the inverse function.
+        See :py:meth:`~rlpy.tools.GeneralTools.vec2id`, the inverse function.
 
     """
     prods = np.cumprod(limits)
@@ -934,7 +934,7 @@ def sp_matrix(m, n=1, dtype="float"):
 def sp_dot_array(sp_m, arr):
     """
     :param sp_m: a sparse 1-D array/matrix (created
-        with :py:meth:`~rlpy.Tools.GeneralTools.sp_matrix`)
+        with :py:meth:`~rlpy.tools.GeneralTools.sp_matrix`)
     :param arr: a (possibly dense) 1-D iterable type (ndarray, list, matrix)
 
     Returns dot product of 1-by-p matrix ``sp_m`` and length-p array arr.
@@ -956,7 +956,7 @@ def sp_dot_array(sp_m, arr):
 def sp_dot_sp(sp_1, sp_2):
     """
     :param sp_1: a sparse 1-D array/matrix (created
-        with :py:meth:`~rlpy.Tools.GeneralTools.sp_matrix`)
+        with :py:meth:`~rlpy.tools.GeneralTools.sp_matrix`)
     :param sp_2: another sparse 1-D array/matrix, len(sp_2) = len(sp_1).
 
     Returns dot product of 1-by-p matrices ``sp_1`` and ``sp_2``.
@@ -989,7 +989,7 @@ def sp_dot_sp(sp_1, sp_2):
 def sp_add2_array(sp, arr):
     """
     :param sp: sparse matrix p-by-1 (created
-        with :py:meth:`~rlpy.Tools.GeneralTools.sp_matrix`)
+        with :py:meth:`~rlpy.tools.GeneralTools.sp_matrix`)
     :param arr: a 1-D iterable type (ndarray, list, matrix) of length p.
 
     Returns ret = arr + sp (with type(ret) = type(arr))

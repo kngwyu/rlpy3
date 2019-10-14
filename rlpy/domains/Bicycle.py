@@ -2,7 +2,7 @@
 from .Domain import Domain
 import numpy as np
 from itertools import product
-from rlpy.Tools import plt
+from rlpy.tools import plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

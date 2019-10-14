@@ -5,7 +5,7 @@ samples)
 """
 from .Representation import Representation
 import numpy as np
-from rlpy.Tools.GeneralTools import addNewElementForAllActions
+from rlpy.tools.GeneralTools import addNewElementForAllActions
 import matplotlib.pyplot as plt
 
 try:

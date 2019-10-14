@@ -2,7 +2,7 @@
 from .Representation import Representation
 import numpy as np
 from .iFDD import iFDD
-from rlpy.Tools import className, plt
+from rlpy.tools import className, plt
 from copy import deepcopy
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

@@ -3,7 +3,7 @@ TODO - test hashing function
 """
 from rlpy.representations import TileCoding
 from rlpy.domains import GridWorld
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 import os
 
 

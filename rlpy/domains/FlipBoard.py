@@ -1,5 +1,5 @@
 """Flipboard domain."""
-from rlpy.Tools import FONTSIZE, id2vec, plt
+from rlpy.tools import FONTSIZE, id2vec, plt
 from .Domain import Domain
 import numpy as np
 

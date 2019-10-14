@@ -1,9 +1,9 @@
 """Representation base class."""
 import logging
 from copy import deepcopy
-from rlpy.Tools import addNewElementForAllActions
-from rlpy.Tools import vec2id, bin2state, findElemArray1D
-from rlpy.Tools import hasFunction, id2vec, closestDiscretization
+from rlpy.tools import addNewElementForAllActions
+from rlpy.tools import vec2id, bin2state, findElemArray1D
+from rlpy.tools import hasFunction, id2vec, closestDiscretization
 import scipy.sparse as sp
 import numpy as np
 

@@ -1,5 +1,5 @@
 """Radial Basis Function Representation"""
-from rlpy.Tools import perms
+from rlpy.tools import perms
 from .Representation import Representation
 import numpy as np
 

@@ -1,5 +1,5 @@
 """Fifty state chain."""
-from rlpy.Tools import plt, mpatches
+from rlpy.tools import plt, mpatches
 import numpy as np
 from .Domain import Domain
 

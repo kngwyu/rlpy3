@@ -1,8 +1,8 @@
 """Fixed policy. Encodes fixed policies for particular domains."""
-from rlpy.Tools import vec2id
+from rlpy.tools import vec2id
 from .Policy import Policy
 import numpy as np
-from rlpy.Tools import randSet, className
+from rlpy.tools import randSet, className
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

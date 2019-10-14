@@ -2,7 +2,7 @@ from .Policy import Policy
 
 import numpy as np
 from scipy.io import loadmat
-from rlpy.Tools import __rlpy_location__, cartesian
+from rlpy.tools import __rlpy_location__, cartesian
 import os
 
 

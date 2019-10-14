@@ -1,6 +1,6 @@
 import numpy as np
 from rlpy.domains import FiniteCartPoleBalanceOriginal, InfCartPoleBalance
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 import os
 import pytest
 

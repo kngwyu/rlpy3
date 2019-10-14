@@ -1,8 +1,8 @@
 """Gridworld Domain."""
 import numpy as np
 import itertools
-from rlpy.Tools import plt, FONTSIZE, linearMap
-from rlpy.Tools import __rlpy_location__, findElemArray1D, perms
+from rlpy.tools import plt, FONTSIZE, linearMap
+from rlpy.tools import __rlpy_location__, findElemArray1D, perms
 import os
 
 from .Domain import Domain

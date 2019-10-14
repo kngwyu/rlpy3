@@ -1,7 +1,7 @@
 """BlocksWorld domain, stacking of blocks to form a tower."""
 from .Domain import Domain
-from rlpy.Tools import id2vec, vec2id, findElemArray1D
-from rlpy.Tools import nchoosek, factorial, findElemArray2D, plt, FONTSIZE
+from rlpy.tools import id2vec, vec2id, findElemArray1D
+from rlpy.tools import nchoosek, factorial, findElemArray2D, plt, FONTSIZE
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

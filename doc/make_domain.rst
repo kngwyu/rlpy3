@@ -169,7 +169,7 @@ Note that the optimal policy is to always go right.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.Tools import plt, mpatches, fromAtoB
+        from rlpy.tools import plt, mpatches, fromAtoB
         from rlpy.domains.Domain import Domain
         import numpy as np
 

@@ -1,6 +1,6 @@
 """Control agents based on TD Learning, i.e., Q-Learning and SARSA"""
 from .Agent import Agent, DescentAlgorithm
-from rlpy.Tools import addNewElementForAllActions, count_nonzero
+from rlpy.tools import addNewElementForAllActions, count_nonzero
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

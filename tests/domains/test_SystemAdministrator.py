@@ -2,7 +2,7 @@ from rlpy.representations import IncrementalTabular
 from rlpy.domains import SystemAdministrator
 from rlpy.agents.TDControlAgent import SARSA
 import numpy as np
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 
 from rlpy.policies import eGreedy
 from rlpy.experiments import Experiment

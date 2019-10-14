@@ -208,7 +208,7 @@ extensions = [
         include_dirs=["rlpy.representations"],
     ),
     Extension(
-        "rlpy.Tools._transformations", ["rlpy/Tools/transformations.c"], include_dirs=[]
+        "rlpy.tools._transformations", ["rlpy/tools/transformations.c"], include_dirs=[]
     ),
 ]
 

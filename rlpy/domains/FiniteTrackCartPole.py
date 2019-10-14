@@ -1,7 +1,7 @@
 """Cart with a pole domains"""
 from .CartPoleBase import CartPoleBase, StateIndex
 import numpy as np
-from rlpy.Tools import pl, plt
+from rlpy.tools import pl, plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

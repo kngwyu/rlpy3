@@ -3,7 +3,7 @@ Experimental Implementation of Natural Actor Critic
 """
 import numpy as np
 from .Agent import Agent
-from rlpy.Tools import solveLinear, regularize
+from rlpy.tools import solveLinear, regularize
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

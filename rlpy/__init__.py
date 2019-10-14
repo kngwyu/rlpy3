@@ -1,5 +1,5 @@
 import rlpy.agents
-import rlpy.Tools
+import rlpy.tools
 import rlpy.domains
 import rlpy.mdp_solvers
 import rlpy.experiments

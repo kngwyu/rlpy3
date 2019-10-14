@@ -3,7 +3,7 @@ import numpy as np
 import csv
 import os
 from .Domain import Domain
-from rlpy.Tools import plt, __rlpy_location__
+from rlpy.tools import plt, __rlpy_location__
 
 try:
     import networkx as nx

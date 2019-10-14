@@ -2,8 +2,8 @@ import joblib
 import os
 import glob
 import re
-from rlpy.Tools import __rlpy_location__
-import rlpy.Tools.condor as ct
+from rlpy.tools import __rlpy_location__
+import rlpy.tools.condor as ct
 from time import sleep
 import cProfile
 import pstats

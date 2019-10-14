@@ -1,5 +1,5 @@
 """classic Acrobot task"""
-from rlpy.Tools import wrap, bound, lines, fromAtoB, rk4
+from rlpy.tools import wrap, bound, lines, fromAtoB, rk4
 from .Domain import Domain
 import numpy as np
 import matplotlib.pyplot as plt

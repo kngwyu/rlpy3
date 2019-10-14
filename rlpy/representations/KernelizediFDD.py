@@ -2,7 +2,7 @@
 import numpy as np
 from .Representation import Representation
 from itertools import combinations
-from rlpy.Tools import addNewElementForAllActions, PriorityQueueWithNovelty
+from rlpy.tools import addNewElementForAllActions, PriorityQueueWithNovelty
 import matplotlib.pyplot as plt
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

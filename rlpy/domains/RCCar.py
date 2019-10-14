@@ -1,5 +1,5 @@
 """RC-Car domain"""
-from rlpy.Tools import plt, bound, wrap, mpatches, id2vec
+from rlpy.tools import plt, bound, wrap, mpatches, id2vec
 import matplotlib as mpl
 from .Domain import Domain
 import numpy as np

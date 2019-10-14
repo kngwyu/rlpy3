@@ -186,7 +186,7 @@ between two policy assessments in less than one second.
 
 .. note::
     Throughout these experiments, if you see error messages similar to:
-    ``rlpy/Tools/transformations.py:1886: UserWarning: failed to import module
+    ``rlpy/tools/transformations.py:1886: UserWarning: failed to import module
     _transformations`` you may safely ignore them.  They merely reflect that
     configuration does not support all features of rlpy.
 
@@ -270,12 +270,12 @@ This means we need to execute the experiment with different seeds.
 Running experiments in Batch
 ----------------------------
 
-The module :mod:`Tools.run` provides several functions that are helpful for
-running experiments. The most important one is :func:`Tools.run.run`.
+The module :mod:`tools.run` provides several functions that are helpful for
+running experiments. The most important one is :func:`tools.run.run`.
 
 It allows us to run a specific experimental setup specified by a
 `make_experiment` function in a file with multiple seeds in parallel. For
-details see :func:`Tools.run.run`.
+details see :func:`tools.run.run`.
 
 You find in `examples/tutorial/run_infTrackCartPole_batch.py` a short script with the
 following content:
@@ -300,7 +300,7 @@ You can execute this script with::
 Analyzing Results
 -----------------
 
-Running experiments via :func:`Tools.run.run` automatically saves the results 
+Running experiments via :func:`tools.run.run` automatically saves the results 
 to the specified path. If we run an :class:`experiments.Experiment` instance
 directly, we can store the results on disc with the
 :func:`experiments.Experiment.save` method. The outcomes are then stored in
@@ -320,7 +320,7 @@ are stored in the JSON format that look for example like::
 
 The measurements of each assessment of the learned policy is stored
 sequentially under the corresponding name.
-The module :mod:`Tools.results` provides a library of functions and classes that 
+The module :mod:`tools.results` provides a library of functions and classes that 
 simplify the analysis and visualization of results. See the the api documentation
 for details.
 
@@ -335,7 +335,7 @@ how:
 
 First, we specify the results we specify the directories where the results are
 stored and give them a label, here *RBFs* and *Tabular*. Then we create an
-instance of :class:`Tools.results.MultiExperimentResults` which loads all
+instance of :class:`tools.results.MultiExperimentResults` which loads all
 corresponding results an let us analyze and transform them. In line 7, we plot
 the average return of each method over the number learning steps done so far.
 Finally, the plot is saved in `./Results/Tutorial/plot.pdf` in the lossless pdf

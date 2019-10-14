@@ -1,7 +1,7 @@
 """AnyRewardGridworld Domain."""
 import itertools
 import numpy as np
-from rlpy.Tools import __rlpy_location__, plt, with_bold_fonts
+from rlpy.tools import __rlpy_location__, plt, with_bold_fonts
 import os
 
 from .GridWorld import GridWorld

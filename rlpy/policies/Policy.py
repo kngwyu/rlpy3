@@ -1,5 +1,5 @@
 """Policy base class"""
-from rlpy.Tools import className, discrete_sample
+from rlpy.tools import className, discrete_sample
 import numpy as np
 import logging
 from abc import ABC, abstractmethod

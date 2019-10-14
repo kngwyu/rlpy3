@@ -12,7 +12,7 @@ except ImportError:
     import warnings
 
     warnings.warn("TkInter is not found for Pinball.")
-from rlpy.Tools import __rlpy_location__
+from rlpy.tools import __rlpy_location__
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

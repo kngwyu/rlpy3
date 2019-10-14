@@ -1,8 +1,8 @@
 """Helicopter hovering task."""
 from .Domain import Domain
 import numpy as np
-import rlpy.Tools.transformations as trans
-from rlpy.Tools.GeneralTools import cartesian
+import rlpy.tools.transformations as trans
+from rlpy.tools.GeneralTools import cartesian
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, Circle, Ellipse
 from mpl_toolkits.mplot3d import proj3d

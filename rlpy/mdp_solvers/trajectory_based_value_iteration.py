@@ -4,7 +4,7 @@
 
 The algorithm terminates if the maximum bellman-error in a consequent set of trajectories is below a threshold
 """
-from .MDPSolver import MDPSolver
+from .mdp_solver import MDPSolver
 from rlpy.tools import deltaT, hhmmss, randSet, className, clock
 import numpy as np
 

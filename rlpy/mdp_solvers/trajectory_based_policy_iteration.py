@@ -7,7 +7,7 @@
     * There is solveInMatrixFormat function which does policy evaluation in one shot using samples collected in the matrix format.
       Since the algorithm toss out the samples, convergence is hardly reached because the policy may alternate.
 """
-from .MDPSolver import MDPSolver
+from .mdp_solver import MDPSolver
 from rlpy.tools import (
     className,
     hhmmss,

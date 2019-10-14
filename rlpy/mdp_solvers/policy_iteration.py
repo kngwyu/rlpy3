@@ -2,7 +2,7 @@
 Performs Bellman Backup on a given s,a pair given a fixed policy by sweeping through the
 state space. Once the errors are bounded, the policy is changed.
 """
-from .MDPSolver import MDPSolver
+from .mdp_solver import MDPSolver
 from rlpy.tools import className, deltaT, hhmmss, clock, l_norm
 from copy import deepcopy
 from rlpy.policies import eGreedy

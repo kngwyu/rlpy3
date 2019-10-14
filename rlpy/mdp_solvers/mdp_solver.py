@@ -2,13 +2,9 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import logging
-from copy import deepcopy
 from rlpy.tools import (
     className,
     deltaT,
-    hhmmss,
-    clock,
-    l_norm,
     vec2id,
     checkNCreateDirectory,
 )

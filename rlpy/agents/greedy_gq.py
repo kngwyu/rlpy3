@@ -1,5 +1,5 @@
 """Greedy-GQ(lambda) learning agent"""
-from .Agent import Agent, DescentAlgorithm
+from .agent import Agent, DescentAlgorithm
 from rlpy.tools import addNewElementForAllActions, count_nonzero
 import numpy as np
 from copy import copy

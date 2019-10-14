@@ -1,5 +1,5 @@
-from .TDControlAgent import Q_Learning, SARSA
-from .Greedy_GQ import Greedy_GQ
-from .LSPI import LSPI
-from .LSPI_SARSA import LSPI_SARSA
-from .NaturalActorCritic import NaturalActorCritic
+from .td_control_agents import Q_Learning, SARSA
+from .greedy_gq import Greedy_GQ
+from .lspi import LSPI
+from .lspi_sarsa import LSPI_SARSA
+from .natural_actor_critic import NaturalActorCritic

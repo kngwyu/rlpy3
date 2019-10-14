@@ -17,7 +17,7 @@ __license__ = "BSD 3-Clause"
 class Domain(object):
     """
     The Domain controls the environment in which the
-    :py:class:`~rlpy.agents.Agent.Agent` resides as well as the reward function the
+    :py:class:`~rlpy.agents.agent.Agent` resides as well as the reward function the
     Agent is subject to.
 
     The Agent interacts with the Domain in discrete timesteps called

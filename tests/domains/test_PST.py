@@ -2,7 +2,7 @@ from rlpy.representations import IncrementalTabular
 from rlpy.domains import PST
 from rlpy.domains.PST import UAVLocation, ActuatorState, SensorState, UAVAction
 from rlpy.domains.PST import StateStruct
-from rlpy.agents.TDControlAgent import SARSA
+from rlpy.agents import SARSA
 import numpy as np
 from rlpy.tools import vec2id
 from rlpy.policies import eGreedy

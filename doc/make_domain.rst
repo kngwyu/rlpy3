@@ -12,7 +12,7 @@ and illustrates a brief example of creating a new problem domain.
 .. Below taken directly from Domain.py
 
 The Domain controls the environment in which the
-:class:`~rlpy.agents.Agent.Agent` resides as well as the reward function the
+:class:`~rlpy.agents.agent.Agent` resides as well as the reward function the
 Agent is subject to.
 
 The Agent interacts with the Domain in discrete timesteps called

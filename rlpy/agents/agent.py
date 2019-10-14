@@ -26,7 +26,7 @@ class Agent(ABC):
     timesteps.
     At each Experiment timestep the Agent receives some observations from the Domain
     which it uses to update the value function Representation of the Domain
-    (ie, on each call to its :py:meth:`~rlpy.agents.Agent.Agent.learn` function).
+    (ie, on each call to its :py:meth:`~rlpy.agents.agent.Agent.learn` function).
     The Policy is used to select an action to perform.
     This process (observe, update, act) repeats until some goal or fail state,
     determined by the Domain, is reached. At this point the
@@ -34,7 +34,7 @@ class Agent(ABC):
     whether the agent starts over or has its current policy tested
     (without any exploration).
 
-    :py:class:`~rlpy.agents.Agent.Agent` is a base class that provides the basic
+    :py:class:`~rlpy.agents.agent.Agent` is a base class that provides the basic
     framework for all RL agents. It provides the methods and attributes that
     allow child classes to interact with the
     :py:class:`~rlpy.domains.Domain.Domain`,

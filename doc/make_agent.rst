@@ -5,19 +5,19 @@
 Creating a New Agent
 ====================
 
-This tutorial describes the standard RLPy :class:`~rlpy.agents.Agent.Agent` interface,
+This tutorial describes the standard RLPy :class:`~rlpy.agents.agent.Agent` interface,
 and illustrates a brief example of creating a new learning agent.
 
 .. Below taken directly from Agent.py
 
-The Agent receives observations from the Domain and updates the 
+The Agent receives observations from the Domain and updates the
 Representation accordingly.
 
-In a typical Experiment, the Agent interacts with the Domain in discrete 
+In a typical Experiment, the Agent interacts with the Domain in discrete
 timesteps.
 At each Experiment timestep the Agent receives some observations from the Domain
 which it uses to update the value function Representation of the Domain
-(ie, on each call to its :func:`~rlpy.agents.Agent.Agent.learn` function).
+(ie, on each call to its :func:`~rlpy.agents.agent.Agent.learn` function).
 The Policy is used to select an action to perform.
 This process (observe, update, act) repeats until some goal or fail state,
 determined by the Domain, is reached. At this point the
@@ -26,26 +26,26 @@ whether the agent starts over or has its current policy tested
 (without any exploration).
 
 .. note ::
-    You may want to review the namespace / inheritance / scoping 
+    You may want to review the namespace / inheritance / scoping
     `rules in Python <https://docs.python.org/2/tutorial/classes.html>`_.
 
 
-Requirements 
+Requirements
 ------------
 
-* Each learning agent must be a subclass of :class:`~rlpy.agents.Agent.Agent` 
-  and call 
-  the :func:`~rlpy.agents.Agent.Agent.__init__` function of the Agent superclass.
+* Each learning agent must be a subclass of :class:`~rlpy.agents.agent.Agent`
+  and call
+  the :func:`~rlpy.agents.agent.Agent.__init__` function of the Agent superclass.
 
-* Accordingly, each Agent must be instantiated with a Representation, 
+* Accordingly, each Agent must be instantiated with a Representation,
   Policy, and Domain in the ``__init__()`` function
 
 * Any randomization that occurs at object construction *MUST* occur in
-  the :func:`~rlpy.agents.Agent.Agent.init_randomization` function, 
+  the :func:`~rlpy.agents.agent.Agent.init_randomization` function,
   which can be called by ``__init__()``.
 
-* Any random calls should use ``self.random_state``, not ``random()`` or 
-  ``np.random()``, as this will ensure consistent seeded results during 
+* Any random calls should use ``self.random_state``, not ``random()`` or
+  ``np.random()``, as this will ensure consistent seeded results during
   experiments.
 
 * After your agent is complete, you should define a unit test to ensure future
@@ -57,19 +57,19 @@ REQUIRED Instance Variables
 
 REQUIRED Functions
 """"""""""""""""""
-:func:`~rlpy.agents.Agent.Agent.learn` - called on every timestep (see documentation)
+:func:`~rlpy.agents.agent.Agent.learn` - called on every timestep (see documentation)
 
-  .. Note:: 
+  .. Note::
 
-      The Agent *MUST* call the (inherited) :func:`~rlpy.agents.Agent.Agent.episodeTerminated`
+      The Agent *MUST* call the (inherited) :func:`~rlpy.agents.agent.Agent.episodeTerminated`
       function after learning if the transition led to a terminal state
       (ie, ``learn()`` will return ``isTerminal=True``)
 
   .. Note::
 
-      The ``learn()`` function *MUST* call the 
+      The ``learn()`` function *MUST* call the
       :func:`~rlpy.representations.Representation.Representation.pre_discover`
-      function at its beginning, and 
+      function at its beginning, and
       :func:`~rlpy.representations.Representation.Representation.post_discover`
       at its end.  This allows adaptive representations to add new features
       (no effect on fixed ones).
@@ -78,25 +78,25 @@ REQUIRED Functions
 Additional Information
 ----------------------
 
-* As always, the agent can log messages using ``self.logger.info(<str>)``, see 
+* As always, the agent can log messages using ``self.logger.info(<str>)``, see
   the Python ``logger`` documentation
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.agents.Agent.Agent` for functions provided by the superclass.
+* See :class:`~rlpy.agents.agent.Agent` for functions provided by the superclass.
 
 
 
 Example: Creating the ``SARSA0`` Agent
 --------------------------------------
-In this example, we will create the standard SARSA learning agent (without 
+In this example, we will create the standard SARSA learning agent (without
 eligibility traces (ie the λ parameter= 0 always)).
 This algorithm first computes the Temporal Difference Error,
-essentially the difference between the prediction under the current 
+essentially the difference between the prediction under the current
 value function and what was actually observed
-(see e.g. `Sutton and Barto's *Reinforcement Learning* (1998) <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node60.html>`_ 
+(see e.g. `Sutton and Barto's *Reinforcement Learning* (1998) <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node60.html>`_
 or `Wikipedia <http://en.wikipedia.org/wiki/Temporal_difference_learning>`_).
-It then updates the representation by summing the current function with 
+It then updates the representation by summing the current function with
 this TD error, weighted by a factor called the *learning rate*.
 
 
@@ -109,7 +109,7 @@ this TD error, weighted by a factor called the *learning rate*.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.agents.Agent import Agent, DescentAlgorithm
+        from rlpy.agents import Agent, DescentAlgorithm
         import numpy
 
 #. Declare the class, create needed members variables (here a learning rate),
@@ -173,8 +173,8 @@ this TD error, weighted by a factor called the *learning rate*.
 
 .. note::
 
-    You can and should define helper functions in your agents as needed, and 
-    arrange class hierarchy. (See eg TDControlAgent.py)
+    You can and should define helper functions in your agents as needed, and
+    arrange class hierarchy. (See eg td_control_agents.py)
 
 
 That's it! Now test the agent by creating a simple settings file on the domain of your choice.
@@ -187,7 +187,7 @@ An example experiment is given below:
 What to do next?
 ----------------
 
-In this Agent tutorial, we have seen how to 
+In this Agent tutorial, we have seen how to
 
 * Write a learning agent that inherits from the RLPy base ``Agent`` class
 * Add the agent to RLPy and test it
@@ -195,12 +195,12 @@ In this Agent tutorial, we have seen how to
 
 Adding your component to RLPy
 """""""""""""""""""""""""""""
-If you would like to add your component to RLPy, we recommend developing on the 
+If you would like to add your component to RLPy, we recommend developing on the
 development version (see :ref:`devInstall`).
-Please use the following header at the top of each file:: 
+Please use the following header at the top of each file::
 
     __copyright__ = "Copyright 2013, RLPy http://www.acl.mit.edu/RLPy"
-    __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann", 
+    __credits__ = ["Alborz Geramifard", "Robert H. Klein", "Christoph Dann",
                     "William Dabney", "Jonathan P. How"]
     __license__ = "BSD 3-Clause"
     __author__ = "Tim Beaver"
@@ -208,18 +208,18 @@ Please use the following header at the top of each file::
 * Fill in the appropriate ``__author__`` name and ``__credits__`` as needed.
   Note that RLPy requires the BSD 3-Clause license.
 
-* If you installed RLPy in a writeable directory, the className of the new 
+* If you installed RLPy in a writeable directory, the className of the new
   agent can be added to
   the ``__init__.py`` file in the ``agents/`` directory.
   (This allows other files to import the new agent).
 
-* If available, please include a link or reference to the publication associated 
+* If available, please include a link or reference to the publication associated
   with this implementation (and note differences, if any).
 
 If you would like to add your new agent to the RLPy project, we recommend
-you branch the project and create a pull request to the 
+you branch the project and create a pull request to the
 `RLPy repository <https://bitbucket.org/rlpy/rlpy>`_.
 
-You can also email the community list ``rlpy@mit.edu`` for comments or 
+You can also email the community list ``rlpy@mit.edu`` for comments or
 questions. To subscribe `click here <http://mailman.mit.edu/mailman/listinfo/rlpy>`_.
 

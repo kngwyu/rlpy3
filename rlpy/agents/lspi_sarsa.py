@@ -1,6 +1,6 @@
 """Least-Squares Policy Iteration but with SARSA"""
-from .LSPI import LSPI
-from .TDControlAgent import SARSA
+from .lspi import LSPI
+from .td_control_agents import SARSA
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [

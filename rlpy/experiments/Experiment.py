@@ -37,7 +37,7 @@ class Experiment(object):
     """
     The Experiment controls the training, testing, and evaluation of the
     agent. Reinforcement learning is based around
-    the concept of training an :py:class:`~agents.Agent.Agent` to solve a task,
+    the concept of training an :py:class:`~agents.agent.Agent` to solve a task,
     and later testing its ability to do so based on what it has learned.
     This cycle forms a loop that the experiment defines and controls. First
     the agent is repeatedly tasked with solving a problem determined by the
@@ -91,7 +91,7 @@ class Experiment(object):
         **kwargs
     ):
         """
-        :param agent: the :py:class:`~agents.Agent.Agent` to use for learning the task.
+        :param agent: the :py:class:`~agents.agent.Agent` to use for learning the task.
         :param domain: the problem :py:class:`~domains.Domain.Domain` to learn
         :param exp_id: ID of this experiment (main seed used for calls to np.rand)
         :param max_steps: Total number of interactions (steps) before experiment termination.

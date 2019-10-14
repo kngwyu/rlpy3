@@ -1,5 +1,5 @@
 """An abstract class for Batch Learning agents"""
-from .Agent import Agent
+from .agent import Agent
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

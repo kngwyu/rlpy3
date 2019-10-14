@@ -1,5 +1,5 @@
 """Least-Squares Policy Iteration [Lagoudakis and Parr 2003]."""
-from .BatchAgent import BatchAgent
+from .batch_agent import BatchAgent
 import rlpy.tools as tools
 import numpy as np
 from scipy import sparse as sp

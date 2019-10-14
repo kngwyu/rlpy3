@@ -21,7 +21,7 @@ __author__ = "Alborz Geramifard"
 
 class Representation(object):
     """
-    The Representation is the :py:class:`~rlpy.agents.Agent.Agent`'s model of the
+    The Representation is the :py:class:`~rlpy.agents.agent.Agent`'s model of the
     value function associated with a :py:class:`~rlpy.domains.Domain.Domain`.
 
     As the Agent interacts with the Domain, it receives updates in the form of

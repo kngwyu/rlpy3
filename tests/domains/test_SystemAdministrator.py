@@ -1,6 +1,6 @@
 from rlpy.representations import IncrementalTabular
 from rlpy.domains import SystemAdministrator
-from rlpy.agents.TDControlAgent import SARSA
+from rlpy.agents import SARSA
 import numpy as np
 from rlpy.tools import __rlpy_location__
 

@@ -12,7 +12,7 @@ and illustrates a brief example of creating a new problem domain.
 .. Below taken directly from Policy.py
 
 The Policy determines the discrete action that an
-:py:class:`~rlpy.agents.Agent.Agent` will take  given its current value function
+:py:class:`~rlpy.agents.agent.Agent` will take  given its current value function
 :py:class:`~rlpy.representations.Representation.Representation`.
 
 The Agent learns about the :py:class:`~rlpy.domains.Domain.Domain`

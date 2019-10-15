@@ -5,18 +5,18 @@
 Creating a New Domain
 =====================
 
-This tutorial describes the standard RLPy 
-:class:`~rlpy.Domains.Domain.Domain` interface,
+This tutorial describes the standard RLPy
+:class:`~rlpy.domains.domain.Domain` interface,
 and illustrates a brief example of creating a new problem domain.
 
 .. Below taken directly from Domain.py
 
 The Domain controls the environment in which the
-:class:`~rlpy.Agents.Agent.Agent` resides as well as the reward function the
+:class:`~rlpy.agents.agent.Agent` resides as well as the reward function the
 Agent is subject to.
 
 The Agent interacts with the Domain in discrete timesteps called
-*episodes* (see :func:`~rlpy.Domains.Domain.Domain.step`).
+*episodes* (see :func:`~rlpy.domains.domain.Domain.step`).
 At each step, the Agent informs the Domain what indexed action it wants to
 perform.  The Domain then calculates the effects this action has on the
 environment and updates its internal state accordingly.
@@ -26,9 +26,9 @@ is reset to its initial state.
 
 This process repeats until the Domain determines that the Agent has either
 completed its goal or failed.
-The :py:class:`~rlpy.Experiments.Experiment.Experiment` controls this cycle.
+The :py:class:`~rlpy.experiments.experiment.Experiment` controls this cycle.
 
-Because Agents are designed to be agnostic to the Domain that they are
+Because agents are designed to be agnostic to the Domain that they are
 acting within and the problem they are trying to solve, the Domain needs
 to completely describe everything related to the task. Therefore, the
 Domain must not only define the observations that the Agent receives,
@@ -49,12 +49,12 @@ Requirements
 ------------
 
 * Each Domain must be a subclass of 
-  :class:`~rlpy.Domains.Domain.Domain` and call the 
-  :func:`~rlpy.Domains.Domain.Domain.__init__` function of the 
+  :class:`~rlpy.domains.domain.Domain` and call the 
+  :func:`~rlpy.domains.domain.Domain.__init__` function of the 
   Domain superclass.
 
 * Any randomization that occurs at object construction *MUST* occur in 
-  the :func:`~rlpy.Domains.Domain.Domain.init_randomization` function, 
+  the :func:`~rlpy.domains.domain.Domain.init_randomization` function, 
   which can be called by ``__init__()``.
 
 * Any random calls should use ``self.random_state``, not ``random()`` or
@@ -94,11 +94,11 @@ superclass ``__init__()`` function:
 
 REQUIRED Functions
 """"""""""""""""""
-#. :func:`~rlpy.Domains.Domain.Domain.s0`,
+#. :func:`~rlpy.domains.domain.Domain.s0`,
    (see linked documentation), which returns a (possibly random) state in the 
    domain, to be used at the start of an *episode*.
 
-#. :func:`~rlpy.Domains.Domain.Domain.step`,
+#. :func:`~rlpy.domains.domain.Domain.step`,
    (see linked documentation), which returns the tuple ``(r,ns,terminal, pa)`` 
    that results from taking action *a* from the current state (internal to the Domain).
 
@@ -112,9 +112,9 @@ SPECIAL Functions
 """""""""""""""""
 In many cases, the Domain will also override the functions:
 
-#. :func:`~rlpy.Domains.Domain.Domain.isTerminal` - returns a boolean whether or
+#. :func:`~rlpy.domains.domain.Domain.isTerminal` - returns a boolean whether or
    not the current (internal) state is terminal. Default is always return False.
-#. :func:`~rlpy.Domains.Domain.Domain.possibleActions` - returns an array of
+#. :func:`~rlpy.domains.domain.Domain.possibleActions` - returns an array of
    possible action indices, which often depend on the current state.
    Default is to enumerate **every** possible action, regardless of current state.
 
@@ -123,15 +123,15 @@ OPTIONAL Functions
 """"""""""""""""""
 Optionally, define / override the following functions, used for visualization:
 
-#. :func:`~rlpy.Domains.Domain.Domain.showDomain` - Visualization of domain based
+#. :func:`~rlpy.domains.domain.Domain.showDomain` - Visualization of domain based
    on current internal state and an action, *a*.
    Often the header will include an optional argument *s* to display instead 
    of the current internal state.
    RLPy frequently uses `matplotlib <http://matplotlib.org/>`_
    to accomplish this - see the example below.
-#. :func:`~rlpy.Domains.Domain.Domain.showLearning` - Visualization of the "learning"
+#. :func:`~rlpy.domains.domain.Domain.showLearning` - Visualization of the "learning"
    obtained so far on this domain, usually a value function plot and policy plot.
-   See the introductory tutorial for an example on :class:`~rlpy.Domains.Gridworld.GridWorld`
+   See the introductory tutorial for an example on :class:`~rlpy.domains.Gridworld.GridWorld`
 
 XX expectedStep(), XX
 
@@ -144,7 +144,7 @@ Additional Information
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.Domains.Domain.Domain` for functions 
+* See :class:`~rlpy.domains.domain.Domain` for functions 
   provided by the superclass, especially before defining 
   helper functions which might be redundant.
 
@@ -169,8 +169,8 @@ Note that the optimal policy is to always go right.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.Tools import plt, mpatches, fromAtoB
-        from rlpy.Domains.Domain import Domain
+        from rlpy.tools import plt, mpatches, fromAtoB
+        from rlpy.domains.domain import Domain
         import numpy as np
 
 #. Declare the class, create needed members variables (here several objects to
@@ -323,7 +323,7 @@ Note that RLPy requires the BSD 3-Clause license.
 
 * If you installed RLPy in a writeable directory, the className of the new 
   domain can be added to 
-  the ``__init__.py`` file in the ``Domains/`` directory.
+  the ``__init__.py`` file in the ``domains/`` directory.
   (This allows other files to import the new domain).
 
 * If available, please include a link or reference to the publication associated 

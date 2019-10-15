@@ -1,10 +1,10 @@
 doc/_build/*
 build/*
 Results/*
-rlpy/Representations/FastCythonKiFDD.cpp
-rlpy/Representations/hashing.c
-rlpy/Representations/kernels.cpp
-rlpy/Domains/HIVTreatment_dynamics.c
+rlpy/representations/*.cpp
+rlpy/representations/*.c
+rlpy/domains/*.c
+*.cpp
 *.so
 *.swp
 .project
@@ -19,3 +19,4 @@ dist
 .eggs
 /**/Results
 /**/Result
+MANIFEST

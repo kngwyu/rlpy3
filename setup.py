@@ -97,9 +97,9 @@ class CheckSDist(sdist):
     """Custom sdist that ensures Cython has compiled all pyx files to c."""
 
     _pyxfiles = [
-        "rlpy/Representations/hashing.pyx",
-        "rlpy/Domains/HIVTreatment_dynamics.pyx",
-        "rlpy/Representations/kernels.pyx",
+        "rlpy/representations/hashing.pyx",
+        "rlpy/domains/HIVTreatment_dynamics.pyx",
+        "rlpy/representations/kernels.pyx",
     ]
 
     def initialize_options(self):
@@ -183,32 +183,32 @@ else:
     CMD_CLASS["build_src"] = DummyBuildSrc
 
 # always cythonize if C-files are not present
-USE_CYTHON = not os.path.exists("rlpy/Representations/hashing.c") or os.getenv(
+USE_CYTHON = not os.path.exists("rlpy/representations/hashing.c") or os.getenv(
     "USE_CYTHON", False
 )
 extensions = [
     Extension(
-        "rlpy.Representations.hashing",
-        ["rlpy/Representations/hashing.pyx"],
-        include_dirs=["rlpy/Representations"],
+        "rlpy.representations.hashing",
+        ["rlpy/representations/hashing.pyx"],
+        include_dirs=["rlpy/representations"],
     ),
     Extension(
-        "rlpy.Domains.HIVTreatment_dynamics",
-        ["rlpy/Domains/HIVTreatment_dynamics.pyx"],
-        include_dirs=["rlpy/Representations"],
+        "rlpy.domains.HIVTreatment_dynamics",
+        ["rlpy/domains/HIVTreatment_dynamics.pyx"],
+        include_dirs=["rlpy/representations"],
     ),
     Extension(
-        "rlpy.Representations.kernels",
+        "rlpy.representations.kernels",
         [
-            "rlpy/Representations/kernels.pyx",
-            "rlpy/Representations/c_kernels.cc",
-            "rlpy/Representations/c_kernels.pxd",
+            "rlpy/representations/kernels.pyx",
+            "rlpy/representations/c_kernels.cc",
+            "rlpy/representations/c_kernels.pxd",
         ],
         language="c++",
-        include_dirs=["rlpy.Representations"],
+        include_dirs=["rlpy.representations"],
     ),
     Extension(
-        "rlpy.Tools._transformations", ["rlpy/Tools/transformations.c"], include_dirs=[]
+        "rlpy.tools._transformations", ["rlpy/tools/transformations.c"], include_dirs=[]
     ),
 ]
 
@@ -281,26 +281,6 @@ setup(
     + " Education and Research: Python3 Fork",
     long_description=LONG_DESCRIPTION,
     include_package_data=True,
-    data_files=[
-        ("rlpy/Domains/GridWorldMaps", glob.glob("./rlpy/Domains/GridWorldMaps/*.txt")),
-        (
-            "rlpy/Domains/IntruderMonitoringMaps",
-            glob.glob("./rlpy/Domains/IntruderMonitoringMaps/*.txt"),
-        ),
-        (
-            "rlpy/Domains/SystemAdministratorMaps",
-            glob.glob("./rlpy/Domains/SystemAdministratorMaps/*.txt"),
-        ),
-        (
-            "rlpy/Domains/PinballConfigs",
-            glob.glob("./rlpy/Domains/PinballConfigs/*.cfg"),
-        ),
-        (
-            "rlpy/Domains/PacmanPackage/layouts",
-            glob.glob("./rlpy/Domains/PacmanPackage/layouts/*.lay"),
-        ),
-        ("rlpy/Policies", glob.glob("./rlpy/Policies/*.mat")),
-    ],
     packages=find_packages(exclude=["tests", "tests.*"]),
     python_requires=REQUIRES_PYTHON,
     install_requires=REQUIRED,

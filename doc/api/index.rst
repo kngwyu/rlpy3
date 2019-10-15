@@ -17,7 +17,7 @@ Base Classes
    mdp_solver.rst
    domain.rst
 
-Domains
+domains
 #######
 
 .. toctree::

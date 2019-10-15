@@ -1,5 +1,5 @@
-from rlpy.Domains import BicycleRiding
-from rlpy.Tools.cli import run_experiment
+from rlpy.domains import BicycleRiding
+from rlpy.tools.cli import run_experiment
 
 import methods
 

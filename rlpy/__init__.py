@@ -1,10 +1,10 @@
-import rlpy.Agents
-import rlpy.Tools
-import rlpy.Domains
-import rlpy.MDPSolvers
-import rlpy.Experiments
-import rlpy.Policies
-import rlpy.Representations
+import rlpy.agents
+import rlpy.tools
+import rlpy.domains
+import rlpy.mdp_solvers
+import rlpy.experiments
+import rlpy.policies
+import rlpy.representations
 
 
 __version__ = "2.0.0a0"

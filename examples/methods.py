@@ -1,7 +1,7 @@
-from rlpy.Agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
-from rlpy.Policies import eGreedy, GibbsPolicy
-from rlpy import Representations
-from rlpy.Representations import (
+from rlpy.agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
+from rlpy.policies import eGreedy, GibbsPolicy
+from rlpy import representations
+from rlpy.representations import (
     iFDD,
     iFDDK,
     IndependentDiscretization,
@@ -178,7 +178,7 @@ def kifdd_q(
     kifdd = KernelizediFDD(
         domain,
         sparsify=True,
-        kernel=getattr(Representations, kernel),
+        kernel=getattr(representations, kernel),
         kernel_args=[kernel_width],
         active_threshold=0.01,
         discover_threshold=threshold,

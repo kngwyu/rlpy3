@@ -7,3 +7,5 @@ test:
 	pipenv run python -m pytest $(ARGS)
 example:
 	pipenv run python examples/$(ARGS)
+clean:
+	pipenv run python setup.py clean

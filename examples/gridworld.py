@@ -1,6 +1,6 @@
 import click
-from rlpy.Domains import GridWorld
-from rlpy.Tools.cli import run_experiment
+from rlpy.domains import GridWorld
+from rlpy.tools.cli import run_experiment
 
 import methods
 

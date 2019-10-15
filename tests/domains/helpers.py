@@ -1,5 +1,5 @@
 import numpy as np
-from rlpy.Tools import plt, nogui_mode
+from rlpy.tools import plt, nogui_mode
 
 nogui_mode()
 

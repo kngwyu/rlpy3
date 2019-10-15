@@ -186,7 +186,7 @@ between two policy assessments in less than one second.
 
 .. note::
     Throughout these experiments, if you see error messages similar to:
-    ``rlpy/Tools/transformations.py:1886: UserWarning: failed to import module
+    ``rlpy/tools/transformations.py:1886: UserWarning: failed to import module
     _transformations`` you may safely ignore them.  They merely reflect that
     configuration does not support all features of rlpy.
 
@@ -197,12 +197,12 @@ A Slightly More Challenging Domain: Inverted Pole Balancing
 
 We will now look at how to run experiments in batch and how to analyze and
 compare the performance of different methods on the same task. To this end, we
-compare different value function representations on the Cart-Pole Balancing task 
+compare different value function representations on the Cart-Pole Balancing task
 with an infinite track. The task is to keep a pole balanced upright. The pole
 is mounted on a cart which we can either push to the left or right.
 
 The experimental setup is specified in `examples/tutorial/infTrackCartPole_tabular.py` with
-a tabular representation and in `examples/tutorial/infTrackCartPole_rbfs.py` with radial 
+a tabular representation and in `examples/tutorial/infTrackCartPole_rbfs.py` with radial
 basis functions (RBFs). The content of `infTrackCartPole_rbfs.py` is
 
 .. literalinclude:: ../examples/tutorial/infTrackCartPole_rbfs.py
@@ -210,8 +210,8 @@ basis functions (RBFs). The content of `infTrackCartPole_rbfs.py` is
    :linenos:
 
 Again, as the first GridWorld example, the main content of the file is a
-`make_experiment` function which takes an id, a path and some more optional 
-parameters and returns an :class:`Experiment.Experiment` instance. 
+`make_experiment` function which takes an id, a path and some more optional
+parameters and returns an :class:`experiment.Experiment` instance.
 This is the standard format of
 an RLPy experiment description and will allow us to run it in parallel on
 several cores on one computer or even on a computing cluster with numerous
@@ -220,8 +220,8 @@ machines.
 The content of `infTrackCartPole_tabular.py` is very similar but
 differs in the definition of the representation parameter of the agent.
 Compared to our first example,
-the experiment is now executed by calling its :func:`Experiments.Experiment.run_from_commandline` method.
-This is a wrapper around :func:`Experiments.Experiment.run` and allows to specify the options for
+the experiment is now executed by calling its :func:`experiments.Experiment.run_from_commandline` method.
+This is a wrapper around :func:`experiments.Experiment.run` and allows to specify the options for
 visualization during the execution with command line arguments. You can for
 example run::
 
@@ -267,15 +267,15 @@ In order to properly assess the quality of the learning algorithm using this
 representation, we need to average over several independent learning sequences.
 This means we need to execute the experiment with different seeds.
 
-Running Experiments in Batch
+Running experiments in Batch
 ----------------------------
 
-The module :mod:`Tools.run` provides several functions that are helpful for
-running experiments. The most important one is :func:`Tools.run.run`.
+The module :mod:`tools.run` provides several functions that are helpful for
+running experiments. The most important one is :func:`tools.run.run`.
 
 It allows us to run a specific experimental setup specified by a
 `make_experiment` function in a file with multiple seeds in parallel. For
-details see :func:`Tools.run.run`.
+details see :func:`tools.run.run`.
 
 You find in `examples/tutorial/run_infTrackCartPole_batch.py` a short script with the
 following content:
@@ -300,10 +300,10 @@ You can execute this script with::
 Analyzing Results
 -----------------
 
-Running experiments via :func:`Tools.run.run` automatically saves the results 
-to the specified path. If we run an :class:`Experiments.Experiment` instance
+Running experiments via :func:`tools.run.run` automatically saves the results 
+to the specified path. If we run an :class:`experiments.Experiment` instance
 directly, we can store the results on disc with the
-:func:`Experiments.Experiment.save` method. The outcomes are then stored in
+:func:`experiments.Experiment.save` method. The outcomes are then stored in
 the directory that is passed during initialization. The filename has the format
 `XXX-results.json` where `XXX` is the id / seed of the experiment. The results
 are stored in the JSON format that look for example like::
@@ -320,7 +320,7 @@ are stored in the JSON format that look for example like::
 
 The measurements of each assessment of the learned policy is stored
 sequentially under the corresponding name.
-The module :mod:`Tools.results` provides a library of functions and classes that 
+The module :mod:`tools.results` provides a library of functions and classes that 
 simplify the analysis and visualization of results. See the the api documentation
 for details.
 
@@ -335,7 +335,7 @@ how:
 
 First, we specify the results we specify the directories where the results are
 stored and give them a label, here *RBFs* and *Tabular*. Then we create an
-instance of :class:`Tools.results.MultiExperimentResults` which loads all
+instance of :class:`tools.results.MultiExperimentResults` which loads all
 corresponding results an let us analyze and transform them. In line 7, we plot
 the average return of each method over the number learning steps done so far.
 Finally, the plot is saved in `./Results/Tutorial/plot.pdf` in the lossless pdf

@@ -3,12 +3,12 @@
 Acrobot with Euler Integration
 ------------------------------
 
-.. autoclass:: rlpy.Domains.Acrobot.AcrobotLegacy
+.. autoclass:: rlpy.domains.Acrobot.AcrobotLegacy
     :members:
     :inherited-members:
 
 Acrobot with Runge-Kutta Integration
 ------------------------------------
 
-.. autoclass:: rlpy.Domains.Acrobot.Acrobot
+.. autoclass:: rlpy.domains.Acrobot.Acrobot
     :members:

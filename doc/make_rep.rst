@@ -6,19 +6,19 @@ Creating a New Representation
 =============================
 
 This tutorial describes the standard RLPy 
-:class:`~rlpy.Representations.Representation.Representation` interface,
+:class:`~rlpy.representations.Representation` interface,
 and illustrates a brief example of creating a new value function representation.
 
 .. Below taken directly from Representation.py
 
 The Representation is the approximation of the
-value function associated with a :py:class:`~rlpy.Domains.Domain.Domain`,
+value function associated with a :py:class:`~rlpy.domains.domain.Domain`,
 usually in some lower-dimensional feature space.
 
 The Agent receives observations from the Domain on each step and calls 
-its :func:`~rlpy.Agents.Agent.Agent.learn` function, which is responsible for updating the
+its :func:`~rlpy.agents.agent.Agent.learn` function, which is responsible for updating the
 Representation accordingly.
-Agents can later query the Representation for the value of being in a state
+agents can later query the Representation for the value of being in a state
 *V(s)* or the value of taking an action in a particular state
 ( known as the Q-function, *Q(s,a)* ).
 
@@ -35,18 +35,18 @@ Requirements
 ------------
 
 * Each Representation must be a subclass of 
-  :class:`~rlpy.Representations.Representation.Representation` and call the 
-  :func:`~rlpy.Representations.Representation.Representation.__init__` function 
+  :class:`~rlpy.representations.Representation` and call the 
+  :func:`~rlpy.representations.Representation.__init__` function 
   of the Representation superclass.
 
 * Accordingly, each Representation must be instantiated with
   and a Domain in the ``__init__()`` function.  Note that an optional
-  ``discretization`` parameter may be used by discrete Representations 
+  ``discretization`` parameter may be used by discrete representations 
   attempting to represent a value function over a continuous space.
   It is ignored for discrete dimensions.
 
 * Any randomization that occurs at object construction *MUST* occur in
-  the :func:`~rlpy.Representations.Representation.Represenation.init_randomization`
+  the :func:`~rlpy.representations.Representation.Represenation.init_randomization`
   function, which can be called by ``__init__()``.
 
 * Any random calls should use ``self.random_state``, not ``random()`` or 
@@ -73,24 +73,24 @@ REQUIRED Functions
 """"""""""""""""""
 The new Representation *MUST* define two functions:
 
-#. :func:`~rlpy.Representations.Representation.Representation.phi_nonTerminal`,
+#. :func:`~rlpy.representations.Representation.phi_nonTerminal`,
    (see linked documentation), which returns a vector of feature function 
    values associated with a particular state.
 
-#. :func:`~rlpy.Representations.Representation.Representation.featureType`,
+#. :func:`~rlpy.representations.Representation.featureType`,
    (see linked documentation), which returns the data type of the underlying
    feature functions (eg "float" or "bool").
 
 SPECIAL Functions
 """""""""""""""""
-Representations whose feature functions may change over the course of execution
-(termed **adaptive** or **dynamic** Representations) should override 
+representations whose feature functions may change over the course of execution
+(termed **adaptive** or **dynamic** representations) should override 
 one or both functions below as needed.
 Note that ``self.isDynamic`` should = ``True``.
 
-#. :func:`~rlpy.Representations.Representation.Representation.pre_discover`
+#. :func:`~rlpy.representations.Representation.pre_discover`
 
-#. :func:`~rlpy.Representations.Representation.Representation.post_discover`
+#. :func:`~rlpy.representations.Representation.post_discover`
 
 Additional Information
 ----------------------
@@ -100,7 +100,7 @@ Additional Information
 
 * You should log values assigned to custom parameters when ``__init__()`` is called.
 
-* See :class:`~rlpy.Representations.Representation.Representation` for functions 
+* See :class:`~rlpy.representationsRepresentation` for functions 
   provided by the superclass, especially before defining 
   helper functions which might be redundant.
 
@@ -108,12 +108,12 @@ Additional Information
 
 Example: Creating the ``IncrementalTabular`` Representation
 -----------------------------------------------------------
-In this example we will recreate the simple :class:`~rlpy.Representations.IncrementalTabular.IncrementalTabular`  Representation, which 
+In this example we will recreate the simple :class:`~rlpy.representations.IncrementalTabular.IncrementalTabular`  Representation, which 
 merely creates a binary feature function f\ :sub:`d`\ () that is associated with each
 discrete state ``d`` we have encountered so far.
 f\ :sub:`d`\ (s) = 1 when *d=s*, 0 elsewhere, ie, the vector of feature 
 functions evaluated at *s* will have all zero elements except one.
-Note that this is identical to the :class:`~rlpy.Representations.Tabular.Tabular` 
+Note that this is identical to the :class:`~rlpy.representations.Tabular.Tabular` 
 Representation, except that feature functions are only created as needed, not 
 instantiated for every single state at the outset.
 Though simple, neither the ``Tabular`` nor ``IncrementalTabular`` representations
@@ -132,7 +132,7 @@ are discretized.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.Representations.Representation import Representation
+        from rlpy.representations import Representation
         import numpy as np
         from copy import deepcopy
 
@@ -242,7 +242,7 @@ Please use the following header at the top of each file::
 
 * If you installed RLPy in a writeable directory, the className of the new 
   representation can be added to
-  the ``__init__.py`` file in the ``Representations/`` directory.
+  the ``__init__.py`` file in the ``representations/`` directory.
   (This allows other files to import the new representation).
 
 * If available, please include a link or reference to the publication associated 

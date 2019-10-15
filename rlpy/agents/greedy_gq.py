@@ -1,8 +1,8 @@
 """Greedy-GQ(lambda) learning agent"""
-from .agent import Agent, DescentAlgorithm
-from rlpy.tools import addNewElementForAllActions, count_nonzero
-import numpy as np
 from copy import copy
+import numpy as np
+from rlpy.tools import addNewElementForAllActions, count_nonzero
+from .agent import Agent, DescentAlgorithm
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -16,34 +16,35 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Greedy_GQ(DescentAlgorithm, Agent):
+class GreedyGQ(Agent, DescentAlgorithm):
     """
     A variant of Q-learning for use with linear function approximation.
-    Convergence guarantees are available even without an exact value 
+    Convergence guarantees are available even without an exact value
     function representation.
     See Maei et al., 2010 (http://www.icml2010.org/papers/627.pdf)
 
     """
 
-    lambda_ = 0  # lambda Parameter in SARSA [Sutton Book 1998]
-    eligibility_trace = []
-    # eligibility trace using state only (no copy-paste), necessary for dabney
-    # decay mode
-    eligibility_trace_s = []
-
-    def __init__(self, policy, representation, lambda_=0, BetaCoef=1e-6, **kwargs):
+    def __init__(
+        self,
+        policy,
+        representation,
+        discount_factor=1.0,
+        lambda_=0,
+        beta_coef=1e-6,
+        **kwargs
+    ):
+        super().__init__(policy, representation, discount_factor)
+        DescentAlgorithm.__init__(self, **kwargs)
         self.eligibility_trace = np.zeros(
             representation.features_num * representation.actions_num
         )
         # use a state-only version of eligibility trace for dabney decay mode
         self.eligibility_trace_s = np.zeros(representation.features_num)
         self.lambda_ = lambda_
-        super(Greedy_GQ, self).__init__(
-            policy=policy, representation=representation, **kwargs
-        )
-        self.GQWeight = copy(self.representation.weight_vec)
+        self.gqweight = copy(self.representation.weight_vec)
         # The beta in the GQ algorithm is assumed to be learn_rate * THIS CONSTANT
-        self.secondLearningRateCoef = BetaCoef
+        self.second_lr_coef = beta_coef
 
     def learn(self, s, p_actions, a, r, ns, np_actions, na, terminal):
         self.representation.pre_discover(s, False, a, ns, terminal)
@@ -57,7 +58,7 @@ class Greedy_GQ(DescentAlgorithm, Agent):
         phi_prime = self.representation.phi_sa(ns, terminal, na, phi_prime_s)
         nnz = count_nonzero(phi_s)  # Number of non-zero elements
 
-        expanded = (len(phi) - len(self.GQWeight)) // self.representation.actions_num
+        expanded = (len(phi) - len(self.gqweight)) // self.representation.actions_num
         if expanded > 0:
             self._expand_vectors(expanded)
         # Set eligibility traces:
@@ -82,16 +83,14 @@ class Greedy_GQ(DescentAlgorithm, Agent):
         )
 
         if nnz > 0:  # Phi has some nonzero elements, proceed with update
-            td_error_estimate_now = np.dot(phi, self.GQWeight)
-            Delta_weight_vec = (
+            td_error_estimate_now = np.dot(phi, self.gqweight)
+            delta_weight_vec = (
                 td_error * self.eligibility_trace
                 - discount_factor * td_error_estimate_now * phi_prime
             )
-            weight_vec += self.learn_rate * Delta_weight_vec
-            Delta_GQWeight = (td_error - td_error_estimate_now) * phi
-            self.GQWeight += (
-                self.learn_rate * self.secondLearningRateCoef * Delta_GQWeight
-            )
+            weight_vec += self.learn_rate * delta_weight_vec
+            delta_gqweight = (td_error - td_error_estimate_now) * phi
+            self.gqweight += self.learn_rate * self.second_lr_coef * delta_gqweight
 
         expanded = self.representation.post_discover(s, False, a, td_error, phi_s)
         if expanded:
@@ -104,8 +103,8 @@ class Greedy_GQ(DescentAlgorithm, Agent):
         correct size of GQ weight and e-traces when new features were expanded
         """
         new_elem = np.zeros((self.representation.actions_num, num_expansions))
-        self.GQWeight = addNewElementForAllActions(
-            self.GQWeight, self.representation.actions_num, new_elem
+        self.gqweight = addNewElementForAllActions(
+            self.gqweight, self.representation.actions_num, new_elem
         )
         if self.lambda_:
             # Correct the size of eligibility traces (pad with zeros for new

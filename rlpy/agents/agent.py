@@ -48,49 +48,28 @@ class Agent(ABC):
 
     """
 
-    # The Representation to be used by the Agent
-    representation = None
-    #: discount factor determining the optimal policy
-    discount_factor = None
-    #: The policy to be used by the agent
-    policy = None
-    #: The eligibility trace, which marks states as eligible for a learning
-    #: update. Used by \ref agents.SARSA.SARSA "SARSA" agent when the
-    #: parameter lambda is set. See:
-    #: http://www.incompleteideas.net/sutton/book/7/node1.html
-    eligibility_trace = []
-    #: A simple object that records the prints in a file
-    logger = None
-    #: number of seen episodes
-    episode_count = 0
-    # A seeded numpy random number generator
-    random_state = None
-
-    def __init__(self, policy, representation, discount_factor, seed=1, **kwargs):
+    def __init__(self, policy, representation, discount_factor, seed=1):
         """initialization.
-
-        :param representation: the :py:class:`~rlpy.Representation.Representation.Representation`
+        :param representation: the :py:class:`~rlpy.representations.Representation`
             to use in learning the value function.
-        :param policy: the :py:class:`~rlpy.policies.Policy.Policy` to use when selecting actions.
-        :param discount_factor: the discount factor of the optimal policy which should be
-            learned
-        :param initial_learn_rate: Initial learning rate to use (where applicable)
-
-        .. warning::
-            ``initial_learn_rate`` should be set to 1 for automatic learning rate;
-            otherwise, initial_learn_rate will act as a permanent upper-bound on learn_rate.
-
-        :param learn_rate_decay_mode: The learning rate decay mode (where applicable)
-        :param boyan_N0: Initial Boyan rate parameter (when learn_rate_decay_mode='boyan')
-
+        :param policy: the :py:class:`~rlpy.policies.Policy.Policy` to use
+            when selecting actions.
+        :param discount_factor: the discount factor of the optimal policy which
+            should be  learned
         """
         self.representation = representation
         self.policy = policy
         self.discount_factor = discount_factor
         self.logger = logging.getLogger("rlpy.agents." + self.__class__.__name__)
-
         # a new stream of random numbers for each agent
         self.random_state = np.random.RandomState(seed=seed)
+        #: number of seen episodes
+        self.episode_count = 0
+        #: The eligibility trace, which marks states as eligible for a learning
+        #: update. Used by \ref agents.SARSA.SARSA "SARSA" agent when the
+        #: parameter lambda is set. See:
+        #: http://www.incompleteideas.net/sutton/book/7/node1.html
+        self.eligibility_trace = None
 
     def init_randomization(self):
         """
@@ -133,49 +112,26 @@ class Agent(ABC):
         """
         # Increase the number of episodes
         self.episode_count += 1
-
+        self.representation.episodeTerminated()
         # Set eligibility Traces to zero if it is end of the episode
-        if hasattr(self, "eligibility_trace"):
+        if self.eligibility_trace is not None:
             self.eligibility_trace = np.zeros_like(self.eligibility_trace)
 
 
-class DescentAlgorithm(object):
+class DescentAlgorithm:
     """
     Abstract base class that contains step-size control methods for (stochastic)
     descent algorithms such as TD Learning, Greedy-GQ etc.
     """
 
-    # The initial learning rate. Note that initial_learn_rate should be set to
-    # 1 for automatic learning rate; otherwise, initial_learn_rate will act as
-    # a permanent upper-bound on learn_rate.
-    initial_learn_rate = 0.1
-    #: The learning rate
-    learn_rate = 0
-    #: The eligibility trace, which marks states as eligible for a learning
-    #: update. Used by \ref agents.SARSA.SARSA "SARSA" agent when the
-    #: parameter lambda is set. See:
-    #: http://www.incompleteideas.net/sutton/book/7/node1.html
-    eligibility_trace = []
-    #: A simple object that records the prints in a file
-    logger = None
-    #: Used by some learn_rate_decay modes
-    episode_count = 0
-    # Decay mode of learning rate. Options are determined by valid_decay_modes.
-    learn_rate_decay_mode = "dabney"
     # Valid selections for the ``learn_rate_decay_mode``.
-    valid_decay_modes = ["dabney", "boyan", "const", "boyan_const"]
-    #  The N0 parameter for boyan learning rate decay
-    boyan_N0 = 1000
+    VALID_DECAY_MODES = ["dabney", "boyan", "const", "boyan_const"]
 
     def __init__(
-        self,
-        initial_learn_rate=0.1,
-        learn_rate_decay_mode="dabney",
-        boyan_N0=1000,
-        **kwargs
+        self, initial_learn_rate=0.1, learn_rate_decay_mode="dabney", boyan_N0=1000
     ):
         """
-        :param initial_learn_rate: Initial learning rate to use (where applicable)
+        :param initial_learn_rate: Initial learning rate to use (where applicable).
 
         .. warning::
             ``initial_learn_rate`` should be set to 1 for automatic learning rate;
@@ -185,18 +141,17 @@ class DescentAlgorithm(object):
         :param boyan_N0: Initial Boyan rate parameter (when learn_rate_decay_mode='boyan')
 
         """
+        if learn_rate_decay_mode not in self.VALID_DECAY_MODES:
+            raise ValueError("Invalid decay mode: {}".format(learn_rate_decay_mode))
         self.initial_learn_rate = initial_learn_rate
         self.learn_rate = initial_learn_rate
         self.learn_rate_decay_mode = learn_rate_decay_mode.lower()
         self.boyan_N0 = boyan_N0
-
         # Note that initial_learn_rate should be set to 1 for automatic learning rate; otherwise,
         # initial_learn_rate will act as a permanent upper-bound on learn_rate.
         if self.learn_rate_decay_mode == "dabney":
             self.initial_learn_rate = 1.0
             self.learn_rate = 1.0
-
-        super(DescentAlgorithm, self).__init__(**kwargs)
 
     def updateLearnRate(
         self, phi, phi_prime, eligibility_trace, discount_factor, nnz, terminal
@@ -246,18 +201,3 @@ class DescentAlgorithm(object):
             self.learn_rate = self.initial_learn_rate
         else:
             self.logger.warn("Unrecognized decay mode ")
-
-    def episodeTerminated(self):
-        """
-        This function adjusts all necessary elements of the agent at the end of
-        the episodes.
-
-        .. note::
-            Every Agent must call this function at the end of the learning if the
-            transition led to terminal state.
-
-        """
-        # Increase the number of episodes
-        self.episode_count += 1
-        self.representation.episodeTerminated()
-        super(DescentAlgorithm, self).episodeTerminated()

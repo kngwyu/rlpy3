@@ -1,6 +1,6 @@
 """An abstract class for Batch Learning agents"""
-from .agent import Agent
 import numpy as np
+from .agent import Agent
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -15,21 +15,22 @@ __author__ = "Alborz Geramifard"
 
 
 class BatchAgent(Agent):
-
     """An abstract class for batch agents
     """
 
-    max_window = 0
-    samples_count = 0  # Number of samples gathered so far
-
     def __init__(self, policy, representation, discount_factor, max_window):
-
-        super(BatchAgent, self).__init__(
-            policy, representation, discount_factor=discount_factor
-        )
-
+        """
+        :param representation: the :py:class:`~rlpy.representations.Representation`
+            to use in learning the value function.
+        :param policy: the :py:class:`~rlpy.policies.Policy.Policy` to use
+            when selecting actions.
+        :param discount_factor: the discount factor of the optimal policy which
+            should be  learned
+        :param max_window: Max size of a batch
+        """
+        super().__init__(policy, representation, discount_factor=discount_factor)
         self.max_window = max_window
-        self.samples_count = 0
+        self.samples_count = 0  #: Number of samples gathered so far
 
         # Take memory for stored values
         self.data_s = np.zeros((max_window, self.representation.state_space_dims))

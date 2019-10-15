@@ -2,8 +2,8 @@
 Experimental Implementation of Natural Actor Critic
 """
 import numpy as np
-from .agent import Agent
 from rlpy.tools import solveLinear, regularize
+from .agent import Agent
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -42,21 +42,21 @@ class NaturalActorCritic(Agent):
         learn_rate,
     ):
         """
-        @param representation: function approximation used to approximate the
+        :param representation: function approximation used to approximate the
                                value function
-        @param policy:  parametrized stochastic policy that is an instance of
+        :param policy:  parametrized stochastic policy that is an instance of
                                 DifferentiablePolicy
-        @param forgetting_rate: specifies the decay of previous statistics
+        :param forgetting_rate: specifies the decay of previous statistics
                                 after a policy update; 1 = forget all
                                 0 = forget none
-        @param min_steps_between_updates: minimum number of steps between
+        :param min_steps_between_updates: minimum number of steps between
                                 two policy updates
-        @param max_steps_between_updates
-        @param lambda_:    e-trace parameter lambda
-        @param learn_rate:  learning rate
+        :param max_steps_between_updates
+        :param lambda_:    e-trace parameter lambda
+        :param learn_rate:  learning rate
 
         """
-
+        super().__init__(policy, representation, discount_factor)
         self.samples_count = 0
         self.forgetting_rate = forgetting_rate
         self.n = representation.features_num + len(policy.theta)
@@ -71,10 +71,6 @@ class NaturalActorCritic(Agent):
         self.A = np.zeros((self.n, self.n))
         self.buf_ = np.zeros((self.n, self.n))
         self.z = np.zeros((self.n))
-
-        super(NaturalActorCritic, self).__init__(
-            policy, representation, discount_factor
-        )
 
     def learn(self, s, p_actions, a, r, ns, np_actions, na, terminal):
 

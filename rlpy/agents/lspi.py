@@ -1,8 +1,8 @@
 """Least-Squares Policy Iteration [Lagoudakis and Parr 2003]."""
-from .batch_agent import BatchAgent
-import rlpy.tools as tools
 import numpy as np
+from rlpy import tools
 from scipy import sparse as sp
+from .batch_agent import BatchAgent
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -17,41 +17,8 @@ __author__ = "Alborz Geramifard"
 
 
 class LSPI(BatchAgent):
-
     """Least Squares Policy Iteration reinforcement learning agent.
-
-    Args:
-        representation (Representation):    Representation over the state features used by the agent.
-
-        policy (Policy):    Policy used by the agent.
-
-        discount_factor (double): discount factor of future rewards
-        max_window (int):   Maximum number of steps the agent will be run for,
-                            which acts as the number of transitions to store.
-
-        steps_between_LSPI (int):   Number of steps between runs of the LSPI algorithm.
-
-        lspi_iterations (int):  Maximum number of iterations to go through for each update with LSPI.
-
-        tol_epsilon (float):    Stopping criteria, threshold, for when LSPI is considered to have converged.
-
-        re_iterations (int):    Number of iterations of representation expansion to run.
-
-        use_sparse (bool):  Use sparse operators for building the matrix of transitions?
-
     """
-
-    use_sparse = 0  # Use sparse operators for building A?
-    lspi_iterations = 0  # Number of LSPI iterations
-    # Number of samples to be used to calculate the A and b matrices
-    steps_between_LSPI = 0  # Number of samples between each LSPI run.
-    samples_count = 0  # Number of samples gathered so far
-    # Minimum l_2 change required to continue iterations in LSPI
-    tol_epsilon = 0
-
-    # Reprsentation Expansion
-    # Maximum number of iterations over LSPI and Representation expansion
-    re_iterations = 0
 
     def __init__(
         self,
@@ -59,22 +26,36 @@ class LSPI(BatchAgent):
         representation,
         discount_factor,
         max_window,
-        steps_between_LSPI,
+        steps_between_lspi,
         lspi_iterations=5,
         tol_epsilon=1e-3,
         re_iterations=100,
         use_sparse=False,
     ):
-
-        self.steps_between_LSPI = steps_between_LSPI
+        """
+        :param representation: Representation over the state features used by the agent.
+        :param policy: Policy used by the agent.
+        :param discount_factor: discount factor of future rewards
+        :param max_window): Maximum number of steps the agent will be run for,
+            which acts as the number of transitions to store.
+        :param steps_between_lspi: Number of steps between runs of the lspi algorithm.
+        :param lspi_iterations: Maximum number of iterations to go through
+            for each update with LSPI.
+        :param tol_epsilond: Stopping criteria/threshold  for when LSPI is
+            considered to have converged.
+        :param re_iterations: Number of iterations of representation expansion to run.
+        :param use_sparse: Use sparse operators for building the matrix of transitions?
+        """
+        super().__init__(policy, representation, discount_factor, max_window)
+        self.steps_between_LSPI = steps_between_lspi
         self.tol_epsilon = tol_epsilon
         self.lspi_iterations = lspi_iterations
         self.re_iterations = re_iterations
         self.use_sparse = use_sparse
 
         # Make A and r incrementally if the representation can not expand
-        self.fixedRep = not representation.isDynamic
-        if self.fixedRep:
+        self.fixed_rep = not representation.isDynamic
+        if self.fixed_rep:
             f_size = representation.features_num * representation.actions_num
             self.b = np.zeros((f_size, 1))
             self.A = np.zeros((f_size, f_size))
@@ -94,8 +75,6 @@ class LSPI(BatchAgent):
                 self.all_phi_ns = np.zeros((max_window, representation.features_num))
                 self.all_phi_s_a = np.zeros((max_window, f_size))
                 self.all_phi_ns_na = np.zeros((max_window, f_size))
-
-        super(LSPI, self).__init__(policy, representation, discount_factor, max_window)
 
     def calculateTDErrors(self):
         """Calculate TD errors over the transition instances stored.
@@ -141,8 +120,8 @@ class LSPI(BatchAgent):
         :param int na: The action taken by the agent in state ns.
         :param bool terminal: Whether or not ns is a terminal state.
         """
-        super(LSPI, self).learn(s, p_actions, a, r, ns, np_actions, na, terminal)
-        if (self.samples_count) % self.steps_between_LSPI == 0:
+        self.learn(s, p_actions, a, r, ns, np_actions, na, terminal)
+        if self.samples_count % self.steps_between_lspi == 0:
             self.representationExpansionLSPI()
 
     def representationExpansionLSPI(self):
@@ -266,7 +245,7 @@ class LSPI(BatchAgent):
         """
         start_time = tools.clock()
 
-        if not self.fixedRep:
+        if not self.fixed_rep:
             # build phi_s and phi_ns for all samples
             p = self.samples_count
             n = self.representation.features_num
@@ -322,7 +301,7 @@ class LSPI(BatchAgent):
 
         # Update A and b if representation is going to be fix together with all
         # features
-        if self.fixedRep:
+        if self.fixed_rep:
             if terminal:
                 phi_s = self.representation.phi(s, False)
                 phi_s_a = self.representation.phi_sa(s, False, a, phi_s=phi_s)
@@ -348,4 +327,4 @@ class LSPI(BatchAgent):
             d = phi_s_a - discount_factor * phi_ns_na
             self.A += np.outer(phi_s_a, d)
 
-            super(LSPI, self).store_samples(s, a, r, ns, na, terminal)
+            self.store_samples(s, a, r, ns, na, terminal)

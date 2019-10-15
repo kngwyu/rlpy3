@@ -14,8 +14,7 @@ __credits__ = [
 __license__ = "BSD 3-Clause"
 
 
-class TDControlAgent(DescentAlgorithm, Agent):
-
+class TDControlAgent(Agent, DescentAlgorithm):
     """
     abstract class for the control variants of the classical linear TD-Learning.
     It is the parent of SARSA and Q-Learning
@@ -23,20 +22,13 @@ class TDControlAgent(DescentAlgorithm, Agent):
     All children must implement the _future_action function.
     """
 
-    lambda_ = 0  #: lambda Parameter in SARSA [Sutton Book 1998]
-    eligibility_trace = []  #: eligibility trace
-
     def __init__(self, policy, representation, discount_factor, lambda_=0, **kwargs):
+        Agent.__init__(self, policy, representation, discount_factor)
+        DescentAlgorithm.__init__(self, **kwargs)
         self.eligibility_trace = np.zeros(
             representation.features_num * representation.actions_num
         )
-        self.lambda_ = lambda_
-        super(TDControlAgent, self).__init__(
-            policy=policy,
-            representation=representation,
-            discount_factor=discount_factor,
-            **kwargs
-        )
+        self.lambda_ = lambda_  #: lambda Parameter in SARSA [Sutton Book 1998]
 
     def _future_action(self, ns, terminal, np_actions, ns_phi, na):
         """needs to be implemented by children"""
@@ -60,9 +52,9 @@ class TDControlAgent(DescentAlgorithm, Agent):
         nnz = count_nonzero(phi_s)  # Number of non-zero elements
 
         # Set eligibility traces:
-        if self.lambda_:
+        if self.lambda_ > 0:
             expanded = (
-                len(phi) - len(self.eligibility_trace)
+                len(phi) - self.eligibility_trace.shape[0]
             ) // self.representation.actions_num
             if expanded > 0:
                 # Correct the size of eligibility traces (pad with zeros for
@@ -107,7 +99,6 @@ class TDControlAgent(DescentAlgorithm, Agent):
 
 
 class Q_Learning(TDControlAgent):
-
     """
     The off-policy variant known as Q-Learning
     """
@@ -118,7 +109,6 @@ class Q_Learning(TDControlAgent):
 
 
 class SARSA(TDControlAgent):
-
     """
     The on-policy variant known as SARSA.
     """

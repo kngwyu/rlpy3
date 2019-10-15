@@ -1,4 +1,4 @@
-from rlpy.agents import Greedy_GQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
+from rlpy.agents import GreedyGQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
 from rlpy.representations import (
@@ -80,7 +80,7 @@ def tile_ggq(domain, res_mat, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100)
         resolution_matrix=res_mat,
         safety="none",
     )
-    return Greedy_GQ(
+    return GreedyGQ(
         eGreedy(tile, epsilon=0.1),
         tile,
         discount_factor=domain.discount_factor,
@@ -121,7 +121,7 @@ def _ifdd_q_common(
 
 
 def ifdd_ggq(*args, **kwargs):
-    return _ifdd_q_common(Greedy_GQ, *args, **kwargs)
+    return _ifdd_q_common(GreedyGQ, *args, **kwargs)
 
 
 def ifdd_q(*args, **kwargs):

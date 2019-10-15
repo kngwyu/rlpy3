@@ -36,7 +36,7 @@ def _make_experiment(exp_id=1, path="./Results/Tmp/test_SystemAdministrator"):
         representation=representation,
         policy=policy,
         discount_factor=domain.discount_factor,
-        learn_rate=0.1,
+        initial_learn_rate=0.1,
     )
     checks_per_policy = 2
     max_steps = 20

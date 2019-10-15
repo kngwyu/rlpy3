@@ -3,7 +3,7 @@ import numpy as np
 import logging
 from rlpy.policies import eGreedy
 from rlpy.agents import SARSA, Q_Learning
-from rlpy.agents import Greedy_GQ
+from rlpy.agents import GreedyGQ
 
 
 class MockRepresentation(Representation):
@@ -150,7 +150,7 @@ def test_ggq_valfun_chain():
     """
     rep = MockRepresentation()
     pol = eGreedy(rep)
-    agent = Greedy_GQ(pol, rep, lambda_=0.0, discount_factor=0.9)
+    agent = GreedyGQ(pol, rep, lambda_=0.0, discount_factor=0.9)
     for i in range(1000):
         if i % 4 == 3:
             agent.episodeTerminated()

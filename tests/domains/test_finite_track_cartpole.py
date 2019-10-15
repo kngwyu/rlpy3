@@ -24,7 +24,7 @@ def _make_experiment(domain, exp_id=1, path="./Results/Tmp/test_FiniteTrackCartP
         representation=representation,
         policy=policy,
         discount_factor=domain.discount_factor,
-        learn_rate=0.1,
+        initial_learn_rate=0.1,
     )
     checks_per_policy = 2
     max_steps = 30

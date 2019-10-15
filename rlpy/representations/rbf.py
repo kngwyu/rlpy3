@@ -22,13 +22,7 @@ class RBF(Representation):
     based on user-specified resolution_min, resolution_max, and grid_bins.
     See specification in __init__ below.
 
-
     """
-
-    state_dimensions = None
-    rbfs_mu = None  #: The mean of RBFs
-    #: The std dev of the RBFs (uniformly selected between [0, dimension width]
-    rbfs_sigma = None
 
     def __init__(
         self,
@@ -69,6 +63,7 @@ class RBF(Representation):
             the domain boundaries.
 
         """
+        super().__init__(domain, num_rbfs, seed=seed)
         if resolution_max is None:
             resolution_max = resolution_min
 
@@ -85,9 +80,11 @@ class RBF(Representation):
 
         if self.grid_bins is not None:
             # uniform grid of rbfs
+            #: The mean of RBFs
             self.rbfs_mu, self.num_rbfs = self._uniformRBFs(
                 self.grid_bins, domain, include_border
             )
+            #: The std dev of the RBFs (uniformly selected between [0, dimension width]
             self.rbfs_sigma = (
                 np.ones((self.num_rbfs, self.dims))
                 * (self.resolution_max + self.resolution_min)
@@ -95,14 +92,10 @@ class RBF(Representation):
             )
 
         self.const_feature = const_feature
-        self.features_num = self.num_rbfs
         if const_feature:
             self.features_num += 1  # adds a constant 1 to each feature vector
         self.state_dimensions = state_dimensions
         self.normalize = normalize
-
-        super(RBF, self).__init__(domain, seed=seed)
-
         self.init_randomization()
 
     def init_randomization(self):
@@ -126,7 +119,7 @@ class RBF(Representation):
                         dim_widths[d] / self.resolution_min,
                     )
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         F_s = np.ones(self.features_num)
         if self.state_dimensions is not None:
             s = s[self.state_dimensions]
@@ -193,5 +186,5 @@ class RBF(Representation):
         # print result.shape
         return result, rbfs_num
 
-    def featureType(self):
+    def feature_type(self):
         return float

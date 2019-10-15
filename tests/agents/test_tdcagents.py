@@ -13,9 +13,6 @@ class MockRepresentation(Representation):
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
-        for v in ["features_num"]:
-            if getattr(self, v) is None:
-                raise Exception("Missed domain initialization of " + v)
         self.expectedStepCached = {}
         self.state_space_dims = 1
         self.actions_num = 1
@@ -35,10 +32,13 @@ class MockRepresentation(Representation):
         self._arange_cache = np.arange(self.features_num)
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         ret = np.zeros(self.features_num)
         ret[s[0]] = 1.0
         return ret
+
+    def feature_type(self):
+        return float
 
 
 def test_sarsa_valfun_chain():

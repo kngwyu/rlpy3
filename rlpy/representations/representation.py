@@ -1,11 +1,12 @@
 """Representation base class."""
-import logging
+from abc import ABC, abstractmethod
 from copy import deepcopy
+import logging
+import numpy as np
 from rlpy.tools import addNewElementForAllActions
 from rlpy.tools import vec2id, bin2state, findElemArray1D
 from rlpy.tools import hasFunction, id2vec, closestDiscretization
 import scipy.sparse as sp
-import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -19,7 +20,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Representation(object):
+class Representation(ABC):
     """
     The Representation is the :py:class:`~rlpy.agents.agent.Agent`'s model of the
     value function associated with a :py:class:`~rlpy.domains.domain.Domain`.
@@ -53,50 +54,28 @@ class Representation(object):
         family of representations is being used.
     """
 
-    #: A numpy array of the Linear Weights, one for each feature (theta)
-    weight_vec = None
-    #: The Domain that this Representation is modeling
-    domain = None
-    #: Number of features in the representation
-    features_num = 0
-    #: Number of actions in the representation
-    actions_num = 0
-    # Number of bins used for discretization of each continuous dimension
-    discretization = 20
-    #: Number of possible states per dimension [1-by-dim]
-    bins_per_dim = 0
-    #: Width of bins in each dimension
-    binWidth_per_dim = 0
-    #: Number of aggregated states based on the discretization.
-    #: If the represenation is adaptive, set to the best resolution possible
-    agg_states_num = 0
-    # A simple object that records the prints in a file
-    logger = None
-    # A seeded numpy random number generator
-    random_state = None
-
     #: True if the number of features may change during execution.
-    isDynamic = False
-    #: A dictionary used to cache expected results of step(). Used for planning algorithms
-    expectedStepCached = None
+    IS_DYNAMIC = False
 
-    def __init__(self, domain, discretization=20, seed=1):
+    def __init__(self, domain, features_num, discretization=20, seed=1):
         """
-        :param domain: the problem :py:class:`~rlpy.domains.domain.Domain` to learn
+        :param domain: the problem :py:class:`~rlpy.domains.domain.Domain` to learn.
+        :param features: Number of features in the representation.
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
-
-        for v in ["features_num"]:
-            if getattr(self, v) is None:
-                raise Exception("Missed domain initialization of " + v)
+        # A dictionary used to cache expected results of step().
+        # Used for planning algorithms
         self.expectedStepCached = {}
-        self.setBinsPerDimension(domain, discretization)
+        self.set_bins_per_dim(domain, discretization)
         self.domain = domain
         self.state_space_dims = domain.state_space_dims
+        self.features_num = features_num
+        #: Number of actions in the representation
         self.actions_num = domain.actions_num
         self.discretization = discretization
         try:
+            #: A numpy array of the Linear Weights, one for each feature (theta)
             self.weight_vec = np.zeros(self.features_num * self.actions_num)
         except MemoryError as m:
             print(
@@ -108,6 +87,8 @@ class Representation(object):
 
         self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
         self._arange_cache = np.arange(self.features_num)
+        #: Number of aggregated states based on the discretization.
+        #: If the represenation is adaptive, set to the best resolution possible
         self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
         self.logger = logging.getLogger(
             "rlpy.representations." + self.__class__.__name__
@@ -121,7 +102,6 @@ class Representation(object):
         Any stochastic behavior in __init__() is broken out into this function
         so that if the random seed is later changed (eg, by the Experiment),
         other member variables and functions are updated accordingly.
-        
         """
         pass
 
@@ -144,7 +124,7 @@ class Representation(object):
         if len(p_actions):
             return max(AllQs[p_actions])
         else:
-            return 0  # Return 0 value when no action is possible
+            return 0.0  # Return 0 value when no action is possible
 
     def Qs(self, s, terminal, phi_s=None):
         """
@@ -202,7 +182,7 @@ class Representation(object):
 
     def phi(self, s, terminal):
         """
-        Returns :py:meth:`~rlpy.representations.representation.phi_nonTerminal`
+        Returns :py:meth:`~rlpy.representations.representation.phi_non_terminal`
         for a given representation, or a zero feature vector in a terminal state.
 
         :param s: The state for which to compute the feature vector
@@ -221,7 +201,7 @@ class Representation(object):
         if terminal or self.features_num == 0:
             return np.zeros(self.features_num, "bool")
         else:
-            return self.phi_nonTerminal(s)
+            return self.phi_non_terminal(s)
 
     def phi_sa(self, s, terminal, a, phi_s=None, snippet=False):
         """
@@ -269,7 +249,8 @@ class Representation(object):
             self._arange_cache += a * self.features_num - self._arange_cache[0]
         phi_sa[self._arange_cache] = phi_s
         # Slower alternatives
-        # Alternative 1: Set only non_zeros (Very close on running time with the current solution. In fact it is sometimes better)
+        # Alternative 1: Set only non_zeros
+        # (Very close on running time with the current solution. It is sometimes better)
         # nnz_ind = phi_s.nonzero()
         # phi_sa[nnz_ind+a*self.features_num] = phi_s[nnz_ind]
         # Alternative 2: Use of Kron
@@ -278,14 +259,14 @@ class Representation(object):
         # F_sa = kron(A,F_s)
         return phi_sa
 
-    def addNewWeight(self):
+    def add_new_weight(self):
         """
         Add a new zero weight, corresponding to a newly added feature,
         to all actions.
         """
         self.weight_vec = addNewElementForAllActions(self.weight_vec, self.actions_num)
 
-    def hashState(self, s):
+    def hash_state(self, s):
         """
         Returns a unique id for a given state.
         Essentially, enumerate all possible states and return the ID associated
@@ -294,18 +275,20 @@ class Representation(object):
         Under the hood: first, discretize continuous dimensions into bins
         as necessary. Then map the binstate to an integer.
         """
-        ds = self.binState(s)
+        ds = self.bin_state(s)
         return vec2id(ds, self.bins_per_dim)
 
-    def setBinsPerDimension(self, domain, discretization):
+    def set_bins_per_dim(self, domain, discretization):
         """
         Set the number of bins for each dimension of the domain.
         Continuous spaces will be slices using the ``discretization`` parameter.
         :param domain: the problem :py:class:`~rlpy.domains.domain.Domain` to learn
-        :param discretization: The number of bins a continuous domain should be sliced into.
-
+        :param discretization: The number of bins a continuous
+            domain should be sliced into.
         """
+        #: Number of possible states per dimension [1-by-dim]
         self.bins_per_dim = np.zeros(domain.state_space_dims, np.uint16)
+        #: Width of bins in each dimension
         self.binWidth_per_dim = np.zeros(domain.state_space_dims)
         for d in range(domain.state_space_dims):
             if d in domain.continuous_dims:
@@ -318,11 +301,11 @@ class Representation(object):
                 domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]
             ) / self.bins_per_dim[d]
 
-    def binState(self, s):
+    def bin_state(self, s):
         """
         Returns a vector where each element is the zero-indexed bin number
         corresponding with the given state.
-        (See :py:meth:`~rlpy.representations.representation.hashState`)
+        (See :py:meth:`~rlpy.representations.representation.hash_state`)
         Note that this vector will have the same dimensionality as *s*.
 
         (Note: This method is binary compact; the negative case of binary features is
@@ -342,7 +325,7 @@ class Representation(object):
         bs[m] = self.bins_per_dim[m] - 1
         return bs
 
-    def bestActions(self, s, terminal, p_actions, phi_s=None):
+    def best_actions(self, s, terminal, p_actions, phi_s=None):
         """
         Returns a list of the best actions at a given state.
         If *phi_s* [the feature vector at state *s*] is given, it is used to
@@ -417,14 +400,14 @@ class Representation(object):
         If *phi_s* [the feature vector at state *s*] is given, it is used to
         speed up code by preventing re-computation within this function.
 
-        See :py:meth:`~rlpy.representations.representation.bestActions`
+        See :py:meth:`~rlpy.representations.representation.best_actions`
 
         :param s: The given state
         :param terminal: Whether or not the state *s* is a terminal one.
         :param phi_s: (optional) the feature vector at state (s).
         :return: The best action at the given state.
         """
-        bestA = self.bestActions(s, terminal, p_actions, phi_s)
+        bestA = self.best_actions(s, terminal, p_actions, phi_s)
         if isinstance(bestA, int):
             return bestA
         elif len(bestA) > 1:
@@ -433,7 +416,7 @@ class Representation(object):
         else:
             return bestA[0]
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         """ *Abstract Method* \n
         Returns the feature vector evaluated at state *s* for non-terminal
         states; see
@@ -455,7 +438,7 @@ class Representation(object):
         :return: The active initial features of this representation
             (before expansion)
         """
-        bs = self.binState(s)
+        bs = self.bin_state(s)
         shifts = np.hstack((0, np.cumsum(self.bins_per_dim)[:-1]))
         index = bs + shifts
         return index.astype("uint32")
@@ -544,11 +527,12 @@ class Representation(object):
         phi_s_a = self.batchPhi_s_a(all_phi_s, best_action, all_phi_s_a, useSparse)
         return best_action, phi_s_a, action_mask
 
-    def featureType(self):
-        """ *Abstract Method* \n
+    @abstractmethod
+    def feature_type(self):
+        """
         Return the data type for the underlying features (eg 'float').
         """
-        raise NotImplementedError
+        pass
 
     def Q_oneStepLookAhead(self, s, a, ns_samples, policy=None):
         """
@@ -595,7 +579,9 @@ class Representation(object):
                         + discount_factor * self.V(ns[j, :], t[j, :], p_actions[j])
                     )
                 else:
-                    # For some domains such as blocks world, you may want to apply bellman backup to impossible states which may not have any possible actions.
+                    # For some domains such as blocks world, you may want to apply
+                    # bellman backup to impossible states which may not have
+                    # any possible actions.
                     # This if statement makes sure that there exist at least
                     # one action in the next state so the bellman backup with
                     # the fixed policy is valid
@@ -612,9 +598,11 @@ class Representation(object):
             cacheHit = self.expectedStepCached.get(key)
             if cacheHit is None:
                 # Not found in cache => Calculate and store in cache
-                # If continuous domain, sample <continuous_state_starting_samples> points within each discritized grid and sample <ns_samples>/<continuous_state_starting_samples> for each starting state.
+                # If continuous domain, sample <continuous_state_starting_samples>
+                # points within each discritized grid and sample
+                # <ns_samples>/<continuous_state_starting_samples> for each starting
+                # state.
                 # Otherwise take <ns_samples> for the state.
-
                 # First put s in the middle of the grid:
                 # shout(self,s)
                 s = self.stateInTheMiddleOfGrid(s)
@@ -775,7 +763,7 @@ class Representation(object):
     def episodeTerminated(self):
         pass
 
-    def featureLearningRate(self):
+    def feature_learning_rate(self):
         """
         :return: An array or scalar used to adapt the learning rate of each
         feature individually.

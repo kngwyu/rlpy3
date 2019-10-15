@@ -16,24 +16,22 @@ __author__ = "Alborz Geramifard"
 
 class IndependentDiscretization(Representation):
     """
-    Creates a feature for each discrete bin in each dimension; the feature 
-    vector for a given state is comprised of binary features, where only the 
+    Creates a feature for each discrete bin in each dimension; the feature
+    vector for a given state is comprised of binary features, where only the
     single feature in a particular dimension is 1, all others 0.
     I.e., in a particular state, the sum of all elements of a feature vector
     equals the number of dimensions in the state space.
 
-    Note that This is the minimum number of binary features required to 
+    Note that This is the minimum number of binary features required to
     uniquely represent a state in a given finite discrete domain.
-
     """
 
     def __init__(self, domain, discretization=20):
-        self.setBinsPerDimension(domain, discretization)
-        self.features_num = int(sum(self.bins_per_dim))
+        self.set_bins_per_dim(domain, discretization)
         self.maxFeatureIDperDimension = np.cumsum(self.bins_per_dim) - 1
-        super(IndependentDiscretization, self).__init__(domain, discretization)
+        super().__init__(domain, int(sum(self.bins_per_dim)), discretization)
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         F_s = np.zeros(self.features_num, "bool")
         F_s[self.activeInitialFeatures(s)] = 1
         return F_s
@@ -43,15 +41,5 @@ class IndependentDiscretization(Representation):
         dim = np.searchsorted(self.maxFeatureIDperDimension, f)
         return dim
 
-    def getFeatureName(self, feat_id):
-        if hasattr(self.domain, "DimNames"):
-            dim = np.searchsorted(self.maxFeatureIDperDimension, feat_id)
-            # Find the index of the feature in the corresponding dimension
-            index_in_dim = feat_id
-            if dim != 0:
-                index_in_dim = feat_id - self.maxFeatureIDperDimension[dim - 1]
-            print(self.domain.DimNames[dim])
-            f_name = self.domain.DimNames[dim] + "=" + str(index_in_dim)
-
-    def featureType(self):
+    def feature_type(self):
         return bool

@@ -146,7 +146,7 @@ have explored the entire domain.
                if coin < self.epsilon:
                    return self.random_state.choice(p_actions)
                else:
-                   b_actions = self.representation.bestActions(s, terminal, p_actions)
+                   b_actions = self.representation.best_actions(s, terminal, p_actions)
                    if self.deterministic:
                        return b_actions[0]
                    else:

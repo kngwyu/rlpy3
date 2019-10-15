@@ -6,15 +6,12 @@ import logging
 import numpy as np
 import os
 import re
-import warnings
 import rlpy.tools.results
 from rlpy.tools import (
     checkNCreateDirectory,
-    className,
     clock,
     deltaT,
     hhmmss,
-    ipshell,
     plt,
     printClass,
     with_pdf_fonts,

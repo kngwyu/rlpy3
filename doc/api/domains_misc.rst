@@ -32,7 +32,7 @@ GridWorld
 HIV Treatment
 -------------
 
-.. autoclass:: rlpy.domains.HIVTreatment.HIVTreatment
+.. autoclass:: rlpy.domains.hiv_treatment.HIVTreatment
     :members:
 
 Helicopter Hovering

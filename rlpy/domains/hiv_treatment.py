@@ -192,7 +192,7 @@ def dsdt(s, t, eps1, eps2):
 
 
 try:
-    from .HIVTreatment_dynamics import dsdt
+    from .hiv_treatment_dynamics import dsdt
 except Exception as e:
     print(e)
     print(

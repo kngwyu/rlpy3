@@ -98,7 +98,7 @@ class CheckSDist(sdist):
 
     _pyxfiles = [
         "rlpy/representations/hashing.pyx",
-        "rlpy/domains/HIVTreatment_dynamics.pyx",
+        "rlpy/domains/hiv_treatment_dynamics.pyx",
         "rlpy/representations/kernels.pyx",
     ]
 
@@ -193,8 +193,8 @@ extensions = [
         include_dirs=["rlpy/representations"],
     ),
     Extension(
-        "rlpy.domains.HIVTreatment_dynamics",
-        ["rlpy/domains/HIVTreatment_dynamics.pyx"],
+        "rlpy.domains.hiv_treatment_dynamics",
+        ["rlpy/domains/hiv_treatment_dynamics.pyx"],
         include_dirs=["rlpy/representations"],
     ),
     Extension(

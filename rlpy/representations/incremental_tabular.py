@@ -17,25 +17,23 @@ __author__ = "Alborz Geramifard"
 
 class IncrementalTabular(Representation):
     """
-    Identical to Tabular representation (ie assigns a binary feature function 
+    Identical to Tabular representation (ie assigns a binary feature function
     f_{d}() to each possible discrete state *d* in the domain, with
     f_{d}(s) = 1 when d=s, 0 elsewhere.
     HOWEVER, unlike *Tabular*, feature functions are only created for *s* which
-    have been encountered in the domain, not instantiated for every single 
+    have been encountered in the domain, not instantiated for every single
     state at the outset.
-
     """
 
-    hash = None
+    IS_DYNAMIC = True
 
     def __init__(self, domain, discretization=20):
         self.hash = {}
-        self.features_num = 0
-        self.isDynamic = True
-        super(IncrementalTabular, self).__init__(domain, discretization)
+        features_num = 0
+        super().__init__(domain, features_num, discretization)
 
-    def phi_nonTerminal(self, s):
-        hash_id = self.hashState(s)
+    def phi_non_terminal(self, s):
+        hash_id = self.hash_state(s)
         hashVal = self.hash.get(hash_id)
         F_s = np.zeros(self.features_num, bool)
         if hashVal is not None:
@@ -48,13 +46,12 @@ class IncrementalTabular(Representation):
     def _add_state(self, s):
         """
         :param s: the (possibly un-cached) state to hash.
-        
-        Accepts state ``s``; if it has been cached already, do nothing and 
+
+        Accepts state ``s``; if it has been cached already, do nothing and
         return 0; if not, add it to the hash table and return 1.
-        
         """
 
-        hash_id = self.hashState(s)
+        hash_id = self.hash_state(s)
         hashVal = self.hash.get(hash_id)
         if hashVal is None:
             # New State
@@ -63,7 +60,7 @@ class IncrementalTabular(Representation):
             hashVal = self.features_num - 1
             self.hash[hash_id] = hashVal
             # Add a new element to the feature weight vector, theta
-            self.addNewWeight()
+            self.add_new_weight()
             return 1
         return 0
 
@@ -72,5 +69,5 @@ class IncrementalTabular(Representation):
         new_copy.hash = deepcopy(self.hash)
         return new_copy
 
-    def featureType(self):
+    def feature_type(self):
         return bool

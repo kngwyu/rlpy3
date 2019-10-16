@@ -81,7 +81,7 @@ class TDControlAgent(Agent, DescentAlgorithm):
             weight_vec_old = weight_vec.copy()
             weight_vec += (
                 self.learn_rate
-                * self.representation.featureLearningRate()
+                * self.representation.feature_learning_rate()
                 * td_error
                 * self.eligibility_trace
             )

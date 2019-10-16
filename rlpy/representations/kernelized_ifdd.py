@@ -1,9 +1,9 @@
 """Kernelized Incremental Feature Dependency Discovery"""
-import numpy as np
-from .representation import Representation
 from itertools import combinations
-from rlpy.tools import addNewElementForAllActions, PriorityQueueWithNovelty
 import matplotlib.pyplot as plt
+import numpy as np
+from rlpy.tools import addNewElementForAllActions, PriorityQueueWithNovelty
+from .representation import Representation
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -17,18 +17,15 @@ __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann <cdann@mit.edu>"
 
 
-class KernelizedFeature(object):
-    # feature index, -1 for non-discovered ones
-    index = -1
-    # relevance used to decide when to discover
-    relevance = 0.0
-    # list of dimensions that are regarded by this feature
-    dim = []
-    # center = data point used to generate the feature
-    # center gives the highest output of this feature
-    center = None
-
+class KernelizedFeature:
     def __init__(self, center, dim, kernel, index=-1, base_ids=None, kernel_args=[]):
+        """
+        :param center: Data point used to generate the feature, which
+            gives the highest output of this feature.
+        :param dim: List of dimensions that are regarded by this feature.
+        :param kernel: The kernel used to generate featues.
+        :param index: The index of the feature. -1 is for non-discovered ones.
+        """
         self.index = index
         self.kernel_args = kernel_args
         self.center = center
@@ -47,37 +44,26 @@ class KernelizedFeature(object):
     def output(self, s):
         return self.kernel(s, self.center, self.dim, *self.kernel_args)
 
+    def key(self):
+        return len(self.base_ids), tuple(self.dim), tuple(self.center[self.dim])
+
 
 class Candidate(object):
-
     """
     candidate feature as a combination of two existing features
     """
-
-    activation_count = 0.0
-    td_error_sum = 0.0
-    relevance = 0.0
-    idx1 = -1
-    idx2 = -1
-
     def __init__(self, idx1, idx2):
         self.idx1 = idx1
         self.idx2 = idx2
+        self.activation_count = 0.0
+        self.td_error_sum = 0.0
+        self.relevance = 0.0
 
 
 class KernelizediFDD(Representation):
-
     """
     Kernelized version of iFDD
     """
-
-    features = []
-    candidates = {}
-    # contains a set for each feature indicating the ids of
-    base_id_sets = set()
-    # 1-dim features it refines
-    base_feature_ids = []
-    max_relevance = 0.0
 
     def __init__(
         self,
@@ -91,7 +77,7 @@ class KernelizediFDD(Representation):
         max_active_base_feat=2,
         max_base_feat_sim=0.7,
     ):
-        super(KernelizediFDD, self).__init__(domain)
+        super().__init__(domain, 0)
         self.kernel = kernel
         self.kernel_args = kernel_args
         self.active_threshold = active_threshold
@@ -105,16 +91,14 @@ class KernelizediFDD(Representation):
         self.features = []
         self.base_features_ids = []
         self.max_relevance = 0.0
+        # contains a set for each feature indicating the ids of
+        self.base_id_sets = set()
+        self.base_feature_ids = []  # 1-dim features it rnefines
 
     def show_features(self):
-        l = self.sorted_ids.toList()[:]
-        key = lambda x: (
-            len(self.features[x].base_ids),
-            tuple(self.features[x].dim),
-            tuple(self.features[x].center[self.features[x].dim]),
-        )
-        l.sort(key=key)
-        for i in l:
+        ids = self.sorted_ids.toList()[:]
+        ids.sort(key=lambda x: self.features[x].key())
+        for i in ids:
             f = self.features[i]
             print("{:>5} {:>20}".format(i, f))
 
@@ -132,12 +116,7 @@ class KernelizediFDD(Representation):
             idx = self.domain.continuous_dims
 
         feat_list = list(range(self.features_num))
-        key = lambda x: (
-            len(self.features[x].base_ids),
-            tuple(self.features[x].dim),
-            tuple(self.features[x].center[self.features[x].dim]),
-        )
-        feat_list.sort(key=key)
+        feat_list.sort(key=lambda x: self.features[x].key())
         last_i = -1
         for k in feat_list:
             if len(self.features[k].dim) > 1:
@@ -180,12 +159,7 @@ class KernelizediFDD(Representation):
         idx.sort()
 
         feat_list = list(range(self.features_num))
-        key = lambda x: (
-            len(self.features[x].base_ids),
-            tuple(self.features[x].dim),
-            tuple(self.features[x].center[self.features[x].dim]),
-        )
-        feat_list.sort(key=key)
+        feat_list.sort(key=lambda x: self.features[x].key())
         last_i = -1
         last_j = -1
         for k in feat_list:
@@ -241,12 +215,7 @@ class KernelizediFDD(Representation):
         idx.sort()
 
         feat_list = list(range(self.features_num))
-        key = lambda x: (
-            len(self.features[x].base_ids),
-            tuple(self.features[x].dim),
-            tuple(self.features[x].center[self.features[x].dim]),
-        )
-        feat_list.sort(key=key)
+        feat_list.sort(key=lambda x: self.features[x].key())
         last_i = -1
         last_j = -1
         for k in feat_list:
@@ -272,7 +241,7 @@ class KernelizediFDD(Representation):
             last_j = cur_j
         plt.draw()
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         out = np.zeros(self.features_num)
         if not self.sparsify:
             for i in range(self.features_num):
@@ -488,7 +457,8 @@ class KernelizediFDD(Representation):
 
 
 try:
-    from .kernels import *
+    from .kernels import *  # noqa
 except ImportError:
-    print("C-Extension for kernels not available, expect slow runtime")
-    from .slow_kernels import *
+    import warnings
+    warnings.warn("C-Extension for kernels not available, expect slow runtime")
+    from .slow_kernels import *  # noqa

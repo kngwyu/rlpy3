@@ -57,27 +57,24 @@ Requirements
   for some examples.
 
 
-REQUIRED Instance Variables
+REQUIRED Class Variables
 """""""""""""""""""""""""""
 
-The new Representation *MUST* set the variables *BEFORE* calling the
-superclass ``__init__()`` function:
+The new Representation can set following class variables:
 
-#. ``self.isDynamic`` - bool: True if this Representation can add or 
+#. ``self.IS_DYNAMIC`` - bool: True if this Representation can add or 
    remove features during execution
-
-#. ``self.features_num`` - int: The (initial) number of features in the representation
 
 
 REQUIRED Functions
 """"""""""""""""""
 The new Representation *MUST* define two functions:
 
-#. :func:`~rlpy.representations.Representation.phi_nonTerminal`,
+#. :func:`~rlpy.representations.Representation.phi_non_terminal`,
    (see linked documentation), which returns a vector of feature function 
    values associated with a particular state.
 
-#. :func:`~rlpy.representations.Representation.featureType`,
+#. :func:`~rlpy.representations.Representation.feature_type`,
    (see linked documentation), which returns the data type of the underlying
    feature functions (eg "float" or "bool").
 
@@ -86,7 +83,7 @@ SPECIAL Functions
 representations whose feature functions may change over the course of execution
 (termed **adaptive** or **dynamic** representations) should override 
 one or both functions below as needed.
-Note that ``self.isDynamic`` should = ``True``.
+Note that ``self.IS_DYNAMIC`` should = ``True``.
 
 #. :func:`~rlpy.representations.Representation.pre_discover`
 
@@ -150,35 +147,34 @@ are discretized.
 
 #. Copy the __init__ declaration from ``Representation.py``, add needed parameters
    (here none), and log them.
-   Assign self.features_num and self.isDynamic, then
-   call the superclass constructor::
+   You have to pass domain, features_num, and discretization
+   to the superclass constructor::
 
             def __init__(self, domain, discretization=20):
-                self.hash           = {}
-                self.features_num   = 0
-                self.isDynamic      = True
-                super(IncrTabularTut, self).__init__(domain, discretization)
+                self.hash = {}
+                features_num = 0
+                super(IncrTabularTut, self).__init__(domain, features_num, discretization)
 
-#. Copy the ``phi_nonTerminal()`` function declaration and implement it accordingly
+#. Copy the ``phi_non_terminal()`` function declaration and implement it accordingly
    to return the vector of feature function values for a given state.
-   Here, lookup feature function values using self.hashState(s) provided by the 
+   Here, lookup feature function values using self.hash_state(s) provided by the
    parent class.
    Note here that self.hash should always contain hash_id if ``pre_discover()``
    is called as required::
-                
-            def phi_nonTerminal(self, s):
-                hash_id = self.hashState(s)
+
+            def phi_non_terminal(self, s):
+                hash_id = self.hash_state(s)
                 id  = self.hash.get(hash_id)
                 F_s = np.zeros(self.features_num, bool)
                 if id is not None:
                     F_s[id] = 1
                 return F_s
 
-#. Copy the ``featureType()`` function declaration and implement it accordingly
+#. Copy the ``feature_type()`` function declaration and implement it accordingly
    to return the datatype returned by each feature function.
    Here, feature functions are binary, so the datatype is boolean::
 
-            def featureType(self):
+            def feature_type(self):
                 return bool
 
 #. Override parent functions as necessary; here we require a ``pre_discover()``
@@ -190,7 +186,7 @@ are discretized.
 #. Finally, define any needed helper functions::
 
             def _add_state(self, s):
-                hash_id = self.hashState(s)
+                hash_id = self.hash_state(s)
                 id  = self.hash.get(hash_id)
                 if id is None:
                     #New State
@@ -199,7 +195,7 @@ are discretized.
                     id = self.features_num - 1
                     self.hash[hash_id] = id
                     #Add a new element to the feature weight vector
-                    self.addNewWeight()
+                    self.add_new_weight()
                     return 1
                 return 0
 

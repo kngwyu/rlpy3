@@ -78,7 +78,7 @@ class DirectionalGhost(GhostAgent):
         else:
             bestScore = min(distancesToPacman)
             bestProb = self.prob_attack
-        bestActions = [
+        best_actions = [
             action
             for action, distance in zip(legalActions, distancesToPacman)
             if distance == bestScore
@@ -86,8 +86,8 @@ class DirectionalGhost(GhostAgent):
 
         # Construct distribution
         dist = util.Counter()
-        for a in bestActions:
-            dist[a] = bestProb / len(bestActions)
+        for a in best_actions:
+            dist[a] = bestProb / len(best_actions)
         for a in legalActions:
             dist[a] += (1 - bestProb) / len(legalActions)
         dist.normalize()

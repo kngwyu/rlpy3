@@ -54,7 +54,7 @@ class LSPI(BatchAgent):
         self.use_sparse = use_sparse
 
         # Make A and r incrementally if the representation can not expand
-        self.fixed_rep = not representation.isDynamic
+        self.fixed_rep = not representation.IS_DYNAMIC
         if self.fixed_rep:
             f_size = representation.features_num * representation.actions_num
             self.b = np.zeros((f_size, 1))
@@ -139,7 +139,7 @@ class LSPI(BatchAgent):
         while added_feature and re_iteration <= self.re_iterations:
             re_iteration += 1
             # Some Prints
-            if tools.hasFunction(self.representation, "batchDiscover"):
+            if tools.hasFunction(self.representation, "batch_discover"):
                 self.logger.info(
                     "-----------------\nRepresentation Expansion iteration #%d\n-----------------"
                     % re_iteration
@@ -150,8 +150,8 @@ class LSPI(BatchAgent):
             # loop
             td_errors = self.policyIteration()
             # Add new Features
-            if tools.hasFunction(self.representation, "batchDiscover"):
-                added_feature = self.representation.batchDiscover(
+            if tools.hasFunction(self.representation, "batch_discover"):
+                added_feature = self.representation.batch_discover(
                     td_errors,
                     self.all_phi_s[: self.samples_count, :],
                     self.data_s[: self.samples_count, :],
@@ -249,8 +249,8 @@ class LSPI(BatchAgent):
             # build phi_s and phi_ns for all samples
             p = self.samples_count
             n = self.representation.features_num
-            self.all_phi_s = np.empty((p, n), dtype=self.representation.featureType())
-            self.all_phi_ns = np.empty((p, n), dtype=self.representation.featureType())
+            self.all_phi_s = np.empty((p, n), dtype=self.representation.feature_type())
+            self.all_phi_ns = np.empty((p, n), dtype=self.representation.feature_type())
 
             for i in np.arange(self.samples_count):
                 self.all_phi_s[i, :] = self.representation.phi(self.data_s[i])

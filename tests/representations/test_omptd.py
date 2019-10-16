@@ -15,26 +15,26 @@ def test_bag_creation():
     domain = GridWorld(mapfile=mapfile)
 
     initial_representation = IndependentDiscretization(domain)
-    maxBatchDiscovery = np.inf
-    batchThreshold = 1e-10
+    max_batch_discovery = np.inf
+    batch_threshold = 1e-10
     discretization = 20
-    bagSize = 100000  # We add all possible features
+    bag_size = 100000  # We add all possible features
 
     rep = OMPTD(
         domain,
         initial_representation,
         discretization,
-        maxBatchDiscovery,
-        batchThreshold,
-        bagSize,
+        max_batch_discovery,
+        batch_threshold,
+        bag_size,
         sparsify=False,
     )
-    assert rep.totalFeatureSize == 9 + 20
+    assert rep.total_feature_size == 9 + 20
     assert rep.features_num == 9
 
     # Compute full (including non-discovered) feature vec for a few states
     states = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    rep.calculateFullPhiNormalized(states)
+    rep.calculate_full_phi_normalized(states)
     phi_states = rep.fullphi
     phi_states[phi_states > 0] = True
     true_phi_s1 = np.zeros(len(phi_states[0, :]))
@@ -76,42 +76,42 @@ def test_batch_discovery():
     domain = GridWorld(mapfile=mapfile)
 
     initial_representation = IndependentDiscretization(domain)
-    maxBatchDiscovery = np.inf
-    batchThreshold = 1e-10
+    max_batch_discovery = np.inf
+    batch_threshold = 1e-10
     discretization = 20
-    bagSize = 100000  # We add all possible features
+    bag_size = 100000  # We add all possible features
 
     rep = OMPTD(
         domain,
         initial_representation,
         discretization,
-        maxBatchDiscovery,
-        batchThreshold,
-        bagSize,
+        max_batch_discovery,
+        batch_threshold,
+        bag_size,
         sparsify=False,
     )
     states = np.array([[0, 0], [0, 2]])
-    activePhi_s1 = rep.phi_nonTerminal(states[0, :])
-    activePhi_s2 = rep.phi_nonTerminal(states[1, :])
+    activePhi_s1 = rep.phi_non_terminal(states[0, :])
+    activePhi_s2 = rep.phi_non_terminal(states[1, :])
     phiMatr = np.zeros((2, len(activePhi_s1)))
     phiMatr[0, :] = activePhi_s1
     phiMatr[1, :] = activePhi_s2
     td_errors = np.array([2, 5])
-    flagAddedFeat = rep.batchDiscover(td_errors, phiMatr, states)
+    flagAddedFeat = rep.batch_discover(td_errors, phiMatr, states)
     assert flagAddedFeat  # should have added at least one
-    assert rep.selectedFeatures[-1] == 9  # feat conj that yields state [0,2]
-    assert rep.selectedFeatures[-2] == 11  # feat conj that yields state [0,0]
+    assert rep.selected_features[-1] == 9  # feat conj that yields state [0,2]
+    assert rep.selected_features[-2] == 11  # feat conj that yields state [0,0]
 
     # Ensure that discovered features are now active
     true_phi_s1 = np.zeros(rep.features_num)
     true_phi_s1[0] = True
     true_phi_s1[4] = True  # TODO - could be [4] depending on axes, check.
     true_phi_s1[10] = True  # The conjunction of [0,0]
-    assert np.all(true_phi_s1 == rep.phi_nonTerminal(states[0, :]))
+    assert np.all(true_phi_s1 == rep.phi_non_terminal(states[0, :]))
 
     true_phi_s2 = np.zeros(rep.features_num)
     true_phi_s2[0] = True
     true_phi_s2[6] = True  # TODO - could be [4] depending on axes, check.
     # The conjunction of [0,2] [[note actual id is 11, but in index 10]]
     true_phi_s2[9] = True
-    assert np.all(true_phi_s2 == rep.phi_nonTerminal(states[1, :]))
+    assert np.all(true_phi_s2 == rep.phi_non_terminal(states[1, :]))

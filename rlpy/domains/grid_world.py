@@ -217,7 +217,7 @@ class GridWorld(Domain):
                 As = self.possibleActions(s)
                 terminal = self.isTerminal(s)
                 Qs = representation.Qs(s, terminal)
-                bestA = representation.bestActions(s, terminal, As)
+                bestA = representation.best_actions(s, terminal, As)
                 V[r, c] = max(Qs[As])
                 Mask[c, r, As] = False
                 arrowColors[c, r, bestA] = 1

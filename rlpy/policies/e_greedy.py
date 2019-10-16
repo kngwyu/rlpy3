@@ -58,7 +58,7 @@ class eGreedy(Policy):
         if coin < eps:
             return self.random_state.choice(p_actions)
         else:
-            b_actions = self.representation.bestActions(s, terminal, p_actions)
+            b_actions = self.representation.best_actions(s, terminal, p_actions)
             if self.deterministic:
                 return b_actions[0]
             else:
@@ -67,7 +67,7 @@ class eGreedy(Policy):
     def prob(self, s, terminal, p_actions):
         p = np.ones(len(p_actions)) / len(p_actions)
         p *= self.epsilon
-        b_actions = self.representation.bestActions(s, terminal, p_actions)
+        b_actions = self.representation.best_actions(s, terminal, p_actions)
         if self.deterministic:
             p[b_actions[0]] += 1 - self.epsilon
         else:

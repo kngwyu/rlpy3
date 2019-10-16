@@ -12,8 +12,8 @@ try:
     from .kernels import batch
 except ImportError:
     from .slow_kernels import batch
-
-    print("C-Extensions for kernels not available, expect slow runtime")
+    import warnings
+    warnings.warn("C-Extensions for kernels not available, expect slow runtime")
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -31,28 +31,24 @@ class LocalBases(Representation):
     abstract base class for representations that use local basis functions
     """
 
-    #: centers of bases
-    centers = None
-    #: widths of bases
-    widths = None
-
     def __init__(self, domain, kernel, normalization=False, seed=1, **kwargs):
         """
         :param domain: domain to learn on.
         :param kernel: function handle to use for kernel function evaluations.
-        :param normalization: (Boolean) If true, normalize feature vector so 
+        :param normalization: (Boolean) If true, normalize feature vector so
             that sum( phi(s) ) = 1.
-        
-        Associates a kernel function with each  
-        
+
+        Associates a kernel function with each
         """
+        super().__init__(domain, 0, seed=seed)
         self.kernel = batch[kernel.__name__]
         self.normalization = normalization
+        #: centers of bases
         self.centers = np.zeros((0, domain.statespace_limits.shape[0]))
+        #: widths of bases
         self.widths = np.zeros((0, domain.statespace_limits.shape[0]))
-        super(LocalBases, self).__init__(domain, seed=seed)
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
         v = self.kernel(s, self.centers, self.widths)
         if self.normalization and not v.sum() == 0.0:
             # normalize such that each vector has a l1 norm of 1
@@ -61,11 +57,11 @@ class LocalBases(Representation):
 
     def plot_2d_feature_centers(self, d1=None, d2=None):
         """
-        :param d1: 1 (of 2 possible) indices of dimensions to plot; ignore all 
+        :param d1: 1 (of 2 possible) indices of dimensions to plot; ignore all
             others, purely visual.
-        :param d2: 1 (of 2 possible) indices of dimensions to plot; ignore all 
+        :param d2: 1 (of 2 possible) indices of dimensions to plot; ignore all
             others, purely visual.
-        
+
         Phe centers of all features in dimension d1 and d2.
         If no dimensions are specified, the first two continuous dimensions
         are shown.
@@ -79,41 +75,43 @@ class LocalBases(Representation):
             plt.plot([self.centers[i, d1]], [self.centers[i, d2]], "r", marker="x")
         plt.draw()
 
+    def feature_type(self):
+        return float
+
 
 class NonparametricLocalBases(LocalBases):
     def __init__(self, domain, kernel, max_similarity=0.9, resolution=5, **kwargs):
         """
         :param domain: domain to learn on.
         :param kernel: function handle to use for kernel function evaluations.
-        :param max_similarity: threshold to allow feature to be added to 
-            representation.  Larger max_similarity makes it \"easier\" to add 
-            more features by permitting larger values of phi(s) before 
+        :param max_similarity: threshold to allow feature to be added to
+            representation.  Larger max_similarity makes it \"easier\" to add
+            more features by permitting larger values of phi(s) before
             discarding.  (An existing feature function in phi() with large value
-            at phi(s) implies that it is very representative of the true 
-            function at *s*.  i.e., the value of a feature in phi(s) is 
+            at phi(s) implies that it is very representative of the true
+            function at *s*.  i.e., the value of a feature in phi(s) is
             inversely related to the \"similarity\" of a potential new feature.
         :param resolution: to be used by the ``kernel()`` function, see parent.
             Determines *width* of basis functions, eg sigma in Gaussian basis.
-        
         """
+        super().__init__(domain, kernel, **kwargs)
         self.max_similarity = max_similarity
         self.common_width = (
             domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
         ) / resolution
         self.features_num = 0
-        super(NonparametricLocalBases, self).__init__(domain, kernel, **kwargs)
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
         norm = self.normalization
         expanded = 0
         self.normalization = False
         if not terminal:
-            phi_s = self.phi_nonTerminal(s)
+            phi_s = self.phi_non_terminal(s)
             if np.all(phi_s < self.max_similarity):
                 self._add_feature(s)
                 expanded += 1
         if not terminaln:
-            phi_s = self.phi_nonTerminal(sn)
+            phi_s = self.phi_non_terminal(sn)
             if np.all(phi_s < self.max_similarity):
                 self._add_feature(sn)
                 expanded += 1
@@ -145,26 +143,24 @@ class RandomLocalBases(LocalBases):
         """
         :param domain: domain to learn on.
         :param kernel: function handle to use for kernel function evaluations.
-        :param num: Fixed number of feature (kernel) functions to use in 
+        :param num: Fixed number of feature (kernel) functions to use in
             EACH dimension. (for a total of features_num=numDims * num)
         :param resolution_min: resolution selected uniform random, lower bound.
         :param resolution_max: resolution selected uniform random, upper bound.
         :param seed: the random seed to use when scattering basis functions.
-        
-        Randomly scatter ``num`` feature functions throughout the domain, with 
-        sigma / noise parameter selected uniform random between 
-        ``resolution_min`` and ``resolution_max``.  NOTE these are 
+
+        Randomly scatter ``num`` feature functions throughout the domain, with
+        sigma / noise parameter selected uniform random between
+        ``resolution_min`` and ``resolution_max``.  NOTE these are
         sensitive to the choice of coordinate (scale with coordinate units).
-        
         """
+        super().__init__(domain, kernel, seed=seed, **kwargs)
         self.features_num = num
         self.dim_widths = (
             domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
         )
         self.resolution_max = resolution_max
         self.resolution_min = resolution_min
-
-        super(RandomLocalBases, self).__init__(domain, kernel, seed=seed, **kwargs)
         self.centers = np.zeros((num, len(self.dim_widths)))
         self.widths = np.zeros((num, len(self.dim_widths)))
         self.init_randomization()

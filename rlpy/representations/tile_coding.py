@@ -15,12 +15,9 @@ __license__ = "BSD 3-Clause"
 
 
 class TileCoding(Representation):
-
     """
-    Tile Coding Representation with Hashing Trick.
-
+    Tile Coding Representation with Hashing Trick,
     based on http://incompleteideas.net/rlai.cs.ualberta.ca/RLAI/RLtoolkit/tiles.html
-
     """
 
     BIG_INT = 2147483647
@@ -47,7 +44,7 @@ class TileCoding(Representation):
         One type covers only dimensions 1 and 2 and has a
         resolution of state_range / 4 and consists of 2 tilings.
 
-        The second type covers dimensions 2, 3 and 4 with resolution 
+        The second type covers dimensions 2, 3 and 4 with resolution
         state_range / 6 and only 1 tiling.
         Such a representation can be created by passing
         >>> memory = 2000
@@ -79,21 +76,20 @@ class TileCoding(Representation):
                    none  = don't care about collisions
 
         """
-        self.features_num = memory
-        super(TileCoding, self).__init__(domain, seed)
+        super().__init__(domain, memory, seed)
         try:
             self.num_tilings = tuple(num_tilings)
-        except TypeError as e:
+        except TypeError:
             self.num_tilings = [num_tilings]
         try:
             self.dimensions = tuple(dimensions)
-        except TypeError as e:
+        except TypeError:
             self.dimensions = [dimensions]
 
         if resolutions is not None:
             try:
                 resolutions = tuple(resolutions)
-            except TypeError as e:
+            except TypeError:
                 resolutions = (resolutions,)
 
         if resolution_matrix is None:
@@ -142,7 +138,7 @@ class TileCoding(Representation):
                 print(e)
                 print("Cython extension for TileCoding hashing trick not available")
 
-    def phi_nonTerminal(self, s):
+    def phi_non_terminal(self, s):
 
         phi = np.zeros((self.features_num))
         sn = np.empty((len(s) + 1), dtype="int")
@@ -165,14 +161,8 @@ class TileCoding(Representation):
         """
         # TODO implement in cython if speed needs to be improved
         max = self.features_num if max is None else max
-        return (
-            int(
-                self.R[
-                    np.mod(A + np.arange(len(A)) * increment, self.features_num)
-                ].sum()
-            )
-            % max
-        )
+        idx = np.mod(A + np.arange(len(A)) * increment, self.features_num)
+        return int(self.R[idx].sum()) % max
 
     def _physical_addr(self, A):
         """
@@ -212,5 +202,5 @@ class TileCoding(Representation):
             self.logger.warn("Tile memory too small")
             return h1
 
-    def featureType(self):
+    def feature_type(self):
         return bool

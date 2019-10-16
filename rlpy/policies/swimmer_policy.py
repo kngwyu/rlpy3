@@ -44,7 +44,7 @@ class SwimmerPolicy(Policy):
             return self.random_state.choice(p_actions)
         else:
             if self.eGreedy:
-                b_actions = self.representation.bestActions(s, terminal, p_actions)
+                b_actions = self.representation.best_actions(s, terminal, p_actions)
                 return self.random_state.choice(b_actions)
             else:
                 return self.pi_sam(s, terminal, p_actions)

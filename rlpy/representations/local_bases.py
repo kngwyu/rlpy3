@@ -13,6 +13,7 @@ try:
 except ImportError:
     from .slow_kernels import batch
     import warnings
+
     warnings.warn("C-Extensions for kernels not available, expect slow runtime")
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"

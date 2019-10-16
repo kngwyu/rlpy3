@@ -109,6 +109,7 @@ class iFDD(Representation):
     Given n features iFDD can expand the set of features up to 2^n-1 features
     (i.e. conjunction of each subset of n features can be considered as a new feature.
     """
+
     IS_DYNAMIC = True
 
     def __init__(
@@ -722,7 +723,7 @@ class iFDDK(iFDD):
         self.kappa = kappa
         self.discount_factor = domain.discount_factor
         self.lazy = lazy  # lazy updating?
-        self.w = 0   # log(rho) trace
+        self.w = 0  # log(rho) trace
         self.n_rho = 0  # index for rho episodes
         self.t = 0
         self.t_rho = defaultdict(int)

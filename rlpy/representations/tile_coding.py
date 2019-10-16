@@ -121,9 +121,7 @@ class TileCoding(Representation):
         self.init_randomization()
 
     def init_randomization(self):
-        self.R = self.random_state.randint(
-            self.BIG_INT // 4, size=self.features_num
-        ).astype(np.int)
+        self.R = self.random_state.randint(self.BIG_INT // 4, size=self.features_num)
 
         if self.safety == "none":
             try:
@@ -133,10 +131,10 @@ class TileCoding(Representation):
                     h.physical_addr(A, self.R, self.check_data, self.counts)[0]
 
                 self._physical_addr = types.MethodType(_physical_addr, self)
-                print("Use cython extension for TileCoding hashing trick")
-            except Exception as e:
-                print(e)
-                print("Cython extension for TileCoding hashing trick not available")
+            except Exception:
+                from warnings import warn
+
+                warn("Cython extension for TileCoding hashing trick not available")
 
     def phi_non_terminal(self, s):
 
@@ -159,7 +157,6 @@ class TileCoding(Representation):
         """
         hashing without collision detection
         """
-        # TODO implement in cython if speed needs to be improved
         max = self.features_num if max is None else max
         idx = np.mod(A + np.arange(len(A)) * increment, self.features_num)
         return int(self.R[idx].sum()) % max

@@ -266,7 +266,7 @@ class Representation(ABC):
         """
         self.weight_vec = addNewElementForAllActions(self.weight_vec, self.actions_num)
 
-    def hash_state(self, s):
+    def _hash_state(self, s):
         """
         Returns a unique id for a given state.
         Essentially, enumerate all possible states and return the ID associated
@@ -277,6 +277,14 @@ class Representation(ABC):
         """
         ds = self.bin_state(s)
         return vec2id(ds, self.bins_per_dim)
+
+    def hash_for_state_count(self, s):
+        """
+        Returns a hash value for counting state visitation.
+        """
+        raise NotImplementedError(
+            "{} does not support hash_for_state_count".format(type(self))
+        )
 
     def set_bins_per_dim(self, domain, discretization):
         """
@@ -305,7 +313,7 @@ class Representation(ABC):
         """
         Returns a vector where each element is the zero-indexed bin number
         corresponding with the given state.
-        (See :py:meth:`~rlpy.representations.representation.hash_state`)
+        (See :py:meth:`~rlpy.representations.representation._hash_state`)
         Note that this vector will have the same dimensionality as *s*.
 
         (Note: This method is binary compact; the negative case of binary features is
@@ -349,7 +357,7 @@ class Representation(ABC):
         """
         Identifies and adds ("discovers") new features for this adaptive
         representation BEFORE having obtained the TD-Error.
-        For example, see :py:class:`~rlpy.representations.IncrementalTabular.IncrementalTabular`.
+        For example, see :py:class:`~rlpy.representations.IncrementalTabular`.
         In that class, a new feature is added anytime a novel state is observed.
 
         .. note::

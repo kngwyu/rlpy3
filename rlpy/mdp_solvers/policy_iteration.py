@@ -105,10 +105,8 @@ class PolicyIteration(MDPSolver):
             )
 
             # Show Plots
-            if self.show:
-                self.domain.show(
-                    policy.pi(s, False, possible_actions), self.representation, s=s
-                )
+            if self._visualize_mode:
+                self.domain.show_learning(self.representation)
         return converged
 
     def policy_improvement(self, policy):
@@ -161,7 +159,7 @@ class PolicyIteration(MDPSolver):
         )
         return policy, policyChanges
 
-    def solve(self):
+    def _solve_impl(self):
         """Solve the domain MDP."""
         self.bellman_updates = 0
         self.policy_improvement_iteration = 0

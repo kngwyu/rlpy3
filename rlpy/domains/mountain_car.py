@@ -127,7 +127,7 @@ class MountainCar(Domain):
 
         return self.state[0] > self.GOAL
 
-    def showDomain(self, a):
+    def show_domain(self, a):
         """
          Plot the car and an arrow indicating the direction of accelaration
          Parts of this code was adopted from Jose Antonio Martin H.
@@ -198,7 +198,7 @@ class MountainCar(Domain):
         self.domain_fig.canvas.draw()
         self.domain_fig.canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         pi = np.zeros((self.X_discretization, self.XDot_discretization), "uint8")
         V = np.zeros((self.X_discretization, self.XDot_discretization))
 

@@ -104,7 +104,7 @@ class PuddleWorld(Domain):
             reward -= 400 * (0.1 - dists[dists < 0.1]).max()
         return reward
 
-    def showDomain(self, a=None):
+    def show_domain(self, a=None):
         s = self.state
         # Draw the environment
         if self.domain_fig is None:
@@ -121,7 +121,7 @@ class PuddleWorld(Domain):
             plt.figure("Domain").canvas.draw()
             plt.figure("Domain").canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         a = np.zeros((2))
         for i, x in enumerate(np.linspace(0, 1, 100)):
             for j, y in enumerate(np.linspace(0, 1, 100)):

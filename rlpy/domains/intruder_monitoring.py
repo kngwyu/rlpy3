@@ -219,7 +219,7 @@ class IntruderMonitoring(Domain):
         """
         return self.random_state.choice(self.possibleActionsPerAgent(s_i))
 
-    def showDomain(self, a):
+    def show_domain(self, a):
         s = self.state
         # Draw the environment
         fig = plt.figure("IntruderMonitoring")

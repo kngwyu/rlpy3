@@ -132,7 +132,7 @@ class InfTrackCartPole(CartPoleBase):
         possibleActions = self.possibleActions()
         return reward, ns, terminal, possibleActions
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         Display the 4-d state of the cartpole and arrow indicating current
         force action (not including noise!).
@@ -144,7 +144,7 @@ class InfTrackCartPole(CartPoleBase):
         fourState = np.append(self.state, np.array([0, 0]))
         self._plot_state(fourState, a)
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         thetas, theta_dots = self._setup_learning(representation)
         pi = np.zeros((len(theta_dots), len(thetas)), np.uint8)
         V = np.zeros((len(theta_dots), len(thetas)))

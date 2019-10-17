@@ -5,9 +5,9 @@ from rlpy.tools.cli import run_experiment
 import methods
 
 
-def select_domain(map_="4x5", **kwargs):
+def select_domain(map_="4x5", noise=0.1, **kwargs):
     map_ = GridWorld.default_map(map_ + ".txt")
-    return GridWorld(map_, random_start=True, noise=0.1)
+    return GridWorld(map_, random_start=True, noise=noise)
 
 
 def select_agent(name, domain, max_steps, _seed, **kwargs):

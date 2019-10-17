@@ -1,3 +1,4 @@
+import click
 from rlpy.domains import GridWorld
 from rlpy.mdp_solvers import (
     TrajectoryBasedPolicyIteration,
@@ -30,4 +31,11 @@ def select_agent(name, domain, seed, **kwargs):
 
 
 if __name__ == "__main__":
-    run_mb_experiment(select_domain, select_agent)
+    run_mb_experiment(
+        select_domain,
+        select_agent,
+        other_options=[
+            click.Option(["--map", "map_"], type=str, default="4x5"),
+            click.Option(["--noise"], type=float, default=0.1),
+        ],
+    )

@@ -125,7 +125,7 @@ class RCCar(Domain):
     def isTerminal(self):
         return np.linalg.norm(self.state[0:2] - self.GOAL) < self.GOAL_RADIUS
 
-    def showDomain(self, a):
+    def show_domain(self, a):
         s = self.state
         # Plot the car
         x, y, speed, heading = s

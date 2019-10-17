@@ -45,7 +45,7 @@ class TrajectoryBasedValueIteration(MDPSolver):
         else:
             self.alpha = alpha
 
-    def solve(self):
+    def _solve_impl(self):
         """Solve the domain MDP."""
 
         # Used to show the total time took the process
@@ -119,8 +119,8 @@ class TrajectoryBasedValueIteration(MDPSolver):
                     self.representation.features_num,
                 )
             )
-            if self.show:
-                self.domain.show(a, representation=self.representation, s=s)
+            if self._visualize_mode:
+                self.domain.show_learning(self.representation)
 
             # store stats
             self.result["bellman_updates"].append(bellman_updates)

@@ -128,15 +128,32 @@ def run_mb_experiment(domain_or_domain_selector, agent_selector, other_options=[
         "--agent", type=str, default=None, help="The name of agent you want to run"
     )
     @click.option("--seed", type=int, default=1, help="The random seed of the agent")
-    def experiment(agent, seed, **kwargs):
+    @click.option(
+        "--visualize-performance",
+        "--show-performance",
+        "-VP",
+        default=0,
+        type=int,
+        help="The number of visualization steps in the final performance runs",
+    )
+    @click.option(
+        "--visualize-learning",
+        "--show-learning",
+        "-VL",
+        is_flag=True,
+        help="Visualize of the learning status before each evaluation",
+    )
+    def experiment(agent, seed, visualize_performance, visualize_learning, **kwargs):
         if isinstance(domain_or_domain_selector, Domain):
             domain = domain_or_domain_selector
         else:
             domain = domain_or_domain_selector(**kwargs)
         agent = agent_selector(agent, domain, seed, **kwargs)
         experiment = MDPSolverExperiment(agent, domain)
-        experiment.run()
-        print(agent.performance_run())
+        experiment.run(visualize=visualize_learning)
+        for i in range(visualize_performance):
+            ret = experiment.performance_run(visualize=True)
+            print("Performance Return: {}".format(ret))
 
     for opt in other_options:
         if not isinstance(opt, click.Option):

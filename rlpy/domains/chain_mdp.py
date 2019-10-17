@@ -79,7 +79,7 @@ class ChainMDP(Domain):
             episodeCap=2 * chainSize,
         )
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         # Draw the environment
         s = self.state
         s = s[0]

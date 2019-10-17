@@ -53,7 +53,7 @@ class HIVTreatment(Domain):
     state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
     actions = np.array([[0.0, 0.0], [0.7, 0.0], [0.0, 0.3], [0.7, 0.3]])
     dt = 5  #: measurement every 5 days
-    #: only update the graphs in showDomain every x steps
+    #: only update the graphs in show_domain every x steps
     show_domain_every = 20
 
     def __init__(self, logspace=True):
@@ -105,7 +105,7 @@ class HIVTreatment(Domain):
         self.episode_data[:-1, 0] = s
         return s, self.isTerminal(), self.possibleActions()
 
-    def showDomain(self, a=0, s=None):
+    def show_domain(self, a=0, s=None):
         """
         shows a live graph of each concentration
         """

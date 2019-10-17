@@ -253,10 +253,10 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         raise NotImplementedError
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         raise NotImplementedError
 
     def possibleActions(self, s=None):

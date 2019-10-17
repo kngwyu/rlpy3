@@ -181,7 +181,7 @@ class Acrobot(Domain):
         ddtheta1 = -(d2 * ddtheta2 + phi1) / d1
         return (dtheta1, dtheta2, ddtheta1, ddtheta2, 0.0)
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         Plot the 2 links + action arrows
         """

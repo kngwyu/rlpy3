@@ -91,7 +91,7 @@ class BlocksWorld(Domain):
         for a in range(blocks):
             self.DimNames.append(["%d on" % a])
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         # Draw the environment
         s = self.state
         world = np.zeros((self.blocks, self.blocks), "uint8")
@@ -125,7 +125,7 @@ class BlocksWorld(Domain):
             plt.figure("Domain").canvas.draw()
             plt.figure("Domain").canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         pass  # cant show 6 dimensional value function
 
     def step(self, a):
@@ -216,7 +216,7 @@ class BlocksWorld(Domain):
     def getActionPutAonB(self, A, B):
         return vec2id(np.array([A, B]), [self.blocks, self.blocks])
 
-    def expectedStep(self, s, a):
+    def expected_step(self, s, a):
         # Returns k possible outcomes
         #  p: k-by-1    probability of each transition
         #  r: k-by-1    rewards

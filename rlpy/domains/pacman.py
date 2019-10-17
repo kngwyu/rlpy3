@@ -44,7 +44,7 @@ class Pacman(Domain):
     .. note::
         The visualization runs as fast as your CPU will permit; to slow things
         down so gameplay is actually visible, de-comment time.sleep()
-        in the showDomain() method.
+        in the show_domain() method.
 
     **REFERENCE:** This domain is an RLPy wrapper for the implementation
     from the `BerkeleyX/CS188.1x course project 3 <https://courses.edx.org/courses/BerkeleyX/CS188.1x/2013_Spring/courseware/Week_9/Project_3_Reinforcement/>`_
@@ -197,11 +197,11 @@ class Pacman(Domain):
 
     state = property(_get_state, _set_state)
 
-    def showDomain(self, a, s=None):
+    def show_domain(self, a, s=None):
         if s is not None:
             errStr = (
                 "ERROR: In Pacman.py, attempted to pass a state (s)"
-                "to showDomain(); Pacman only supports internal states."
+                "to show_domain(); Pacman only supports internal states."
                 "If you do pass a state parameter, ensure it is set to None."
             )
             raise Exception(errStr)

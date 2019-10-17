@@ -58,7 +58,7 @@ class FlipBoard(Domain):
             episodeCap=min(100, boards_num),
         )
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         # Draw the environment
         if self.domain_fig is None:

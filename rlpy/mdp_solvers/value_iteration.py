@@ -28,7 +28,7 @@ class ValueIteration(MDPSolver):
         use the average.
     """
 
-    def solve(self):
+    def _solve_impl(self):
         """Solve the domain MDP."""
 
         self.start_time = clock()  # Used to show the total time took the process
@@ -103,12 +103,12 @@ class ValueIteration(MDPSolver):
             )
 
             # Show the domain and value function
-            if self.show:
-                self.domain.show(a, s=s, representation=self.representation)
+            if self._visualize_mode:
+                self.domain.show_learning(self.representation)
 
             # store stats
             self.result["bellman_updates"].append(bellman_updates)
-            self.result["return"].append(performance_return)
+            self.result["return"].append(perf_return)
             self.result["planning_time"].append(deltaT(self.start_time))
             self.result["num_features"].append(self.representation.features_num)
             self.result["steps"].append(perf_steps)

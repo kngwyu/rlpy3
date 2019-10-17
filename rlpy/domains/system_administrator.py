@@ -144,7 +144,7 @@ class SystemAdministrator(Domain):
         self.setUniqueEdges(_Neighbors)
         self.setNeighbors()
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         plt.figure("Domain")
 

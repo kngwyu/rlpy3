@@ -60,7 +60,7 @@ class BicycleBalancing(Domain):
         r"$\dot{\theta}$",
         r"$\psi",
     )
-    #: only update the graphs in showDomain every x steps
+    #: only update the graphs in show_domain every x steps
     show_domain_every = 20
     dt = 0.01  #: Frequency is ``1 / dt``.
 
@@ -167,7 +167,7 @@ class BicycleBalancing(Domain):
         self.episode_data[:-1, 0] = s
         return s, self.isTerminal(), self.possibleActions()
 
-    def showDomain(self, a=0, s=None):
+    def show_domain(self, a=0, s=None):
         """
         shows a live graph of each observable dimension
         """

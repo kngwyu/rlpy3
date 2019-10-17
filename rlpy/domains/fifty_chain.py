@@ -169,7 +169,7 @@ class FiftyChain(Domain):
             self.optimal_policy[np.arange(averageState, goalState2)] = self.RIGHT
         self.optimal_policy[np.arange(self.GOAL_STATES[-1], self.chainSize)] = self.LEFT
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         # Draw the environment
         fig = plt.figure("FiftyChain")
@@ -203,7 +203,7 @@ class FiftyChain(Domain):
         fig.canvas.draw()
         fig.canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         allStates = np.arange(0, self.chainSize)
         X = np.arange(self.chainSize) * 2.0 / 10.0 - self.SHIFT
         Y = np.ones(self.chainSize) * self.Y

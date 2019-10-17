@@ -95,7 +95,7 @@ class Pinball(Domain):
             self.configuration, random_state=self.random_state
         )
 
-    def showDomain(self, a):
+    def show_domain(self, a):
         if self.screen is None:
             master = Tk()
             master.title("RLPY Pinball")

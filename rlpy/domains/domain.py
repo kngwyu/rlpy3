@@ -45,8 +45,8 @@ class Domain(object):
     to interact with the Agent and Experiment classes within the RLPy library.
     domains should also provide methods that provide visualization of the
     Domain itself and of the Agent's learning
-    (:py:meth:`~rlpy.domains.domain.Domain.showDomain` and
-    :py:meth:`~rlpy.domains.domain.Domain.showLearning` respectively) \n
+    (:py:meth:`~rlpy.domains.domain.Domain.show_domain` and
+    :py:meth:`~rlpy.domains.domain.Domain.show_learning` respectively) \n
     All new domain implementations should inherit from :py:class:`~rlpy.domains.domain.domain`.
 
     .. note::
@@ -128,8 +128,8 @@ Gamma:      {self.discount_factor}
         Shows a visualization of the current state of the domain and that of
         learning.
 
-        See :py:meth:`~rlpy.domains.domain.Domain.showDomain()` and
-        :py:meth:`~rlpy.domains.domain.Domain.showLearning()`,
+        See :py:meth:`~rlpy.domains.domain.Domain.show_domain()` and
+        :py:meth:`~rlpy.domains.domain.Domain.show_learning()`,
         both called by this method.
 
         .. note::
@@ -143,11 +143,11 @@ Gamma:      {self.discount_factor}
 
         """
         self.saveRandomState()
-        self.showDomain(a=a)
-        self.showLearning(representation=representation)
+        self.show_domain(a=a)
+        self.show_learning(representation=representation)
         self.loadRandomState()
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         *Abstract Method:*\n
         Shows a visualization of the current state of the domain.
@@ -157,7 +157,7 @@ Gamma:      {self.discount_factor}
         """
         pass
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         """
         *Abstract Method:*\n
         Shows a visualization of the current learning,

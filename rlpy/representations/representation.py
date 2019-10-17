@@ -66,7 +66,7 @@ class Representation(ABC):
         """
         # A dictionary used to cache expected results of step().
         # Used for planning algorithms
-        self.expectedStepCached = {}
+        self.expected_step_cached = {}
         self.set_bins_per_dim(domain, discretization)
         self.domain = domain
         self.state_space_dims = domain.state_space_dims
@@ -552,7 +552,7 @@ class Representation(ABC):
             `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
         If a policy is passed (used in the policy evaluation), it is used to
         generate the action for the next state.
@@ -577,8 +577,8 @@ class Representation(ABC):
             self.addState(s)
 
         discount_factor = self.domain.discount_factor
-        if hasFunction(self.domain, "expectedStep"):
-            p, r, ns, t, p_actions = self.domain.expectedStep(s, a)
+        if hasFunction(self.domain, "expected_step"):
+            p, r, ns, t, p_actions = self.domain.expected_step(s, a)
             Q = 0
             for j in range(len(p)):
                 if policy is None:
@@ -603,7 +603,7 @@ class Representation(ABC):
         else:
             # See if they are in cache:
             key = tuple(np.hstack((s, [a])))
-            cacheHit = self.expectedStepCached.get(key)
+            cacheHit = self.expected_step_cached.get(key)
             if cacheHit is None:
                 # Not found in cache => Calculate and store in cache
                 # If continuous domain, sample <continuous_state_starting_samples>
@@ -638,7 +638,7 @@ class Representation(ABC):
                         rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
                 else:
                     next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
-                self.expectedStepCached[key] = [next_states, rewards]
+                self.expected_step_cached[key] = [next_states, rewards]
             else:
                 next_states, rewards = cacheHit
             if policy is None:
@@ -669,7 +669,7 @@ class Representation(ABC):
             `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
         If a policy is passed (used in the policy evaluation), it is used to
         generate the action for the next state.
@@ -704,7 +704,7 @@ class Representation(ABC):
             `Line 6 of Figure 4.5 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
 
         .. note::

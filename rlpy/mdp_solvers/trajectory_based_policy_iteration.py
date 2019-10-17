@@ -154,9 +154,8 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     self.representation.features_num,
                 )
             )
-        return s, a
 
-    def solve(self):
+    def _solve_impl(self):
         """Solve the domain MDP."""
 
         self.start_time = clock()  # Used to track the total time for solving
@@ -171,7 +170,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         while self.has_time() and not converged:
 
             # Policy Improvement (Updating the representation of the value)
-            s, a = self.traj_based_policy_evaluation(policy)
+            self.traj_based_policy_evaluation(policy)
             PI_iteration += 1
 
             # Theta can increase in size if the representation
@@ -205,8 +204,9 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     self.representation.features_num,
                 )
             )
-            if self.show:
-                self.domain.show(a, representation=self.representation, s=s)
+
+            if self._visualize_mode:
+                self.domain.show_learning(self.representation)
 
             # store stats
             self.result["bellman_updates"].append(self.bellman_updates)
@@ -288,8 +288,8 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     perf_return,
                 )
             )
-            if self.show:
-                self.domain.show(S[-1], Actions[-1], self.representation)
+            if self._visualize_mode:
+                self.domain.show_learning(self.representation)
 
             # store stats
             self.result["samples"].append(samples)
@@ -309,8 +309,8 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
     def calculate_expected_phi_ns_na(self, s, a, ns_samples):
         # calculate the expected next feature vector (phi(ns,pi(ns)) given s
         # and a. Eqns 2.20 and 2.25 in [Geramifard et. al. 2012 FTML Paper]
-        if hasFunction(self.domain, "expectedStep"):
-            p, r, ns, t, pa = self.domain.expectedStep(s, a)
+        if hasFunction(self.domain, "expected_step"):
+            p, r, ns, t, pa = self.domain.expected_step(s, a)
             phi_ns_na = np.zeros(
                 self.representation.features_num * self.domain.actions_num
             )

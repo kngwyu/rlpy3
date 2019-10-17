@@ -252,7 +252,7 @@ class HelicopterHoverExtended(Domain):
         """
         return self._in_body_coord(p, trans.quaternion_conjugate(q))
 
-    def showDomain(self, a=None):
+    def show_domain(self, a=None):
         s = self.state
         if a is not None:
             a = self.actions[a].copy() * 3  # amplify for visualization

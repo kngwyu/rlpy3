@@ -123,17 +123,17 @@ OPTIONAL Functions
 """"""""""""""""""
 Optionally, define / override the following functions, used for visualization:
 
-#. :func:`~rlpy.domains.domain.Domain.showDomain` - Visualization of domain based
+#. :func:`~rlpy.domains.domain.Domain.show_domain` - Visualization of domain based
    on current internal state and an action, *a*.
    Often the header will include an optional argument *s* to display instead 
    of the current internal state.
    RLPy frequently uses `matplotlib <http://matplotlib.org/>`_
    to accomplish this - see the example below.
-#. :func:`~rlpy.domains.domain.Domain.showLearning` - Visualization of the "learning"
+#. :func:`~rlpy.domains.domain.Domain.show_learning` - Visualization of the "learning"
    obtained so far on this domain, usually a value function plot and policy plot.
    See the introductory tutorial for an example on :class:`~rlpy.domains.Gridworld.GridWorld`
 
-XX expectedStep(), XX
+XX expected_step(), XX
 
 
 Additional Information
@@ -259,7 +259,7 @@ Note that the optimal policy is to always go right.
    and action *a*::
 
 
-            def showDomain(self, a = 0):
+            def show_domain(self, a = 0):
                 #Draw the environment
                 s = self.state
                 s = s[0]

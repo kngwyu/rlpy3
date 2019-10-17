@@ -220,7 +220,7 @@ class Experiment(object):
         while not eps_term and eps_length < self.domain.episodeCap:
             a = self.agent.policy.pi(s, eps_term, p_actions)
             if visualize:
-                self.performance_domain.showDomain(a)
+                self.performance_domain.show_domain(a)
 
             r, ns, eps_term, p_actions = self.performance_domain.step(a)
             self._gather_transition_statistics(s, a, ns, r, learning=False)
@@ -231,7 +231,7 @@ class Experiment(object):
             )
             eps_length += 1
         if visualize:
-            self.performance_domain.showDomain(a)
+            self.performance_domain.show_domain(a)
         self.agent.policy.turnOnExploration()
         # This hidden state is for domains (such as the noise in the helicopter domain)
         # that include unobservable elements that are evolving over time
@@ -316,7 +316,7 @@ class Experiment(object):
 
         # show policy or value function of initial policy
         if visualize_learning:
-            self.domain.showLearning(self.agent.representation)
+            self.domain.show_learning(self.agent.representation)
 
         # Used to bound the number of logs in the file
         start_log_time = clock()
@@ -382,7 +382,7 @@ class Experiment(object):
 
                 # show policy or value function
                 if visualize_learning:
-                    self.domain.showLearning(self.agent.representation)
+                    self.domain.show_learning(self.agent.representation)
 
                 self.evaluate(total_steps, episode_number, visualize_performance)
                 self.total_eval_time += (

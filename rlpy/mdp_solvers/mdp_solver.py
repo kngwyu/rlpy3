@@ -40,7 +40,6 @@ class MDPSolver(ABC):
         ns_samples=100,
         project_path=".",
         log_interval=5000,
-        show=False,
     ):
         """
         :param job_id: The job id of this run of the algorithm(=random seed).
@@ -52,11 +51,10 @@ class MDPSolver(ABC):
             of the planner.
         :param nc_samples: Number of samples to be used to generate estimated bellman
             backup if the domain does not provide explicit probabilities
-            though expectedStep function.
+            though expected_step function.
         :param project_path: The place to save stats.
         :param log_interval: Number of bellman backups before reporting
             the performance. Not all planners may use this.
-        :param show: Show the learning if possible.
         """
         self.exp_id = job_id
         self.representation = representation
@@ -66,8 +64,8 @@ class MDPSolver(ABC):
         self.planning_time = planning_time
         self.project_path = project_path
         self.log_interval = log_interval
-        self.show = show
         self.convergence_threshold = convergence_threshold
+        self._visualize_mode = False
 
         # Set random seed for this job id
         np.random.seed(self.MAIN_SEED)
@@ -82,9 +80,16 @@ class MDPSolver(ABC):
         self.output_filename = "{:0>3}-results.json".format(self.exp_id)
 
     @abstractmethod
-    def solve(self):
+    def _solve_impl(self):
         """Solve the domain MDP."""
         pass
+
+    def solve(self, visualize=False):
+        """Solve the domain MDP."""
+        vis_orig = self._visualize_mode
+        self._visualize_mode = visualize
+        self._solve_impl()
+        self._visualize_mode = vis_orig
 
     def log_value(self):
         self.logger.info(
@@ -110,7 +115,7 @@ class MDPSolver(ABC):
         weight_vec_index = int(self.representation.agg_states_num * a + s_index)
         self.representation.weight_vec[weight_vec_index] = Q
 
-    def performance_run(self):
+    def performance_run(self, visualize=False):
         """Set Exploration to zero and sample one episode from the domain."""
 
         eps_length = 0
@@ -122,11 +127,15 @@ class MDPSolver(ABC):
 
         while not eps_term and eps_length < self.domain.episodeCap:
             a = self.representation.bestAction(s, eps_term, p_actions)
+            if visualize:
+                self.domain.show_domain(a)
             r, ns, eps_term, p_actions = self.domain.step(a)
             s = ns
             eps_discounted_return += self.domain.discount_factor ** eps_length * r
             eps_return += r
             eps_length += 1
+        if visualize:
+            self.domain.show_domain(a)
         return eps_return, eps_length, eps_term, eps_discounted_return
 
     def save_stats(self):

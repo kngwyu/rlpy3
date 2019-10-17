@@ -2,11 +2,12 @@
 Performs Bellman Backup on a given s,a pair given a fixed policy by sweeping through the
 state space. Once the errors are bounded, the policy is changed.
 """
-from .mdp_solver import MDPSolver
-from rlpy.tools import deltaT, hhmmss, clock, l_norm
 from copy import deepcopy
-from rlpy.policies import eGreedy
 import numpy as np
+from rlpy.policies import eGreedy
+from rlpy.tools import deltaT, hhmmss, clock, l_norm
+import warnings
+from .mdp_solver import MDPSolver
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -167,9 +168,7 @@ class PolicyIteration(MDPSolver):
 
         # Check for Tabular Representation
         if not self.is_tabular():
-            self.logger.error(
-                "Policy Iteration works only with a tabular representation."
-            )
+            warnings.warn("Policy Iteration works only with a tabular representation.")
             return 0
 
         # Initialize the policy

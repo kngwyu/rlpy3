@@ -14,7 +14,6 @@ from .mdp_solver import MDPSolver
 from rlpy.tools import (
     hhmmss,
     deltaT,
-    randSet,
     hasFunction,
     solveLinear,
     regularize,
@@ -82,10 +81,10 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         else:
             _, ns, terminal, possible_actions = self.domain.step(action)
 
-        if np.random.rand() > self.epsilon:
+        if self.random_state.rand() > self.epsilon:
             na = policy.pi(ns, terminal, possible_actions)
         else:
-            na = randSet(possible_actions)
+            na = self.random_state.choice(possible_actions)
 
         return ns, na, terminal
 

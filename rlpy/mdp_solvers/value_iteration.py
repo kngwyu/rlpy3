@@ -1,9 +1,10 @@
 """Classical Value Iteration
 Performs full Bellman Backup on a given s,a pair by sweeping through the state space
 """
-from .mdp_solver import MDPSolver
-from rlpy.tools import hhmmss, deltaT, clock, l_norm
 import numpy as np
+from rlpy.tools import hhmmss, deltaT, clock, l_norm
+import warnings
+from .mdp_solver import MDPSolver
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -28,35 +29,37 @@ class ValueIteration(MDPSolver):
         use the average.
     """
 
+    def _log_updates(self, perf_return, bellman_updates):
+        dt = hhmmss(deltaT(self.start_tim))
+        self.logger.info(
+            "[%s]: BellmanUpdates=%d, Return=%0.4f" % (dt, bellman_updates, perf_return)
+        )
+
     def _solve_impl(self):
         """Solve the domain MDP."""
+
+        # Check for Tabular Representation
+        if not self.is_tabular():
+            warnings.warn("Value Iteration works only with a tabular representation.")
+            return 0
 
         self.start_time = clock()  # Used to show the total time took the process
         bellman_updates = 0  # used to track the performance improvement.
         converged = False
         iteration = 0
 
-        # Check for Tabular Representation
-        if not self.is_tabular():
-            self.logger.error(
-                "Value Iteration works only with a tabular representation."
-            )
-            return 0
-
-        no_of_states = self.representation.agg_states_num
+        num_states = self.representation.agg_states_num
 
         while self.has_time() and not converged:
-
             iteration += 1
 
             # Store the weight vector for comparison
             prev_weight_vec = self.representation.weight_vec.copy()
 
             # Sweep The State Space
-            for i in range(no_of_states):
+            for i in range(num_states):
 
                 s = self.representation.stateID2state(i)
-
                 # Sweep through possible actions
                 for a in self.domain.possibleActions(s):
 
@@ -70,19 +73,11 @@ class ValueIteration(MDPSolver):
                     # Create Log
                     if bellman_updates % self.log_interval == 0:
                         performance_return, _, _, _ = self.performance_run()
-                        self.logger.info(
-                            "[%s]: BellmanUpdates=%d, Return=%0.4f"
-                            % (
-                                hhmmss(deltaT(self.start_time)),
-                                bellman_updates,
-                                performance_return,
-                            )
-                        )
+                        self._log_updates(performance_return, bellman_updates)
 
             # check for convergence
-            weight_vec_change = l_norm(
-                prev_weight_vec - self.representation.weight_vec, np.inf
-            )
+            weight_diff = prev_weight_vec - self.representation.weight_vec
+            weight_vec_change = l_norm(weight_diff, np.inf)
             converged = weight_vec_change < self.convergence_threshold
 
             # log the stats

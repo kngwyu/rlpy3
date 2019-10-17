@@ -25,8 +25,6 @@ class MDPSolver(ABC):
     planners.
     """
 
-    # To make sure all same job ids see the same random sequence
-    MAIN_SEED = 999999999
     # Maximum number of runs of an algorithm for averaging
     MAX_RUNS = 100
 
@@ -67,10 +65,7 @@ class MDPSolver(ABC):
         self.convergence_threshold = convergence_threshold
         self._visualize_mode = False
 
-        # Set random seed for this job id
-        np.random.seed(self.MAIN_SEED)
-        self.randomSeeds = np.random.randint(1, self.MAIN_SEED, (self.MAX_RUNS, 1))
-        np.random.seed(self.randomSeeds[self.exp_id - 1, 0])
+        self.random_state = np.random.RandomState(seed=job_id)
 
         # TODO setup logging to file in experiment
 
@@ -155,6 +150,12 @@ class MDPSolver(ABC):
         Value Iteration only work with Tabular representation.
         """
         return className(self.representation) == "Tabular"
+
+    def eps_greedy(self, epsilon, s, terminal, p_actions):
+        if self.random_state.rand() > epsilon:
+            return self.representation.bestAction(s, terminal, p_actions)
+        else:
+            return self.random_state.choice(p_actions)
 
     def collect_samples(self, samples):
         """

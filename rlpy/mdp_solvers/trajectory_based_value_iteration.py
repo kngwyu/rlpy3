@@ -7,7 +7,7 @@ The algorithm terminates if the maximum bellman-error in a consequent set of
 trajectories is below a threshold
 """
 from .mdp_solver import MDPSolver
-from rlpy.tools import deltaT, hhmmss, randSet, clock
+from rlpy.tools import deltaT, hhmmss, clock
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -63,11 +63,7 @@ class TrajectoryBasedValueIteration(MDPSolver):
             step = 0
             terminal = False
             s, terminal, p_actions = self.domain.s0()
-            a = (
-                self.representation.bestAction(s, terminal, p_actions)
-                if np.random.rand() > self.epsilon
-                else randSet(p_actions)
-            )
+            a = self.eps_greedy(self.epsilon, s, terminal, p_actions)
             while not terminal and step < self.domain.episodeCap and self.has_time():
                 new_Q = self.representation.Q_oneStepLookAhead(s, a, self.ns_samples)
                 phi_s = self.representation.phi(s, terminal)
@@ -90,11 +86,7 @@ class TrajectoryBasedValueIteration(MDPSolver):
                 max_Bellman_Error = max(max_Bellman_Error, abs(bellman_error))
                 # Simulate new state and action on trajectory
                 _, s, terminal, p_actions = self.domain.step(a)
-                a = (
-                    self.representation.bestAction(s, terminal, p_actions)
-                    if np.random.rand() > self.epsilon
-                    else randSet(p_actions)
-                )
+                a = self.eps_greedy(self.epsilon, s, terminal, p_actions)
 
             # check for convergence
             iteration += 1
@@ -129,6 +121,7 @@ class TrajectoryBasedValueIteration(MDPSolver):
             self.result["num_features"].append(self.representation.features_num)
             self.result["steps"].append(perf_steps)
             self.result["terminated"].append(perf_term)
+
             self.result["discounted_return"].append(perf_disc_return)
             self.result["iteration"].append(iteration)
 

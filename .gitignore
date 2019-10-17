@@ -7,6 +7,7 @@ rlpy/domains/*.c
 *.cpp
 *.so
 *.swp
+*-results.json
 .project
 .pydevproject
 *.pyc

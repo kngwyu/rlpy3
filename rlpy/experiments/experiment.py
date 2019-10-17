@@ -196,7 +196,7 @@ class Experiment(object):
                 logging.FileHandler(os.path.join(self.full_path, self.log_filename))
             )
 
-    def performanceRun(self, total_steps, visualize=False):
+    def performance_run(self, total_steps, visualize=False):
         """
         Execute a single episode using the current policy to evaluate its
         performance. No exploration or learning is enabled.
@@ -414,7 +414,7 @@ class Experiment(object):
         performance_term = 0.0
         performance_discounted_return = 0.0
         for j in range(self.checks_per_policy):
-            p_ret, p_step, p_term, p_dret = self.performanceRun(
+            p_ret, p_step, p_term, p_dret = self.performance_run(
                 total_steps, visualize=visualize > j
             )
             performance_return += p_ret

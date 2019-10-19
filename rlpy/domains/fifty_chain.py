@@ -142,7 +142,7 @@ class FiftyChain(Domain):
             statespace_limits=np.array([[0, self.chainSize - 1]]),
             # Set discount_factor to be 0.8 for this domain per L & P 2007
             discount_factor=0.8,
-            episodeCap=50,
+            episode_cap=50,
         )
         self.start = 0
         # To catch errors
@@ -248,7 +248,7 @@ class FiftyChain(Domain):
 
         V = [representation.V(s, False, self.possibleActions(s=s)) for s in allStates]
         pi = [
-            representation.bestAction(s, False, self.possibleActions(s=s))
+            representation.best_action(s, False, self.possibleActions(s=s))
             for s in allStates
         ]
         # pi  = [self.optimal_policy[s] for s in allStates]

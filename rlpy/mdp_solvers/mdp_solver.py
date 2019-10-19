@@ -103,7 +103,7 @@ class MDPSolver(ABC):
             ns_samples(int):    Number of next state samples to use.
             policy (Policy):    Policy object to use for sampling actions.
         """
-        Q = self.representation.Q_oneStepLookAhead(s, a, ns_samples, policy)
+        Q = self.representation.q_look_ahead(s, a, ns_samples, policy)
         s_index = vec2id(
             self.representation.bin_state(s), self.representation.bins_per_dim
         )
@@ -120,8 +120,8 @@ class MDPSolver(ABC):
 
         s, eps_term, p_actions = self.domain.s0()
 
-        while not eps_term and eps_length < self.domain.episodeCap:
-            a = self.representation.bestAction(s, eps_term, p_actions)
+        while not eps_term and eps_length < self.domain.episode_cap:
+            a = self.representation.best_action(s, eps_term, p_actions)
             if visualize:
                 self.domain.show_domain(a)
             r, ns, eps_term, p_actions = self.domain.step(a)
@@ -150,12 +150,6 @@ class MDPSolver(ABC):
         Value Iteration only work with Tabular representation.
         """
         return className(self.representation) == "Tabular"
-
-    def eps_greedy(self, epsilon, s, terminal, p_actions):
-        if self.random_state.rand() > epsilon:
-            return self.representation.bestAction(s, terminal, p_actions)
-        else:
-            return self.random_state.choice(p_actions)
 
     def collect_samples(self, samples):
         """
@@ -186,7 +180,7 @@ class MDPSolver(ABC):
         # So the first sample forces initialization of s and a
         terminal = True
         while sample < samples:
-            if terminal or eps_length > self.representation.domain.episodeCap:
+            if terminal or eps_length > self.representation.domain.episode_cap:
                 s, terminal, possible_actions = domain.s0()
                 a = self.policy.pi(s, terminal, possible_actions)
 

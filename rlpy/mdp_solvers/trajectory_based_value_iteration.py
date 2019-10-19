@@ -45,6 +45,19 @@ class TrajectoryBasedValueIteration(MDPSolver):
         else:
             self.alpha = alpha
 
+    def _bellman_error(self, s, a, terminal):
+        new_Q = self.representation.q_look_ahead(s, a, self.ns_samples)
+        phi_s = self.representation.phi(s, terminal)
+        phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s)
+        old_Q = np.dot(phi_s_a, self.representation.weight_vec)
+        return new_Q - old_Q, phi_s, phi_s_a
+
+    def eps_greedy(self, s, terminal, p_actions):
+        if self.random_state.rand() > self.epsilon:
+            return self.representation.best_action(s, terminal, p_actions)
+        else:
+            return self.random_state.choice(p_actions)
+
     def _solve_impl(self):
         """Solve the domain MDP."""
 
@@ -57,40 +70,29 @@ class TrajectoryBasedValueIteration(MDPSolver):
         # BellmanError
         converged_trajectories = 0
         while self.has_time() and not converged:
-
-            # Generate a new episode e-greedy with the current values
-            max_Bellman_Error = 0
+            max_bellman_error = 0
             step = 0
-            terminal = False
             s, terminal, p_actions = self.domain.s0()
-            a = self.eps_greedy(self.epsilon, s, terminal, p_actions)
-            while not terminal and step < self.domain.episodeCap and self.has_time():
-                new_Q = self.representation.Q_oneStepLookAhead(s, a, self.ns_samples)
-                phi_s = self.representation.phi(s, terminal)
-                phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s)
-                old_Q = np.dot(phi_s_a, self.representation.weight_vec)
-                bellman_error = new_Q - old_Q
-
-                # print s, old_Q, new_Q, bellman_error
+            # Generate a new episode e-greedy with the current values
+            while not terminal and step < self.domain.episode_cap and self.has_time():
+                a = self.eps_greedy(s, terminal, p_actions)
+                bellman_error, phi_s, phi_s_a = self._bellman_error(s, a, terminal)
+                # Update Parameters
                 self.representation.weight_vec += self.alpha * bellman_error * phi_s_a
                 bellman_updates += 1
                 step += 1
 
                 # Discover features if the representation has the discover method
-                discover_func = getattr(
-                    self.representation, "discover", None
-                )  # None is the default value if the discover is not an attribute
-                if discover_func and callable(discover_func):
-                    self.representation.discover(phi_s, bellman_error)
+                if hasattr(self.representation, "discover"):
+                    self.representation.post_discover(phi_s, bellman_error)
 
-                max_Bellman_Error = max(max_Bellman_Error, abs(bellman_error))
+                max_bellman_error = max(max_bellman_error, abs(bellman_error))
                 # Simulate new state and action on trajectory
                 _, s, terminal, p_actions = self.domain.step(a)
-                a = self.eps_greedy(self.epsilon, s, terminal, p_actions)
 
             # check for convergence
             iteration += 1
-            if max_Bellman_Error < self.convergence_threshold:
+            if max_bellman_error < self.convergence_threshold:
                 converged_trajectories += 1
             else:
                 converged_trajectories = 0
@@ -105,7 +107,7 @@ class TrajectoryBasedValueIteration(MDPSolver):
                     iteration,
                     hhmmss(deltaT(self.start_time)),
                     bellman_updates,
-                    max_Bellman_Error,
+                    max_bellman_error,
                     perf_return,
                     perf_steps,
                     self.representation.features_num,

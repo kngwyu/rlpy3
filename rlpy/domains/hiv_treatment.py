@@ -68,12 +68,12 @@ class HIVTreatment(Domain):
         super().__init__(
             actions_num=4,
             statespace_limits=statespace_limits,
-            episodeCap=200,  #: total of 1000 days with a measurement every 5 days
+            episode_cap=200,  #: total of 1000 days with a measurement every 5 days
             discount_factor=0.98,
             continuous_dims=np.arange(6),
         )
         # store samples of current episode for drawing
-        self.episode_data = np.zeros((7, self.episodeCap + 1))
+        self.episode_data = np.zeros((7, self.episode_cap + 1))
 
     def step(self, a):
         self.t += 1
@@ -111,7 +111,7 @@ class HIVTreatment(Domain):
         """
         # only update the graph every couple of steps, otherwise it is
         # extremely slow
-        if self.t % self.show_domain_every != 0 and not self.t >= self.episodeCap:
+        if self.t % self.show_domain_every != 0 and not self.t >= self.episode_cap:
             return
 
         n = self.state_space_dims + 1
@@ -125,7 +125,7 @@ class HIVTreatment(Domain):
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
-                d = np.arange(self.episodeCap + 1) * 5
+                d = np.arange(self.episode_cap + 1) * 5
                 ax.set_ylabel(names[i])
                 ax.locator_params(tight=True, nbins=4)
                 handles.append(ax.plot(d, self.episode_data[i], color=colors[i])[0])

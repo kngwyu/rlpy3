@@ -200,7 +200,7 @@ class PST(Domain):
             # Number of Actions: ADVANCE, RETREAT, LOITER
             actions_num=pow(UAVAction.SIZE, NUM_UAV),
             statespace_limits=statespace_limits,
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=0.9,
         )
 

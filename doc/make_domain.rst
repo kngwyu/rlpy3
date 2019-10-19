@@ -81,7 +81,7 @@ superclass ``__init__()`` function:
 #. ``self.DimNames`` - array of strings, a name corresponding to each dimension
    (eg one for each row in ``statespace_limits`` above)
 
-#. ``self.episodeCap`` - integer, maximum number of steps before an episode
+#. ``self.episode_cap`` - integer, maximum number of steps before an episode
    terminated (even if not in a terminal state).
 
 #. ``actions_num`` - integer, the total number of possible actions (ie, the size
@@ -186,7 +186,7 @@ Note that the optimal policy is to always go right.
             #: Reward for each timestep
             STEP_REWARD = -1
             #: Set by the domain = min(100,rows*cols)
-            episodeCap = 0
+            episode_cap = 0
             # Used for graphical normalization
             MAX_RETURN  = 1
             # Used for graphical normalization
@@ -204,7 +204,7 @@ Note that the optimal policy is to always go right.
 
 #. Copy the __init__ declaration from ``Domain.py``, add needed parameters
    (here the number of states in the chain, ``chainSize``), and log them.
-   Assign ``self.statespace_limits, self.episodeCap, self.continuous_dims, self.DimNames, self.actions_num,`` 
+   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.DimNames, self.actions_num,`` 
    and ``self.discount_factor``.
    Then call the superclass constructor::
 
@@ -216,7 +216,7 @@ Note that the optimal policy is to always go right.
                 self.start              = 0
                 self.goal               = chainSize - 1
                 self.statespace_limits  = np.array([[0,chainSize-1]])
-                self.episodeCap         = 2*chainSize
+                self.episode_cap         = 2*chainSize
                 self.continuous_dims    = []
                 self.DimNames           = ['State']
                 self.actions_num        = 2

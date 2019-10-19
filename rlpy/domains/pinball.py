@@ -62,13 +62,13 @@ class Pinball(Domain):
     def __init__(
         self,
         noise=0.1,
-        episodeCap=1000,
+        episode_cap=1000,
         configuration=os.path.join(default_config_dir, "pinball_simple_single.cfg"),
     ):
         """
         configuration:
             location of the configuration file
-        episodeCap:
+        episode_cap:
             maximum length of an episode
         noise:
             with probability noise, a uniformly random action is executed
@@ -89,7 +89,7 @@ class Pinball(Domain):
                 [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
             ),
             continuous_dims=[4],
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
         )
         self.environment = PinballModel(
             self.configuration, random_state=self.random_state

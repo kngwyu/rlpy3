@@ -82,7 +82,7 @@ class GridWorld(Domain):
         mapfile=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
         noise=0.1,
         random_start=False,
-        episodeCap=1000,
+        episode_cap=1000,
     ):
         self._load_map(mapfile)
         self.random_start = random_start
@@ -92,7 +92,7 @@ class GridWorld(Domain):
             actions_num=4,
             statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
             # 2*W*H, small values can cause problem for some planning techniques
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
         )
         #: Movement noise
         self.noise = noise

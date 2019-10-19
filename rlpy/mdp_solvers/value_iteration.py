@@ -3,7 +3,6 @@ Performs full Bellman Backup on a given s,a pair by sweeping through the state s
 """
 import numpy as np
 from rlpy.tools import hhmmss, deltaT, clock, l_norm
-import warnings
 from .mdp_solver import MDPSolver
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -29,6 +28,13 @@ class ValueIteration(MDPSolver):
         use the average.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.is_tabular():
+            raise ValueError(
+                "Value Iteration works only with a tabular representation."
+            )
+
     def _log_updates(self, perf_return, bellman_updates):
         dt = hhmmss(deltaT(self.start_tim))
         self.logger.info(
@@ -37,11 +43,6 @@ class ValueIteration(MDPSolver):
 
     def _solve_impl(self):
         """Solve the domain MDP."""
-
-        # Check for Tabular Representation
-        if not self.is_tabular():
-            warnings.warn("Value Iteration works only with a tabular representation.")
-            return 0
 
         self.start_time = clock()  # Used to show the total time took the process
         bellman_updates = 0  # used to track the performance improvement.
@@ -62,10 +63,6 @@ class ValueIteration(MDPSolver):
                 s = self.representation.stateID2state(i)
                 # Sweep through possible actions
                 for a in self.domain.possibleActions(s):
-
-                    # Check for available planning time
-                    if not self.has_time():
-                        break
 
                     self.bellman_backup(s, a, ns_samples=self.ns_samples)
                     bellman_updates += 1

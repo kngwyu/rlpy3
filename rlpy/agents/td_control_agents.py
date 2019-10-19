@@ -105,7 +105,7 @@ class Q_Learning(TDControlAgent):
 
     def _future_action(self, ns, terminal, np_actions, ns_phi, na):
         """Q Learning chooses the optimal action"""
-        return self.representation.bestAction(ns, terminal, np_actions, ns_phi)
+        return self.representation.best_action(ns, terminal, np_actions, ns_phi)
 
 
 class SARSA(TDControlAgent):

@@ -14,7 +14,7 @@ def select_domain(
         random_start=True,
         noise=noise,
         step_penalty=step_penalty,
-        episodeCap=episode_cap,
+        episode_cap=episode_cap,
     )
 
 

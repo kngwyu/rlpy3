@@ -90,7 +90,7 @@ class Swimmer(Domain):
             actions_num=len(self.actions),
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=0.98,
         )
         self.swimmer_lines = None

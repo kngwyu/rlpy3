@@ -93,7 +93,7 @@ class Acrobot(Domain):
             statespace_limits=np.stack((-st_max, st_max), axis=1),
             discount_factor=1.0,
             continuous_dims=np.arange(4),
-            episodeCap=1000,
+            episode_cap=1000,
         )
 
     def s0(self):

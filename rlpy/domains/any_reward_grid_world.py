@@ -34,13 +34,13 @@ class AnyRewardGridWorld(GridWorld):
         noise=0.1,
         step_penalty=1.0,
         random_start=False,
-        episodeCap=20,
+        episode_cap=20,
     ):
         super().__init__(
             mapfile=mapfile,
             noise=noise,
             random_start=random_start,
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
         )
         self.step_penalty = step_penalty
 

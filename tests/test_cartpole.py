@@ -47,7 +47,7 @@ def sample_random_trajectory(domain_class):
     while steps < T:
         if terminal:
             s, terminal, p_actions = domain.s0()
-        elif steps % domain.episodeCap == 0:
+        elif steps % domain.episode_cap == 0:
             s, terminal, p_actions = domain.s0()
         a = np.random.choice(p_actions)
         traj.append((s, terminal, p_actions, a, r))

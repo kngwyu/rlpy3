@@ -51,7 +51,7 @@ class PuddleWorld(Domain):
             actions_num=len(self.actions),
             statespace_limits=np.array([[0.0, 1.0]] * 2),
             continuous_dims=np.arange(2),
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=discount_factor,
         )
         self.noise_level = noise_level
@@ -130,7 +130,7 @@ class PuddleWorld(Domain):
                 self.val_map[j, i] = representation.V(
                     a, self.isTerminal(a), self.possibleActions()
                 )
-                self.pi_map[j, i] = representation.bestAction(
+                self.pi_map[j, i] = representation.best_action(
                     a, self.isTerminal(a), self.possibleActions()
                 )
 

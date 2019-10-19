@@ -82,7 +82,7 @@ class RCCar(Domain):
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
             discount_factor=0.9,
-            episodeCap=10000,
+            episode_cap=10000,
         )
 
     def step(self, a):

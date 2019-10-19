@@ -6,7 +6,6 @@ from copy import deepcopy
 import numpy as np
 from rlpy.policies import eGreedy
 from rlpy.tools import deltaT, hhmmss, clock, l_norm
-import warnings
 from .mdp_solver import MDPSolver
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -34,6 +33,11 @@ class PolicyIteration(MDPSolver):
         self.max_pe_iterations = max_pe_iterations
         self.bellman_updates = 0
         self.logger.info("Max PE Iterations:\t%d" % self.max_pe_iterations)
+
+        if not self.is_tabular():
+            raise ValueError(
+                "Policy Iteration works only with a tabular representation."
+            )
 
     def policy_evaluation(self, policy):
         """
@@ -127,7 +131,7 @@ class PolicyIteration(MDPSolver):
                     self.bellman_backup(s, a, self.ns_samples, policy)
                 if policy.pi(
                     s, False, self.domain.possibleActions(s=s)
-                ) != self.representation.bestAction(
+                ) != self.representation.best_action(
                     s, False, self.domain.possibleActions(s=s)
                 ):
                     policyChanges += 1
@@ -165,11 +169,6 @@ class PolicyIteration(MDPSolver):
         self.bellman_updates = 0
         self.policy_improvement_iteration = 0
         self.start_time = clock()
-
-        # Check for Tabular Representation
-        if not self.is_tabular():
-            warnings.warn("Policy Iteration works only with a tabular representation.")
-            return 0
 
         # Initialize the policy
         # Copy the representation so that the weight change during the evaluation

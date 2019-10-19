@@ -55,7 +55,7 @@ class FlipBoard(Domain):
             actions_num=boards_num,
             statespace_limits=np.tile([0, 1], (boards_num, 1)),
             discount_factor=1.0,
-            episodeCap=min(100, boards_num),
+            episode_cap=min(100, boards_num),
         )
 
     def show_domain(self, a=0):

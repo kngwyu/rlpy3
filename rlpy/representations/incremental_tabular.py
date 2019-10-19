@@ -29,8 +29,7 @@ class IncrementalTabular(Representation):
 
     def __init__(self, domain, discretization=20):
         self.state_ids = {}
-        features_num = 0
-        super().__init__(domain, features_num, discretization)
+        super().__init__(domain, 0, discretization)
 
     def phi_non_terminal(self, s):
         hash_key = self._hash_state(s)

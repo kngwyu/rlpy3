@@ -94,7 +94,7 @@ class IntruderMonitoring(Domain):
             actions_num=5 ** self.NUMBER_OF_AGENTS,
             statespace_limits=statespace_limits,
             discount_factor=0.8,
-            episodeCap=100,
+            episode_cap=100,
         )
 
     def setupMap(self, mapname):

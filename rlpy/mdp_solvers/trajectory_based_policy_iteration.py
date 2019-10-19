@@ -103,15 +103,13 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         ):
 
             # Generate a new episode e-greedy with the current values
-            max_Bellman_Error = 0
+            max_bellman_error = 0
             step = 0
 
             s, a, terminal = self.sample_ns_na(policy, start_trajectory=True)
 
-            while not terminal and step < self.domain.episodeCap and self.has_time():
-                new_Q = self.representation.Q_oneStepLookAhead(
-                    s, a, self.ns_samples, policy
-                )
+            while not terminal and step < self.domain.episode_cap and self.has_time():
+                new_Q = self.representation.q_look_ahead(s, a, self.ns_samples, policy)
                 phi_s = self.representation.phi(s, terminal)
                 phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s=phi_s)
                 old_Q = np.dot(phi_s_a, self.representation.weight_vec)
@@ -121,22 +119,17 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                 self.representation.weight_vec += self.alpha * bellman_error * phi_s_a
                 self.bellman_updates += 1
                 step += 1
-                max_Bellman_Error = max(max_Bellman_Error, abs(bellman_error))
+                max_bellman_error = max(max_bellman_error, abs(bellman_error))
 
                 # Discover features if the representation has the discover method
-                discover_func = getattr(
-                    self.representation, "discover", None
-                )  # None is the default value if the discover is not an attribute
-                if discover_func and callable(discover_func):
+                if hasattr(self.representation, "discover"):
                     self.representation.post_discover(phi_s, bellman_error)
-                    # if discovered:
-                    # print "Features = %d" % self.representation.features_num
 
                 s, a, terminal = self.sample_ns_na(policy, a)
 
             # check for convergence of policy evaluation
             PE_iteration += 1
-            if max_Bellman_Error < self.convergence_threshold:
+            if max_bellman_error < self.convergence_threshold:
                 converged_trajectories += 1
             else:
                 converged_trajectories = 0
@@ -149,7 +142,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     PE_iteration,
                     hhmmss(deltaT(self.start_time)),
                     self.bellman_updates,
-                    max_Bellman_Error,
+                    max_bellman_error,
                     self.representation.features_num,
                 )
             )

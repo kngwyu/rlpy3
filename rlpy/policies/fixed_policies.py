@@ -226,7 +226,7 @@ class FixedPolicy(Policy):
             # If UAVs_num > Target, the rest will hold position
             # Move all agents based on the taken action
             agents = np.array(s[: domain.NUMBER_OF_AGENTS * 2].reshape(-1, 2))
-            targets = np.array(s[domain.NUMBER_OF_AGENTS * 2:].reshape(-1, 2))
+            targets = np.array(s[domain.NUMBER_OF_AGENTS * 2 :].reshape(-1, 2))
             zones = domain.danger_zone_locations
             # Default action is hold
             actions = np.ones(len(agents), dtype=np.integer) * 4

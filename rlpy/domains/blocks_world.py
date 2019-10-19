@@ -62,7 +62,7 @@ class BlocksWorld(Domain):
     blocks = 0
     #: Goal tower size
     towerSize = 0
-    episodeCap = 1000
+    episode_cap = 1000
     #: Used to plot the domain
     domain_fig = None
 
@@ -73,7 +73,7 @@ class BlocksWorld(Domain):
             # if block i is on top of block i => block i is on top of table
             statespace_limits=np.tile([0, blocks - 1], (blocks, 1)),
             discount_factor=1.0,
-            episodeCap=1000,
+            episode_cap=1000,
         )
         self.blocks = blocks
         self.towerSize = towerSize

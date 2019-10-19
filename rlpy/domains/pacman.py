@@ -101,7 +101,7 @@ class Pacman(Domain):
         super().__init__(
             actions_num=len(self.actions),
             statespace_limits=self._statespace_limits(),
-            episodeCap=1000,
+            episode_cap=1000,
         )
 
     def _statespace_limits(self):

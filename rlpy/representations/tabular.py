@@ -27,8 +27,8 @@ class Tabular(Representation):
     def __init__(self, domain, discretization=20):
         # Already performed in call to superclass
         self.set_bins_per_dim(domain, discretization)
-        features_dim = np.prod(self.bins_per_dim).astype(int)
-        super().__init__(domain, features_dim, discretization)
+        features_num = np.prod(self.bins_per_dim).astype(int)
+        super().__init__(domain, features_num, discretization)
 
     def phi_non_terminal(self, s):
         hashVal = self._hash_state(s)

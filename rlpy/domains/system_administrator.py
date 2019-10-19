@@ -118,7 +118,7 @@ class SystemAdministrator(Domain):
             statespace_limits=np.tile(
                 [0, self._NUM_VALUES - 1], (self.computers_num, 1)
             ),
-            episodeCap=200,
+            episode_cap=200,
             discount_factor=0.95,
         )
 

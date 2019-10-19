@@ -44,7 +44,7 @@ def check_random_trajectory(domain_class):
     while steps < T:
         if terminal:
             s, terminal, p_actions = domain.s0()
-        elif steps % domain.episodeCap == 0:
+        elif steps % domain.episode_cap == 0:
             s, terminal, p_actions = domain.s0()
         a = np.random.choice(p_actions)
         r, s, terminal, p_actions = domain.step(a)
@@ -53,5 +53,5 @@ def check_random_trajectory(domain_class):
 
 def check_specifications(domain_class):
     domain = domain_class()
-    for v in ["statespace_limits", "actions_num", "episodeCap"]:
+    for v in ["statespace_limits", "actions_num", "episode_cap"]:
         assert getattr(domain, v) is not None

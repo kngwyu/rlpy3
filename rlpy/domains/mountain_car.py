@@ -72,7 +72,7 @@ class MountainCar(Domain):
             ),
             continuous_dims=[0, 1],
             discount_factor=discount_factor,
-            episodeCap=10000,
+            episode_cap=10000,
         )
         self.noise = noise
         # Visual stuff:
@@ -82,10 +82,10 @@ class MountainCar(Domain):
         self.yTicksLabels = np.linspace(self.XDOTMIN, self.XDOTMAX, 5)
         self.MIN_RETURN = (
             self.STEP_REWARD
-            * (1 - discount_factor ** self.episodeCap)
+            * (1 - discount_factor ** self.episode_cap)
             / (1 - discount_factor)
             if discount_factor != 1
-            else self.STEP_REWARD * self.episodeCap
+            else self.STEP_REWARD * self.episode_cap
         )
         self.MAX_RETURN = 0
         self.DimNames = ["X", "Xdot"]
@@ -243,7 +243,7 @@ class MountainCar(Domain):
                 s = np.array([x, xDot])
                 Qs = representation.Qs(s, False)
                 As = self.possibleActions()
-                pi[row, col] = representation.bestAction(s, False, As)
+                pi[row, col] = representation.best_action(s, False, As)
                 V[row, col] = max(Qs)
         self.valueFunction_im.set_data(V)
         self.policy_im.set_data(pi)

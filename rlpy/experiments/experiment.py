@@ -94,7 +94,7 @@ class Experiment(object):
         :param max_steps: Total number of interactions (steps) before experiment termination.
 
         .. note::
-            ``max_steps`` is distinct from ``episodeCap``; ``episodeCap`` defines the
+            ``max_steps`` is distinct from ``episode_cap``; ``episode_cap`` defines the
             the largest number of interactions which can occur in a single
             episode / trajectory, while ``max_steps`` limits the sum of all
             interactions over all episodes which can occur in an experiment.
@@ -217,7 +217,7 @@ class Experiment(object):
 
         s, eps_term, p_actions = self.performance_domain.s0()
 
-        while not eps_term and eps_length < self.domain.episodeCap:
+        while not eps_term and eps_length < self.domain.episode_cap:
             a = self.agent.policy.pi(s, eps_term, p_actions)
             if visualize:
                 self.performance_domain.show_domain(a)
@@ -328,7 +328,7 @@ class Experiment(object):
         self.total_eval_time = 0.0
         terminal = True
         while total_steps < self.max_steps:
-            if terminal or eps_steps >= self.domain.episodeCap:
+            if terminal or eps_steps >= self.domain.episode_cap:
                 s, terminal, p_actions = self.domain.s0()
                 a = self.agent.policy.pi(s, terminal, p_actions)
                 # Visual
@@ -351,7 +351,7 @@ class Experiment(object):
             eps_return += r
 
             # Print Current performance
-            if (terminal or eps_steps == self.domain.episodeCap) and deltaT(
+            if (terminal or eps_steps == self.domain.episode_cap) and deltaT(
                 start_log_time
             ) > self.log_interval:
                 start_log_time = clock()

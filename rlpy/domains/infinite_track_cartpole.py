@@ -203,8 +203,8 @@ class InfCartPoleBalance(InfTrackCartPole):
     # saturates them frequently when falling; more
     # realistic to use 2*pi.
 
-    def __init__(self, episodeCap=3000):
-        super().__init__(episodeCap=episodeCap)
+    def __init__(self, episode_cap=3000):
+        super().__init__(episode_cap=episode_cap)
 
     def s0(self):
         # import ipdb; ipdb.set_trace()
@@ -233,7 +233,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     """
     **Goal** \n
     Reward is 1 whenever ``theta`` is within ``GOAL_LIMITS``, 0 elsewhere.\n
-    There is no terminal condition aside from ``episodeCap``.\n
+    There is no terminal condition aside from ``episode_cap``.\n
 
     Pendulum starts straight down, ``theta = pi``.  The task is to swing it up,
     after which the problem reduces to
@@ -252,7 +252,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     ANGULAR_RATE_LIMITS = [-3 * np.pi, 3 * np.pi]
 
     def __init__(self):
-        super().__init__(discount_factor=0.9, episodeCap=300)
+        super().__init__(discount_factor=0.9, episode_cap=300)
 
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """

@@ -84,7 +84,7 @@ class HelicopterHoverExtended(Domain):
     gust_memory = 0.8
     domain_fig = None
 
-    episodeCap = 6000
+    episode_cap = 6000
     # model specific parameters from the learned model
     noise_std = np.array([0.1941, 0.2975, 0.6058, 0.1508, 0.2492, 0.0734])
     drag_vel_body = np.array([0.18, 0.43, 0.49])
@@ -107,7 +107,7 @@ class HelicopterHoverExtended(Domain):
         continuous_dims=np.arange(20),
         noise_level=1.0,
         discount_factor=0.95,
-        episodeCap=6000,
+        episode_cap=6000,
     ):
         self.statespace_limits_full = np.array(
             [[-self.MAX_POS, self.MAX_POS]] * 3
@@ -115,7 +115,7 @@ class HelicopterHoverExtended(Domain):
             + [[-self.MAX_ANG_RATE, self.MAX_ANG_RATE]] * 3
             + [[-self.MAX_ANG, self.MAX_ANG]] * 4
             + [[-2.0, 2.0]] * 6
-            + [[0, episodeCap]]
+            + [[0, episode_cap]]
         )
         self.noise_level = noise_level
         if statespace_limits is None:
@@ -124,7 +124,7 @@ class HelicopterHoverExtended(Domain):
             actions_num=np.prod(self.actions.shape[0]),
             statespace_limits=statespace_limits,
             discount_factor=discount_factor,
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
         )
 
     def s0(self):
@@ -152,7 +152,7 @@ class HelicopterHoverExtended(Domain):
             r = -np.sum(self.statespace_limits[:9, 1] ** 2)
             # r -= np.sum(self.statespace_limits[10:12, 1] ** 2)
             r -= 1.0 - self.MIN_QW_BEFORE_HITTING_TERMINAL_STATE ** 2
-            return r * (self.episodeCap - s[-1])
+            return r * (self.episode_cap - s[-1])
         else:
             return -np.sum(s[:9] ** 2) - np.sum(s[10:12] ** 2)
 
@@ -443,7 +443,7 @@ class HelicopterHover(HelicopterHoverExtended):
         Advances in Neural Information Systems (2006).
     """
 
-    episodeCap = 6000
+    episode_cap = 6000
     MAX_POS = 20.0  # m
     MAX_VEL = 10.0  # m/s
     MAX_ANG_RATE = 4 * np.pi

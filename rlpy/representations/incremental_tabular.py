@@ -41,7 +41,7 @@ class IncrementalTabular(Representation):
         F_s[state_id] = 1
         return F_s
 
-    def hash_for_state_count(self, s):
+    def state_id(self, s):
         hash_id = self._hash_state(s)
         return self.hash.get(hash_id)
 

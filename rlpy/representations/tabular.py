@@ -36,7 +36,7 @@ class Tabular(Representation):
         F_s[hashVal] = 1
         return F_s
 
-    def hash_for_state_count(self, s):
+    def state_id(self, s):
         return self._hash_state(s)
 
     def feature_type(self):

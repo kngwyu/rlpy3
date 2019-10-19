@@ -269,12 +269,12 @@ class Representation(ABC):
         ds = self.bin_state(s)
         return vec2id(ds, self.bins_per_dim)
 
-    def hash_for_state_count(self, s):
+    def state_id(self, s):
         """
-        Returns a hash value for counting state visitation.
+        Returns a 0-indexed state id corresponding to the state.
         """
         raise NotImplementedError(
-            "{} does not support hash_for_state_count".format(type(self))
+            "{} does not support state_id".format(type(self))
         )
 
     def set_bins_per_dim(self, domain, discretization):

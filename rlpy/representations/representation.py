@@ -248,15 +248,6 @@ class Representation(ABC):
         else:
             self._arange_cache += a * self.features_num - self._arange_cache[0]
         phi_sa[self._arange_cache] = phi_s
-        # Slower alternatives
-        # Alternative 1: Set only non_zeros
-        # (Very close on running time with the current solution. It is sometimes better)
-        # nnz_ind = phi_s.nonzero()
-        # phi_sa[nnz_ind+a*self.features_num] = phi_s[nnz_ind]
-        # Alternative 2: Use of Kron
-        # A = zeros(self.actions_num)
-        # A[a] = 1
-        # F_sa = kron(A,F_s)
         return phi_sa
 
     def add_new_weight(self):

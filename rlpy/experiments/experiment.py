@@ -6,7 +6,6 @@ import logging
 import numpy as np
 import os
 import re
-import rlpy.tools.results
 from rlpy.tools import (
     checkNCreateDirectory,
     clock,
@@ -17,6 +16,8 @@ from rlpy.tools import (
     with_pdf_fonts,
     MARKERS,
 )
+from rlpy.tools.encoders import NpAwareEncoder
+import rlpy.tools.results
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -462,7 +463,7 @@ class Experiment(object):
         if not os.path.exists(self.full_path):
             os.makedirs(self.full_path)
         with open(results_fn, "w") as f:
-            json.dump(self.result, f, indent=4, sort_keys=True)
+            json.dump(self.result, f, indent=4, sort_keys=True, cls=NpAwareEncoder)
 
     def load(self):
         """loads the experimental results from the ``results.txt`` file

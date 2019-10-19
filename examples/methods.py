@@ -1,4 +1,4 @@
-from rlpy.agents import GreedyGQ, LSPI, NaturalActorCritic, Q_Learning, SARSA
+from rlpy.agents import GreedyGQ, LSPI, NaturalActorCritic, PSRL, Q_Learning, SARSA
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
 from rlpy.representations import (
@@ -70,6 +70,11 @@ def tabular_sarsa(domain, discretization=20, lambda_=0.3):
     tabular = Tabular(domain, discretization=discretization)
     policy = eGreedy(tabular, epsilon=0.1)
     return SARSA(policy, tabular, domain.discount_factor, lambda_=lambda_)
+
+
+def tabular_psrl(domain, seed):
+    tabular = Tabular(domain, discretization=20)
+    return PSRL(tabular, domain.discount_factor, seed=seed)
 
 
 def tile_ggq(domain, res_mat, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100):

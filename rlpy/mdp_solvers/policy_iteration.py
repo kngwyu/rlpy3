@@ -126,14 +126,10 @@ class PolicyIteration(MDPSolver):
             s = self.representation.stateID2state(i)
             if not self.domain.isTerminal(s) and len(self.domain.possibleActions(s)):
                 for a in self.domain.possibleActions(s):
-                    if not self.has_time():
-                        break
                     self.bellman_backup(s, a, self.ns_samples, policy)
-                if policy.pi(
-                    s, False, self.domain.possibleActions(s=s)
-                ) != self.representation.best_action(
-                    s, False, self.domain.possibleActions(s=s)
-                ):
+                p_actions = self.domain.possibleActions(s=s)
+                best_action = self.representation.best_action(s, False, p_actions)
+                if policy.pi(s, False, p_actions) != best_action:
                     policyChanges += 1
             i += 1
         # This will cause the policy to be copied over

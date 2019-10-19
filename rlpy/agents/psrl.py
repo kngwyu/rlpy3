@@ -2,7 +2,6 @@
 """
 import itertools
 import numpy as np
-from rlpy.policies import eGreedy
 from rlpy.representations import Tabular
 from .agent import Agent
 from ._vi_impl import compute_q_values
@@ -15,21 +14,9 @@ class PSRL(Agent):
     """
 
     def __init__(
-        self,
-        representation,
-        discount_factor,
-        alpha0=1.0,
-        mu0=0.0,
-        tau0=1.0,
-        tau=1.0,
-        seed=1,
-        spread_prior=False,
+        self, *args, alpha0=1.0, mu0=0.0, tau0=1.0, tau=1.0, seed=1, spread_prior=False
     ):
         """
-        :param representation: the :py:class:`~rlpy.representations.Representation`
-            to use in learning the value function.
-        :param discount_factor: the discount factor of the optimal policy which
-            should be  learned
         :param step_size: Step size parameter to adjust the weights.
         :param alpha0: Prior weight for uniform Dirichlet.
         :param mu0: Prior mean rewards.
@@ -37,13 +24,8 @@ class PSRL(Agent):
         :param tau: Precision of reward noise.
         :param spread_prior: Use alpha0/n_states as alpha0
         """
-        super().__init__(
-            eGreedy(representation, epsilon=0.0),
-            representation,
-            discount_factor,
-            seed=seed,
-        )
-        if not isinstance(representation, Tabular):
+        super().__init__(*args, seed=seed)
+        if not isinstance(self.representation, Tabular):
             raise ValueError("PSRL works only with a tabular representation.")
 
         self.epsilon = 0.0
@@ -62,7 +44,7 @@ class PSRL(Agent):
         self.n_states = n_states
         self.n_actions = n_actions
         self.ep_cap = self.representation.domain.episode_cap
-        self.discount_factor = discount_factor
+        self.update_steps = 0
 
     def _update_prior(self, s, a, reward, terminal, ns):
         s_id = self.representation.state_id(s)
@@ -86,7 +68,14 @@ class PSRL(Agent):
     def _solve_sampled_mdp(self):
         r, p = self._sample_mdp()
         q_value = compute_q_values(r, p, self.ep_cap, self.discount_factor)
+        import itertools
+
+        for x, y in itertools.product(range(3), range(3)):
+            s = [x, y]
+            s_id = self.representation.state_id(s)
+            # print("Q for {}: {}".format(s, q_value[s_id]))
         self.representation.weight_vec = q_value.T.flatten()
+        self.update_steps += 1
 
     def learn(self, s, p_actions, a, r, ns, np_actions, na, terminal):
         self._update_prior(s, a, r, terminal, ns)

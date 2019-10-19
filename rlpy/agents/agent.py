@@ -50,10 +50,10 @@ class Agent(ABC):
 
     def __init__(self, policy, representation, discount_factor, seed=1):
         """initialization.
-        :param representation: the :py:class:`~rlpy.representations.Representation`
-            to use in learning the value function.
         :param policy: the :py:class:`~rlpy.policies.Policy.Policy` to use
             when selecting actions.
+        :param representation: the :py:class:`~rlpy.representations.Representation`
+            to use in learning the value function.
         :param discount_factor: the discount factor of the optimal policy which
             should be  learned
         """

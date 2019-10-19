@@ -273,9 +273,7 @@ class Representation(ABC):
         """
         Returns a 0-indexed state id corresponding to the state.
         """
-        raise NotImplementedError(
-            "{} does not support state_id".format(type(self))
-        )
+        raise NotImplementedError("{} does not support state_id".format(type(self)))
 
     def set_bins_per_dim(self, domain, discretization):
         """

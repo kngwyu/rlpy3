@@ -19,7 +19,7 @@ def select_domain(
 
 
 def select_agent(
-    name, domain, max_steps, _seed, epsilon=0.1, epsilon_min=None, **kwargs
+    name, domain, max_steps, seed, epsilon=0.1, epsilon_min=None, **kwargs
 ):
     if epsilon_min is not None:
         eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
@@ -40,6 +40,14 @@ def select_agent(
         )
     elif name == "ifddk-q":
         return methods.ifddk_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
+    elif name == "psrl":
+        return methods.tabular_psrl(
+            domain,
+            seed=seed,
+            epsilon=epsilon,
+            epsilon_decay=eps_decay,
+            epsilon_min=eps_min,
+        )
     else:
         raise NotImplementedError("Method {} is not supported".format(name))
 

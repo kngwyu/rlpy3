@@ -7,7 +7,7 @@ import methods
 
 def select_domain(map_="4x5", noise=0.1, **kwargs):
     map_ = GridWorld.default_map(map_ + ".txt")
-    return GridWorld(map_, random_start=True, noise=noise, episode_cap=100)
+    return GridWorld(map_, random_start=True, noise=noise, episode_cap=20)
 
 
 def select_agent(name, domain, max_steps, seed, **kwargs):
@@ -20,7 +20,7 @@ def select_agent(name, domain, max_steps, seed, **kwargs):
     elif name == "ifddk-q":
         return methods.ifddk_q(domain, initial_learn_rate=0.11)
     elif name == "psrl":
-        return methods.tabular_psrl(domain, seed=seed)
+        return methods.tabular_psrl(domain, seed=seed, )
     else:
         raise NotImplementedError("Method {} is not supported".format(name))
 

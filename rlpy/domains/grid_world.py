@@ -135,6 +135,9 @@ class GridWorld(Domain):
         plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
         plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
 
+    def _agent_fig(self, s):
+        return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
+
     def show_domain(self, a=0, s=None):
         if s is None:
             s = self.state
@@ -145,14 +148,10 @@ class GridWorld(Domain):
             self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
             self._show_map()
             self._set_ticks(self.domain_ax)
-            self.agent_fig = self.domain_ax.plot(
-                s[1], s[0], "k>", markersize=20.0 - self.cols
-            )[0]
+            self.agent_fig = self._agent_fig(s)
             self.domain_fig.show()
         self.agent_fig.remove()
-        self.agent_fig = self.domain_ax.plot(
-            s[1], s[0], "k>", markersize=20.0 - self.cols
-        )[0]
+        self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
 
     def _init_arrow(self, name, x, y):

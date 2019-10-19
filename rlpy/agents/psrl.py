@@ -1,4 +1,6 @@
 """Posterior Sampling for Reinforcement Learning
+Paper: https://arxiv.org/abs/1306.0940, https://arxiv.org/abs/1607.00215
+Based on the author's code: https://github.com/iosband/TabulaRL
 """
 import itertools
 import numpy as np
@@ -17,7 +19,6 @@ class PSRL(Agent):
         self, *args, alpha0=1.0, mu0=0.0, tau0=1.0, tau=1.0, seed=1, spread_prior=False
     ):
         """
-        :param step_size: Step size parameter to adjust the weights.
         :param alpha0: Prior weight for uniform Dirichlet.
         :param mu0: Prior mean rewards.
         :param tau0: Precision of prior mean rewards.
@@ -68,12 +69,7 @@ class PSRL(Agent):
     def _solve_sampled_mdp(self):
         r, p = self._sample_mdp()
         q_value = compute_q_values(r, p, self.ep_cap, self.discount_factor)
-        import itertools
 
-        for x, y in itertools.product(range(3), range(3)):
-            s = [x, y]
-            s_id = self.representation.state_id(s)
-            # print("Q for {}: {}".format(s, q_value[s_id]))
         self.representation.weight_vec = q_value.T.flatten()
         self.update_steps += 1
 

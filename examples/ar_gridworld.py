@@ -5,9 +5,7 @@ from rlpy.tools.cli import run_experiment
 import methods
 
 
-def select_domain(
-    map_="6x6guided", noise=0.1, step_penalty=0.5, episode_cap=20, **kwargs
-):
+def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
     map_ = AnyRewardGridWorld.default_map(map_ + ".txt")
     return AnyRewardGridWorld(
         map_,
@@ -18,9 +16,7 @@ def select_domain(
     )
 
 
-def select_agent(
-    name, domain, max_steps, seed, epsilon=0.1, epsilon_min=None, **kwargs
-):
+def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, **kwargs):
     if epsilon_min is not None:
         eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
         eps_min = epsilon_min

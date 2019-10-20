@@ -54,8 +54,9 @@ class PSRL(Agent):
         self.r_prior_tau[s_id, a] = tau_new
         mu_old = self.r_prior_mu[s_id, a]
         self.r_prior_mu[s_id, a] = (mu_old * tau_old + reward * self.tau) / tau_new
-        ns_id = self.representation.state_id(ns)
-        self.p_prior[s_id, a, ns_id] += 1
+        if not terminal:
+            ns_id = self.representation.state_id(ns)
+            self.p_prior[s_id, a, ns_id] += 1
 
     def _sample_mdp(self):
         r_sample = np.zeros_like(self.r_prior_mu)

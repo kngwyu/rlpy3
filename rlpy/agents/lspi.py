@@ -175,7 +175,7 @@ class LSPI(BatchAgent):
         self.best_performance = -np.inf
         self.logger.info("Running Policy Iteration:")
 
-        # We save action_mask on the first iteration (used for batchBestAction) to reuse it and boost the speed
+        # We save action_mask on the first iteration (used for batch_best_action) to reuse it and boost the speed
         # action_mask is a matrix that shows which actions are available for
         # each state
         action_mask = None
@@ -191,7 +191,7 @@ class LSPI(BatchAgent):
             # Notice if actions have the same value the first action is
             # selected in the batch mode
             iteration_start_time = tools.clock()
-            bestAction, self.all_phi_ns_new_na, action_mask = self.representation.batchBestAction(
+            best_action, self.all_phi_ns_new_na, action_mask = self.representation.batch_best_action(
                 self.data_ns[: self.samples_count, :],
                 self.all_phi_ns,
                 action_mask,

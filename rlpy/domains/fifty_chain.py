@@ -62,7 +62,7 @@ class FiftyChain(Domain):
     # colors
     circles = None
     #: Number of states in the chain
-    chainSize = 50
+    chain_size = 50
     # Y values used for drawing circles
     Y = 1
     #: Probability of taking the other (unselected) action
@@ -139,14 +139,14 @@ class FiftyChain(Domain):
     def __init__(self):
         super().__init__(
             actions_num=2,
-            statespace_limits=np.array([[0, self.chainSize - 1]]),
+            statespace_limits=np.array([[0, self.chain_size - 1]]),
             # Set discount_factor to be 0.8 for this domain per L & P 2007
             discount_factor=0.8,
-            episodeCap=50,
+            episode_cap=50,
         )
         self.start = 0
         # To catch errors
-        self.optimal_policy = np.array([-1 for dummy in range(0, self.chainSize)])
+        self.optimal_policy = np.array([-1 for dummy in range(0, self.chain_size)])
         self.storeOptimalPolicy()
 
     def storeOptimalPolicy(self):
@@ -167,21 +167,23 @@ class FiftyChain(Domain):
             averageState = int(np.mean([goalState1, goalState2]))
             self.optimal_policy[np.arange(goalState1, averageState)] = self.LEFT
             self.optimal_policy[np.arange(averageState, goalState2)] = self.RIGHT
-        self.optimal_policy[np.arange(self.GOAL_STATES[-1], self.chainSize)] = self.LEFT
+        self.optimal_policy[
+            np.arange(self.GOAL_STATES[-1], self.chain_size)
+        ] = self.LEFT
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         # Draw the environment
         fig = plt.figure("FiftyChain")
         if self.circles is None:
             self.domain_fig = plt.subplot(3, 1, 1)
-            plt.figure(1, (self.chainSize * 2 / 10.0, 2))
-            self.domain_fig.set_xlim(0, self.chainSize * 2 / 10.0)
+            plt.figure(1, (self.chain_size * 2 / 10.0, 2))
+            self.domain_fig.set_xlim(0, self.chain_size * 2 / 10.0)
             self.domain_fig.set_ylim(0, 2)
             # Make the last one double circle
             self.domain_fig.add_patch(
                 mpatches.Circle(
-                    (0.2 + 2 / 10.0 * (self.chainSize - 1), self.Y),
+                    (0.2 + 2 / 10.0 * (self.chain_size - 1), self.Y),
                     self.RADIUS * 1.1,
                     fc="w",
                 )
@@ -190,9 +192,9 @@ class FiftyChain(Domain):
             self.domain_fig.yaxis.set_visible(False)
             self.circles = [
                 mpatches.Circle((0.2 + 2 / 10.0 * i, self.Y), self.RADIUS, fc="w")
-                for i in range(self.chainSize)
+                for i in range(self.chain_size)
             ]
-            for i in range(self.chainSize):
+            for i in range(self.chain_size):
                 self.domain_fig.add_patch(self.circles[i])
                 plt.show()
         for p in self.circles:
@@ -203,13 +205,13 @@ class FiftyChain(Domain):
         fig.canvas.draw()
         fig.canvas.flush_events()
 
-    def showLearning(self, representation):
-        allStates = np.arange(0, self.chainSize)
-        X = np.arange(self.chainSize) * 2.0 / 10.0 - self.SHIFT
-        Y = np.ones(self.chainSize) * self.Y
-        DY = np.zeros(self.chainSize)
-        DX = np.zeros(self.chainSize)
-        C = np.zeros(self.chainSize)
+    def show_learning(self, representation):
+        allStates = np.arange(0, self.chain_size)
+        X = np.arange(self.chain_size) * 2.0 / 10.0 - self.SHIFT
+        Y = np.ones(self.chain_size) * self.Y
+        DY = np.zeros(self.chain_size)
+        DX = np.zeros(self.chain_size)
+        C = np.zeros(self.chain_size)
 
         if self.value_function_fig is None:
             self.value_function_fig = plt.subplot(3, 1, 2)
@@ -229,7 +231,7 @@ class FiftyChain(Domain):
             plt.ylim([0, self.GOAL_REWARD * (len(self.GOAL_STATES) + 1)])
 
             self.policy_fig = plt.subplot(3, 1, 3)
-            self.policy_fig.set_xlim(0, self.chainSize * 2 / 10.0)
+            self.policy_fig.set_xlim(0, self.chain_size * 2 / 10.0)
             self.policy_fig.set_ylim(0, 2)
             self.arrows = plt.quiver(
                 X,
@@ -248,7 +250,7 @@ class FiftyChain(Domain):
 
         V = [representation.V(s, False, self.possibleActions(s=s)) for s in allStates]
         pi = [
-            representation.bestAction(s, False, self.possibleActions(s=s))
+            representation.best_action(s, False, self.possibleActions(s=s))
             for s in allStates
         ]
         # pi  = [self.optimal_policy[s] for s in allStates]
@@ -265,14 +267,14 @@ class FiftyChain(Domain):
         if a == self.LEFT or (a == self.RIGHT and actionFailure):  # left
             ns = max(0, self.state - 1)
         elif a == self.RIGHT or (a == self.LEFT and actionFailure):
-            ns = min(self.chainSize - 1, self.state + 1)
+            ns = min(self.chain_size - 1, self.state + 1)
         self.state = ns
         terminal = self.isTerminal()
         r = self.GOAL_REWARD if s in self.GOAL_STATES else 0
         return r, ns, terminal, self.possibleActions()
 
     def s0(self):
-        self.state = self.random_state.randint(0, self.chainSize)
+        self.state = self.random_state.randint(0, self.chain_size)
         return self.state, self.isTerminal(), self.possibleActions()
 
     def isTerminal(self):
@@ -297,7 +299,7 @@ class FiftyChain(Domain):
         V = np.array(
             [
                 representation.V(s, False, self.possibleActions(s=s))
-                for s in range(self.chainSize)
+                for s in range(self.chain_size)
             ]
         )
         return np.linalg.norm(V - self.V_star, np.inf)

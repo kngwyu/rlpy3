@@ -1,6 +1,6 @@
 import click
 from rlpy.domains.domain import Domain
-from rlpy.experiments import Experiment
+from rlpy.experiments import Experiment, MDPSolverExperiment
 
 
 def get_experiment(
@@ -15,7 +15,7 @@ def get_experiment(
     @click.option(
         "--agent", type=str, default=None, help="The name of agent you want to run"
     )
-    @click.option("--seed", type=int, default=1, help="The problem to learn")
+    @click.option("--seed", type=int, default=1, help="The random seed of the agent")
     @click.option(
         "--max-steps",
         type=int,
@@ -120,3 +120,44 @@ def get_experiment(
 
 def run_experiment(*args, **kwargs):
     get_experiment(*args, **kwargs)(obj={})
+
+
+def run_mb_experiment(domain_or_domain_selector, agent_selector, other_options=[]):
+    @click.command("Model-base experiment")
+    @click.option(
+        "--agent", type=str, default=None, help="The name of agent you want to run"
+    )
+    @click.option("--seed", type=int, default=1, help="The random seed of the agent")
+    @click.option(
+        "--visualize-performance",
+        "--show-performance",
+        "-VP",
+        default=0,
+        type=int,
+        help="The number of visualization steps in the final performance runs",
+    )
+    @click.option(
+        "--visualize-learning",
+        "--show-learning",
+        "-VL",
+        is_flag=True,
+        help="Visualize of the learning status before each evaluation",
+    )
+    def experiment(agent, seed, visualize_performance, visualize_learning, **kwargs):
+        if isinstance(domain_or_domain_selector, Domain):
+            domain = domain_or_domain_selector
+        else:
+            domain = domain_or_domain_selector(**kwargs)
+        agent = agent_selector(agent, domain, seed, **kwargs)
+        experiment = MDPSolverExperiment(agent, domain)
+        experiment.run(visualize=visualize_learning)
+        for i in range(visualize_performance):
+            ret = experiment.performance_run(visualize=True)
+            print("Performance Return: {}".format(ret))
+
+    for opt in other_options:
+        if not isinstance(opt, click.Option):
+            raise ValueError("Every item of agent_options must be click.Option!")
+        experiment.params.append(opt)
+
+    experiment()

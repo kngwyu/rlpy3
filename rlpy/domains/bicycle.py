@@ -60,7 +60,7 @@ class BicycleBalancing(Domain):
         r"$\dot{\theta}$",
         r"$\psi",
     )
-    #: only update the graphs in showDomain every x steps
+    #: only update the graphs in show_domain every x steps
     show_domain_every = 20
     dt = 0.01  #: Frequency is ``1 / dt``.
 
@@ -72,9 +72,9 @@ class BicycleBalancing(Domain):
             statespace_limits=np.stack((-smax, smax), axis=1),
             discount_factor=0.98,
             continuous_dims=np.arange(5),
-            episodeCap=50000,
+            episode_cap=50000,
         )
-        self.episode_data = np.zeros((6, self.episodeCap + 1))
+        self.episode_data = np.zeros((6, self.episode_cap + 1))
         self._state_graph_handles = None
 
     def step(self, a):
@@ -167,13 +167,13 @@ class BicycleBalancing(Domain):
         self.episode_data[:-1, 0] = s
         return s, self.isTerminal(), self.possibleActions()
 
-    def showDomain(self, a=0, s=None):
+    def show_domain(self, a=0, s=None):
         """
         shows a live graph of each observable dimension
         """
         # only update the graph every couple of steps, otherwise it is
         # extremely slow
-        if self.t % self.show_domain_every != 0 and not self.t >= self.episodeCap:
+        if self.t % self.show_domain_every != 0 and not self.t >= self.episode_cap:
             return
 
         n = self.state_space_dims + 1
@@ -187,7 +187,7 @@ class BicycleBalancing(Domain):
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
-                d = np.arange(self.episodeCap + 1) * 5
+                d = np.arange(self.episode_cap + 1) * 5
                 ax.set_ylabel(names[i])
                 ax.locator_params(tight=True, nbins=4)
                 handles.append(ax.plot(d, self.episode_data[i], color=colors[i])[0])

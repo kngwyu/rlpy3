@@ -165,18 +165,6 @@ def randint(low, high, m=1, n=1):
     return np.random.randint(low, high + 1, size=(m, n))
 
 
-def randSet(x):
-    """
-    :param x: a list, array, or other iterable datatype
-    Accepts a 1-D vector (list, array, etc) and returns an element from the list
-    selected uniform random.
-
-    """
-    # i = random.random_integers(0,size(x)-1)
-    i = np.random.randint(0, len(x) - 1)
-    return x[i]
-
-
 def closestDiscretization(s, num_bins, limits):
     """
     :param s: a state.  (possibly multidimensional) ndarray, with dimension d =

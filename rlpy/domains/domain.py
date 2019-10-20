@@ -1,7 +1,8 @@
 """Domain base class"""
-import numpy as np
-import logging
+from abc import ABC, abstractmethod
 from copy import deepcopy
+import logging
+import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -14,7 +15,7 @@ __credits__ = [
 __license__ = "BSD 3-Clause"
 
 
-class Domain(object):
+class Domain(ABC):
     """
     The Domain controls the environment in which the
     :py:class:`~rlpy.agents.agent.Agent` resides as well as the reward function the
@@ -45,8 +46,8 @@ class Domain(object):
     to interact with the Agent and Experiment classes within the RLPy library.
     domains should also provide methods that provide visualization of the
     Domain itself and of the Agent's learning
-    (:py:meth:`~rlpy.domains.domain.Domain.showDomain` and
-    :py:meth:`~rlpy.domains.domain.Domain.showLearning` respectively) \n
+    (:py:meth:`~rlpy.domains.domain.Domain.show_domain` and
+    :py:meth:`~rlpy.domains.domain.Domain.show_learning` respectively) \n
     All new domain implementations should inherit from :py:class:`~rlpy.domains.domain.domain`.
 
     .. note::
@@ -61,7 +62,7 @@ class Domain(object):
         statespace_limits,
         discount_factor=0.9,
         continuous_dims=None,
-        episodeCap=None,
+        episode_cap=None,
         random_state=None,
     ):
         """
@@ -71,7 +72,7 @@ class Domain(object):
         Each row corresponds to one dimension and has two elements [min, max]
         :param state_space_dims: Number of dimensions of the state space
         :param continuous_dims: List of the continuous dimensions of the domain
-        :param episodeCap: The cap used to bound each episode (return to state 0 after)
+        :param episode_cap: The cap used to bound each episode (return to state 0 after)
         :param random_state: A seeded numpy random number generator
         """
         self.actions_num = actions_num
@@ -86,7 +87,7 @@ class Domain(object):
             self.states_num = np.inf
             self.continuous_dims = continuous_dims
 
-        self.episodeCap = episodeCap
+        self.episode_cap = episode_cap
 
         if random_state is None:
             self.random_state = np.random.RandomState()
@@ -116,7 +117,7 @@ class Domain(object):
 Dimensions: {self.state_space_dims}
 |S|:        {self.states_num}
 |A|:        {self.actions_num}
-Episode Cap:{self.episodeCap}
+Episode Cap:{self.episode_cap}
 Gamma:      {self.discount_factor}
 """.format(
             self=self
@@ -128,8 +129,8 @@ Gamma:      {self.discount_factor}
         Shows a visualization of the current state of the domain and that of
         learning.
 
-        See :py:meth:`~rlpy.domains.domain.Domain.showDomain()` and
-        :py:meth:`~rlpy.domains.domain.Domain.showLearning()`,
+        See :py:meth:`~rlpy.domains.domain.Domain.show_domain()` and
+        :py:meth:`~rlpy.domains.domain.Domain.show_learning()`,
         both called by this method.
 
         .. note::
@@ -143,11 +144,11 @@ Gamma:      {self.discount_factor}
 
         """
         self.saveRandomState()
-        self.showDomain(a=a)
-        self.showLearning(representation=representation)
+        self.show_domain(a=a)
+        self.show_learning(representation=representation)
         self.loadRandomState()
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         *Abstract Method:*\n
         Shows a visualization of the current state of the domain.
@@ -157,7 +158,7 @@ Gamma:      {self.discount_factor}
         """
         pass
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         """
         *Abstract Method:*\n
         Shows a visualization of the current learning,
@@ -204,6 +205,7 @@ Gamma:      {self.discount_factor}
 
     # TODO: change 'a' to be 'aID' to make it clearer when we refer to
     # actions vs. integer IDs of actions?  They aren't always interchangeable.
+    @abstractmethod
     def step(self, a):
         """
         *Abstract Method:*\n
@@ -236,7 +238,7 @@ Gamma:      {self.discount_factor}
             (Reward [value], next observed state, isTerminal [boolean])
 
         """
-        raise NotImplementedError("Each domain needs to implement this method")
+        pass
 
     def saveRandomState(self):
         """
@@ -320,18 +322,12 @@ Gamma:      {self.discount_factor}
         result = cls.__new__(cls)
         memo[id(self)] = result
         for k, v in list(self.__dict__.items()):
-            if k is "logger":
+            if k == "logger":
                 continue
             # This block bandles matplotlib transformNode objects,
             # which cannot be coped
             try:
                 setattr(result, k, deepcopy(v, memo))
-            except:
-                # Try this: if this doesnt work, just let theat error get thrown
-                try:
-                    setattr(result, k, v.frozen())
-                except:
-                    self.logger.warning(
-                        "Could not copy attribute " + k + " when duplicating domain."
-                    )
+            except Exception:
+                setattr(result, k, v.frozen())
         return result

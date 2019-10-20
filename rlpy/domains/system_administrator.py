@@ -118,7 +118,7 @@ class SystemAdministrator(Domain):
             statespace_limits=np.tile(
                 [0, self._NUM_VALUES - 1], (self.computers_num, 1)
             ),
-            episodeCap=200,
+            episode_cap=200,
             discount_factor=0.95,
         )
 
@@ -144,7 +144,7 @@ class SystemAdministrator(Domain):
         self.setUniqueEdges(_Neighbors)
         self.setNeighbors()
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         plt.figure("Domain")
 

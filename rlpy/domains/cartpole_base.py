@@ -141,7 +141,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         self,
         statespace_limits,
         discount_factor=0.95,
-        episodeCap=3000,
+        episode_cap=3000,
         continuous_dims=None,
     ):
         """
@@ -154,7 +154,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             len(self.AVAIL_FORCE),
             statespace_limits,
             discount_factor=discount_factor,
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
             continuous_dims=continuous_dims,
         )
 
@@ -253,10 +253,10 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         raise NotImplementedError
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         raise NotImplementedError
 
     def possibleActions(self, s=None):

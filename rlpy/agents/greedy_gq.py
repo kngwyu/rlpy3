@@ -54,7 +54,7 @@ class GreedyGQ(Agent, DescentAlgorithm):
         phi = self.representation.phi_sa(s, False, a, phi_s)
         phi_prime_s = self.representation.phi(ns, terminal)
         # Switch na to the best possible action
-        na = self.representation.bestAction(ns, terminal, np_actions, phi_prime_s)
+        na = self.representation.best_action(ns, terminal, np_actions, phi_prime_s)
         phi_prime = self.representation.phi_sa(ns, terminal, na, phi_prime_s)
         nnz = count_nonzero(phi_s)  # Number of non-zero elements
 

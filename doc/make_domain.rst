@@ -81,7 +81,7 @@ superclass ``__init__()`` function:
 #. ``self.DimNames`` - array of strings, a name corresponding to each dimension
    (eg one for each row in ``statespace_limits`` above)
 
-#. ``self.episodeCap`` - integer, maximum number of steps before an episode
+#. ``self.episode_cap`` - integer, maximum number of steps before an episode
    terminated (even if not in a terminal state).
 
 #. ``actions_num`` - integer, the total number of possible actions (ie, the size
@@ -123,17 +123,17 @@ OPTIONAL Functions
 """"""""""""""""""
 Optionally, define / override the following functions, used for visualization:
 
-#. :func:`~rlpy.domains.domain.Domain.showDomain` - Visualization of domain based
+#. :func:`~rlpy.domains.domain.Domain.show_domain` - Visualization of domain based
    on current internal state and an action, *a*.
    Often the header will include an optional argument *s* to display instead 
    of the current internal state.
    RLPy frequently uses `matplotlib <http://matplotlib.org/>`_
    to accomplish this - see the example below.
-#. :func:`~rlpy.domains.domain.Domain.showLearning` - Visualization of the "learning"
+#. :func:`~rlpy.domains.domain.Domain.show_learning` - Visualization of the "learning"
    obtained so far on this domain, usually a value function plot and policy plot.
    See the introductory tutorial for an example on :class:`~rlpy.domains.Gridworld.GridWorld`
 
-XX expectedStep(), XX
+XX expected_step(), XX
 
 
 Additional Information
@@ -186,7 +186,7 @@ Note that the optimal policy is to always go right.
             #: Reward for each timestep
             STEP_REWARD = -1
             #: Set by the domain = min(100,rows*cols)
-            episodeCap = 0
+            episode_cap = 0
             # Used for graphical normalization
             MAX_RETURN  = 1
             # Used for graphical normalization
@@ -198,25 +198,25 @@ Note that the optimal policy is to always go right.
             # Stores the graphical pathes for states so that we can later change their colors
             circles     = None
             #: Number of states in the chain
-            chainSize   = 0
+            chain_size   = 0
             # Y values used for drawing circles
             Y           = 1
 
 #. Copy the __init__ declaration from ``Domain.py``, add needed parameters
-   (here the number of states in the chain, ``chainSize``), and log them.
-   Assign ``self.statespace_limits, self.episodeCap, self.continuous_dims, self.DimNames, self.actions_num,`` 
+   (here the number of states in the chain, ``chain_size``), and log them.
+   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.DimNames, self.actions_num,`` 
    and ``self.discount_factor``.
    Then call the superclass constructor::
 
-            def __init__(self, chainSize=2):
+            def __init__(self, chain_size=2):
                 """
-                :param chainSize: Number of states \'n\' in the chain.
+                :param chain_size: Number of states \'n\' in the chain.
                 """
-                self.chainSize          = chainSize
+                self.chain_size          = chain_size
                 self.start              = 0
-                self.goal               = chainSize - 1
-                self.statespace_limits  = np.array([[0,chainSize-1]])
-                self.episodeCap         = 2*chainSize
+                self.goal               = chain_size - 1
+                self.statespace_limits  = np.array([[0,chain_size-1]])
+                self.episode_cap         = 2*chain_size
                 self.continuous_dims    = []
                 self.DimNames           = ['State']
                 self.actions_num        = 2
@@ -233,7 +233,7 @@ Note that the optimal policy is to always go right.
                 if a == 0: #left
                     ns = max(0,s-1)
                 if a == 1: #right
-                    ns = min(self.chainSize-1,s+1)
+                    ns = min(self.chain_size-1,s+1)
                 self.state = np.array([ns])
 
                 terminal = self.isTerminal()
@@ -249,7 +249,7 @@ Note that the optimal policy is to always go right.
 
             def isTerminal(self):
                 s = self.state
-                return (s[0] == self.chainSize - 1)
+                return (s[0] == self.chain_size - 1)
 
 #. For debugging convenience, demonstration, and entertainment, create a domain
    visualization by overriding the default (which is to do nothing).
@@ -259,24 +259,24 @@ Note that the optimal policy is to always go right.
    and action *a*::
 
 
-            def showDomain(self, a = 0):
+            def show_domain(self, a = 0):
                 #Draw the environment
                 s = self.state
                 s = s[0]
                 if self.circles is None: # We need to draw the figure for the first time
-                   fig = plt.figure(1, (self.chainSize*2, 2))
+                   fig = plt.figure(1, (self.chain_size*2, 2))
                    ax = fig.add_axes([0, 0, 1, 1], frameon=False, aspect=1.)
-                   ax.set_xlim(0, self.chainSize*2)
+                   ax.set_xlim(0, self.chain_size*2)
                    ax.set_ylim(0, 2)
-                   ax.add_patch(mpatches.Circle((1+2*(self.chainSize-1), self.Y), self.RADIUS*1.1, fc="w")) #Make the last one double circle
+                   ax.add_patch(mpatches.Circle((1+2*(self.chain_size-1), self.Y), self.RADIUS*1.1, fc="w")) #Make the last one double circle
                    ax.xaxis.set_visible(False)
                    ax.yaxis.set_visible(False)
-                   self.circles = [mpatches.Circle((1+2*i, self.Y), self.RADIUS, fc="w") for i in np.arange(self.chainSize)]
-                   for i in np.arange(self.chainSize):
+                   self.circles = [mpatches.Circle((1+2*i, self.Y), self.RADIUS, fc="w") for i in np.arange(self.chain_size)]
+                   for i in np.arange(self.chain_size):
                        ax.add_patch(self.circles[i])
-                       if i != self.chainSize-1:
+                       if i != self.chain_size-1:
                             fromAtoB(1+2*i+self.SHIFT,self.Y+self.SHIFT,1+2*(i+1)-self.SHIFT, self.Y+self.SHIFT)
-                            if i != self.chainSize-2: fromAtoB(1+2*(i+1)-self.SHIFT,self.Y-self.SHIFT,1+2*i+self.SHIFT, self.Y-self.SHIFT, 'r')
+                            if i != self.chain_size-2: fromAtoB(1+2*(i+1)-self.SHIFT,self.Y-self.SHIFT,1+2*i+self.SHIFT, self.Y-self.SHIFT, 'r')
                        fromAtoB(.75,self.Y-1.5*self.SHIFT,.75,self.Y+1.5*self.SHIFT,'r',connectionstyle='arc3,rad=-1.2')
                        plt.show()
 

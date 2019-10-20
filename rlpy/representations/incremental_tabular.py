@@ -28,17 +28,22 @@ class IncrementalTabular(Representation):
     IS_DYNAMIC = True
 
     def __init__(self, domain, discretization=20):
-        self.hash = {}
-        features_num = 0
-        super().__init__(domain, features_num, discretization)
+        self.state_ids = {}
+        super().__init__(domain, 0, discretization)
 
     def phi_non_terminal(self, s):
-        hash_id = self.hash_state(s)
-        hashVal = self.hash.get(hash_id)
+        hash_key = self._hash_state(s)
+        state_id = self.state_ids.get(hash_key)
+        if state_id is None:
+            self._add_state(s)
+            state_id = self.features_num - 1
         F_s = np.zeros(self.features_num, bool)
-        if hashVal is not None:
-            F_s[hashVal] = 1
+        F_s[state_id] = 1
         return F_s
+
+    def state_id(self, s):
+        hash_id = self._hash_state(s)
+        return self.hash.get(hash_id)
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
         return self._add_state(s) + self._add_state(sn)
@@ -51,14 +56,12 @@ class IncrementalTabular(Representation):
         return 0; if not, add it to the hash table and return 1.
         """
 
-        hash_id = self.hash_state(s)
-        hashVal = self.hash.get(hash_id)
-        if hashVal is None:
-            # New State
+        hash_key = self._hash_state(s)
+        if hash_key not in self.state_ids:
+            # Assign a new id
+            self.state_ids[hash_key] = self.features_num
+            # Increment state count
             self.features_num += 1
-            # New id = feature_num - 1
-            hashVal = self.features_num - 1
-            self.hash[hash_id] = hashVal
             # Add a new element to the feature weight vector, theta
             self.add_new_weight()
             return 1

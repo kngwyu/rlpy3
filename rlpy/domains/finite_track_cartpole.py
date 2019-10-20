@@ -127,7 +127,7 @@ class FiniteTrackCartPole(CartPoleBase):
         # defined by children
         raise NotImplementedError
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         """
 
         ``xSlice`` and ``xDotSlice`` - the value of ``x`` and ``xDot``
@@ -168,7 +168,7 @@ class FiniteTrackCartPole(CartPoleBase):
 
         pl.draw()
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         Display the 4-d state of the cartpole and arrow indicating current
         force action (not including noise!).
@@ -375,7 +375,7 @@ class FiniteCartPoleSwingUpFriction(FiniteCartPoleSwingUp):
     #: seconds, s - Time between steps
     dt = 0.10
     #: Max number of steps per trajectory (reduced from default of 3000)
-    episodeCap = 400
+    episode_cap = 400
     # Friction coefficient between cart and ground
     B = 0.1
 

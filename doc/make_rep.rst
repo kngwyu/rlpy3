@@ -157,13 +157,13 @@ are discretized.
 
 #. Copy the ``phi_non_terminal()`` function declaration and implement it accordingly
    to return the vector of feature function values for a given state.
-   Here, lookup feature function values using self.hash_state(s) provided by the
+   Here, lookup feature function values using self._hash_state(s) provided by the
    parent class.
    Note here that self.hash should always contain hash_id if ``pre_discover()``
    is called as required::
 
             def phi_non_terminal(self, s):
-                hash_id = self.hash_state(s)
+                hash_id = self._hash_state(s)
                 id  = self.hash.get(hash_id)
                 F_s = np.zeros(self.features_num, bool)
                 if id is not None:
@@ -186,7 +186,7 @@ are discretized.
 #. Finally, define any needed helper functions::
 
             def _add_state(self, s):
-                hash_id = self.hash_state(s)
+                hash_id = self._hash_state(s)
                 id  = self.hash.get(hash_id)
                 if id is None:
                     #New State

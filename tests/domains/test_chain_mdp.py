@@ -11,8 +11,8 @@ from .helpers import check_seed_vis
 
 def _make_experiment(exp_id=1, path="./Results/Tmp/test_ChainMDP/"):
     ## Domain:
-    chainSize = 5
-    domain = ChainMDP(chainSize=chainSize)
+    chain_size = 5
+    domain = ChainMDP(chain_size=chain_size)
 
     ## Representation
     # discretization only needed for continuous state spaces, discarded otherwise
@@ -48,8 +48,8 @@ def test_transitions():
 
     """
     # [[initialize domain]]
-    chainSize = 5
-    domain = ChainMDP(chainSize=chainSize)
+    chain_size = 5
+    domain = ChainMDP(chain_size=chain_size)
     dummyS = domain.s0()
     domain.state = np.array([2])  # state s2
     left = 0

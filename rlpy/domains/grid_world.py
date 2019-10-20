@@ -24,8 +24,8 @@ class GridWorld(Domain):
     The GridWorld domain simulates a path-planning problem for a mobile robot
     in an environment with obstacles. The goal of the agent is to
     navigate from the starting point to the goal state.
-    The map is loaded from a text file filled with numbers showing the map with the following
-    coding for each cell:
+    The map is loaded from a text file filled with numbers showing the map with the
+    following coding for each cell:
 
     * 0: empty
     * 1: blocked
@@ -82,7 +82,7 @@ class GridWorld(Domain):
         mapfile=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
         noise=0.1,
         random_start=False,
-        episodeCap=1000,
+        episode_cap=1000,
     ):
         self._load_map(mapfile)
         self.random_start = random_start
@@ -92,7 +92,7 @@ class GridWorld(Domain):
             actions_num=4,
             statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
             # 2*W*H, small values can cause problem for some planning techniques
-            episodeCap=episodeCap,
+            episode_cap=episode_cap,
         )
         #: Movement noise
         self.noise = noise
@@ -135,7 +135,10 @@ class GridWorld(Domain):
         plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
         plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
 
-    def showDomain(self, a=0, s=None):
+    def _agent_fig(self, s):
+        return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
+
+    def show_domain(self, a=0, s=None):
         if s is None:
             s = self.state
         # Draw the environment
@@ -145,14 +148,10 @@ class GridWorld(Domain):
             self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
             self._show_map()
             self._set_ticks(self.domain_ax)
-            self.agent_fig = self.domain_ax.plot(
-                s[1], s[0], "k>", markersize=20.0 - self.cols
-            )[0]
+            self.agent_fig = self._agent_fig(s)
             self.domain_fig.show()
         self.agent_fig.remove()
-        self.agent_fig = self.domain_ax.plot(
-            s[1], s[0], "k>", markersize=20.0 - self.cols
-        )[0]
+        self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
 
     def _init_arrow(self, name, x, y):
@@ -176,7 +175,7 @@ class GridWorld(Domain):
         )
         self.arrow_figs[name].set_clim(vmin=0, vmax=1)
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         if self.vf_ax is None:
             self.vf_fig = plt.figure("Value Function")
             self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
@@ -188,6 +187,8 @@ class GridWorld(Domain):
                 vmin=self.MIN_RETURN,
                 vmax=self.MAX_RETURN,
             )
+            self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max Return")
+            self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min Return")
             self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
             self._set_ticks(self.vf_ax)
             # Create quivers for each action. 4 in total
@@ -303,7 +304,7 @@ class GridWorld(Domain):
             possibleA = np.append(possibleA, [a])
         return possibleA
 
-    def expectedStep(self, s, a):
+    def expected_step(self, s, a):
         # Returns k possible outcomes
         #  p: k-by-1    probability of each transition
         #  r: k-by-1    rewards

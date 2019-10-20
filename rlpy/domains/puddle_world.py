@@ -51,7 +51,7 @@ class PuddleWorld(Domain):
             actions_num=len(self.actions),
             statespace_limits=np.array([[0.0, 1.0]] * 2),
             continuous_dims=np.arange(2),
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=discount_factor,
         )
         self.noise_level = noise_level
@@ -104,7 +104,7 @@ class PuddleWorld(Domain):
             reward -= 400 * (0.1 - dists[dists < 0.1]).max()
         return reward
 
-    def showDomain(self, a=None):
+    def show_domain(self, a=None):
         s = self.state
         # Draw the environment
         if self.domain_fig is None:
@@ -121,7 +121,7 @@ class PuddleWorld(Domain):
             plt.figure("Domain").canvas.draw()
             plt.figure("Domain").canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         a = np.zeros((2))
         for i, x in enumerate(np.linspace(0, 1, 100)):
             for j, y in enumerate(np.linspace(0, 1, 100)):
@@ -130,7 +130,7 @@ class PuddleWorld(Domain):
                 self.val_map[j, i] = representation.V(
                     a, self.isTerminal(a), self.possibleActions()
                 )
-                self.pi_map[j, i] = representation.bestAction(
+                self.pi_map[j, i] = representation.best_action(
                     a, self.isTerminal(a), self.possibleActions()
                 )
 

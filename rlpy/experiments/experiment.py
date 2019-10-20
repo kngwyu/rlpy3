@@ -6,7 +6,6 @@ import logging
 import numpy as np
 import os
 import re
-import rlpy.tools.results
 from rlpy.tools import (
     checkNCreateDirectory,
     clock,
@@ -17,6 +16,8 @@ from rlpy.tools import (
     with_pdf_fonts,
     MARKERS,
 )
+from rlpy.tools.encoders import NpAwareEncoder
+import rlpy.tools.results
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -94,7 +95,7 @@ class Experiment(object):
         :param max_steps: Total number of interactions (steps) before experiment termination.
 
         .. note::
-            ``max_steps`` is distinct from ``episodeCap``; ``episodeCap`` defines the
+            ``max_steps`` is distinct from ``episode_cap``; ``episode_cap`` defines the
             the largest number of interactions which can occur in a single
             episode / trajectory, while ``max_steps`` limits the sum of all
             interactions over all episodes which can occur in an experiment.
@@ -196,7 +197,7 @@ class Experiment(object):
                 logging.FileHandler(os.path.join(self.full_path, self.log_filename))
             )
 
-    def performanceRun(self, total_steps, visualize=False):
+    def performance_run(self, total_steps, visualize=False):
         """
         Execute a single episode using the current policy to evaluate its
         performance. No exploration or learning is enabled.
@@ -217,10 +218,10 @@ class Experiment(object):
 
         s, eps_term, p_actions = self.performance_domain.s0()
 
-        while not eps_term and eps_length < self.domain.episodeCap:
+        while not eps_term and eps_length < self.domain.episode_cap:
             a = self.agent.policy.pi(s, eps_term, p_actions)
             if visualize:
-                self.performance_domain.showDomain(a)
+                self.performance_domain.show_domain(a)
 
             r, ns, eps_term, p_actions = self.performance_domain.step(a)
             self._gather_transition_statistics(s, a, ns, r, learning=False)
@@ -231,7 +232,7 @@ class Experiment(object):
             )
             eps_length += 1
         if visualize:
-            self.performance_domain.showDomain(a)
+            self.performance_domain.show_domain(a)
         self.agent.policy.turnOnExploration()
         # This hidden state is for domains (such as the noise in the helicopter domain)
         # that include unobservable elements that are evolving over time
@@ -316,7 +317,7 @@ class Experiment(object):
 
         # show policy or value function of initial policy
         if visualize_learning:
-            self.domain.showLearning(self.agent.representation)
+            self.domain.show_learning(self.agent.representation)
 
         # Used to bound the number of logs in the file
         start_log_time = clock()
@@ -328,7 +329,7 @@ class Experiment(object):
         self.total_eval_time = 0.0
         terminal = True
         while total_steps < self.max_steps:
-            if terminal or eps_steps >= self.domain.episodeCap:
+            if terminal or eps_steps >= self.domain.episode_cap:
                 s, terminal, p_actions = self.domain.s0()
                 a = self.agent.policy.pi(s, terminal, p_actions)
                 # Visual
@@ -351,7 +352,7 @@ class Experiment(object):
             eps_return += r
 
             # Print Current performance
-            if (terminal or eps_steps == self.domain.episodeCap) and deltaT(
+            if (terminal or eps_steps == self.domain.episode_cap) and deltaT(
                 start_log_time
             ) > self.log_interval:
                 start_log_time = clock()
@@ -382,7 +383,7 @@ class Experiment(object):
 
                 # show policy or value function
                 if visualize_learning:
-                    self.domain.showLearning(self.agent.representation)
+                    self.domain.show_learning(self.agent.representation)
 
                 self.evaluate(total_steps, episode_number, visualize_performance)
                 self.total_eval_time += (
@@ -414,7 +415,7 @@ class Experiment(object):
         performance_term = 0.0
         performance_discounted_return = 0.0
         for j in range(self.checks_per_policy):
-            p_ret, p_step, p_term, p_dret = self.performanceRun(
+            p_ret, p_step, p_term, p_dret = self.performance_run(
                 total_steps, visualize=visualize > j
             )
             performance_return += p_ret
@@ -462,7 +463,7 @@ class Experiment(object):
         if not os.path.exists(self.full_path):
             os.makedirs(self.full_path)
         with open(results_fn, "w") as f:
-            json.dump(self.result, f, indent=4, sort_keys=True)
+            json.dump(self.result, f, indent=4, sort_keys=True, cls=NpAwareEncoder)
 
     def load(self):
         """loads the experimental results from the ``results.txt`` file

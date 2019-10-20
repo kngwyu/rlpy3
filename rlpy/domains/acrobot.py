@@ -93,7 +93,7 @@ class Acrobot(Domain):
             statespace_limits=np.stack((-st_max, st_max), axis=1),
             discount_factor=1.0,
             continuous_dims=np.arange(4),
-            episodeCap=1000,
+            episode_cap=1000,
         )
 
     def s0(self):
@@ -181,7 +181,7 @@ class Acrobot(Domain):
         ddtheta1 = -(d2 * ddtheta2 + phi1) / d1
         return (dtheta1, dtheta2, ddtheta1, ddtheta2, 0.0)
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         Plot the 2 links + action arrows
         """

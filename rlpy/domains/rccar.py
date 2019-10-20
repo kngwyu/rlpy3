@@ -82,7 +82,7 @@ class RCCar(Domain):
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
             discount_factor=0.9,
-            episodeCap=10000,
+            episode_cap=10000,
         )
 
     def step(self, a):
@@ -125,7 +125,7 @@ class RCCar(Domain):
     def isTerminal(self):
         return np.linalg.norm(self.state[0:2] - self.GOAL) < self.GOAL_RADIUS
 
-    def showDomain(self, a):
+    def show_domain(self, a):
         s = self.state
         # Plot the car
         x, y, speed, heading = s

@@ -66,7 +66,7 @@ class Representation(ABC):
         """
         # A dictionary used to cache expected results of step().
         # Used for planning algorithms
-        self.expectedStepCached = {}
+        self.expected_step_cached = {}
         self.set_bins_per_dim(domain, discretization)
         self.domain = domain
         self.state_space_dims = domain.state_space_dims
@@ -248,15 +248,6 @@ class Representation(ABC):
         else:
             self._arange_cache += a * self.features_num - self._arange_cache[0]
         phi_sa[self._arange_cache] = phi_s
-        # Slower alternatives
-        # Alternative 1: Set only non_zeros
-        # (Very close on running time with the current solution. It is sometimes better)
-        # nnz_ind = phi_s.nonzero()
-        # phi_sa[nnz_ind+a*self.features_num] = phi_s[nnz_ind]
-        # Alternative 2: Use of Kron
-        # A = zeros(self.actions_num)
-        # A[a] = 1
-        # F_sa = kron(A,F_s)
         return phi_sa
 
     def add_new_weight(self):
@@ -266,7 +257,7 @@ class Representation(ABC):
         """
         self.weight_vec = addNewElementForAllActions(self.weight_vec, self.actions_num)
 
-    def hash_state(self, s):
+    def _hash_state(self, s):
         """
         Returns a unique id for a given state.
         Essentially, enumerate all possible states and return the ID associated
@@ -277,6 +268,12 @@ class Representation(ABC):
         """
         ds = self.bin_state(s)
         return vec2id(ds, self.bins_per_dim)
+
+    def state_id(self, s):
+        """
+        Returns a 0-indexed state id corresponding to the state.
+        """
+        raise NotImplementedError("{} does not support state_id".format(type(self)))
 
     def set_bins_per_dim(self, domain, discretization):
         """
@@ -305,7 +302,7 @@ class Representation(ABC):
         """
         Returns a vector where each element is the zero-indexed bin number
         corresponding with the given state.
-        (See :py:meth:`~rlpy.representations.representation.hash_state`)
+        (See :py:meth:`~rlpy.representations.representation._hash_state`)
         Note that this vector will have the same dimensionality as *s*.
 
         (Note: This method is binary compact; the negative case of binary features is
@@ -331,7 +328,7 @@ class Representation(ABC):
         If *phi_s* [the feature vector at state *s*] is given, it is used to
         speed up code by preventing re-computation within this function.
 
-        See :py:meth:`~rlpy.representations.representation.bestAction`
+        See :py:meth:`~rlpy.representations.representation.best_action`
 
         :param s: The given state
         :param terminal: Whether or not the state *s* is a terminal one.
@@ -349,7 +346,7 @@ class Representation(ABC):
         """
         Identifies and adds ("discovers") new features for this adaptive
         representation BEFORE having obtained the TD-Error.
-        For example, see :py:class:`~rlpy.representations.IncrementalTabular.IncrementalTabular`.
+        For example, see :py:class:`~rlpy.representations.IncrementalTabular`.
         In that class, a new feature is added anytime a novel state is observed.
 
         .. note::
@@ -392,7 +389,7 @@ class Representation(ABC):
         """
         return 0
 
-    def bestAction(self, s, terminal, p_actions, phi_s=None):
+    def best_action(self, s, terminal, p_actions, phi_s=None):
         """
         Returns the best action at a given state.
         If there are multiple best actions, this method selects one of them
@@ -481,12 +478,12 @@ class Representation(ABC):
                 phi_s_a[rows, i * n : (i + 1) * n] = all_phi_s[rows, :]
         return phi_s_a
 
-    def batchBestAction(self, all_s, all_phi_s, action_mask=None, useSparse=True):
+    def batch_best_action(self, all_s, all_phi_s, action_mask=None, useSparse=True):
         """
         Accepts a batch of states, returns the best action associated with each.
 
         .. note::
-            See :py:meth:`~rlpy.representations.representation.bestAction`
+            See :py:meth:`~rlpy.representations.representation.best_action`
 
         :param all_s: An array of all the states to consider.
         :param all_phi_s: The feature vectors evaluated at a series of states.
@@ -534,7 +531,92 @@ class Representation(ABC):
         """
         pass
 
-    def Q_oneStepLookAhead(self, s, a, ns_samples, policy=None):
+    def _q_from_expetected_step(self, s, a, policy):
+        p, r, ns, t, p_actions = self.domain.expected_step(s, a)
+        Q = 0
+        discount = self.domain.discount_factor
+        if policy is None:
+            Q = sum(
+                [
+                    p[j, 0] * (r[j, 0] + discount * self.V(ns[j], t[j], p_actions[j]))
+                    for j in range(len(p))
+                ]
+            )
+        else:
+            for j in range(len(p)):
+                # For some domains such as blocks world, you may want to apply
+                # bellman backup to impossible states which may not have
+                # any possible actions.
+                # This if statement makes sure that there exist at least
+                # one action in the next state so the bellman backup with
+                # the fixed policy is valid
+                p_actions = self.domain.possible_actions(ns[j])
+                if len(p_actions) == 0:
+                    continue
+                na = policy.pi(ns[j], t[j], p_actions)
+                Q += p[j, 0] * (r[j, 0] + discount * self.Q(ns[j], t[j], na))
+        return Q
+
+    def _q_from_sampling(self, s, a, policy, ns_samples):
+        # See if they are in cache:
+        key = tuple(np.hstack((s, [a])))
+        cacheHit = self.expected_step_cached.get(key)
+        if cacheHit is None:
+            # Not found in cache => Calculate and store in cache
+            # If continuous domain, sample <continuous_state_starting_samples>
+            # points within each discritized grid and sample
+            # <ns_samples>/<continuous_state_starting_samples> for each starting
+            # state.
+            # Otherwise take <ns_samples> for the state.
+            # First put s in the middle of the grid:
+            # shout(self,s)
+            s = self.stateInTheMiddleOfGrid(s)
+            # print "After:", shout(self,s)
+            if len(self.domain.continuous_dims):
+                next_states = np.empty((ns_samples, self.domain.state_space_dims))
+                rewards = np.empty(ns_samples)
+                # next states per samples initial state
+                ns_samples_ = ns_samples // self.continuous_state_starting_samples
+                for i in range(self.continuous_state_starting_samples):
+                    # sample a random state within the grid corresponding
+                    # to input s
+                    new_s = s.copy()
+                    for d in range(self.domain.state_space_dims):
+                        w = self.binWidth_per_dim[d]
+                        # Sample each dimension of the new_s within the
+                        # cell
+                        new_s[d] = (self.random_state.rand() - 0.5) * w + s[d]
+                        # If the dimension is discrete make make the
+                        # sampled value to be int
+                        if d not in self.domain.continuous_dims:
+                            new_s[d] = int(new_s[d])
+                            ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
+                            next_states[i * ns_samples_ : (i + 1) * ns_samples_, :] = ns
+                            rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
+            else:
+                next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
+                self.expected_step_cached[key] = [next_states, rewards]
+        else:
+            next_states, rewards = cacheHit
+        discount = self.domain.discount_factor
+        if policy is None:
+            Q = np.mean(
+                [
+                    rewards[i] + discount * self.V(next_states[i, :])
+                    for i in range(ns_samples)
+                ]
+            )
+        else:
+            Q = np.mean(
+                [
+                    rewards[i]
+                    + discount * self.Q(next_states[i, :], policy.pi(next_states[i, :]))
+                    for i in range(ns_samples)
+                ]
+            )
+        return Q
+
+    def q_look_ahead(self, s, a, ns_samples, policy=None):
         """
         Returns the state action value, Q(s,a), by performing one step
         look-ahead on the domain.
@@ -544,7 +626,7 @@ class Representation(ABC):
             `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
         If a policy is passed (used in the policy evaluation), it is used to
         generate the action for the next state.
@@ -568,90 +650,12 @@ class Representation(ABC):
         if hasFunction(self, "addState"):
             self.addState(s)
 
-        discount_factor = self.domain.discount_factor
-        if hasFunction(self.domain, "expectedStep"):
-            p, r, ns, t, p_actions = self.domain.expectedStep(s, a)
-            Q = 0
-            for j in range(len(p)):
-                if policy is None:
-                    Q += p[j, 0] * (
-                        r[j, 0]
-                        + discount_factor * self.V(ns[j, :], t[j, :], p_actions[j])
-                    )
-                else:
-                    # For some domains such as blocks world, you may want to apply
-                    # bellman backup to impossible states which may not have
-                    # any possible actions.
-                    # This if statement makes sure that there exist at least
-                    # one action in the next state so the bellman backup with
-                    # the fixed policy is valid
-                    if len(self.domain.possibleActions(ns[j, :])):
-                        na = policy.pi(
-                            ns[j, :], t[j, :], self.domain.possibleActions(ns[j, :])
-                        )
-                        Q += p[j, 0] * (
-                            r[j, 0] + discount_factor * self.Q(ns[j, :], t[j, :], na)
-                        )
+        if hasFunction(self.domain, "expected_step"):
+            return self._q_from_expetected_step(s, a, policy)
         else:
-            # See if they are in cache:
-            key = tuple(np.hstack((s, [a])))
-            cacheHit = self.expectedStepCached.get(key)
-            if cacheHit is None:
-                # Not found in cache => Calculate and store in cache
-                # If continuous domain, sample <continuous_state_starting_samples>
-                # points within each discritized grid and sample
-                # <ns_samples>/<continuous_state_starting_samples> for each starting
-                # state.
-                # Otherwise take <ns_samples> for the state.
-                # First put s in the middle of the grid:
-                # shout(self,s)
-                s = self.stateInTheMiddleOfGrid(s)
-                # print "After:", shout(self,s)
-                if len(self.domain.continuous_dims):
-                    next_states = np.empty((ns_samples, self.domain.state_space_dims))
-                    rewards = np.empty(ns_samples)
-                    # next states per samples initial state
-                    ns_samples_ = ns_samples // self.continuous_state_starting_samples
-                    for i in range(self.continuous_state_starting_samples):
-                        # sample a random state within the grid corresponding
-                        # to input s
-                        new_s = s.copy()
-                        for d in range(self.domain.state_space_dims):
-                            w = self.binWidth_per_dim[d]
-                            # Sample each dimension of the new_s within the
-                            # cell
-                            new_s[d] = (self.random_state.rand() - 0.5) * w + s[d]
-                            # If the dimension is discrete make make the
-                            # sampled value to be int
-                            if not d in self.domain.continuous_dims:
-                                new_s[d] = int(new_s[d])
-                        ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
-                        next_states[i * ns_samples_ : (i + 1) * ns_samples_, :] = ns
-                        rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
-                else:
-                    next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
-                self.expectedStepCached[key] = [next_states, rewards]
-            else:
-                next_states, rewards = cacheHit
-            if policy is None:
-                Q = np.mean(
-                    [
-                        rewards[i] + discount_factor * self.V(next_states[i, :])
-                        for i in range(ns_samples)
-                    ]
-                )
-            else:
-                Q = np.mean(
-                    [
-                        rewards[i]
-                        + discount_factor
-                        * self.Q(next_states[i, :], policy.pi(next_states[i, :]))
-                        for i in range(ns_samples)
-                    ]
-                )
-        return Q
+            return self._q_from_sampling(s, a, policy, ns_samples)
 
-    def Qs_oneStepLookAhead(self, s, ns_samples, policy=None):
+    def qs_look_ahead(self, s, ns_samples, policy=None):
         """
         Returns an array of actions and their associated values Q(s,a),
         by performing one step look-ahead on the domain for each of them.
@@ -661,7 +665,7 @@ class Representation(ABC):
             `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
         If a policy is passed (used in the policy evaluation), it is used to
         generate the action for the next state.
@@ -681,12 +685,10 @@ class Representation(ABC):
             possible *a*, where `|A|` is the number of possible actions from state *s*
         """
         actions = self.domain.possibleActions(s)
-        Qs = np.array(
-            [self.Q_oneStepLookAhead(s, a, ns_samples, policy) for a in actions]
-        )
+        Qs = np.array([self.q_look_ahead(s, a, ns_samples, policy) for a in actions])
         return Qs, actions
 
-    def V_oneStepLookAhead(self, s, ns_samples):
+    def v_look_ahead(self, s, ns_samples):
         """
         Returns the value of being in state *s*, V(s),
         by performing one step look-ahead on the domain.
@@ -696,7 +698,7 @@ class Representation(ABC):
             `Line 6 of Figure 4.5 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
             in Sutton and Barto 1998.
 
-        If the domain does not define ``expectedStep()``, this function uses
+        If the domain does not define ``expected_step()``, this function uses
         ``ns_samples`` samples to estimate the one_step look-ahead.
 
         .. note::
@@ -710,7 +712,7 @@ class Representation(ABC):
         """
         # The estimated value = max_a Q(s,a) together with the corresponding
         # action that maximizes the Q function
-        Qs, actions = self.Qs_oneStepLookAhead(s, ns_samples)
+        Qs, actions = self.qs_look_ahead(s, ns_samples)
         a_ind = np.argmax(Qs)
         return Qs[a_ind], actions[a_ind]
 
@@ -775,7 +777,7 @@ class Representation(ABC):
         result = cls.__new__(cls)
         memo[id(self)] = result
         for k, v in list(self.__dict__.items()):
-            if k is "logger":
+            if k == "logger":
                 continue
             setattr(result, k, deepcopy(v, memo))
         return result

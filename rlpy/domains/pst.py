@@ -200,11 +200,11 @@ class PST(Domain):
             # Number of Actions: ADVANCE, RETREAT, LOITER
             actions_num=pow(UAVAction.SIZE, NUM_UAV),
             statespace_limits=statespace_limits,
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=0.9,
         )
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         s = self.state
         if self.domain_fig is None:
             plt.figure("Domain")
@@ -400,7 +400,7 @@ class PST(Domain):
         plt.figure("Domain").canvas.flush_events()
         sleep(0.5)
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         pass
 
     def step(self, a):

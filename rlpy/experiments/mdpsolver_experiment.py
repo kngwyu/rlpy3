@@ -19,7 +19,7 @@ class MDPSolverExperiment(Experiment):
     solve method to start solving the MDP.
     """
 
-    def __init__(self, agent, domain, **kwargs):
+    def __init__(self, agent, domain):
         """
         :param agent: The agent to be tested.
         :param domain: The domain to be tested on.
@@ -27,7 +27,7 @@ class MDPSolverExperiment(Experiment):
         self.agent = agent
         self.domain = domain
 
-    def run(self, debug_on_sigurg=False):
+    def run(self, visualize=False, debug_on_sigurg=False):
         """
         Run the experiment and collect statistics / generate the results
 
@@ -47,4 +47,8 @@ class MDPSolverExperiment(Experiment):
         if debug_on_sigurg:
             rlpy.tools.ipshell.ipdb_on_SIGURG()
 
-        self.agent.solve()
+        self.agent.solve(visualize=visualize)
+
+    def performance_run(self, visualize=False):
+        ret, _, _, _ = self.agent.performance_run(visualize=visualize)
+        return ret

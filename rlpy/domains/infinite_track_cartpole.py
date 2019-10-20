@@ -132,7 +132,7 @@ class InfTrackCartPole(CartPoleBase):
         possibleActions = self.possibleActions()
         return reward, ns, terminal, possibleActions
 
-    def showDomain(self, a=0):
+    def show_domain(self, a=0):
         """
         Display the 4-d state of the cartpole and arrow indicating current
         force action (not including noise!).
@@ -144,7 +144,7 @@ class InfTrackCartPole(CartPoleBase):
         fourState = np.append(self.state, np.array([0, 0]))
         self._plot_state(fourState, a)
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         thetas, theta_dots = self._setup_learning(representation)
         pi = np.zeros((len(theta_dots), len(thetas)), np.uint8)
         V = np.zeros((len(theta_dots), len(thetas)))
@@ -203,8 +203,8 @@ class InfCartPoleBalance(InfTrackCartPole):
     # saturates them frequently when falling; more
     # realistic to use 2*pi.
 
-    def __init__(self, episodeCap=3000):
-        super().__init__(episodeCap=episodeCap)
+    def __init__(self, episode_cap=3000):
+        super().__init__(episode_cap=episode_cap)
 
     def s0(self):
         # import ipdb; ipdb.set_trace()
@@ -233,7 +233,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     """
     **Goal** \n
     Reward is 1 whenever ``theta`` is within ``GOAL_LIMITS``, 0 elsewhere.\n
-    There is no terminal condition aside from ``episodeCap``.\n
+    There is no terminal condition aside from ``episode_cap``.\n
 
     Pendulum starts straight down, ``theta = pi``.  The task is to swing it up,
     after which the problem reduces to
@@ -252,7 +252,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     ANGULAR_RATE_LIMITS = [-3 * np.pi, 3 * np.pi]
 
     def __init__(self):
-        super().__init__(discount_factor=0.9, episodeCap=300)
+        super().__init__(discount_factor=0.9, episode_cap=300)
 
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """

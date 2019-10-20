@@ -1,13 +1,12 @@
 import click
-from rlpy.domains import GridWorld
+from rlpy.domains import ChainMDP
 from rlpy.tools.cli import run_experiment
 
 import methods
 
 
-def select_domain(map_, noise, **kwargs):
-    map_ = GridWorld.default_map(map_ + ".txt")
-    return GridWorld(map_, random_start=True, noise=noise, episode_cap=20)
+def select_domain(chain_size):
+    return ChainMDP(chain_size=chain_size)
 
 
 def select_agent(name, domain, max_steps, seed, **kwargs):
@@ -16,9 +15,9 @@ def select_agent(name, domain, max_steps, seed, **kwargs):
     elif name == "nac":
         return methods.tabular_nac(domain)
     elif name == "tabular-q":
-        return methods.tabular_q(domain, initial_learn_rate=0.11)
+        return methods.tabular_q(domain, initial_learn_rate=0.1)
     elif name == "ifddk-q":
-        return methods.ifddk_q(domain, initial_learn_rate=0.11)
+        return methods.ifddk_q(domain, initial_learn_rate=0.1)
     elif name == "psrl":
         return methods.tabular_psrl(domain, seed=seed)
     else:
@@ -32,8 +31,5 @@ if __name__ == "__main__":
         default_max_steps=10000,
         default_num_policy_checks=10,
         default_checks_per_policy=50,
-        other_options=[
-            click.Option(["--map", "map_"], type=str, default="4x5"),
-            click.Option(["--noise"], type=float, default=0.1),
-        ],
+        other_options=[click.Option(["--chain-size"], type=int, default=4)],
     )

@@ -90,7 +90,7 @@ class Swimmer(Domain):
             actions_num=len(self.actions),
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
-            episodeCap=1000,
+            episode_cap=1000,
             discount_factor=0.98,
         )
         self.swimmer_lines = None
@@ -112,7 +112,7 @@ class Swimmer(Domain):
     def possibleActions(self, s=None):
         return np.arange(self.actions_num)
 
-    def showDomain(self, a=None):
+    def show_domain(self, a=None):
         if a is not None:
             a = self.actions[a]
         T = np.empty((self.d, 2))
@@ -136,7 +136,7 @@ class Swimmer(Domain):
         fig.canvas.draw()
         fig.canvas.flush_events()
 
-    def showLearning(self, representation):
+    def show_learning(self, representation):
         good_pol = SwimmerPolicy(representation=representation, epsilon=0)
         id1 = 2
         id2 = 3

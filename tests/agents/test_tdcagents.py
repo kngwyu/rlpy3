@@ -13,7 +13,7 @@ class MockRepresentation(Representation):
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
-        self.expectedStepCached = {}
+        self.expected_step_cached = {}
         self.state_space_dims = 1
         self.actions_num = 1
         self.discretization = 3

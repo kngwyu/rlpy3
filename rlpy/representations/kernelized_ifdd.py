@@ -52,6 +52,7 @@ class Candidate(object):
     """
     candidate feature as a combination of two existing features
     """
+
     def __init__(self, idx1, idx2):
         self.idx1 = idx1
         self.idx2 = idx2
@@ -460,5 +461,6 @@ try:
     from .kernels import *  # noqa
 except ImportError:
     import warnings
+
     warnings.warn("C-Extension for kernels not available, expect slow runtime")
     from .slow_kernels import *  # noqa

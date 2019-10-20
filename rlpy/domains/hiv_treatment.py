@@ -53,7 +53,7 @@ class HIVTreatment(Domain):
     state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
     actions = np.array([[0.0, 0.0], [0.7, 0.0], [0.0, 0.3], [0.7, 0.3]])
     dt = 5  #: measurement every 5 days
-    #: only update the graphs in showDomain every x steps
+    #: only update the graphs in show_domain every x steps
     show_domain_every = 20
 
     def __init__(self, logspace=True):
@@ -68,12 +68,12 @@ class HIVTreatment(Domain):
         super().__init__(
             actions_num=4,
             statespace_limits=statespace_limits,
-            episodeCap=200,  #: total of 1000 days with a measurement every 5 days
+            episode_cap=200,  #: total of 1000 days with a measurement every 5 days
             discount_factor=0.98,
             continuous_dims=np.arange(6),
         )
         # store samples of current episode for drawing
-        self.episode_data = np.zeros((7, self.episodeCap + 1))
+        self.episode_data = np.zeros((7, self.episode_cap + 1))
 
     def step(self, a):
         self.t += 1
@@ -105,13 +105,13 @@ class HIVTreatment(Domain):
         self.episode_data[:-1, 0] = s
         return s, self.isTerminal(), self.possibleActions()
 
-    def showDomain(self, a=0, s=None):
+    def show_domain(self, a=0, s=None):
         """
         shows a live graph of each concentration
         """
         # only update the graph every couple of steps, otherwise it is
         # extremely slow
-        if self.t % self.show_domain_every != 0 and not self.t >= self.episodeCap:
+        if self.t % self.show_domain_every != 0 and not self.t >= self.episode_cap:
             return
 
         n = self.state_space_dims + 1
@@ -125,7 +125,7 @@ class HIVTreatment(Domain):
             f.subplots_adjust(hspace=0.1)
             for i in range(n):
                 ax = axes[i]
-                d = np.arange(self.episodeCap + 1) * 5
+                d = np.arange(self.episode_cap + 1) * 5
                 ax.set_ylabel(names[i])
                 ax.locator_params(tight=True, nbins=4)
                 handles.append(ax.plot(d, self.episode_data[i], color=colors[i])[0])

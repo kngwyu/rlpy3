@@ -338,13 +338,6 @@ class GridWorld(Domain):
     def allStates(self):
         if len(self.continuous_dims) > 0:
             # Recall that discrete dimensions are assumed to be integer
-            return (
-                perms(
-                    self.discrete_statespace_limits[:, 1]
-                    - self.discrete_statespace_limits[:, 0]
-                    + 1
-                )
-                + self.discrete_statespace_limits[:, 0]
-            )
+            return perms(self.discrete_statespace_width + 1) + self.discrete_statespace_limits[0]
         else:
             return None

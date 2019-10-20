@@ -288,17 +288,14 @@ class Representation(ABC):
         #: Number of possible states per dimension [1-by-dim]
         self.bins_per_dim = np.zeros(domain.state_space_dims, np.uint16)
         #: Width of bins in each dimension
-        self.binWidth_per_dim = np.zeros(domain.state_space_dims)
+        self.binwidth_per_dim = np.zeros(domain.state_space_dims)
+        statespace_width = domain.statespace_width
         for d in range(domain.state_space_dims):
             if d in domain.continuous_dims:
                 self.bins_per_dim[d] = discretization
             else:
-                self.bins_per_dim[d] = (
-                    domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]
-                )
-            self.binWidth_per_dim[d] = (
-                domain.statespace_limits[d, 1] - domain.statespace_limits[d, 0]
-            ) / self.bins_per_dim[d]
+                self.bins_per_dim[d] = statespace_width[d]
+            self.binwidth_per_dim[d] = statespace_width[d] / self.bins_per_dim[d]
 
     def bin_state(self, s):
         """
@@ -584,7 +581,7 @@ class Representation(ABC):
                     # to input s
                     new_s = s.copy()
                     for d in range(self.domain.state_space_dims):
-                        w = self.binWidth_per_dim[d]
+                        w = self.binwidth_per_dim[d]
                         # Sample each dimension of the new_s within the
                         # cell
                         new_s[d] = (self.random_state.rand() - 0.5) * w + s[d]

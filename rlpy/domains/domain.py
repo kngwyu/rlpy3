@@ -283,6 +283,14 @@ Gamma:      {self.discount_factor}
                 self.statespace_limits[d, 0] += -0.5
                 self.statespace_limits[d, 1] += +0.5
 
+    @property
+    def statespace_width(self):
+        return self.statespace_limits[:, 1] - self.statespace_limits[:, 0]
+
+    @property
+    def discrete_statespace_width(self):
+        return self.discrete_statespace_limits[:, 1] - self.discrete_statespace_limits[:, 0]
+
     def sampleStep(self, a, num_samples):
         """
         Sample a set number of next states and rewards from the domain.

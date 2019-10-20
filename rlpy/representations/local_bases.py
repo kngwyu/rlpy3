@@ -97,9 +97,7 @@ class NonparametricLocalBases(LocalBases):
         """
         super().__init__(domain, kernel, **kwargs)
         self.max_similarity = max_similarity
-        self.common_width = (
-            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
-        ) / resolution
+        self.common_width = domain.statespace_width / resolution
         self.features_num = 0
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
@@ -154,9 +152,7 @@ class RandomLocalBases(LocalBases):
         """
         super().__init__(domain, kernel, seed=seed, **kwargs)
         self.features_num = num
-        self.dim_widths = (
-            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
-        )
+        self.dim_widths = domain.statespace_width
         self.resolution_max = resolution_max
         self.resolution_min = resolution_min
         self.centers = np.zeros((num, len(self.dim_widths)))

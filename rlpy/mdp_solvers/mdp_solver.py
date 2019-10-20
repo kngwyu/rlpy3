@@ -107,8 +107,14 @@ class MDPSolver(ABC):
         s_index = vec2id(
             self.representation.bin_state(s), self.representation.bins_per_dim
         )
-        weight_vec_index = int(self.representation.agg_states_num * a + s_index)
-        self.representation.weight_vec[weight_vec_index] = Q
+        self.representation.weight[a, s_index] = Q
+
+    def _bellman_error(self, s, a, terminal):
+        new_Q = self.representation.q_look_ahead(s, a, self.ns_samples)
+        phi_s = self.representation.phi(s, terminal)
+        phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s)
+        old_Q = np.dot(phi_s_a, self.representation.weight_vec)
+        return new_Q - old_Q, phi_s, phi_s_a
 
     def performance_run(self, visualize=False):
         """Set Exploration to zero and sample one episode from the domain."""

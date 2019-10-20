@@ -167,7 +167,8 @@ class LSPI(BatchAgent):
     def policyIteration(self):
         """Update the policy by recalculating A based on new na.
 
-        Returns the TD error for each sample based on the latest weights and next actions.
+        Returns the TD error for each sample based on the latest weights and
+        next actions.
         """
         start_time = tools.clock()
         weight_diff = self.tol_epsilon + 1  # So that the loop starts
@@ -175,9 +176,9 @@ class LSPI(BatchAgent):
         self.best_performance = -np.inf
         self.logger.info("Running Policy Iteration:")
 
-        # We save action_mask on the first iteration (used for batch_best_action) to reuse it and boost the speed
-        # action_mask is a matrix that shows which actions are available for
-        # each state
+        # We save action_mask on the first iteration (used for batch_best_action) to
+        # reuse it and boost the speed
+        # action_mask is a matrix that shows which actions are available for each state
         action_mask = None
         discount_factor = self.discount_factor
         F1 = (

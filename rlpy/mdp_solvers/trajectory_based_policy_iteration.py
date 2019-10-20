@@ -12,13 +12,13 @@
 """
 from .mdp_solver import MDPSolver
 from rlpy.tools import (
+    add_new_features,
     hhmmss,
     deltaT,
     hasFunction,
     solveLinear,
     regularize,
     clock,
-    padZeros,
     l_norm,
 )
 from rlpy.policies import eGreedy
@@ -109,11 +109,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
             s, a, terminal = self.sample_ns_na(policy, start_trajectory=True)
 
             while not terminal and step < self.domain.episode_cap and self.has_time():
-                new_Q = self.representation.q_look_ahead(s, a, self.ns_samples, policy)
-                phi_s = self.representation.phi(s, terminal)
-                phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s=phi_s)
-                old_Q = np.dot(phi_s_a, self.representation.weight_vec)
-                bellman_error = new_Q - old_Q
+                bellman_error, phi_s, phi_s_a = self._bellman_error(s, a, terminal)
 
                 # Update the value function using approximate bellman backup
                 self.representation.weight_vec += self.alpha * bellman_error * phi_s_a
@@ -158,6 +154,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         # The policy is maintained as separate copy of the representation.
         # This way as the representation is updated the policy remains intact
         policy = eGreedy(deepcopy(self.representation), epsilon=0, deterministic=True)
+        a_num = self.domain.actions_num
 
         while self.has_time() and not converged:
 
@@ -167,15 +164,14 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
 
             # Theta can increase in size if the representation
             # is expanded hence padding the weight vector with zeros
-            paddedTheta = padZeros(
-                policy.representation.weight_vec, len(self.representation.weight_vec)
+            additional_dim = self.representation.features_num - policy.representation.features_num
+            padded_theta = np.hstack(
+                (policy.representation.weight, np.zeros((a_num, additional_dim)))
             )
 
             # Calculate the change in the weight_vec as L2-norm
-            delta_weight_vec = np.linalg.norm(
-                paddedTheta - self.representation.weight_vec
-            )
-            converged = delta_weight_vec < self.convergence_threshold
+            weight_diff = np.linalg.norm(padded_theta - self.representation.weight)
+            converged = weight_diff < self.convergence_threshold
 
             # Update the underlying value function of the policy
             policy.representation = deepcopy(self.representation)  # self.representation
@@ -190,7 +186,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     PI_iteration,
                     hhmmss(deltaT(self.start_time)),
                     self.bellman_updates,
-                    delta_weight_vec,
+                    weight_diff,
                     perf_return,
                     perf_steps,
                     self.representation.features_num,
@@ -262,10 +258,10 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     "#%d: Finished Policy Evaluation. Solve Time = %0.2f(s)"
                     % (iteration, solve_time)
                 )
-            delta_weight_vec = l_norm(
+            weight_diff = l_norm(
                 new_weight_vec - self.representation.weight_vec, np.inf
             )
-            converged = delta_weight_vec < self.convergence_threshold
+            converged = weight_diff < self.convergence_threshold
             self.representation.weight_vec = new_weight_vec
             perf_return, perf_steps, perf_term, perf_disc_return = (
                 self.performance_run()
@@ -276,7 +272,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     iteration,
                     hhmmss(deltaT(self.start_time)),
                     samples,
-                    delta_weight_vec,
+                    weight_diff,
                     perf_return,
                 )
             )

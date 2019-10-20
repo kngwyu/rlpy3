@@ -6,7 +6,7 @@ from copy import deepcopy
 import numpy as np
 
 from rlpy.tools import printClass, PriorityQueueWithNovelty
-from rlpy.tools import powerset, combinations, addNewElementForAllActions
+from rlpy.tools import powerset, combinations, add_new_features
 from rlpy.tools import plt
 from .representation import Representation
 import warnings
@@ -335,16 +335,11 @@ class iFDD(Representation):
         The new weight is set to zero if sparsify = False, and equal to the
         sum of weights corresponding to the parents if sparsify = True
         """
-        a = self.domain.actions_num
-        # Number of feature before adding the new one
-        f = self.features_num - 1
         if self.sparsify:
-            newElem = (
-                self.weight_vec[p1_index::f] + self.weight_vec[p2_index::f]
-            ).reshape((-1, 1))
+            new_elem = self.weight[:, p1_index] + self.weight[:, p2_index]
         else:
-            newElem = None
-        self.weight_vec = addNewElementForAllActions(self.weight_vec, a, newElem)
+            new_elem = None
+        self.weight = add_new_features(self.weight, new_elem)
         # We dont want to reuse the hased phi because phi function is changed!
         self.hashed_s = None
 
@@ -578,7 +573,7 @@ class iFDD(Representation):
         ifdd.cache = deepcopy(self.cache)
         ifdd.sortediFDDFeatures = deepcopy(self.sortediFDDFeatures)
         ifdd.features_num = self.features_num
-        ifdd.weight_vec = deepcopy(self.weight_vec)
+        ifdd.weight = deepcopy(self.weight)
         return ifdd
 
 

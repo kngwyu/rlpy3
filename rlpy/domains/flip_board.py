@@ -97,13 +97,13 @@ class FlipBoard(Domain):
             r = self.STEP_REWARD
         ns = ns.flatten()
         self.state = ns.copy()
-        return r, ns, terminal, self.possibleActions()
+        return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = np.array(
             [[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]], dtype="bool"
         ).flatten()
-        return self.state, self.isTerminal(), self.possibleActions()
+        return self.state, self.isTerminal(), self.possible_actions()
 
     def isTerminal(self):
         return np.count_nonzero(self.state) == self.BOARD_SIZE ** 2

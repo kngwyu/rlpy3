@@ -1,7 +1,6 @@
 """Greedy-GQ(lambda) learning agent"""
-from copy import copy
 import numpy as np
-from rlpy.tools import addNewElementForAllActions, count_nonzero
+from rlpy.tools import add_new_features, count_nonzero
 from .agent import Agent, DescentAlgorithm
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -42,7 +41,7 @@ class GreedyGQ(Agent, DescentAlgorithm):
         # use a state-only version of eligibility trace for dabney decay mode
         self.eligibility_trace_s = np.zeros(representation.features_num)
         self.lambda_ = lambda_
-        self.gqweight = copy(self.representation.weight_vec)
+        self.gqweight = self.representation.weight_vec.copy()
         # The beta in the GQ algorithm is assumed to be learn_rate * THIS CONSTANT
         self.second_lr_coef = beta_coef
 
@@ -103,15 +102,13 @@ class GreedyGQ(Agent, DescentAlgorithm):
         correct size of GQ weight and e-traces when new features were expanded
         """
         new_elem = np.zeros((self.representation.actions_num, num_expansions))
-        self.gqweight = addNewElementForAllActions(
-            self.gqweight, self.representation.actions_num, new_elem
-        )
+        self.gqweight = add_new_features(self.gqweight, new_elem)
         if self.lambda_:
             # Correct the size of eligibility traces (pad with zeros for new
             # features)
-            self.eligibility_trace = addNewElementForAllActions(
+            self.eligibility_trace = add_new_features(
                 self.eligibility_trace, self.representation.actions_num, new_elem
             )
-            self.eligibility_trace_s = addNewElementForAllActions(
-                self.eligibility_trace_s, 1, np.zeros((1, num_expansions))
+            self.eligibility_trace_s = add_new_features(
+                self.eligibility_trace_s, np.zeros((1, num_expansions))
             )

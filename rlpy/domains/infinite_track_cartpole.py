@@ -129,8 +129,8 @@ class InfTrackCartPole(CartPoleBase):
 
         terminal = self.isTerminal()  # automatically uses self.state
         reward = self._getReward(a)  # Automatically uses self.state
-        possibleActions = self.possibleActions()
-        return reward, ns, terminal, possibleActions
+        possible_actions = self.possible_actions()
+        return reward, ns, terminal, possible_actions
 
     def show_domain(self, a=0):
         """
@@ -157,7 +157,7 @@ class InfTrackCartPole(CartPoleBase):
                 # state s
                 Qs = representation.Qs(s, terminal)
                 # Array of all possible actions at state s
-                As = self.possibleActions(s=s)
+                As = self.possible_actions(s=s)
 
                 # If multiple optimal actions, pick one randomly
                 a = np.random.choice(As[Qs.max() == Qs])
@@ -212,7 +212,7 @@ class InfCartPoleBalance(InfTrackCartPole):
         # Initial state is uniformly random between [-.2,.2] for both
         # dimensions
         self.state = (self.random_state.rand(2) * 2 - 1) * 0.2
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         # Return the reward earned for this state-action pair
@@ -257,7 +257,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """
         self.state = np.array([np.pi, 0])
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         """

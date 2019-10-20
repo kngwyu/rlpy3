@@ -55,14 +55,14 @@ class ValueIteration(MDPSolver):
             iteration += 1
 
             # Store the weight vector for comparison
-            prev_weight_vec = self.representation.weight_vec.copy()
+            prev_weight = self.representation.weight.copy()
 
             # Sweep The State Space
             for i in range(num_states):
 
                 s = self.representation.stateID2state(i)
                 # Sweep through possible actions
-                for a in self.domain.possibleActions(s):
+                for a in self.domain.possible_actions(s):
 
                     self.bellman_backup(s, a, ns_samples=self.ns_samples)
                     bellman_updates += 1
@@ -73,9 +73,8 @@ class ValueIteration(MDPSolver):
                         self._log_updates(performance_return, bellman_updates)
 
             # check for convergence
-            weight_diff = prev_weight_vec - self.representation.weight_vec
-            weight_vec_change = l_norm(weight_diff, np.inf)
-            converged = weight_vec_change < self.convergence_threshold
+            weight_diff = l_norm(prev_weight - self.representation.weight, np.inf)
+            converged = weight_diff < self.convergence_threshold
 
             # log the stats
             perf_return, perf_steps, perf_term, perf_disc_return = (
@@ -88,7 +87,7 @@ class ValueIteration(MDPSolver):
                     iteration,
                     hhmmss(deltaT(self.start_time)),
                     bellman_updates,
-                    weight_vec_change,
+                    weight_diff,
                     perf_return,
                     perf_steps,
                 )

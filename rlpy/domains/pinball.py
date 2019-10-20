@@ -119,12 +119,12 @@ class Pinball(Domain):
         ] = s
         if self.random_state.random_sample() < self.NOISE:
             # Random Move
-            a = self.random_state.choice(self.possibleActions())
+            a = self.random_state.choice(self.possible_actions())
         reward = self.environment.take_action(a)
         self.environment._check_bounds()
         state = np.array(self.environment.get_state())
         self.state = state.copy()
-        return reward, state, self.isTerminal(), self.possibleActions()
+        return reward, state, self.isTerminal(), self.possible_actions()
 
     def s0(self):
         self.environment.ball.position[0], self.environment.ball.position[
@@ -139,9 +139,9 @@ class Pinball(Domain):
                 self.environment.ball.ydot,
             ]
         )
-        return self.state, self.isTerminal(), self.possibleActions()
+        return self.state, self.isTerminal(), self.possible_actions()
 
-    def possibleActions(self, s=0):
+    def possible_actions(self, s=0):
         return np.array(self.actions)
 
     def isTerminal(self):

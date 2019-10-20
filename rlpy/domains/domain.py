@@ -182,7 +182,7 @@ Gamma:      {self.discount_factor}
         """
         raise NotImplementedError("Children need to implement this method")
 
-    def possibleActions(self, s=None):
+    def possible_actions(self, s=None):
         """
         The default version returns an enumeration of all actions [0, 1, 2...].
         We suggest overriding this method in your domain, especially if not all
@@ -329,5 +329,9 @@ Gamma:      {self.discount_factor}
             try:
                 setattr(result, k, deepcopy(v, memo))
             except Exception:
-                setattr(result, k, v.frozen())
+                if hasattr(v, "frozen"):
+                    setattr(result, k, v.frozen())
+                else:
+                    import warnings
+                    warnings.warn("Skip {} when copying".format(k))
         return result

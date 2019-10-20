@@ -66,7 +66,7 @@ class PolicyIteration(MDPSolver):
                 s = self.representation.stateID2state(i)
 
                 # Skip terminal states and states with no possible action
-                possible_actions = self.domain.possibleActions(s=s)
+                possible_actions = self.domain.possible_actions(s=s)
                 if self.domain.isTerminal(s) or len(possible_actions) == 0:
                     continue
 
@@ -92,11 +92,10 @@ class PolicyIteration(MDPSolver):
 
             # check for convergence: L_infinity norm of the difference between the to
             # the weight vector of representation
-            weight_vec_change = l_norm(
-                policy.representation.weight_vec - self.representation.weight_vec,
-                np.inf,
+            weight_diff = l_norm(
+                policy.representation.weight - self.representation.weight, np.inf
             )
-            converged = weight_vec_change < self.convergence_threshold
+            converged = weight_diff < self.convergence_threshold
 
             # Log Status
             self.logger.info(
@@ -105,7 +104,7 @@ class PolicyIteration(MDPSolver):
                     policy_evaluation_iteration,
                     hhmmss(deltaT(self.start_time)),
                     self.bellman_updates,
-                    weight_vec_change,
+                    weight_diff,
                 )
             )
 
@@ -124,16 +123,17 @@ class PolicyIteration(MDPSolver):
         i = 0
         while i < self.representation.agg_states_num and self.has_time():
             s = self.representation.stateID2state(i)
-            if not self.domain.isTerminal(s) and len(self.domain.possibleActions(s)):
-                for a in self.domain.possibleActions(s):
+            if not self.domain.isTerminal(s) and len(self.domain.possible_actions(s)):
+                for a in self.domain.possible_actions(s):
                     self.bellman_backup(s, a, self.ns_samples, policy)
-                p_actions = self.domain.possibleActions(s=s)
+                p_actions = self.domain.possible_actions(s=s)
                 best_action = self.representation.best_action(s, False, p_actions)
                 if policy.pi(s, False, p_actions) != best_action:
                     policyChanges += 1
             i += 1
+
         # This will cause the policy to be copied over
-        policy.representation.weight_vec = self.representation.weight_vec.copy()
+        policy.representation.weight = self.representation.weight.copy()
         perf_return, perf_steps, perf_term, perf_disc_return = self.performance_run()
         self.logger.info(
             "PI #%d [%s]: BellmanUpdates=%d, Policy Change=%d, Return=%0.4f, Steps=%d"

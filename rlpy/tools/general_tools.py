@@ -740,14 +740,14 @@ def printClass(obj):
         print(property, ": ", value)
 
 
-def addNewElementForAllActions(weight_vec, actions_num, newElem=None):
+def add_new_features(weight_vec, new_elem=None):
     """
     :param weight_vec: The weight vector (often feature weights from
         representation) used for s-a pairs
         (i.e, len(weight_vec) = actions_num * numFeats)
     :param actions_num: The total number of possible actions
-    :param newElem: (Optional) The weights associated with each action of the
-        feature to  insert (often newElem = const * np.ones(actions_num, 1)).
+    :param new_elem: (Optional) The weights associated with each action of the
+        feature to  insert (often new_elem = const * np.ones(actions_num, 1)).
         If not specified or = None, assume 0 weight on new features.
 
     Adds new elements into ``weight_vec`` in the correct location based on
@@ -756,21 +756,15 @@ def addNewElementForAllActions(weight_vec, actions_num, newElem=None):
     weight_vec should expand by the number of possible actions as for each
     action the feature vector phi(s) is expand by 1 element.]]\n
     Example: \n
-    x = [1,2,3,4], a = 2, newElem = None => [1,2,0,3,4,0] \n
-    x = [1,2,3], a = 3, newElem = [1,1,1] => [1,1,2,1,3,1] \n
+    x = [1,2,3,4], a = 2, new_elem = None => [1,2,0,3,4,0] \n
+    x = [1,2,3], a = 3, new_elem = [1,1,1] => [1,1,2,1,3,1] \n
 
     """
-    if newElem is None:
-        newElem = np.zeros((actions_num, 1))
-    if len(weight_vec) == 0:
-        return newElem.flatten()
-    else:
-        weight_vec = weight_vec.reshape(
-            actions_num, -1
-        )  # -1 means figure the other dimension yourself
-        weight_vec = np.hstack((weight_vec, newElem))
-        weight_vec = weight_vec.reshape(1, -1).flatten()
-        return weight_vec
+    if new_elem is None:
+        new_elem = np.zeros((weight_vec.shape[0], 1))
+    elif new_elem.ndim == 1:
+        new_elem = new_elem.reshape(-1, 1)
+    return np.hstack((weight_vec, new_elem))
 
 
 def solveLinear(A, b):
@@ -1043,24 +1037,6 @@ def regularize(A):
 def sparsity(A):
     """ Returns the percentage of nonzero elements in ``A``. """
     return (1 - np.count_nonzero(A) / np.prod(A.shape)) * 100
-
-
-def padZeros(X, L):
-    """
-    :param X: a 1-D numpy array
-    :param L: the desired length of ``X`` (integer)
-
-
-    if ``len(X) < L`` pad zeros to X so it will have length ``L``, otherwise
-    do nothing and return the original ``X``.
-
-    """
-    if len(X) < L:
-        new_X = np.zeros(L)
-        new_X[: len(X)] = X
-        return new_X
-    else:
-        return X
 
 
 def rk4(derivs, y0, t, *args, **kwargs):

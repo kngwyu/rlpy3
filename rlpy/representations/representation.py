@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import logging
 import numpy as np
-from rlpy.tools import addNewElementForAllActions
+from rlpy.tools import add_new_features
 from rlpy.tools import vec2id, bin2state, findElemArray1D
 from rlpy.tools import hasFunction, id2vec, closestDiscretization
 import scipy.sparse as sp
@@ -24,6 +24,7 @@ class Enumerable(ABC):
     """
     A mix-in class for enumerable represenation
     """
+
     @abstractmethod
     def state_id(self, s):
         """
@@ -88,17 +89,15 @@ class Representation(ABC):
         self.discretization = discretization
         try:
             #: A numpy array of the Linear Weights, one for each feature (theta)
-            self.weight_vec = np.zeros(self.features_num * self.actions_num)
-        except MemoryError as m:
-            print(
-                "Unable to allocate weights of size: %d\n"
-                % self.features_num
-                * self.actions_num
+            self.weight = np.zeros((self.actions_num, self.features_num))
+        except MemoryError:
+            raise MemoryError(
+                "Unable to allocate weights of size: {}\n".format(
+                    self.features_num * self.actions_num
+                )
             )
-            raise m
 
         self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
-        self._arange_cache = np.arange(self.features_num)
         #: Number of aggregated states based on the discretization.
         #: If the represenation is adaptive, set to the best resolution possible
         self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
@@ -108,6 +107,18 @@ class Representation(ABC):
 
         # a new stream of random numbers for each representation
         self.random_state = np.random.RandomState(seed=seed)
+
+    @property
+    def weight_vec(self):
+        """
+        Flat view of weight.
+        Exists for backward compatibility.
+        """
+        return self.weight.reshape(-1)
+
+    @weight_vec.setter
+    def weight_vec(self, v):
+        self.weight = v.view().reshape(self.weight.shape)
 
     def init_randomization(self):
         """
@@ -152,24 +163,15 @@ class Representation(ABC):
         :return: The tuple (Q,A) where:
             - Q: an array of Q(s,a), the values of each action at *s*. \n
             - A: the corresponding array of actionIDs (integers)
-
-        .. note::
-            This function is distinct
-            from :py:meth:`~rlpy.representations.representation.Q`,
-            which computes the Q function for an (s,a) pair. \n
-            Instead, this function ``Qs()`` computes all Q function values
-            (for all possible actions) at a given state *s*.
-
         """
 
         if phi_s is None:
             phi_s = self.phi(s, terminal)
         if len(phi_s) == 0:
             return np.zeros((self.actions_num))
-        weight_vec_prime = self.weight_vec.reshape(-1, self.features_num)
         if self._phi_sa_cache.shape != (self.actions_num, self.features_num):
             self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
-        Q = np.multiply(weight_vec_prime, phi_s, out=self._phi_sa_cache).sum(axis=1)
+        Q = np.multiply(self.weight, phi_s, out=self._phi_sa_cache).sum(axis=1)
         # stacks phi_s in cache
         return Q
 
@@ -250,24 +252,18 @@ class Representation(ABC):
         if snippet is True:
             return phi_s, a * self.features_num, (a + 1) * self.features_num
 
-        phi_sa = np.zeros((self.features_num * self.actions_num), dtype=phi_s.dtype)
+        phi_sa = np.zeros((self.actions_num, self.features_num), dtype=phi_s.dtype)
         if self.features_num == 0:
             return phi_sa
-        if len(self._arange_cache) != self.features_num:
-            self._arange_cache = np.arange(
-                a * self.features_num, (a + 1) * self.features_num
-            )
-        else:
-            self._arange_cache += a * self.features_num - self._arange_cache[0]
-        phi_sa[self._arange_cache] = phi_s
-        return phi_sa
+        phi_sa[a] = phi_s
+        return phi_sa.reshape(-1)
 
     def add_new_weight(self):
         """
         Add a new zero weight, corresponding to a newly added feature,
         to all actions.
         """
-        self.weight_vec = addNewElementForAllActions(self.weight_vec, self.actions_num)
+        self.weight = add_new_features(self.weight)
 
     def _hash_state(self, s):
         """
@@ -511,17 +507,17 @@ class Representation(ABC):
         if action_mask is None:
             action_mask = np.ones((p, a_num))
             for i, s in enumerate(all_s):
-                action_mask[i, self.domain.possibleActions(s)] = 0
+                action_mask[i, self.domain.possible_actions(s)] = 0
 
         a_num = self.actions_num
         if useSparse:
             # all_phi_s_a will be ap-by-an
             all_phi_s_a = sp.kron(np.eye(a_num, a_num), all_phi_s)
-            all_q_s_a = all_phi_s_a * self.weight_vec.reshape(-1, 1)  # ap-by-1
+            all_q_s_a = all_phi_s_a * self.weight.reshape(-1, 1)
         else:
             # all_phi_s_a will be ap-by-an
             all_phi_s_a = np.kron(np.eye(a_num, a_num), all_phi_s)
-            all_q_s_a = np.dot(all_phi_s_a, self.weight_vec.T)  # ap-by-1
+            all_q_s_a = np.dot(all_phi_s_a, self.weight.reshape(-1, 1))
         all_q_s_a = all_q_s_a.reshape((a_num, -1)).T  # a-by-p
         all_q_s_a = np.ma.masked_array(all_q_s_a, mask=action_mask)
         best_action = np.argmax(all_q_s_a, axis=1)
@@ -690,7 +686,7 @@ class Representation(ABC):
         :return: an array of length `|A|` containing the *Q(s,a)* for each
             possible *a*, where `|A|` is the number of possible actions from state *s*
         """
-        actions = self.domain.possibleActions(s)
+        actions = self.domain.possible_actions(s)
         Qs = np.array([self.q_look_ahead(s, a, ns_samples, policy) for a in actions])
         return Qs, actions
 

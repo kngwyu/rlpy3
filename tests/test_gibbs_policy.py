@@ -24,7 +24,7 @@ def test_fdcheck_dlogpi():
     wvs = np.random.rand(10, len(representation.weight_vec))
     for i in range(10):
         s = np.array([np.random.randint(4), np.random.randint(5)])
-        a = np.random.choice(domain.possibleActions(s))
+        a = np.random.choice(domain.possible_actions(s))
         for wv in wvs:
             error = check_grad(f, df, wv, s, a)
             assert np.abs(error) < 1e-6, "Error={}".format(error)

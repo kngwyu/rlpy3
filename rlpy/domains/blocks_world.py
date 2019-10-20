@@ -135,8 +135,8 @@ class BlocksWorld(Domain):
         # print 'taking action %d->%d' % (A,B)
         if not self.validAction(s, A, B):
             print("State:%s, Invalid move from %d to %d" % (str(s), A, B))
-            print(self.possibleActions())
-            print(id2vec(self.possibleActions(), [self.blocks, self.blocks]))
+            print(self.possible_actions())
+            print(id2vec(self.possible_actions(), [self.blocks, self.blocks]))
 
         if self.random_state.random_sample() < self.noise:
             B = A  # Drop on Table
@@ -145,14 +145,14 @@ class BlocksWorld(Domain):
         self.state = ns.copy()
         terminal = self.isTerminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
-        return r, ns, terminal, self.possibleActions()
+        return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         # all blocks on table
         self.state = np.arange(self.blocks)
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
-    def possibleActions(self):
+    def possible_actions(self):
         s = self.state
         # return the id of possible actions
         # find empty blocks (nothing on top)

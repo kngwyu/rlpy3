@@ -18,18 +18,8 @@ class MockRepresentation(Representation):
         self.actions_num = 1
         self.discretization = 3
         self.features_num = 4
-        try:
-            self.weight_vec = np.zeros(self.features_num * self.actions_num)
-        except MemoryError as m:
-            print(
-                "Unable to allocate weights of size: %d\n"
-                % self.features_num
-                * self.domain.actions_num
-            )
-            raise m
-
+        self.weight = np.zeros((self.actions_num, self.features_num))
         self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
-        self._arange_cache = np.arange(self.features_num)
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def phi_non_terminal(self, s):

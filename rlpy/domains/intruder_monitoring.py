@@ -161,7 +161,7 @@ class IntruderMonitoring(Domain):
         ns = bound_vec(ns, self.discrete_statespace_limits)
         # print s, id2vec(a,self.ACTION_LIMITS), ns
         self.state = ns.copy()
-        return r, ns, False, self.possibleActions()
+        return r, ns, False, self.possible_actions()
 
     def s0(self):
         self.state = np.hstack(
@@ -170,9 +170,9 @@ class IntruderMonitoring(Domain):
                 self.intruders_initial_locations.ravel(),
             ]
         )
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
-    def possibleActionsPerAgent(self, s_i):
+    def possible_actionsPerAgent(self, s_i):
         """
         Returns all possible actions for a single (2-D) agent state *s_i*
         (where the domain state s = [s_0, ... s_i ... s_NUMBER_OF_AGENTS])
@@ -185,16 +185,16 @@ class IntruderMonitoring(Domain):
         next_states = tile_s + self.ACTIONS_PER_AGENT
         next_states_rows = next_states[:, 0]
         next_states_cols = next_states[:, 1]
-        possibleActions1 = np.logical_and(
+        possible_actions1 = np.logical_and(
             0 <= next_states_rows, next_states_rows < self.ROWS
         )
-        possibleActions2 = np.logical_and(
+        possible_actions2 = np.logical_and(
             0 <= next_states_cols, next_states_cols < self.COLS
         )
-        possibleActions, _ = (
-            np.logical_and(possibleActions1, possibleActions2).reshape(-1, 1).nonzero()
+        possible_actions, _ = (
+            np.logical_and(possible_actions1, possible_actions2).reshape(-1, 1).nonzero()
         )
-        return possibleActions
+        return possible_actions
 
     def printDomain(self, s, a):
         print("--------------")
@@ -217,7 +217,7 @@ class IntruderMonitoring(Domain):
 
         Default random action among possible.
         """
-        return self.random_state.choice(self.possibleActionsPerAgent(s_i))
+        return self.random_state.choice(self.possible_actionsPerAgent(s_i))
 
     def show_domain(self, a):
         s = self.state

@@ -217,7 +217,8 @@ class FiftyChain(Domain):
             self.value_function_fig = plt.subplot(3, 1, 2)
             self.V_star_line = self.value_function_fig.plot(allStates, self.V_star)
             V = [
-                representation.V(s, False, self.possible_actions(s=s)) for s in allStates
+                representation.V(s, False, self.possible_actions(s=s))
+                for s in allStates
             ]
 
             # Note the comma below, since a tuple of line objects is returned

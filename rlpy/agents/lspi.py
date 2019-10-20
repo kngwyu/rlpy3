@@ -259,12 +259,12 @@ class LSPI(BatchAgent):
 
             # build phi_s_a and phi_ns_na for all samples given phi_s and
             # phi_ns
-            self.all_phi_s_a = self.representation.batchPhi_s_a(
+            self.all_phi_s_a = self.representation.batch_phi_s_a(
                 self.all_phi_s[: self.samples_count, :],
                 self.data_a[: self.samples_count, :],
                 use_sparse=self.use_sparse,
             )
-            self.all_phi_ns_na = self.representation.batchPhi_s_a(
+            self.all_phi_ns_na = self.representation.batch_phi_s_a(
                 self.all_phi_ns[: self.samples_count, :],
                 self.data_na[: self.samples_count, :],
                 use_sparse=self.use_sparse,

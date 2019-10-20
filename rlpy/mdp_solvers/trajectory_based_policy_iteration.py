@@ -164,7 +164,9 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
 
             # Theta can increase in size if the representation
             # is expanded hence padding the weight vector with zeros
-            additional_dim = self.representation.features_num - policy.representation.features_num
+            additional_dim = (
+                self.representation.features_num - policy.representation.features_num
+            )
             padded_theta = np.hstack(
                 (policy.representation.weight, np.zeros((a_num, additional_dim)))
             )

@@ -289,7 +289,10 @@ Gamma:      {self.discount_factor}
 
     @property
     def discrete_statespace_width(self):
-        return self.discrete_statespace_limits[:, 1] - self.discrete_statespace_limits[:, 0]
+        return (
+            self.discrete_statespace_limits[:, 1]
+            - self.discrete_statespace_limits[:, 0]
+        )
 
     def sampleStep(self, a, num_samples):
         """
@@ -341,5 +344,6 @@ Gamma:      {self.discount_factor}
                     setattr(result, k, v.frozen())
                 else:
                     import warnings
+
                     warnings.warn("Skip {} when copying".format(k))
         return result

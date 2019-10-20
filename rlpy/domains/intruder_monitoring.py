@@ -192,7 +192,9 @@ class IntruderMonitoring(Domain):
             0 <= next_states_cols, next_states_cols < self.COLS
         )
         possible_actions, _ = (
-            np.logical_and(possible_actions1, possible_actions2).reshape(-1, 1).nonzero()
+            np.logical_and(possible_actions1, possible_actions2)
+            .reshape(-1, 1)
+            .nonzero()
         )
         return possible_actions
 

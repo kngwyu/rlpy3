@@ -3,10 +3,9 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 import logging
 import numpy as np
-from rlpy.tools import add_new_features
-from rlpy.tools import vec2id, bin2state, findElemArray1D
-from rlpy.tools import hasFunction, id2vec, closestDiscretization
+from rlpy.tools import bin2state, closestDiscretization, hasFunction, id2vec, vec2id
 import scipy.sparse as sp
+from .value_learner import ValueLearner
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -33,7 +32,7 @@ class Enumerable(ABC):
         pass
 
 
-class Representation(ABC):
+class Representation(ValueLearner, ABC):
     """
     The Representation is the :py:class:`~rlpy.agents.agent.Agent`'s model of the
     value function associated with a :py:class:`~rlpy.domains.domain.Domain`.
@@ -77,27 +76,14 @@ class Representation(ABC):
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
+        super().__init__(domain.actions_num, features_num)
         # A dictionary used to cache expected results of step().
         # Used for planning algorithms
         self.expected_step_cached = {}
         self.set_bins_per_dim(domain, discretization)
         self.domain = domain
         self.state_space_dims = domain.state_space_dims
-        self.features_num = features_num
-        #: Number of actions in the representation
-        self.actions_num = domain.actions_num
         self.discretization = discretization
-        try:
-            #: A numpy array of the Linear Weights, one for each feature (theta)
-            self.weight = np.zeros((self.actions_num, self.features_num))
-        except MemoryError:
-            raise MemoryError(
-                "Unable to allocate weights of size: {}\n".format(
-                    self.features_num * self.actions_num
-                )
-            )
-
-        self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
         #: Number of aggregated states based on the discretization.
         #: If the represenation is adaptive, set to the best resolution possible
         self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
@@ -108,18 +94,6 @@ class Representation(ABC):
         # a new stream of random numbers for each representation
         self.random_state = np.random.RandomState(seed=seed)
 
-    @property
-    def weight_vec(self):
-        """
-        Flat view of weight.
-        Exists for backward compatibility.
-        """
-        return self.weight.reshape(-1)
-
-    @weight_vec.setter
-    def weight_vec(self, v):
-        self.weight = v.view().reshape(self.weight.shape)
-
     def init_randomization(self):
         """
         Any stochastic behavior in __init__() is broken out into this function
@@ -129,51 +103,14 @@ class Representation(ABC):
         pass
 
     def V(self, s, terminal, p_actions, phi_s=None):
-        """ Returns the value of state s under possible actions p_actions.
-
-        :param s: The queried state
-        :param terminal: Whether or not *s* is a terminal state
-        :param p_actions: the set of possible actions
-        :param phi_s: (optional) The feature vector evaluated at state s.
-            If the feature vector phi(s) has already been cached,
-            pass it here as input so that it need not be computed again.
-
-        See :py:meth:`~rlpy.representations.representation.Qs`.
-        """
-
         if phi_s is None:
             phi_s = self.phi(s, terminal)
-        AllQs = self.Qs(s, terminal, phi_s)
-        if len(p_actions):
-            return max(AllQs[p_actions])
-        else:
-            return 0.0  # Return 0 value when no action is possible
+        return super().V(s, terminal, p_actions, phi_s)
 
     def Qs(self, s, terminal, phi_s=None):
-        """
-        Returns an array of actions available at a state and their
-        associated values.
-
-        :param s: The queried state
-        :param terminal: Whether or not *s* is a terminal state
-        :param phi_s: (optional) The feature vector evaluated at state s.
-            If the feature vector phi(s) has already been cached,
-            pass it here as input so that it need not be computed again.
-
-        :return: The tuple (Q,A) where:
-            - Q: an array of Q(s,a), the values of each action at *s*. \n
-            - A: the corresponding array of actionIDs (integers)
-        """
-
         if phi_s is None:
             phi_s = self.phi(s, terminal)
-        if len(phi_s) == 0:
-            return np.zeros((self.actions_num))
-        if self._phi_sa_cache.shape != (self.actions_num, self.features_num):
-            self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
-        Q = np.multiply(self.weight, phi_s, out=self._phi_sa_cache).sum(axis=1)
-        # stacks phi_s in cache
-        return Q
+        return super().Qs(s, terminal, phi_s)
 
     def Q(self, s, terminal, a, phi_s=None):
         """ Returns the learned value of a state-action pair, *Q(s,a)*.
@@ -258,13 +195,6 @@ class Representation(ABC):
         phi_sa[a] = phi_s
         return phi_sa.reshape(-1)
 
-    def add_new_weight(self):
-        """
-        Add a new zero weight, corresponding to a newly added feature,
-        to all actions.
-        """
-        self.weight = add_new_features(self.weight)
-
     def _hash_state(self, s):
         """
         Returns a unique id for a given state.
@@ -320,26 +250,6 @@ class Representation(ABC):
         m = bs == self.bins_per_dim
         bs[m] = self.bins_per_dim[m] - 1
         return bs
-
-    def best_actions(self, s, terminal, p_actions, phi_s=None):
-        """
-        Returns a list of the best actions at a given state.
-        If *phi_s* [the feature vector at state *s*] is given, it is used to
-        speed up code by preventing re-computation within this function.
-
-        See :py:meth:`~rlpy.representations.representation.best_action`
-
-        :param s: The given state
-        :param terminal: Whether or not the state *s* is a terminal one.
-        :param phi_s: (optional) the feature vector at state (s).
-        :return: A list of the best actions at the given state.
-
-        """
-        Qs = self.Qs(s, terminal, phi_s)
-        Qs = Qs[p_actions]
-        # Find the index of best actions
-        ind = findElemArray1D(Qs, Qs.max())
-        return np.array(p_actions)[ind]
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
         """
@@ -412,6 +322,7 @@ class Representation(ABC):
         else:
             return bestA[0]
 
+    @abstractmethod
     def phi_non_terminal(self, s):
         """ *Abstract Method* \n
         Returns the feature vector evaluated at state *s* for non-terminal
@@ -423,7 +334,7 @@ class Representation(ABC):
 
         :return: The feature vector evaluated at state *s*.
         """
-        raise NotImplementedError
+        pass
 
     def activeInitialFeatures(self, s):
         """
@@ -439,7 +350,7 @@ class Representation(ABC):
         index = bs + shifts
         return index.astype("uint32")
 
-    def batchPhi_s_a(self, all_phi_s, all_actions, all_phi_s_a=None, use_sparse=False):
+    def batch_phi_s_a(self, all_phi_s, all_actions, use_sparse=False):
         """
         Builds the feature vector for a series of state-action pairs (s,a)
         using the copy-paste method.
@@ -454,10 +365,6 @@ class Representation(ABC):
         :param all_actions: The set of actions corresponding to each feature.
             Dimension *p* x *1*, where *p* is the number of states included
             in this batch.
-        :param all_phi_s_a: (Optional) Feature vector for a series of
-            state-action pairs (s,a) using the copy-paste method.
-            If the feature vector phi(s) has already been cached,
-            pass it here as input so that it need not be computed again.
         :param use_sparse: Determines whether or not to use sparse matrix
             libraries provided with numpy.
 
@@ -520,7 +427,7 @@ class Representation(ABC):
         best_action = np.argmax(all_q_s_a, axis=1)
 
         # Calculate the corresponding phi_s_a
-        phi_s_a = self.batchPhi_s_a(all_phi_s, best_action, all_phi_s_a, useSparse)
+        phi_s_a = self.batch_phi_s_a(all_phi_s, best_action, all_phi_s_a, useSparse)
         return best_action, phi_s_a, action_mask
 
     @abstractmethod
@@ -529,6 +436,78 @@ class Representation(ABC):
         Return the data type for the underlying features (eg 'float').
         """
         pass
+
+    def q_look_ahead(self, s, a, ns_samples, policy=None):
+        """
+        Returns the state action value, Q(s,a), by performing one step
+        look-ahead on the domain.
+
+        .. note::
+            For an example of how this function works, see
+            `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
+            in Sutton and Barto 1998.
+
+        If the domain does not define ``expected_step()``, this function uses
+        ``ns_samples`` samples to estimate the one_step look-ahead.
+        If a policy is passed (used in the policy evaluation), it is used to
+        generate the action for the next state.
+        Otherwise the best action is selected.
+
+        .. note::
+            This function should not be called in any RL algorithms unless
+            the underlying domain is an approximation of the true model.
+
+        :param s: The given state
+        :param a: The given action
+        :param ns_samples: The number of samples used to estimate the one_step look-ahead.
+        :param policy: (optional) Used to select the action in the next state
+            (*after* taking action a) when estimating the one_step look-aghead.
+            If ``policy == None``, the best action will be selected.
+
+        :return: The one-step lookahead state-action value, Q(s,a).
+        """
+        # Hash new state for the incremental tabular case
+        self.continuous_state_starting_samples = 10
+        if hasFunction(self, "addState"):
+            self.addState(s)
+
+        if hasFunction(self.domain, "expected_step"):
+            return self._q_from_expetected_step(s, a, policy)
+        else:
+            return self._q_from_sampling(s, a, policy, ns_samples)
+
+    def qs_look_ahead(self, s, ns_samples, policy=None):
+        """
+        Returns an array of actions and their associated values Q(s,a),
+        by performing one step look-ahead on the domain for each of them.
+
+        .. note::
+            For an example of how this function works, see
+            `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
+            in Sutton and Barto 1998.
+
+        If the domain does not define ``expected_step()``, this function uses
+        ``ns_samples`` samples to estimate the one_step look-ahead.
+        If a policy is passed (used in the policy evaluation), it is used to
+        generate the action for the next state.
+        Otherwise the best action is selected.
+
+        .. note::
+            This function should not be called in any RL algorithms unless
+            the underlying domain is an approximation of the true model.
+
+        :param s: The given state
+        :param ns_samples: The number of samples used to estimate the one_step look-ahead.
+        :param policy: (optional) Used to select the action in the next state
+            (*after* taking action a) when estimating the one_step look-aghead.
+            If ``policy == None``, the best action will be selected.
+
+        :return: an array of length `|A|` containing the *Q(s,a)* for each
+            possible *a*, where `|A|` is the number of possible actions from state *s*
+        """
+        actions = self.domain.possible_actions(s)
+        Qs = np.array([self.q_look_ahead(s, a, ns_samples, policy) for a in actions])
+        return Qs, actions
 
     def _q_from_expetected_step(self, s, a, policy):
         p, r, ns, t, p_actions = self.domain.expected_step(s, a)
@@ -614,106 +593,6 @@ class Representation(ABC):
                 ]
             )
         return Q
-
-    def q_look_ahead(self, s, a, ns_samples, policy=None):
-        """
-        Returns the state action value, Q(s,a), by performing one step
-        look-ahead on the domain.
-
-        .. note::
-            For an example of how this function works, see
-            `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
-            in Sutton and Barto 1998.
-
-        If the domain does not define ``expected_step()``, this function uses
-        ``ns_samples`` samples to estimate the one_step look-ahead.
-        If a policy is passed (used in the policy evaluation), it is used to
-        generate the action for the next state.
-        Otherwise the best action is selected.
-
-        .. note::
-            This function should not be called in any RL algorithms unless
-            the underlying domain is an approximation of the true model.
-
-        :param s: The given state
-        :param a: The given action
-        :param ns_samples: The number of samples used to estimate the one_step look-ahead.
-        :param policy: (optional) Used to select the action in the next state
-            (*after* taking action a) when estimating the one_step look-aghead.
-            If ``policy == None``, the best action will be selected.
-
-        :return: The one-step lookahead state-action value, Q(s,a).
-        """
-        # Hash new state for the incremental tabular case
-        self.continuous_state_starting_samples = 10
-        if hasFunction(self, "addState"):
-            self.addState(s)
-
-        if hasFunction(self.domain, "expected_step"):
-            return self._q_from_expetected_step(s, a, policy)
-        else:
-            return self._q_from_sampling(s, a, policy, ns_samples)
-
-    def qs_look_ahead(self, s, ns_samples, policy=None):
-        """
-        Returns an array of actions and their associated values Q(s,a),
-        by performing one step look-ahead on the domain for each of them.
-
-        .. note::
-            For an example of how this function works, see
-            `Line 8 of Figure 4.3 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
-            in Sutton and Barto 1998.
-
-        If the domain does not define ``expected_step()``, this function uses
-        ``ns_samples`` samples to estimate the one_step look-ahead.
-        If a policy is passed (used in the policy evaluation), it is used to
-        generate the action for the next state.
-        Otherwise the best action is selected.
-
-        .. note::
-            This function should not be called in any RL algorithms unless
-            the underlying domain is an approximation of the true model.
-
-        :param s: The given state
-        :param ns_samples: The number of samples used to estimate the one_step look-ahead.
-        :param policy: (optional) Used to select the action in the next state
-            (*after* taking action a) when estimating the one_step look-aghead.
-            If ``policy == None``, the best action will be selected.
-
-        :return: an array of length `|A|` containing the *Q(s,a)* for each
-            possible *a*, where `|A|` is the number of possible actions from state *s*
-        """
-        actions = self.domain.possible_actions(s)
-        Qs = np.array([self.q_look_ahead(s, a, ns_samples, policy) for a in actions])
-        return Qs, actions
-
-    def v_look_ahead(self, s, ns_samples):
-        """
-        Returns the value of being in state *s*, V(s),
-        by performing one step look-ahead on the domain.
-
-        .. note::
-            For an example of how this function works, see
-            `Line 6 of Figure 4.5 <http://webdocs.cs.ualberta.ca/~sutton/book/ebook/node43.html>`_
-            in Sutton and Barto 1998.
-
-        If the domain does not define ``expected_step()``, this function uses
-        ``ns_samples`` samples to estimate the one_step look-ahead.
-
-        .. note::
-            This function should not be called in any RL algorithms unless
-            the underlying domain is an approximation of the true model.
-
-        :param s: The given state
-        :param ns_samples: The number of samples used to estimate the one_step look-ahead.
-
-        :return: The value of being in state *s*, *V(s)*.
-        """
-        # The estimated value = max_a Q(s,a) together with the corresponding
-        # action that maximizes the Q function
-        Qs, actions = self.qs_look_ahead(s, ns_samples)
-        a_ind = np.argmax(Qs)
-        return Qs[a_ind], actions[a_ind]
 
     def stateID2state(self, s_id):
         """

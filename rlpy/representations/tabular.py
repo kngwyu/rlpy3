@@ -1,5 +1,5 @@
 """Tabular representation"""
-from .representation import Representation
+from .representation import Enumerable, Representation
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -14,7 +14,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Tabular(Representation):
+class Tabular(Representation, Enumerable):
     """
     Tabular representation that assigns a binary feature function f_{d}()
     to each possible discrete state *d* in the domain. (For bounded continuous

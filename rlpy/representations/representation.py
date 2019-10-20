@@ -20,6 +20,18 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
+class Enumerable(ABC):
+    """
+    A mix-in class for enumerable represenation
+    """
+    @abstractmethod
+    def state_id(self, s):
+        """
+        Returns a 0-indexed state id corresponding to the state.
+        """
+        pass
+
+
 class Representation(ABC):
     """
     The Representation is the :py:class:`~rlpy.agents.agent.Agent`'s model of the
@@ -268,12 +280,6 @@ class Representation(ABC):
         """
         ds = self.bin_state(s)
         return vec2id(ds, self.bins_per_dim)
-
-    def state_id(self, s):
-        """
-        Returns a 0-indexed state id corresponding to the state.
-        """
-        raise NotImplementedError("{} does not support state_id".format(type(self)))
 
     def set_bins_per_dim(self, domain, discretization):
         """

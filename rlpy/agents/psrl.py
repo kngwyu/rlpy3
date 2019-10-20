@@ -2,7 +2,6 @@
 Paper: https://arxiv.org/abs/1306.0940, https://arxiv.org/abs/1607.00215
 Based on the author's code: https://github.com/iosband/TabulaRL
 """
-import itertools
 import numpy as np
 from rlpy.representations import Tabular
 from .agent import Agent
@@ -61,10 +60,11 @@ class PSRL(Agent):
     def _sample_mdp(self):
         r_sample = np.zeros_like(self.r_prior_mu)
         p_sample = np.zeros_like(self.p_prior)
-        for s, a in itertools.product(range(self.n_states), range(self.n_actions)):
-            mu, tau = self.r_prior_mu[s, a], self.r_prior_tau[s, a]
-            r_sample[s, a] = mu + self.random_state.normal() / np.sqrt(tau)
-            p_sample[s, a] = self.random_state.dirichlet(self.p_prior[s, a])
+        for s in range(self.n_states):
+            mu, tau = self.r_prior_mu[s], self.r_prior_tau[s]
+            r_sample[s] = mu + self.random_state.randn(self.n_actions) / np.sqrt(tau)
+            for a in range(self.n_actions):
+                p_sample[s, a] = self.random_state.dirichlet(self.p_prior[s, a])
         return r_sample, p_sample
 
     def _solve_sampled_mdp(self):

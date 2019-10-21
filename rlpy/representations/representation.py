@@ -19,7 +19,20 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Enumerable(ABC):
+class Hashable(ABC):
+    """
+    A mix-in class for hashable represenation
+    """
+
+    @abstractmethod
+    def state_hash(self, s):
+        """
+        Returns a hash value of the state
+        """
+        pass
+
+
+class Enumerable(Hashable, ABC):
     """
     A mix-in class for enumerable represenation
     """
@@ -30,6 +43,9 @@ class Enumerable(ABC):
         Returns a 0-indexed state id corresponding to the state.
         """
         pass
+
+    def state_hash(self, s):
+        return self.state_id(s)
 
 
 class Representation(ValueLearner, ABC):
@@ -69,7 +85,7 @@ class Representation(ValueLearner, ABC):
     #: True if the number of features may change during execution.
     IS_DYNAMIC = False
 
-    def __init__(self, domain, features_num, discretization=20, seed=1):
+    def __init__(self, domain, features_num, seed=1, discretization=20):
         """
         :param domain: the problem :py:class:`~rlpy.domains.domain.Domain` to learn.
         :param features: Number of features in the representation.
@@ -90,17 +106,16 @@ class Representation(ValueLearner, ABC):
         self.logger = logging.getLogger(
             "rlpy.representations." + self.__class__.__name__
         )
-
-        # a new stream of random numbers for each representation
         self.random_state = np.random.RandomState(seed=seed)
 
-    def init_randomization(self):
+    def set_seed(self, seed):
         """
+        Set the random seed.
         Any stochastic behavior in __init__() is broken out into this function
         so that if the random seed is later changed (eg, by the Experiment),
         other member variables and functions are updated accordingly.
         """
-        pass
+        self.random_state.seed(seed)
 
     def V(self, s, terminal, p_actions, phi_s=None):
         if phi_s is None:
@@ -640,7 +655,7 @@ class Representation(ValueLearner, ABC):
             )
         return s_normalized
 
-    def episodeTerminated(self):
+    def episode_terminated(self):
         pass
 
     def feature_learning_rate(self):

@@ -28,7 +28,7 @@ class IndependentDiscretization(Representation):
 
     def __init__(self, domain, discretization=20):
         self.set_bins_per_dim(domain, discretization)
-        self.maxFeatureIDperDimension = np.cumsum(self.bins_per_dim) - 1
+        self.max_featureid_per_dim = np.cumsum(self.bins_per_dim) - 1
         super().__init__(domain, int(sum(self.bins_per_dim)), discretization)
 
     def phi_non_terminal(self, s):
@@ -36,9 +36,9 @@ class IndependentDiscretization(Representation):
         F_s[self.activeInitialFeatures(s)] = 1
         return F_s
 
-    def getDimNumber(self, f):
+    def get_dim_number(self, f):
         # Returns the dimension number corresponding to this feature
-        dim = np.searchsorted(self.maxFeatureIDperDimension, f)
+        dim = np.searchsorted(self.max_featureid_per_dim, f)
         return dim
 
     def feature_type(self):

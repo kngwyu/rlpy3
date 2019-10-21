@@ -95,15 +95,14 @@ class TileCoding(Representation):
         if resolution_matrix is None:
             # we first need to construct the resolution matrix
             resolution_matrix = np.zeros(
-                (len(self.dimensions), self.domain.statespace_limits.shape[0])
+                (len(self.dimensions), domain.statespace_limits.shape[0])
             )
             for i, s in enumerate(self.dimensions):
                 for d in s:
                     resolution_matrix[i, d] = resolutions[i]
         resolution_matrix = resolution_matrix.astype("float")
         resolution_matrix[resolution_matrix == 0] = 1e-50
-        self.scaling_matrix = self.domain.statespace_width / resolution_matrix
-
+        self.scaling_matrix = domain.statespace_width / resolution_matrix
         # now only hashing stuff
         self.seed = seed
         self.safety = safety
@@ -116,9 +115,10 @@ class TileCoding(Representation):
             self.check_data = -np.ones((self.features_num), dtype=np.long)
         self.counts = np.zeros(self.features_num, dtype=np.long)
         self.collisions = 0
-        self.init_randomization()
 
-    def init_randomization(self):
+    def set_seed(self, seed):
+        super().set_seed(seed)
+        self.seed = seed
         self.R = self.random_state.randint(self.BIG_INT // 4, size=self.features_num)
 
         if self.safety == "none":

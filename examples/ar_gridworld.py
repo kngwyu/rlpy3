@@ -16,7 +16,7 @@ def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
     )
 
 
-def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, **kwargs):
+def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, beta, **kwargs):
     if epsilon_min is not None:
         eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
         eps_min = epsilon_min
@@ -36,6 +36,15 @@ def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, **kwargs):
         )
     elif name == "ifddk-q":
         return methods.ifddk_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
+    elif name == "count-based-q":
+        return methods.count_based_tabular_q(
+            domain,
+            beta=beta,
+            epsilon=epsilon,
+            epsilon_decay=eps_decay,
+            epsilon_min=eps_min,
+            initial_learn_rate=0.5,
+        )
     elif name == "psrl":
         return methods.tabular_psrl(
             domain,
@@ -60,6 +69,7 @@ if __name__ == "__main__":
             click.Option(["--noise"], type=float, default=0.1),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),
+            click.Option(["--beta"], type=float, default=0.05),
             click.Option(["--step-penalty"], type=float, default=0.5),
             click.Option(["--episode-cap"], type=int, default=20),
         ],

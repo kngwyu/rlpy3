@@ -98,7 +98,7 @@ class LSPI(BatchAgent):
                 discount_factor * F2 - F1, self.representation.weight_vec
             )
 
-    def episodeTerminated(self):
+    def episode_terminated(self):
         """This function adjusts all necessary elements of the agent at the end of
         the episodes.
         .. note::

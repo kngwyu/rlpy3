@@ -95,7 +95,7 @@ class GreedyGQ(Agent, DescentAlgorithm):
         if expanded:
             self._expand_vectors(expanded)
         if terminal:
-            self.episodeTerminated()
+            self.episode_terminated()
 
     def _expand_vectors(self, num_expansions):
         """

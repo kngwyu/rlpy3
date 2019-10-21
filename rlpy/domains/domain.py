@@ -63,7 +63,6 @@ class Domain(ABC):
         discount_factor=0.9,
         continuous_dims=None,
         episode_cap=None,
-        random_state=None,
     ):
         """
         :param actions_num: The number of Actions the agent can perform
@@ -73,7 +72,6 @@ class Domain(ABC):
         :param state_space_dims: Number of dimensions of the state space
         :param continuous_dims: List of the continuous dimensions of the domain
         :param episode_cap: The cap used to bound each episode (return to state 0 after)
-        :param random_state: A seeded numpy random number generator
         """
         self.actions_num = actions_num
         self.statespace_limits = statespace_limits
@@ -89,10 +87,7 @@ class Domain(ABC):
 
         self.episode_cap = episode_cap
 
-        if random_state is None:
-            self.random_state = np.random.RandomState()
-        else:
-            self.random_state = random_state
+        self.random_state = np.random.RandomState()
 
         self.state_space_dims = self.statespace_limits.shape[0]
         # For discrete domains, limits should be extended by half on each side so that
@@ -102,14 +97,11 @@ class Domain(ABC):
 
         self.logger = logging.getLogger("rlpy.domains." + self.__class__.__name__)
 
-    def init_randomization(self):
+    def set_seed(self, seed):
         """
-        Any stochastic behavior in __init__() is broken out into this function
-        so that if the random seed is later changed (eg, by the Experiment),
-        other member variables and functions are updated accordingly.
-
+        Set random seed
         """
-        pass
+        self.random_state.seed(seed)
 
     def __str__(self):
         res = """{self.__class__}:

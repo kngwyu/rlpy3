@@ -71,14 +71,13 @@ class Agent(ABC):
         #: http://www.incompleteideas.net/sutton/book/7/node1.html
         self.eligibility_trace = None
 
-    def init_randomization(self):
+    def set_seed(self, seed):
         """
-        Any stochastic behavior in __init__() is broken out into this function
-        so that if the random seed is later changed (eg, by the Experiment),
-        other member variables and functions are updated accordingly.
-
+        Set random seed
         """
-        pass
+        self.random_state.seed(seed)
+        self.representation.set_seed(seed=seed)
+        self.policy.set_seed(seed=seed)
 
     @abstractmethod
     def learn(self, s, p_actions, a, r, ns, np_actions, na, terminal):
@@ -100,7 +99,7 @@ class Agent(ABC):
         """
         return NotImplementedError
 
-    def episodeTerminated(self):
+    def episode_terminated(self):
         """
         This function adjusts all necessary elements of the agent at the end of
         the episodes.
@@ -112,7 +111,7 @@ class Agent(ABC):
         """
         # Increase the number of episodes
         self.episode_count += 1
-        self.representation.episodeTerminated()
+        self.representation.episode_terminated()
         # Set eligibility Traces to zero if it is end of the episode
         if self.eligibility_trace is not None:
             self.eligibility_trace = np.zeros_like(self.eligibility_trace)

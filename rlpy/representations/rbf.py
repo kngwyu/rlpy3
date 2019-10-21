@@ -90,15 +90,15 @@ class RBF(Representation):
                 * (self.resolution_max + self.resolution_min)
                 / 2
             )
-
         self.const_feature = const_feature
         if const_feature:
             self.features_num += 1  # adds a constant 1 to each feature vector
         self.state_dimensions = state_dimensions
         self.normalize = normalize
-        self.init_randomization()
+        self.set_seed(seed)
 
-    def init_randomization(self):
+    def set_seed(self, seed):
+        super().set_seed(seed)
         if self.grid_bins is not None:
             return
         else:

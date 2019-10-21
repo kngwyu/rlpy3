@@ -150,16 +150,17 @@ class RandomLocalBases(LocalBases):
         ``resolution_min`` and ``resolution_max``.  NOTE these are
         sensitive to the choice of coordinate (scale with coordinate units).
         """
-        super().__init__(domain, kernel, seed=seed, **kwargs)
+        super().__init__(domain, kernel, **kwargs)
         self.features_num = num
-        self.dim_widths = domain.statespace_width
         self.resolution_max = resolution_max
         self.resolution_min = resolution_min
+        self.dim_widths = domain.statespace_width
         self.centers = np.zeros((num, len(self.dim_widths)))
         self.widths = np.zeros((num, len(self.dim_widths)))
-        self.init_randomization()
+        self.set_seed(seed)
 
-    def init_randomization(self):
+    def set_seed(self, seed):
+        super().set_seed(seed)
         for i in range(self.features_num):
             for d in range(len(self.dim_widths)):
                 self.centers[i, d] = self.random_state.uniform(

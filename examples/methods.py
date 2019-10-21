@@ -1,4 +1,12 @@
-from rlpy.agents import GreedyGQ, LSPI, NaturalActorCritic, PSRL, Q_Learning, SARSA
+from rlpy.agents import (
+    CountBasedBonus,
+    GreedyGQ,
+    LSPI,
+    NaturalActorCritic,
+    PSRL,
+    Q_Learning,
+    SARSA,
+)
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
 from rlpy.representations import (
@@ -64,6 +72,11 @@ def tabular_q(
         learn_rate_decay_mode="boyan",
         boyan_N0=boyan_N0,
     )
+
+
+def count_based_tabular_q(domain, beta=0.05, count_mode="s-a", **kwargs):
+    agent = tabular_q(domain, **kwargs)
+    return CountBasedBonus(agent, count_mode=count_mode, beta=beta)
 
 
 def tabular_sarsa(domain, discretization=20, lambda_=0.3):

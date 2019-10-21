@@ -3,7 +3,7 @@ Paper: https://arxiv.org/abs/1306.0940, https://arxiv.org/abs/1607.00215
 Based on the author's code: https://github.com/iosband/TabulaRL
 """
 import numpy as np
-from rlpy.representations import Tabular
+from rlpy.representations import Enumerable
 from .agent import Agent
 from ._vi_impl import compute_q_values
 
@@ -25,7 +25,7 @@ class PSRL(Agent):
         :param spread_prior: Use alpha0/n_states as alpha0
         """
         super().__init__(*args, seed=seed)
-        if not isinstance(self.representation, Tabular):
+        if not isinstance(self.representation, Enumerable):
             raise ValueError("PSRL works only with a tabular representation.")
 
         self.epsilon = 0.0

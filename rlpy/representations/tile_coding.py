@@ -63,14 +63,14 @@ class TileCoding(Representation):
         The resolution matrix for the example above is
         >>> resolution_matrix = np.array([[4, 4, 0.5, 0.5], [0.5, 6, 6, 6]], dtype="float")
 
-        @param num_tilings: number of tilings; single integer for one type of tiling or
+        :param num_tilings: number of tilings; single integer for one type of tiling or
                      a list for several tiling types; see example above.
-        @param dimensions: list of list of dimension ids; one list per tiling type
-        @param resolutions: list of resolutions; one entry for each type of tilings.
-        @param resolution_matrix: see example above
-        @param seed: random seed for hashing
-        @param memory: size of the "cache", corresponds to number of features
-        @param safety: type of collision checking
+        :param dimensions: list of list of dimension ids; one list per tiling type
+        :param resolutions: list of resolutions; one entry for each type of tilings.
+        :param resolution_matrix: see example above
+        :param seed: random seed for hashing
+        :param memory: size of the "cache", corresponds to number of features
+        :param safety: type of collision checking
             either super = detect and avoid all collisions
                    lazy  = faster but may have some false positives
                    none  = don't care about collisions

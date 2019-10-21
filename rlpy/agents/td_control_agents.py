@@ -28,7 +28,8 @@ class TDControlAgent(Agent, DescentAlgorithm):
         self.eligibility_trace = np.zeros(
             representation.features_num * representation.actions_num
         )
-        self.lambda_ = lambda_  #: lambda Parameter in SARSA [Sutton Book 1998]
+        #: lambda Parameter in SARSA [Sutton Book 1998]
+        self.lambda_ = lambda_
 
     def _future_action(self, ns, terminal, np_actions, ns_phi, na):
         """needs to be implemented by children"""

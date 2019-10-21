@@ -4,6 +4,15 @@ Notable changes after forking are tracked in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+* PSRL by [#23](https://github.com/kngwyu/rlpy3/pull/23).
+* CountBasedBonus by [#25](https://github.com/kngwyu/rlpy3/pull/25).
+
+### Changed
+* Module names by [#20](https://github.com/kngwyu/rlpy3/pull/20).
+
 ## [2.0.0 Alpha]
 
 ### Added

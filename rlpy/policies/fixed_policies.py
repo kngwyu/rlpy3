@@ -99,7 +99,7 @@ class FixedPolicy(Policy):
                     # it doesn't exist yet, so initialize it [immediately
                     # incremented]
                     self.curAction = 0
-                while not (self.curAction in domain.possibleActions(s)):
+                while not (self.curAction in domain.possible_actions(s)):
                     # We can't do something simple because of the order
                     # in which actions are defined.
                     # must do switch statement
@@ -122,7 +122,7 @@ class FixedPolicy(Policy):
                 if not hasattr(self, "curAction"):
                     # it doesn't exist yet, so initialize it
                     self.curAction = 1
-                while not (self.curAction in domain.possibleActions(s)):
+                while not (self.curAction in domain.possible_actions(s)):
                     # We can't do something simple
                     # because of the order in which actions are defined
                     if self.curAction == 3:  # right
@@ -163,7 +163,7 @@ class FixedPolicy(Policy):
             # Random Action with some probability
             # TODO fix isTerminal use here
             if self.random_state.rand() < 0.3 or domain.isTerminal():
-                return self.random_state.choice(domain.possibleActions(s))
+                return self.random_state.choice(domain.possible_actions(s))
 
             # non-Random Policy
             # next_block is the block that should be stacked on the top of the tower

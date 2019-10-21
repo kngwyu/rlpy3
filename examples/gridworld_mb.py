@@ -27,7 +27,7 @@ def select_agent(name, domain, seed, **kwargs):
     elif name in ["tvi", "traj-vi"]:
         return TrajectoryBasedValueIteration(seed, tabular, domain)
     else:
-        raise ValueError("{} is not supported")
+        raise ValueError("{} is not supported".format(name))
 
 
 if __name__ == "__main__":

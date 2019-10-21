@@ -5,7 +5,7 @@ samples)
 """
 from .representation import Representation
 import numpy as np
-from rlpy.tools.general_tools import addNewElementForAllActions
+from rlpy.tools.general_tools import add_new_features
 import matplotlib.pyplot as plt
 
 try:
@@ -97,9 +97,7 @@ class NonparametricLocalBases(LocalBases):
         """
         super().__init__(domain, kernel, **kwargs)
         self.max_similarity = max_similarity
-        self.common_width = (
-            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
-        ) / resolution
+        self.common_width = domain.statespace_width / resolution
         self.features_num = 0
 
     def pre_discover(self, s, terminal, a, sn, terminaln):
@@ -123,11 +121,8 @@ class NonparametricLocalBases(LocalBases):
         self.features_num += 1
         self.centers = np.vstack((self.centers, center))
         self.widths = np.vstack((self.widths, self.common_width))
-        # TODO if normalized, use Q estimate for center to fill weight_vec
-        new = np.zeros((self.domain.actions_num, 1))
-        self.weight_vec = addNewElementForAllActions(
-            self.weight_vec, self.domain.actions_num, new
-        )
+        # TODO if normalized, use Q estimate for center to fill weight
+        self.weight = add_new_features(self.weight)
 
 
 class RandomLocalBases(LocalBases):
@@ -157,9 +152,7 @@ class RandomLocalBases(LocalBases):
         """
         super().__init__(domain, kernel, seed=seed, **kwargs)
         self.features_num = num
-        self.dim_widths = (
-            domain.statespace_limits[:, 1] - domain.statespace_limits[:, 0]
-        )
+        self.dim_widths = domain.statespace_width
         self.resolution_max = resolution_max
         self.resolution_min = resolution_min
         self.centers = np.zeros((num, len(self.dim_widths)))

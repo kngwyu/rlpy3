@@ -1,6 +1,6 @@
 """Control agents based on TD Learning, i.e., Q-Learning and SARSA"""
 from .agent import Agent, DescentAlgorithm
-from rlpy.tools import addNewElementForAllActions, count_nonzero
+from rlpy.tools import add_new_features, count_nonzero
 import numpy as np
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -41,27 +41,24 @@ class TDControlAgent(Agent, DescentAlgorithm):
 
         self.representation.pre_discover(s, prevStateTerminal, a, ns, terminal)
         discount_factor = self.discount_factor
-        weight_vec = self.representation.weight_vec
         phi_s = self.representation.phi(s, prevStateTerminal)
         phi = self.representation.phi_sa(s, prevStateTerminal, a, phi_s)
         phi_prime_s = self.representation.phi(ns, terminal)
-        na = self._future_action(
-            ns, terminal, np_actions, phi_prime_s, na
-        )  # here comes the difference between SARSA and Q-Learning
+        # here comes the difference between SARSA and Q-Learning
+        na = self._future_action(ns, terminal, np_actions, phi_prime_s, na)
         phi_prime = self.representation.phi_sa(ns, terminal, na, phi_prime_s)
         nnz = count_nonzero(phi_s)  # Number of non-zero elements
 
         # Set eligibility traces:
         if self.lambda_ > 0:
             expanded = (
-                len(phi) - self.eligibility_trace.shape[0]
+                phi.shape[0] - self.eligibility_trace.shape[0]
             ) // self.representation.actions_num
             if expanded > 0:
                 # Correct the size of eligibility traces (pad with zeros for
                 # new features)
-                self.eligibility_trace = addNewElementForAllActions(
+                self.eligibility_trace = add_new_features(
                     self.eligibility_trace,
-                    self.representation.actions_num,
                     np.zeros((self.representation.actions_num, expanded)),
                 )
 
@@ -73,21 +70,27 @@ class TDControlAgent(Agent, DescentAlgorithm):
         else:
             self.eligibility_trace = phi
 
-        td_error = r + np.dot(discount_factor * phi_prime - phi, weight_vec)
+        td_error = r + np.dot(
+            discount_factor * phi_prime - phi, self.representation.weight_vec
+        )
         if nnz > 0:
             self.updateLearnRate(
                 phi, phi_prime, self.eligibility_trace, discount_factor, nnz, terminal
             )
-            weight_vec_old = weight_vec.copy()
-            weight_vec += (
+            weight_old = self.representation.weight.copy()
+            self.representation.weight_vec += (
                 self.learn_rate
                 * self.representation.feature_learning_rate()
                 * td_error
                 * self.eligibility_trace
             )
-            if not np.all(np.isfinite(weight_vec)):
-                weight_vec = weight_vec_old
-                print("WARNING: TD-Learning diverged, weight_vec reached infinity!")
+            if not np.all(np.isfinite(self.representation.weight_vec)):
+                self.representation.weight = weight_old
+                import warnings
+
+                warnings.warn(
+                    "WARNING: TD-Learning diverged, weight_vec reached infinity!"
+                )
         # Discover features if the representation has the discover method
         expanded = self.representation.post_discover(
             s, prevStateTerminal, a, td_error, phi_s

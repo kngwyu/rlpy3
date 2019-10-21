@@ -215,7 +215,7 @@ class GridWorld(Domain):
                 V[r, c] = self.MIN_RETURN
             elif self.map[r, c] == self.EMPTY or self.map[r, c] == self.START:
                 s = np.array([r, c])
-                As = self.possibleActions(s)
+                As = self.possible_actions(s)
                 terminal = self.isTerminal(s)
                 Qs = representation.Qs(s, terminal)
                 bestA = representation.best_actions(s, terminal, As)
@@ -252,7 +252,7 @@ class GridWorld(Domain):
         ns = self.state.copy()
         if self.random_state.random_sample() < self.noise:
             # Random Move
-            a = self.random_state.choice(self.possibleActions())
+            a = self.random_state.choice(self.possible_actions())
 
         # Take action
         ns = self.state + self.ACTIONS[a]
@@ -272,11 +272,11 @@ class GridWorld(Domain):
 
         terminal = self.isTerminal()
         reward = self._reward(ns, terminal)
-        return reward, ns, terminal, self.possibleActions()
+        return reward, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self._sample_start()
-        return self.state, self.isTerminal(), self.possibleActions()
+        return self.state, self.isTerminal(), self.possible_actions()
 
     def isTerminal(self, s=None):
         if s is None:
@@ -287,7 +287,7 @@ class GridWorld(Domain):
             return True
         return False
 
-    def possibleActions(self, s=None):
+    def possible_actions(self, s=None):
         if s is None:
             s = self.state
         possibleA = np.array([], np.uint8)
@@ -311,7 +311,7 @@ class GridWorld(Domain):
         # ns: k-by-|s|  next state
         #  t: k-by-1    terminal values
         # pa: k-by-??   possible actions for each next state
-        actions = self.possibleActions(s)
+        actions = self.possible_actions(s)
         k = len(actions)
         # Make Probabilities
         intended_action_index = findElemArray1D(a, actions)
@@ -322,7 +322,7 @@ class GridWorld(Domain):
         actions = self.ACTIONS[actions]
         ns += actions
         # Make next possible actions
-        pa = np.array([self.possibleActions(sn) for sn in ns])
+        pa = np.array([self.possible_actions(sn) for sn in ns])
         # Make rewards
         r = np.ones((k, 1)) * self.STEP_REWARD
         goal = self.map[ns[:, 0].astype(np.int), ns[:, 1].astype(np.int)] == self.GOAL
@@ -339,12 +339,8 @@ class GridWorld(Domain):
         if len(self.continuous_dims) > 0:
             # Recall that discrete dimensions are assumed to be integer
             return (
-                perms(
-                    self.discrete_statespace_limits[:, 1]
-                    - self.discrete_statespace_limits[:, 0]
-                    + 1
-                )
-                + self.discrete_statespace_limits[:, 0]
+                perms(self.discrete_statespace_width + 1)
+                + self.discrete_statespace_limits[0]
             )
         else:
             return None

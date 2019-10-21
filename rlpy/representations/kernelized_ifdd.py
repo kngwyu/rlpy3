@@ -2,7 +2,7 @@
 from itertools import combinations
 import matplotlib.pyplot as plt
 import numpy as np
-from rlpy.tools import addNewElementForAllActions, PriorityQueueWithNovelty
+from rlpy.tools import add_new_features, PriorityQueueWithNovelty
 from .representation import Representation
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -389,13 +389,9 @@ class KernelizediFDD(Representation):
 
         # add parameter dimension
         if self.normalization:
-            self.weight_vec = addNewElementForAllActions(
-                self.weight_vec, self.domain.actions_num, Q
-            )
+            self.weight = add_new_features(self.weight, Q)
         else:
-            self.weight_vec = addNewElementForAllActions(
-                self.weight_vec, self.domain.actions_num
-            )
+            self.weight = add_new_features(self.weight)
         return self.features_num - 1
 
     def add_refined_feature(self, index1, index2, Q):
@@ -446,13 +442,9 @@ class KernelizediFDD(Representation):
         self.logger.debug("{} candidates".format(len(self.candidates)))
         self.features_num += 1
         if self.normalization:
-            self.weight_vec = addNewElementForAllActions(
-                self.weight_vec, self.domain.actions_num, Q
-            )
+            self.weight = add_new_features(self.weight, Q)
         else:
-            self.weight_vec = addNewElementForAllActions(
-                self.weight_vec, self.domain.actions_num
-            )
+            self.weight = add_new_features(self.weight)
 
         return self.features_num - 1
 

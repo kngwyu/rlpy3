@@ -113,11 +113,11 @@ class MountainCar(Domain):
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
         ns = np.array([position, velocity])
         self.state = ns.copy()
-        return r, ns, terminal, self.possibleActions()
+        return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self.INIT_STATE.copy()
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
     def isTerminal(self):
         """
@@ -242,7 +242,7 @@ class MountainCar(Domain):
             ):
                 s = np.array([x, xDot])
                 Qs = representation.Qs(s, False)
-                As = self.possibleActions()
+                As = self.possible_actions()
                 pi[row, col] = representation.best_action(s, False, As)
                 V[row, col] = max(Qs)
         self.valueFunction_im.set_data(V)

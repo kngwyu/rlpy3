@@ -102,9 +102,7 @@ class TileCoding(Representation):
                     resolution_matrix[i, d] = resolutions[i]
         resolution_matrix = resolution_matrix.astype("float")
         resolution_matrix[resolution_matrix == 0] = 1e-50
-        self.scaling_matrix = (
-            self.domain.statespace_limits[:, 1] - self.domain.statespace_limits[:, 0]
-        ) / resolution_matrix
+        self.scaling_matrix = self.domain.statespace_width / resolution_matrix
 
         # now only hashing stuff
         self.seed = seed

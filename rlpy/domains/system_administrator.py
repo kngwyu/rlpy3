@@ -270,7 +270,7 @@ class SystemAdministrator(Domain):
             sum(self.state) + totalRebootReward,
             ns,
             terminal,
-            self.possibleActions(),
+            self.possible_actions(),
         )
         # Returns the triplet [r,ns,t] => Reward, next state, isTerminal
 
@@ -279,9 +279,9 @@ class SystemAdministrator(Domain):
         self.state = np.array(
             [self.RUNNING for dummy in range(0, self.state_space_dims)]
         )
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
-    def possibleActions(self):
+    def possible_actions(self):
         s = self.state
         possibleActs = [
             computer_id

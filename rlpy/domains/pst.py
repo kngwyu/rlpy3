@@ -490,7 +490,7 @@ class PST(Domain):
             self.FUEL_BURN_REWARD_COEFF * self.fuelUnitsBurned
             + self.MOVE_REWARD_COEFF * distanceTraveled
         )  # Presently movement penalty is set to 0
-        return totalStepReward, ns, self.isTerminal(), self.possibleActions()
+        return totalStepReward, ns, self.isTerminal(), self.possible_actions()
 
     def s0(self):
         locations = np.ones(self.NUM_UAV, dtype="int") * UAVLocation.BASE
@@ -499,7 +499,7 @@ class PST(Domain):
         sensor = np.ones(self.NUM_UAV, dtype="int") * SensorState.RUNNING
 
         self.state = self.properties2StateVec(locations, fuel, actuator, sensor)
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
     def state2Struct(self, s):
         """
@@ -539,7 +539,7 @@ class PST(Domain):
             [sState.locations, sState.fuel, sState.actuator, sState.sensor]
         )
 
-    def possibleActions(self):
+    def possible_actions(self):
         s = self.state
         # return the id of possible actions
         # find empty blocks (nothing on top)

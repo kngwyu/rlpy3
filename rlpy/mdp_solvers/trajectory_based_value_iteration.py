@@ -45,13 +45,6 @@ class TrajectoryBasedValueIteration(MDPSolver):
         else:
             self.alpha = alpha
 
-    def _bellman_error(self, s, a, terminal):
-        new_Q = self.representation.q_look_ahead(s, a, self.ns_samples)
-        phi_s = self.representation.phi(s, terminal)
-        phi_s_a = self.representation.phi_sa(s, terminal, a, phi_s)
-        old_Q = np.dot(phi_s_a, self.representation.weight_vec)
-        return new_Q - old_Q, phi_s, phi_s_a
-
     def eps_greedy(self, s, terminal, p_actions):
         if self.random_state.rand() > self.epsilon:
             return self.representation.best_action(s, terminal, p_actions)

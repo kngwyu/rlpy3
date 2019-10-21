@@ -13,3 +13,4 @@ from .rbf import RBF
 from .representation import Representation
 from .tabular import Tabular
 from .tile_coding import TileCoding
+from .value_learner import ValueLearner

@@ -241,7 +241,7 @@ class Pacman(Domain):
         """
         if self.random_state.random_sample() < self.noise:
             # Random Move
-            a = self.random_state.choice(self.possibleActions())
+            a = self.random_state.choice(self.possible_actions())
         a = self.actions[a]
         next_state_p = self.game_state.generateSuccessor(0, a)
         next_state = next_state_p
@@ -265,7 +265,7 @@ class Pacman(Domain):
         r = next_state.data.score - self.game_state.data.score
         self.game_state = next_state
         terminal = self.isTerminal()
-        return r, self._get_state(), terminal, self.possibleActions()
+        return r, self._get_state(), terminal, self.possible_actions()
 
     def s0(self):
         """
@@ -285,21 +285,15 @@ class Pacman(Domain):
         self.game_state.data.initialize(self.layout_copy, self.numGhostAgents)
         self._cleanup_graphics = True
 
-        return self.state, self.isTerminal(), self.possibleActions()
+        return self.state, self.isTerminal(), self.possible_actions()
 
-    def possibleActions(self):
-
+    def possible_actions(self):
         if self.isTerminal():
-            # somewhat hacky, but should not matter anyway, maybe clean up in
-            # the future
+            # somewhat hacky, but should not matter anyway, maybe clean up in the future
             return np.array([0])
-        # makes an array of possible actions pacman can perform at any given
-        # state
-        possibleActions = []
-        possibleMoves = pacman.GameState.getLegalActions(self.game_state, agentIndex=0)
-        for a in possibleMoves:
-            possibleActions.append(self.actions.index(a))
-        return np.array(possibleActions)
+        # makes an array of possible actions pacman can perform at any given state
+        possible_moves = pacman.GameState.getLegalActions(self.game_state, agentIndex=0)
+        return np.array([self.actions.index(a) for a in possible_moves])
 
     def isTerminal(self):
         """

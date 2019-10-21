@@ -1,5 +1,5 @@
 """Incrementally expanded Tabular Representation"""
-from .representation import Representation
+from .representation import Enumerable, Representation
 import numpy as np
 from copy import deepcopy
 
@@ -15,7 +15,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class IncrementalTabular(Representation):
+class IncrementalTabular(Representation, Enumerable):
     """
     Identical to Tabular representation (ie assigns a binary feature function
     f_{d}() to each possible discrete state *d* in the domain, with

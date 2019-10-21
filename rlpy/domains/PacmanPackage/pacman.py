@@ -424,13 +424,13 @@ class GhostRules(object):
         reach a dead end, but can turn 90 degrees at intersections.
         """
         conf = state.getGhostState(ghostIndex).configuration
-        possibleActions = Actions.getPossibleActions(conf, state.data.layout.walls)
+        possible_actions = Actions.getPossibleActions(conf, state.data.layout.walls)
         reverse = Actions.reverseDirection(conf.direction)
-        if Directions.STOP in possibleActions:
-            possibleActions.remove(Directions.STOP)
-        if reverse in possibleActions and len(possibleActions) > 1:
-            possibleActions.remove(reverse)
-        return possibleActions
+        if Directions.STOP in possible_actions:
+            possible_actions.remove(Directions.STOP)
+        if reverse in possible_actions and len(possible_actions) > 1:
+            possible_actions.remove(reverse)
+        return possible_actions
 
     getLegalActions = staticmethod(getLegalActions)
 

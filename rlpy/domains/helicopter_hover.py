@@ -130,7 +130,7 @@ class HelicopterHoverExtended(Domain):
     def s0(self):
         self.state = np.zeros((20))
         self.state[9] = 1.0
-        return self.state.copy(), self.isTerminal(), self.possibleActions()
+        return self.state.copy(), self.isTerminal(), self.possible_actions()
 
     def isTerminal(self):
         s = self.state
@@ -156,7 +156,7 @@ class HelicopterHoverExtended(Domain):
         else:
             return -np.sum(s[:9] ** 2) - np.sum(s[10:12] ** 2)
 
-    def possibleActions(self, s=None):
+    def possible_actions(self, s=None):
         return np.arange(self.actions_num)
 
     def step(self, a):
@@ -214,7 +214,7 @@ class HelicopterHoverExtended(Domain):
         st[13:19] = gust_noise
         st[-1] = t + 1
         self.state = st.copy()
-        return (self._get_reward(), st, self.isTerminal(), self.possibleActions())
+        return (self._get_reward(), st, self.isTerminal(), self.possible_actions())
 
     def _state_in_world(self, s):
         """

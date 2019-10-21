@@ -182,7 +182,7 @@ Gamma:      {self.discount_factor}
         """
         raise NotImplementedError("Children need to implement this method")
 
-    def possibleActions(self, s=None):
+    def possible_actions(self, s=None):
         """
         The default version returns an enumeration of all actions [0, 1, 2...].
         We suggest overriding this method in your domain, especially if not all
@@ -283,6 +283,17 @@ Gamma:      {self.discount_factor}
                 self.statespace_limits[d, 0] += -0.5
                 self.statespace_limits[d, 1] += +0.5
 
+    @property
+    def statespace_width(self):
+        return self.statespace_limits[:, 1] - self.statespace_limits[:, 0]
+
+    @property
+    def discrete_statespace_width(self):
+        return (
+            self.discrete_statespace_limits[:, 1]
+            - self.discrete_statespace_limits[:, 0]
+        )
+
     def sampleStep(self, a, num_samples):
         """
         Sample a set number of next states and rewards from the domain.
@@ -329,5 +340,10 @@ Gamma:      {self.discount_factor}
             try:
                 setattr(result, k, deepcopy(v, memo))
             except Exception:
-                setattr(result, k, v.frozen())
+                if hasattr(v, "frozen"):
+                    setattr(result, k, v.frozen())
+                else:
+                    import warnings
+
+                    warnings.warn("Skip {} when copying".format(k))
         return result

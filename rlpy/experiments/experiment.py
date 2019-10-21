@@ -258,7 +258,7 @@ class Experiment(object):
             counts = self.state_counts_perf
         else:
             return
-        rng = self.domain.statespace_limits[:, 1] - self.domain.statespace_limits[:, 0]
+        rng = self.domain.statespace_width
         d = counts.shape[-1] - 2
         s_norm = s - self.domain.statespace_limits[:, 0]
         idx = np.floor(s_norm / rng * d).astype("int")

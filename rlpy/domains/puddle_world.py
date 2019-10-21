@@ -69,14 +69,14 @@ class PuddleWorld(Domain):
         self.state = self.random_state.rand(2)
         while self.isTerminal():
             self.state = self.random_state.rand(2)
-        return self.state.copy(), False, self.possibleActions()
+        return self.state.copy(), False, self.possible_actions()
 
     def isTerminal(self, s=None):
         if s is None:
             s = self.state
         return s.sum() > 0.95 * 2
 
-    def possibleActions(self, s=0):
+    def possible_actions(self, s=0):
         return np.arange(self.actions_num)
 
     def step(self, a):
@@ -86,7 +86,7 @@ class PuddleWorld(Domain):
         ns = np.minimum(ns, 1.0)
         ns = np.maximum(ns, 0.0)
         self.state = ns.copy()
-        return self._reward(ns), ns, self.isTerminal(), self.possibleActions()
+        return self._reward(ns), ns, self.isTerminal(), self.possible_actions()
 
     def _reward(self, s):
         if self.isTerminal(s):
@@ -128,10 +128,10 @@ class PuddleWorld(Domain):
                 a[0] = x
                 a[1] = y
                 self.val_map[j, i] = representation.V(
-                    a, self.isTerminal(a), self.possibleActions()
+                    a, self.isTerminal(a), self.possible_actions()
                 )
                 self.pi_map[j, i] = representation.best_action(
-                    a, self.isTerminal(a), self.possibleActions()
+                    a, self.isTerminal(a), self.possible_actions()
                 )
 
         if self.valfun_fig is None:

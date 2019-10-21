@@ -89,9 +89,9 @@ class HIVTreatment(Domain):
 
         self.episode_data[:-1, self.t] = self.state
         self.episode_data[-1, self.t - 1] = a
-        return reward, ns, False, self.possibleActions()
+        return reward, ns, False, self.possible_actions()
 
-    def possibleActions(self):
+    def possible_actions(self):
         return np.arange(4)
 
     def s0(self):
@@ -101,9 +101,9 @@ class HIVTreatment(Domain):
         s = np.array([163573.0, 5.0, 11945.0, 46.0, 63919.0, 24.0])
         self.state = s.copy()
         if self.logspace:
-            return np.log10(s), self.isTerminal(), self.possibleActions()
+            return np.log10(s), self.isTerminal(), self.possible_actions()
         self.episode_data[:-1, 0] = s
-        return s, self.isTerminal(), self.possibleActions()
+        return s, self.isTerminal(), self.possible_actions()
 
     def show_domain(self, a=0, s=None):
         """

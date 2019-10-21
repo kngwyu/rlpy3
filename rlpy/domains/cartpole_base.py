@@ -259,7 +259,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
     def show_learning(self, representation):
         raise NotImplementedError
 
-    def possibleActions(self, s=None):
+    def possible_actions(self, s=None):
         """
         Returns an integer for each available action.  Some child domains allow
         different numbers of actions.

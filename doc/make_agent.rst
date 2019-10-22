@@ -61,7 +61,7 @@ REQUIRED Functions
 
   .. Note::
 
-      The Agent *MUST* call the (inherited) :func:`~rlpy.agents.agent.Agent.episodeTerminated`
+      The Agent *MUST* call the (inherited) :func:`~rlpy.agents.agent.Agent.episode_terminated`
       function after learning if the transition led to a terminal state
       (ie, ``learn()`` will return ``isTerminal=True``)
 
@@ -169,7 +169,7 @@ this TD error, weighted by a factor called the *learning rate*.
 
                 # MUST call this at end of learn() - handle episode termination cleanup as required.
                 if terminal:
-                    self.episodeTerminated()
+                    self.episode_terminated()
 
 .. note::
 

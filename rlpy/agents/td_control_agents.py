@@ -99,7 +99,7 @@ class TDControlAgent(Agent, DescentAlgorithm):
 
         if terminal:
             # If THIS state is terminal:
-            self.episodeTerminated()
+            self.episode_terminated()
 
 
 class Q_Learning(TDControlAgent):

@@ -77,6 +77,6 @@ class LSPI_SARSA(SARSA):
         if self.lspi.samples_count % self.lspi.steps_between_lspi == 0:
             self.lspi.representationExpansionLSPI()
             if terminal:
-                self.episodeTerminated()
+                self.episode_terminated()
         else:
             self.learn(s, p_actions, a, r, ns, np_actions, na, terminal)

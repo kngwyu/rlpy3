@@ -53,7 +53,7 @@ class BatchAgent(Agent):
         """
         self.store_samples(s, a, r, ns, na, terminal)
         if terminal:
-            self.episodeTerminated()
+            self.episode_terminated()
         if self.samples_count % self.max_window == 0:
             self.batch_learn()
 

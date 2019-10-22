@@ -51,14 +51,11 @@ class Policy(ABC):
         # a new stream of random numbers for each domain
         self.random_state = np.random.RandomState(seed=seed)
 
-    def init_randomization(self):
+    def set_seed(self, seed):
         """
-        Any stochastic behavior in __init__() is broken out into this function
-        so that if the random seed is later changed (eg, by the Experiment),
-        other member variables and functions are updated accordingly.
-
+        Set random seed
         """
-        pass
+        self.random_state.seed(seed)
 
     @abstractmethod
     def pi(self, s, terminal, p_actions):

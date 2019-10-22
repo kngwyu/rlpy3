@@ -124,7 +124,7 @@ class Experiment(object):
         self.output_filename = ""
         # Array of random seeds. This is used to make sure all jobs start with
         # the same random seed
-        self.randomSeeds = np.random.RandomState(self.MAIN_SEED).randint(
+        self.random_seeds = np.random.RandomState(self.MAIN_SEED).randint(
             1, self.MAIN_SEED, self.MAX_RUNS
         )
         self.result = defaultdict(list)
@@ -163,29 +163,13 @@ class Experiment(object):
         """
         self._update_path(self.path)
         self.output_filename = "{:0>3}-results.json".format(self.exp_id)
-        np.random.seed(self.randomSeeds[self.exp_id - 1])
-        self.domain.random_state = np.random.RandomState(
-            self.randomSeeds[self.exp_id - 1]
-        )
-        self.domain.init_randomization()
+        np.random.seed(self.random_seeds[self.exp_id - 1])
+        self.domain.set_seed(self.random_seeds[self.exp_id - 1])
         # make sure the performance_domain has a different seed
-        self.performance_domain.random_state = np.random.RandomState(
-            self.randomSeeds[self.exp_id + 20]
-        )
+        self.performance_domain.set_seed(self.random_seeds[self.exp_id + 20])
 
         # Its ok if use same seed as domain, random calls completely different
-        self.agent.random_state = np.random.RandomState(
-            self.randomSeeds[self.exp_id - 1]
-        )
-        self.agent.init_randomization()
-        self.agent.representation.random_state = np.random.RandomState(
-            self.randomSeeds[self.exp_id - 1]
-        )
-        self.agent.representation.init_randomization()
-        self.agent.policy.random_state = np.random.RandomState(
-            self.randomSeeds[self.exp_id - 1]
-        )
-        self.agent.policy.init_randomization()
+        self.agent.set_seed(self.random_seeds[self.exp_id - 1])
 
         self.log_filename = "{:0>3}.log".format(self.exp_id)
         if self.config_logging:

@@ -10,7 +10,7 @@ from .kernelized_ifdd import linf_triangle_kernel, gaussian_kernel, KernelizediF
 from .local_bases import NonparametricLocalBases, RandomLocalBases
 from .omptd import OMPTD
 from .rbf import RBF
-from .representation import Representation
+from .representation import Enumerable, Hashable, Representation
 from .tabular import Tabular
 from .tile_coding import TileCoding
 from .value_learner import ValueLearner

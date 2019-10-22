@@ -142,7 +142,7 @@ class iFDD(Representation):
             the batch setting.
         :param max_batch_discovery: Number of features to be expanded in the batch
             setting.
-        :param iFDDPlue: ICML 11 iFDD would add sum of abs(TD-errors) while the iFDD
+        :param iFDDPlus: ICML 11 iFDD would add sum of abs(TD-errors) while the iFDD
             plus uses the abs(sum(TD-Error))/sqrt(potential feature presence count).
         :param use_chirstoph_ordered_features: As Christoph mentioned adding new
             features may affect the phi for all states.
@@ -732,7 +732,7 @@ class iFDDK(iFDD):
             useCache=useCache,
         )
 
-    def episodeTerminated(self):
+    def episode_terminated(self):
         self.n_rho += 1
         self.w = 0
         self.t_rho[self.n_rho] = self.t

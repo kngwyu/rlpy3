@@ -206,7 +206,7 @@ class OMPTD(Representation):
         level_1_features_dim = []
         for i in range(self.initial_representation.features_num):
             level_1_features_dim.append(
-                np.array([self.initial_representation.getDimNumber(i)])
+                np.array([self.initial_representation.get_dim_number(i)])
             )
         level_n_features = np.array(level_1_features)
         level_n_features_dim = deepcopy(level_1_features_dim)

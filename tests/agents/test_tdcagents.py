@@ -66,7 +66,7 @@ def test_sarsalambda_valfun_chain():
     agent = SARSA(pol, rep, 0.9, lambda_=0.5)
     for i in range(1000):
         if i % 4 == 3:
-            agent.episodeTerminated()
+            agent.episode_terminated()
             continue
         agent.learn(
             np.array([i % 4]),
@@ -117,7 +117,7 @@ def test_qlambda_valfun_chain():
     agent = Q_Learning(pol, rep, 0.9, lambda_=0.5)
     for i in range(1000):
         if i % 4 == 3:
-            agent.episodeTerminated()
+            agent.episode_terminated()
             continue
         agent.learn(
             np.array([i % 4]),
@@ -143,7 +143,7 @@ def test_ggq_valfun_chain():
     agent = GreedyGQ(pol, rep, lambda_=0.0, discount_factor=0.9)
     for i in range(1000):
         if i % 4 == 3:
-            agent.episodeTerminated()
+            agent.episode_terminated()
             continue
         agent.learn(
             np.array([i % 4]),

@@ -118,7 +118,7 @@ class NaturalActorCritic(Agent):
                 self.steps_between_updates = 0
 
         if terminal:
-            self.episodeTerminated()
+            self.episode_terminated()
 
     def _gradient_sane(self, w):
         """

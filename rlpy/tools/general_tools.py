@@ -306,37 +306,18 @@ def make_colormap(colors):
     colors[z] can be either an RGB list, e.g. [1,0,0] for red, or an
     html hex string, e.g. "#ff0000" for red.
     """
-
-    from matplotlib.colors import LinearSegmentedColormap, ColorConverter
+    from matplotlib import colors as mc
 
     z = np.sort(list(colors.keys()))
-    n = len(z)
-    z1 = min(z)
-    zn = max(z)
-    x0 = (z - z1) / (zn - z1)
-
-    CC = ColorConverter()
-    R = []
-    G = []
-    B = []
-    for i in range(n):
-        # i'th color at level z[i]:
-        Ci = colors[z[i]]
-        if isinstance(Ci, str):
-            # a hex string of form '#ff0000' for example (for red)
-            RGB = CC.to_rgb(Ci)
-        else:
-            # assume it's an RGB triple already:
-            RGB = Ci
-        R.append(RGB[0])
-        G.append(RGB[1])
-        B.append(RGB[2])
-
-    cmap_dict = {}
-    cmap_dict["red"] = [(x0[i], R[i], R[i]) for i in range(len(R))]
-    cmap_dict["green"] = [(x0[i], G[i], G[i]) for i in range(len(G))]
-    cmap_dict["blue"] = [(x0[i], B[i], B[i]) for i in range(len(B))]
-    mymap = LinearSegmentedColormap("mymap", cmap_dict)
+    min_z = min(z)
+    x0 = (z - min_z) / (max(z) - min_z)
+    rgb = [mc.to_rgb(colors[zi]) for zi in z]
+    cmap_dict = dict(
+        red=[(x0[i], c[0], c[0]) for i, c in enumerate(rgb)],
+        green=[(x0[i], c[1], c[1]) for i, c in enumerate(rgb)],
+        blue=[(x0[i], c[2], c[2]) for i, c in enumerate(rgb)]
+    )
+    mymap = mc.LinearSegmentedColormap("mymap", cmap_dict)
     return mymap
 
 

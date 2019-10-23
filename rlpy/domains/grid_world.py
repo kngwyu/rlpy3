@@ -203,6 +203,13 @@ class GridWorld(Domain):
             self._init_arrow(name, *np.meshgrid(x, y))
         self.vf_fig.show()
 
+    def _vf_text(self, c, r, v):
+        self.vf_texts.append(
+            self.vf_ax.text(
+                c - 0.2, r + 0.1, format(v, ".1f"), color="xkcd:bright blue"
+            )
+        )
+
     def show_learning(self, representation):
         if self.vf_ax is None:
             self._init_value_vis()
@@ -233,14 +240,13 @@ class GridWorld(Domain):
         vmin, vmax = v.min(), v.max()
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if v[r, c] == vmin:
-                self.vf_texts.append(
-                    self.vf_ax.text(c - 0.2, r + 0.1, format(vmin, ".1f"), color="w")
-                )
+                self._vf_text(c, r, vmin)
             elif v[r, c] == vmax:
-                self.vf_texts.append(
-                    self.vf_ax.text(c - 0.2, r + 0.1, format(vmax, ".1f"), color="w")
-                )
-            v[r, c] = linear_map(v[r, c], vmin, vmax, -1, 1)
+                self._vf_text(c, r, vmax)
+            if v[r, c] < 0:
+                v[r, c] = linear_map(v[r, c], min(vmin, self.MIN_RETURN), 0, -1, 0)
+            else:
+                v[r, c] = linear_map(v[r, c], 0, max(vmax, self.MAX_RETURN), 0, 1)
         # Show Value Function
         self.vf_img.set_data(v)
         # Show Policy for arrows

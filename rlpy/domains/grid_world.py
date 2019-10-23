@@ -1,7 +1,8 @@
 """Gridworld Domain."""
 import numpy as np
 import itertools
-from rlpy.tools import plt, FONTSIZE, linearMap
+from matplotlib.colors import Normalize
+from rlpy.tools import FONTSIZE, linear_map, plt
 from rlpy.tools import __rlpy_location__, findElemArray1D, perms
 import os
 
@@ -54,8 +55,6 @@ class GridWorld(Domain):
     STEP_REWARD = -0.001
     # Used for graphical normalization
     MAX_RETURN = 1
-    RMAX = MAX_RETURN
-    # Used for graphical normalization
     MIN_RETURN = -1
     # Used for graphical shifting of arrows
     SHIFT = 0.1
@@ -138,18 +137,21 @@ class GridWorld(Domain):
     def _agent_fig(self, s):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
+    def _init_domain_vis(self, s):
+        self.domain_fig = plt.figure("GridWorld: {}".format(self.mapname))
+        ratio = self.rows / self.cols
+        self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
+        self._show_map()
+        self._set_ticks(self.domain_ax)
+        self.agent_fig = self._agent_fig(s)
+        self.domain_fig.show()
+
     def show_domain(self, a=0, s=None):
         if s is None:
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            self.domain_fig = plt.figure("GridWorld: {}".format(self.mapname))
-            ratio = self.rows / self.cols
-            self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
-            self._show_map()
-            self._set_ticks(self.domain_ax)
-            self.agent_fig = self._agent_fig(s)
-            self.domain_fig.show()
+            self._init_domain_vis(s)
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
@@ -175,58 +177,68 @@ class GridWorld(Domain):
         )
         self.arrow_figs[name].set_clim(vmin=0, vmax=1)
 
+    def _normalize_vf(self, vf, vmin, vmax):
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if self.map[r, c] in (self.EMPTY, self.START):
+                vf[r, c] = linear_map(vf[r, c], vmin, vmax, -1, 1)
+
+    def _init_value_vis(self):
+        self.vf_fig = plt.figure("Value Function")
+        self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
+        cmap = plt.get_cmap("ValueFunction-New")
+        self.vf_img = self.vf_ax.imshow(
+            self.map,
+            cmap=cmap,
+            interpolation="nearest",
+            vmin=self.MIN_RETURN,
+            vmax=self.MAX_RETURN,
+        )
+        self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max Return")
+        self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min Return")
+        self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1, 1))
+        self._set_ticks(self.vf_ax)
+        # Create quivers for each action. 4 in total
+        xshift = [-self.SHIFT, self.SHIFT, 0, 0]
+        yshift = [0, 0, -self.SHIFT, self.SHIFT]
+        for name, xshift, yshift in zip(self.ARROW_NAMES, xshift, yshift):
+            x = np.arange(self.rows) + xshift
+            y = np.arange(self.cols) + yshift
+            self._init_arrow(name, *np.meshgrid(x, y))
+        self.vf_fig.show()
+
     def show_learning(self, representation):
         if self.vf_ax is None:
-            self.vf_fig = plt.figure("Value Function")
-            self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
-            cmap = plt.get_cmap("ValueFunction-New")
-            self.vf_img = self.vf_ax.imshow(
-                self.map,
-                cmap=cmap,
-                interpolation="nearest",
-                vmin=self.MIN_RETURN,
-                vmax=self.MAX_RETURN,
-            )
-            self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max Return")
-            self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min Return")
-            self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1.3, 1.05))
-            self._set_ticks(self.vf_ax)
-            # Create quivers for each action. 4 in total
-            xshift = [-self.SHIFT, self.SHIFT, 0, 0]
-            yshift = [0, 0, -self.SHIFT, self.SHIFT]
-            for name, xshift, yshift in zip(self.ARROW_NAMES, xshift, yshift):
-                x = np.arange(self.rows) + xshift
-                y = np.arange(self.cols) + yshift
-                self._init_arrow(name, *np.meshgrid(x, y))
-            self.vf_fig.show()
-        V = np.zeros((self.rows, self.cols))
+            self._init_value_vis()
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
         Mask = np.ones((self.cols, self.rows, self.actions_num), dtype="bool")
         arrowSize = np.zeros((self.cols, self.rows, self.actions_num), dtype="float")
         # 0 = suboptimal action, 1 = optimal action
         arrowColors = np.zeros((self.cols, self.rows, self.actions_num), dtype="uint8")
+        v = np.zeros((self.rows, self.cols))
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if self.map[r, c] == self.BLOCKED:
-                V[r, c] = 0
+                v[r, c] = 0
             elif self.map[r, c] == self.GOAL:
-                V[r, c] = self.MAX_RETURN
+                v[r, c] = self.MAX_RETURN
             elif self.map[r, c] == self.PIT:
-                V[r, c] = self.MIN_RETURN
-            elif self.map[r, c] == self.EMPTY or self.map[r, c] == self.START:
+                v[r, c] = self.MIN_RETURN
+            elif self.map[r, c] in (self.EMPTY, self.START):
                 s = np.array([r, c])
                 As = self.possible_actions(s)
                 terminal = self.isTerminal(s)
                 Qs = representation.Qs(s, terminal)
                 bestA = representation.best_actions(s, terminal, As)
-                V[r, c] = max(Qs[As])
+                v[r, c] = max(Qs[As])
                 Mask[c, r, As] = False
                 arrowColors[c, r, bestA] = 1
                 for a, Q in zip(As, Qs):
-                    value = linearMap(Q, self.MIN_RETURN, self.MAX_RETURN, 0, 1)
-                    arrowSize[c, r, a] = value
+                    arrowSize[c, r, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
+        vmin, vmax = min(self.MIN_RETURN, v.min()), max(self.MAX_RETURN, v.max())
+        if vmin != self.MIN_RETURN or vmax != self.MAX_RETURN:
+            self._normalize_vf(v, vmin, vmax)
         # Show Value Function
-        self.vf_img.set_data(V)
+        self.vf_img.set_data(v)
         # Show Policy for arrows
         for i, name in enumerate(self.ARROW_NAMES):
             flip = -1 if name in ["DOWN", "LEFT"] else 1

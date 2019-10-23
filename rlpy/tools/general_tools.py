@@ -391,7 +391,7 @@ def make_amrcolors(nlevels=4):
     return (linecolors, bgcolors)
 
 
-def linearMap(x, a, b, A=0, B=1):
+def linear_map(x, a, b, A=0, B=1):
     """
     .. warning::
 
@@ -488,25 +488,6 @@ def findElemArray2D(x, arr2d):
         return res[0].flatten(), res[1].flatten()
     else:
         return [], []
-
-
-# CURRENTLY not used by any algs
-def findRow(rowVec, X):
-    """
-    :param rowVec: a 1-dimensional numpy ndarray
-    :param X: a 2-d numpy ndarray
-
-    Return the indices of the rows of X that are equal to rowVec. \n
-    NOTE: rowVec and X must have the same number of columns
-
-    """
-
-    # return nonzero(any(logical_and.reduce([X[:, i] == r[i] for i in arange(len(r))])))
-    # return any(logical_and(X[:, 0] == r[0], X[:, 1] == r[1]))
-    ind = np.nonzero(
-        np.logical_and.reduce([X[:, i] == rowVec[i] for i in range(len(rowVec))])
-    )
-    return ind[0]
 
 
 def perms(X):

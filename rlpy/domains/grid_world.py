@@ -1,7 +1,6 @@
 """Gridworld Domain."""
 import numpy as np
 import itertools
-from matplotlib.colors import Normalize
 from rlpy.tools import FONTSIZE, linear_map, plt
 from rlpy.tools import __rlpy_location__, findElemArray1D, perms
 import os
@@ -108,6 +107,9 @@ class GridWorld(Domain):
         self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
         self.vf_fig, self.vf_ax, self.vf_img = None, None, None
         self.arrow_figs = {}
+        self.goal_reward = self.MAX_RETURN
+        self.pit_reward = self.MIN_RETURN
+        self.vf_texts = []
 
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
@@ -177,11 +179,6 @@ class GridWorld(Domain):
         )
         self.arrow_figs[name].set_clim(vmin=0, vmax=1)
 
-    def _normalize_vf(self, vf, vmin, vmax):
-        for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if self.map[r, c] in (self.EMPTY, self.START):
-                vf[r, c] = linear_map(vf[r, c], vmin, vmax, -1, 1)
-
     def _init_value_vis(self):
         self.vf_fig = plt.figure("Value Function")
         self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
@@ -193,8 +190,8 @@ class GridWorld(Domain):
             vmin=self.MIN_RETURN,
             vmax=self.MAX_RETURN,
         )
-        self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max Return")
-        self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min Return")
+        self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max")
+        self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min")
         self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1, 1))
         self._set_ticks(self.vf_ax)
         # Create quivers for each action. 4 in total
@@ -209,6 +206,9 @@ class GridWorld(Domain):
     def show_learning(self, representation):
         if self.vf_ax is None:
             self._init_value_vis()
+        for txt in self.vf_texts:
+            txt.remove()
+        self.vf_texts.clear()
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
         Mask = np.ones((self.cols, self.rows, self.actions_num), dtype="bool")
@@ -219,10 +219,6 @@ class GridWorld(Domain):
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if self.map[r, c] == self.BLOCKED:
                 v[r, c] = 0
-            elif self.map[r, c] == self.GOAL:
-                v[r, c] = self.MAX_RETURN
-            elif self.map[r, c] == self.PIT:
-                v[r, c] = self.MIN_RETURN
             elif self.map[r, c] in (self.EMPTY, self.START):
                 s = np.array([r, c])
                 As = self.possible_actions(s)
@@ -234,9 +230,17 @@ class GridWorld(Domain):
                 arrowColors[c, r, bestA] = 1
                 for a, Q in zip(As, Qs):
                     arrowSize[c, r, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
-        vmin, vmax = min(self.MIN_RETURN, v.min()), max(self.MAX_RETURN, v.max())
-        if vmin != self.MIN_RETURN or vmax != self.MAX_RETURN:
-            self._normalize_vf(v, vmin, vmax)
+        vmin, vmax = v.min(), v.max()
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if v[r, c] == vmin:
+                self.vf_texts.append(
+                    self.vf_ax.text(c - 0.2, r + 0.1, format(vmin, ".1f"), color="w")
+                )
+            elif v[r, c] == vmax:
+                self.vf_texts.append(
+                    self.vf_ax.text(c - 0.2, r + 0.1, format(vmax, ".1f"), color="w")
+                )
+            v[r, c] = linear_map(v[r, c], vmin, vmax, -1, 1)
         # Show Value Function
         self.vf_img.set_data(v)
         # Show Policy for arrows

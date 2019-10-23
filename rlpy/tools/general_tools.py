@@ -315,7 +315,7 @@ def make_colormap(colors):
     cmap_dict = dict(
         red=[(x0[i], c[0], c[0]) for i, c in enumerate(rgb)],
         green=[(x0[i], c[1], c[1]) for i, c in enumerate(rgb)],
-        blue=[(x0[i], c[2], c[2]) for i, c in enumerate(rgb)]
+        blue=[(x0[i], c[2], c[2]) for i, c in enumerate(rgb)],
     )
     mymap = mc.LinearSegmentedColormap("mymap", cmap_dict)
     return mymap

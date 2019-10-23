@@ -5,7 +5,7 @@ Large parts of this file were taken from the pandas project
 (https://github.com/pydata/pandas) which have been permitted for use under the
 BSD license.
 """
-import glob
+from itertools import filterfalse
 import io
 import os
 from os.path import join as pjoin
@@ -53,15 +53,12 @@ class CheckingBuildExt(build_ext):
 
     def check_cython_extensions(self, extensions):
         for ext in extensions:
-            for src in ext.sources:
-                if not os.path.exists(src):
-                    raise Exception(
-                        "Cython-generated file '{}' not found."
-                        "Cython is required to compile rlpy from a development branch."
-                        "Please install Cython or download a release package of rlpy.".format(
-                            src
-                        )
-                    )
+            for src in filterfalse(os.path.exists, ext.sources):
+                raise Exception(
+                    "Cython-generated file '{}' not found.".format(src)
+                    + "Cython is required to compile rlpy from a development branch."
+                    + "Please install Cython or download a release package of rlpy."
+                )
 
     def build_extensions(self):
         self.check_cython_extensions(self.extensions)

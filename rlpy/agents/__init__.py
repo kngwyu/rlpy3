@@ -1,3 +1,4 @@
+from .agent import Agent
 from .count_based_bonus import CountBasedBonus
 from .greedy_gq import GreedyGQ
 from .lspi import LSPI

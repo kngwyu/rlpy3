@@ -399,7 +399,7 @@ class Representation(ValueLearner, ABC):
                 phi_s_a[rows, i * n : (i + 1) * n] = all_phi_s[rows, :]
         return phi_s_a
 
-    def batch_best_action(self, all_s, all_phi_s, action_mask=None, useSparse=True):
+    def batch_best_action(self, all_s, all_phi_s, action_mask=None, use_sparse=True):
         """
         Accepts a batch of states, returns the best action associated with each.
 
@@ -429,7 +429,7 @@ class Representation(ValueLearner, ABC):
                 action_mask[i, self.domain.possible_actions(s)] = 0
 
         a_num = self.actions_num
-        if useSparse:
+        if use_sparse:
             # all_phi_s_a will be ap-by-an
             all_phi_s_a = sp.kron(np.eye(a_num, a_num), all_phi_s)
             all_q_s_a = all_phi_s_a * self.weight.reshape(-1, 1)
@@ -442,7 +442,7 @@ class Representation(ValueLearner, ABC):
         best_action = np.argmax(all_q_s_a, axis=1)
 
         # Calculate the corresponding phi_s_a
-        phi_s_a = self.batch_phi_s_a(all_phi_s, best_action, all_phi_s_a, useSparse)
+        phi_s_a = self.batch_phi_s_a(all_phi_s, best_action, use_sparse)
         return best_action, phi_s_a, action_mask
 
     @abstractmethod

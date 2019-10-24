@@ -47,7 +47,7 @@ class LSPI(BatchAgent):
         :param use_sparse: Use sparse operators for building the matrix of transitions?
         """
         super().__init__(policy, representation, discount_factor, max_window)
-        self.steps_between_LSPI = steps_between_lspi
+        self.steps_between_lspi = steps_between_lspi
         self.tol_epsilon = tol_epsilon
         self.lspi_iterations = lspi_iterations
         self.re_iterations = re_iterations
@@ -120,7 +120,7 @@ class LSPI(BatchAgent):
         :param int na: The action taken by the agent in state ns.
         :param bool terminal: Whether or not ns is a terminal state.
         """
-        self.learn(s, p_actions, a, r, ns, np_actions, na, terminal)
+        super().learn(s, p_actions, a, r, ns, np_actions, na, terminal)
         if self.samples_count % self.steps_between_lspi == 0:
             self.representationExpansionLSPI()
 
@@ -328,4 +328,4 @@ class LSPI(BatchAgent):
             d = phi_s_a - discount_factor * phi_ns_na
             self.A += np.outer(phi_s_a, d)
 
-            self.store_samples(s, a, r, ns, na, terminal)
+            super().store_samples(s, a, r, ns, na, terminal)

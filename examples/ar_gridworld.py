@@ -16,7 +16,9 @@ def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
     )
 
 
-def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, beta, **kwargs):
+def select_agent(
+    name, domain, max_steps, seed, epsilon, epsilon_min, beta, show_reward, **kwargs
+):
     if epsilon_min is not None:
         eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
         eps_min = epsilon_min
@@ -49,6 +51,7 @@ def select_agent(name, domain, max_steps, seed, epsilon, epsilon_min, beta, **kw
         return methods.tabular_psrl(
             domain,
             seed=seed,
+            show_reward=show_reward,
             epsilon=epsilon,
             epsilon_decay=eps_decay,
             epsilon_min=eps_min,
@@ -72,5 +75,6 @@ if __name__ == "__main__":
             click.Option(["--beta"], type=float, default=0.05),
             click.Option(["--step-penalty"], type=float, default=0.5),
             click.Option(["--episode-cap"], type=int, default=20),
+            click.Option(["--show-reward"], is_flag=True),
         ],
     )

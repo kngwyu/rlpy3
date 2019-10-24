@@ -110,6 +110,8 @@ class GridWorld(Domain):
         self.goal_reward = self.MAX_RETURN
         self.pit_reward = self.MIN_RETURN
         self.vf_texts = []
+        self.r_fig, self.r_ax, self.r_img = None, None, None
+        self.r_texts = []
 
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
@@ -133,8 +135,15 @@ class GridWorld(Domain):
 
     def _set_ticks(self, ax):
         ax.get_xaxis().set_ticks_position("top")
-        plt.xticks(np.arange(self.cols), fontsize=FONTSIZE)
-        plt.yticks(np.arange(self.rows), fontsize=FONTSIZE)
+        ax.set_xticks(np.arange(self.cols))
+        xlabels = ax.get_xticklabels()
+        for l in xlabels:
+            l.update({"fontsize": FONTSIZE})
+
+        ax.set_yticks(np.arange(self.rows))
+        ylabels = ax.get_yticklabels()
+        for l in ylabels:
+            l.update({"fontsize": FONTSIZE})
 
     def _agent_fig(self, s):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
@@ -157,6 +166,67 @@ class GridWorld(Domain):
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
+
+    def _init_vis_common(self, fig):
+        ax = fig.add_subplot(1, 1, 1)
+        cmap = plt.get_cmap("ValueFunction-New")
+        img = ax.imshow(
+            self.map,
+            cmap=cmap,
+            interpolation="nearest",
+            vmin=self.MIN_RETURN,
+            vmax=self.MAX_RETURN,
+        )
+        ax.plot([0.0], [0.0], color=cmap(256), label="Max")
+        ax.plot([0.0], [0.0], color=cmap(0), label="Min")
+        ax.legend(fontsize=12, bbox_to_anchor=(1, 1))
+        self._set_ticks(ax)
+        return ax, img
+
+    def _init_reward_vis(self, r):
+        self.r_fig = plt.figure("Pseudo Reward")
+        self.r_ax, self.r_img = self._init_vis_common(self.r_fig)
+        self.r_ax.plot(0, 0)
+        self.r_fig.show()
+
+    def show_reward(self, reward_):
+        """
+        Visualize learned reward functions for PSRL or other methods.
+        """
+        reward = reward_.reshape(self.cols, self.rows).T
+        if self.r_fig is None:
+            self._init_reward_vis(reward)
+
+        for txt in self.r_texts:
+            txt.remove()
+        self.r_texts.clear()
+        rmin, rmax = reward.min(), reward.max()
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if reward[r, c] == rmin:
+                self._vf_text(c, r, rmin, mode="r")
+            elif reward[r, c] == rmax:
+                self._vf_text(c, r, rmax, mode="r")
+            if reward[r, c] < 0:
+                reward[r, c] = linear_map(
+                    reward[r, c], min(rmin, self.MIN_RETURN), 0, -1, 0
+                )
+            else:
+                reward[r, c] = linear_map(
+                    reward[r, c], 0, max(rmax, self.MAX_RETURN), 0, 1
+                )
+        self.r_img.set_data(reward)
+        self.r_fig.canvas.draw()
+
+    def _vf_text(self, c, r, v, mode="vf"):
+        if mode == "vf":
+            cache = self.vf_texts
+            ax = self.vf_ax
+        else:
+            cache = self.r_texts
+            ax = self.r_ax
+        cache.append(
+            ax.text(c - 0.2, r + 0.1, format(v, ".1f"), color="xkcd:bright blue")
+        )
 
     def _init_arrow(self, name, x, y):
         arrow_ratio = 0.4
@@ -181,19 +251,7 @@ class GridWorld(Domain):
 
     def _init_value_vis(self):
         self.vf_fig = plt.figure("Value Function")
-        self.vf_ax = self.vf_fig.add_subplot(1, 1, 1)
-        cmap = plt.get_cmap("ValueFunction-New")
-        self.vf_img = self.vf_ax.imshow(
-            self.map,
-            cmap=cmap,
-            interpolation="nearest",
-            vmin=self.MIN_RETURN,
-            vmax=self.MAX_RETURN,
-        )
-        self.vf_ax.plot([0.0], [0.0], color="xkcd:green", label="Max")
-        self.vf_ax.plot([0.0], [0.0], color="xkcd:scarlet", label="Min")
-        self.vf_ax.legend(fontsize=12, bbox_to_anchor=(1, 1))
-        self._set_ticks(self.vf_ax)
+        self.vf_ax, self.vf_img = self._init_vis_common(self.vf_fig)
         # Create quivers for each action. 4 in total
         xshift = [-self.SHIFT, self.SHIFT, 0, 0]
         yshift = [0, 0, -self.SHIFT, self.SHIFT]
@@ -202,13 +260,6 @@ class GridWorld(Domain):
             y = np.arange(self.cols) + yshift
             self._init_arrow(name, *np.meshgrid(x, y))
         self.vf_fig.show()
-
-    def _vf_text(self, c, r, v):
-        self.vf_texts.append(
-            self.vf_ax.text(
-                c - 0.2, r + 0.1, format(v, ".1f"), color="xkcd:bright blue"
-            )
-        )
 
     def show_learning(self, representation):
         if self.vf_ax is None:
@@ -224,9 +275,10 @@ class GridWorld(Domain):
         arrowColors = np.zeros((self.cols, self.rows, self.actions_num), dtype="uint8")
         v = np.zeros((self.rows, self.cols))
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if self.map[r, c] == self.BLOCKED:
+            cell = self.map[r, c]
+            if cell == self.BLOCKED:
                 v[r, c] = 0
-            elif self.map[r, c] in (self.EMPTY, self.START):
+            elif cell in (self.START, self.EMPTY):
                 s = np.array([r, c])
                 As = self.possible_actions(s)
                 terminal = self.isTerminal(s)

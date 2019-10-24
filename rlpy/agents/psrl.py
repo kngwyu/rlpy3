@@ -15,7 +15,15 @@ class PSRL(Agent):
     """
 
     def __init__(
-        self, *args, alpha0=1.0, mu0=0.0, tau0=1.0, tau=1.0, seed=1, spread_prior=False
+        self,
+        *args,
+        alpha0=1.0,
+        mu0=0.0,
+        tau0=1.0,
+        tau=1.0,
+        seed=1,
+        spread_prior=False,
+        show_reward=False,
     ):
         """
         :param alpha0: Prior weight for uniform Dirichlet.
@@ -45,6 +53,7 @@ class PSRL(Agent):
         self.n_actions = n_actions
         self.ep_cap = self.representation.domain.episode_cap
         self.update_steps = 0
+        self.show_reward = show_reward
 
     def _update_prior(self, s, a, reward, terminal, ns):
         s_id = self.representation.state_id(s)
@@ -65,6 +74,8 @@ class PSRL(Agent):
             r_sample[s] = mu + self.random_state.randn(self.n_actions) / np.sqrt(tau)
             for a in range(self.n_actions):
                 p_sample[s, a] = self.random_state.dirichlet(self.p_prior[s, a])
+        if self.show_reward and hasattr(self.representation.domain, "show_reward"):
+            self.representation.domain.show_reward(r_sample.mean(axis=-1))
         return r_sample, p_sample
 
     def _solve_sampled_mdp(self):

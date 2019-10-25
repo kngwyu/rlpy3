@@ -365,7 +365,7 @@ class Representation(ValueLearner, ABC):
         index = bs + shifts
         return index.astype("uint32")
 
-    def batch_phi_s_a(self, all_phi_s, all_actions, use_sparse=False):
+    def batch_phi_sa(self, all_phi_s, all_actions, use_sparse=False):
         """
         Builds the feature vector for a series of state-action pairs (s,a)
         using the copy-paste method.
@@ -442,7 +442,7 @@ class Representation(ValueLearner, ABC):
         best_action = np.argmax(all_q_s_a, axis=1)
 
         # Calculate the corresponding phi_s_a
-        phi_s_a = self.batch_phi_s_a(all_phi_s, best_action, use_sparse)
+        phi_s_a = self.batch_phi_sa(all_phi_s, best_action, use_sparse)
         return best_action, phi_s_a, action_mask
 
     @abstractmethod

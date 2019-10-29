@@ -19,7 +19,7 @@ class MDPSolverExperiment(Experiment):
     solve method to start solving the MDP.
     """
 
-    def __init__(self, agent, domain, seed=1):
+    def __init__(self, agent, domain, seed=10):
         """
         :param agent: The agent to be tested.
         :param domain: The domain to be tested on.

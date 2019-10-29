@@ -1,11 +1,14 @@
 from rlpy.agents import (
     CountBasedBonus,
+    GaussianPSRL,
     GreedyGQ,
     LSPI,
     NaturalActorCritic,
+    OptimisticPSRL,
     PSRL,
     Q_Learning,
     SARSA,
+    UCBVI,
 )
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
@@ -93,6 +96,53 @@ def tabular_psrl(
         tabular, epsilon=epsilon, epsilon_decay=epsilon_decay, epsilon_min=epsilon_min
     )
     return PSRL(
+        policy, tabular, domain.discount_factor, seed=seed, show_reward=show_reward
+    )
+
+
+def tabular_opt_psrl(
+    domain,
+    seed,
+    show_reward=False,
+    epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
+    n_samples=10,
+):
+    tabular = Tabular(domain, discretization=20)
+    policy = eGreedy(
+        tabular, epsilon=epsilon, epsilon_decay=epsilon_decay, epsilon_min=epsilon_min
+    )
+    return OptimisticPSRL(
+        policy,
+        tabular,
+        domain.discount_factor,
+        seed=seed,
+        show_reward=show_reward,
+        n_samples=n_samples,
+    )
+
+
+def tabular_gaussian_psrl(
+    domain, seed, show_reward=False, epsilon=0.1, epsilon_decay=0.0, epsilon_min=0.0
+):
+    tabular = Tabular(domain, discretization=20)
+    policy = eGreedy(
+        tabular, epsilon=epsilon, epsilon_decay=epsilon_decay, epsilon_min=epsilon_min
+    )
+    return GaussianPSRL(
+        policy, tabular, domain.discount_factor, seed=seed, show_reward=show_reward
+    )
+
+
+def tabular_gaussian_psrl(
+    domain, seed, show_reward=False, epsilon=0.1, epsilon_decay=0.0, epsilon_min=0.0
+):
+    tabular = Tabular(domain, discretization=20)
+    policy = eGreedy(
+        tabular, epsilon=epsilon, epsilon_decay=epsilon_decay, epsilon_min=epsilon_min
+    )
+    return UCBVI(
         policy, tabular, domain.discount_factor, seed=seed, show_reward=show_reward
     )
 

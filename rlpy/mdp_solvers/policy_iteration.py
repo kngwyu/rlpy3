@@ -123,6 +123,7 @@ class PolicyIteration(MDPSolver):
         i = 0
         while i < self.representation.agg_states_num and self.has_time():
             s = self.representation.stateID2state(i)
+            p_actions = self.domain.possible_actions(s)
             if not self.domain.isTerminal(s) and len(self.domain.possible_actions(s)):
                 for a in self.domain.possible_actions(s):
                     self.bellman_backup(s, a, self.ns_samples, policy)

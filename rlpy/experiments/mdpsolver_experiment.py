@@ -19,13 +19,14 @@ class MDPSolverExperiment(Experiment):
     solve method to start solving the MDP.
     """
 
-    def __init__(self, agent, domain):
+    def __init__(self, agent, domain, seed=10):
         """
         :param agent: The agent to be tested.
         :param domain: The domain to be tested on.
         """
         self.agent = agent
         self.domain = domain
+        self.seed = seed
 
     def run(self, visualize=False, debug_on_sigurg=False):
         """
@@ -44,6 +45,7 @@ class MDPSolverExperiment(Experiment):
             function.
 
         """
+        self.domain.set_seed(self.seed)
         if debug_on_sigurg:
             rlpy.tools.ipshell.ipdb_on_SIGURG()
 

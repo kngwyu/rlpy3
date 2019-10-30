@@ -332,17 +332,11 @@ class GridWorld(Domain):
         ns = self.state + self.ACTIONS[a]
 
         # Check bounds on state values
-        if (
-            ns[0] < 0
-            or ns[0] == self.rows
-            or ns[1] < 0
-            or ns[1] == self.cols
-            or self.map[ns[0], ns[1]] == self.BLOCKED
-        ):
-            ns = self.state.copy()
-        else:
+        if self._valid_state(ns) and self.map[ns[0], ns[1]] != self.BLOCKED:
             # If in bounds, update the current state
             self.state = ns.copy()
+        else:
+            ns = self.state.copy()
 
         terminal = self.isTerminal()
         reward = self._reward(ns, terminal)
@@ -351,6 +345,10 @@ class GridWorld(Domain):
     def s0(self):
         self.state = self._sample_start()
         return self.state, self.isTerminal(), self.possible_actions()
+
+    def _valid_state(self, state):
+        y, x = state
+        return 0 <= y < self.rows and 0 <= x < self.cols
 
     def isTerminal(self, s=None):
         if s is None:
@@ -364,19 +362,12 @@ class GridWorld(Domain):
     def possible_actions(self, s=None):
         if s is None:
             s = self.state
-        possibleA = np.array([], np.uint8)
+        possible_a = []
         for a in range(self.actions_num):
             ns = s + self.ACTIONS[a]
-            if (
-                ns[0] < 0
-                or ns[0] == self.rows
-                or ns[1] < 0
-                or ns[1] == self.cols
-                or self.map[int(ns[0]), int(ns[1])] == self.BLOCKED
-            ):
-                continue
-            possibleA = np.append(possibleA, [a])
-        return possibleA
+            if self._valid_state(ns) and self.map[ns[0], ns[1]] != self.BLOCKED:
+                possible_a.append(a)
+        return np.array(possible_a)
 
     def expected_step(self, s, a):
         # Returns k possible outcomes

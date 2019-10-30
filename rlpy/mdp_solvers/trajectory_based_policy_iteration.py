@@ -260,9 +260,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                     "#%d: Finished Policy Evaluation. Solve Time = %0.2f(s)"
                     % (iteration, solve_time)
                 )
-            weight_diff = l_norm(
-                new_weight_vec - self.representation.weight_vec, np.inf
-            )
+            weight_diff = l_norm(new_weight_vec - self.representation.weight_vec)
             converged = weight_diff < self.convergence_threshold
             self.representation.weight_vec = new_weight_vec
             perf_return, perf_steps, perf_term, perf_disc_return = (

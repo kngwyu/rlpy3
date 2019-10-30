@@ -93,7 +93,7 @@ class PolicyIteration(MDPSolver):
             # check for convergence: L_infinity norm of the difference between the to
             # the weight vector of representation
             weight_diff = l_norm(
-                policy.representation.weight - self.representation.weight, np.inf
+                policy.representation.weight - self.representation.weight
             )
             converged = weight_diff < self.convergence_threshold
 

@@ -73,7 +73,7 @@ class ValueIteration(MDPSolver):
                         self._log_updates(performance_return, bellman_updates)
 
             # check for convergence
-            weight_diff = l_norm(prev_weight - self.representation.weight, np.inf)
+            weight_diff = l_norm(prev_weight - self.representation.weight)
             converged = weight_diff < self.convergence_threshold
 
             # log the stats

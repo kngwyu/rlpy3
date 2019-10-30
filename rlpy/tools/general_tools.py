@@ -413,7 +413,7 @@ def linear_map(x, a, b, A=0, B=1):
     return res
 
 
-def l_norm(x, norm=2):
+def l_norm(x, norm=np.inf):
     """ Returns the L infinity norm of a vector """
     return np.linalg.norm(x, norm)
 

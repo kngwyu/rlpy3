@@ -362,6 +362,7 @@ class GridWorld(Domain):
     def possible_actions(self, s=None):
         if s is None:
             s = self.state
+        s = s.astype(np.int64)
         possible_a = []
         for a in range(self.actions_num):
             ns = s + self.ACTIONS[a]

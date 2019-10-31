@@ -97,7 +97,7 @@ class Agent(ABC):
         :param na: action taken in the next state
         :param terminal: boolean indicating whether next state (ns) is terminal
         """
-        return NotImplementedError
+        pass
 
     def episode_terminated(self):
         """

@@ -66,7 +66,7 @@ class Policy(ABC):
         :param terminal: boolean, whether or not the *s* is a terminal state.
         :param p_actions: a list / array of all possible actions in *s*.
         """
-        raise NotImplementedError
+        pass
 
     def turnOffExploration(self):
         """
@@ -105,7 +105,7 @@ class DifferentiablePolicy(Policy):
     @abstractmethod
     def dlogpi(self, s, a):
         """derivative of the log probabilities of the policy"""
-        return NotImplementedError
+        pass
 
     def prob(self, s, a):
         """
@@ -128,4 +128,4 @@ class DifferentiablePolicy(Policy):
         returns a vector of num_actions length containing the normalized
         probabilities for taking each action given the state s
         """
-        return NotImplementedError
+        pass

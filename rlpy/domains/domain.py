@@ -164,6 +164,7 @@ Gamma:      {self.discount_factor}
         """
         pass
 
+    @abstractmethod
     def s0(self):
         """
         Begins a new episode and returns the initial observed state of the Domain.
@@ -172,7 +173,7 @@ Gamma:      {self.discount_factor}
         :return: A numpy array that defines the initial domain state.
 
         """
-        raise NotImplementedError("Children need to implement this method")
+        pass
 
     def possible_actions(self, s=None):
         """

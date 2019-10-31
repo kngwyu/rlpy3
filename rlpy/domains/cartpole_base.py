@@ -251,13 +251,15 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         (e.g. for swinging the pendulum up vs. balancing).
 
         """
-        raise NotImplementedError
+        raise NotImplementedError("_getReward should be implemented in child classes")
 
+    @abstractmethod
     def show_domain(self, a=0):
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def show_learning(self, representation):
-        raise NotImplementedError
+        pass
 
     def possible_actions(self, s=None):
         """
@@ -266,9 +268,11 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         """
         return np.arange(self.actions_num)
 
+    @abstractmethod
     def step(self):
-        errMsg = "Implemented in child classes which call _stepFourState()"
-        raise NotImplementedError(errMsg)
+        """Implemented in child classes which call _stepFourState()
+        """
+        pass
 
     def _stepFourState(self, s, a):
         """
@@ -656,7 +660,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         return [ns]
 
 
-class StateIndex(object):
+class StateIndex:
 
     """
     Flexible way to index states in the CartPole Domain.

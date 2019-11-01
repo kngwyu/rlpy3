@@ -28,11 +28,11 @@ You can download wheels of RLPy3 from `PyPI`_.
 .. _PyPI: https://pypi.org/project/rlpy3
 
 In addition, I pushed lots of refactorings, bug fixes, new environments
-such as `AnyRewardGridWorld`_, and new algorithms such as `PSRL`_.
+such as `FixedRewardGridWorld`_, and new algorithms such as `PSRL`_.
 To see what was changed, see the new `CHANGELOG`_.
 
 .. _CHANGELOG: ./CHANGELOG.md
-.. _AnyRewardGridWorld: ./rlpy/domains/any_reward_grid_world.py
+.. _FixedRewardGridWorld: ./rlpy/domains/fixed_reward_grid_world.py
 .. _PSRL: ./rlpy/agents/psrl.py
 
 Screenshots

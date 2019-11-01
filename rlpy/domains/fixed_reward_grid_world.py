@@ -1,4 +1,4 @@
-"""AnyRewardGridworld Domain."""
+"""FixedRewardGridworld Domain."""
 import itertools
 import numpy as np
 from rlpy.tools import __rlpy_location__, plt, with_bold_fonts
@@ -10,13 +10,13 @@ __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"
 
 
-class AnyRewardGridWorld(GridWorld):
+class FixedRewardGridWorld(GridWorld):
     """The same as GridWorld, but you can set any reward for each cell.
     """
 
     # directory of maps shipped with rlpy
     DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "domains", "AnyRewardGridWorldMaps"
+        __rlpy_location__, "domains", "FixedRewardGridWorldMaps"
     )
 
     def _load_map(self, mapfile):

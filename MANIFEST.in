@@ -6,7 +6,7 @@ include README.rst
 include LICENSE.txt
 include CHANGELOG.rst
 include INSTALL.rst
-recursive-include rlpy/domains/AnyRewardGridWorldMaps *.txt
+recursive-include rlpy/domains/FixedRewardGridWorldMaps *.txt
 recursive-include rlpy/domains/GridWorldMaps *.txt
 recursive-include rlpy/domains/IntruderMonitoringMaps *.txt
 recursive-include rlpy/domains/PacmanPackage/layouts *.lay

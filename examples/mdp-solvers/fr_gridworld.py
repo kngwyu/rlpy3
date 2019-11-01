@@ -1,5 +1,5 @@
 import click
-from rlpy.domains import AnyRewardGridWorld
+from rlpy.domains import FixedRewardGridWorld
 from rlpy.mdp_solvers import (
     TrajectoryBasedPolicyIteration,
     TrajectoryBasedValueIteration,
@@ -11,8 +11,8 @@ from rlpy.tools.cli import run_mb_experiment
 
 
 def select_domain(map_, step_penalty, **kwargs):
-    map_ = AnyRewardGridWorld.default_map(map_ + ".txt")
-    return AnyRewardGridWorld(
+    map_ = FixedRewardGridWorld.default_map(map_ + ".txt")
+    return FixedRewardGridWorld(
         map_, random_start=True, noise=0.1, step_penalty=step_penalty
     )
 

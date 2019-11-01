@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ### Added
 * New examples by [#5](https://github.com/kngwyu/rlpy3/pull/5).
 * New CLI by [#5](https://github.com/kngwyu/rlpy3/pull/5).
-* AnyRewardGridWorld by [#13](https://github.com/kngwyu/rlpy3/pull/13).
+* FixedRewardGridWorld by [#13](https://github.com/kngwyu/rlpy3/pull/13).
 
 ### Removed
 * Old examples by [#5](https://github.com/kngwyu/rlpy3/pull/5).

@@ -1,13 +1,13 @@
 import click
-from rlpy.domains import AnyRewardGridWorld
+from rlpy.domains import FixedRewardGridWorld
 from rlpy.tools.cli import run_experiment
 
 import methods
 
 
 def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
-    map_ = AnyRewardGridWorld.default_map(map_ + ".txt")
-    return AnyRewardGridWorld(
+    map_ = FixedRewardGridWorld.default_map(map_ + ".txt")
+    return FixedRewardGridWorld(
         map_,
         random_start=True,
         noise=noise,

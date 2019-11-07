@@ -248,7 +248,7 @@ with io.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
 
 REQUIRES_PYTHON = ">=3.5.0"
 
-REQUIRED = ["numpy>=1.15", "scipy>=1.3", "matplotlib>=3.1", "click>=6.0", "joblib"]
+REQUIRED = ["numpy>=1.15", "scipy>=1.3", "matplotlib>=3.1", "click>=6.0"]
 
 EXTRA = {"systemadmin": "networkx", "bebf": "scikit-learn"}
 

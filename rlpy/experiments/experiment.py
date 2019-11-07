@@ -257,7 +257,6 @@ class Experiment(object):
         visualize_performance=0,
         visualize_learning=False,
         visualize_steps=False,
-        debug_on_sigurg=False,
     ):
         """
         Run the experiment and collect statistics / generate the results
@@ -273,22 +272,7 @@ class Experiment(object):
             performance evaluation (e.g. Value function)
         :param visualize_steps: (boolean)
             visualize all steps taken during learning
-        :param debug_on_sigurg: (boolean)
-            if true, the ipdb debugger is opened when the python process
-            receives a SIGURG signal. This allows to enter a debugger at any
-            time, e.g. to view data interactively or actual debugging.
-            The feature works only in Unix systems. The signal can be sent
-            with the kill command:
-
-                kill -URG pid
-
-            where pid is the process id of the python interpreter running this
-            function.
-
         """
-
-        if debug_on_sigurg:
-            rlpy.tools.ipshell.ipdb_on_SIGURG()
         self.performance_domain = deepcopy(self.domain)
         self.seed_components()
 

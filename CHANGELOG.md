@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 * PSRL by [#23](https://github.com/kngwyu/rlpy3/pull/23).
 * CountBasedBonus by [#25](https://github.com/kngwyu/rlpy3/pull/25).
 
+### Removed
+* Some modules by [#31](https://github.com/kngwyu/rlpy3/pull/31).
+
 ### Changed
 * Module names by [#20](https://github.com/kngwyu/rlpy3/pull/20).
 

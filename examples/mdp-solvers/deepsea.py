@@ -10,8 +10,8 @@ from rlpy.representations import Tabular
 from rlpy.tools.cli import run_mb_experiment
 
 
-def select_domain(size, **kwargs):
-    return DeepSea(size, randomize=False)
+def select_domain(size, randomize, **kwargs):
+    return DeepSea(size, randomize=randomize)
 
 
 def select_agent(name, domain, seed, threshold, **kwargs):
@@ -36,6 +36,7 @@ if __name__ == "__main__":
         select_agent,
         other_options=[
             click.Option(["--size"], type=int, default=10),
+            click.Option(["--randomize"], is_flag=True),
             click.Option(["--threshold"], type=float, default=1e-12),
         ],
     )

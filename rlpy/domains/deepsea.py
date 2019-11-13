@@ -10,6 +10,7 @@ __author__ = "Yuji Kanagawa"
 class DeepSea(GridWorld):
     #: Down, Left
     ACTIONS = np.array([[1, -1], [1, 1]])
+    ARROW_ACTIONS = np.array([[-1, -1], [-1, 1]])
     ARROW_NAMES = ["LEFT", "RIGHT"]
     PIT_REWARD = 0.0
     STEP_REWARD = 0.0

@@ -5,8 +5,8 @@ from rlpy.tools.cli import run_experiment
 import methods
 
 
-def select_domain(size, **kwargs):
-    return DeepSea(size)
+def select_domain(size, randomize, **kwargs):
+    return DeepSea(size, randomize=randomize)
 
 
 def select_agent(
@@ -17,7 +17,7 @@ def select_agent(
         eps_min = epsilon_min
     else:
         eps_decay, eps_min = 0.0, 0.0
-    if name is None or name == "lspi":
+    if name is None or name == "tabular-q":
         return methods.tabular_q(
             domain,
             epsilon=epsilon,
@@ -90,6 +90,7 @@ if __name__ == "__main__":
         default_checks_per_policy=50,
         other_options=[
             click.Option(["--size"], type=int, default=10),
+            click.Option(["--randomize"], is_flag=True),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--beta"], type=float, default=0.05),

@@ -41,6 +41,9 @@ def get_experiment(
         default="Results/Temp",
         help="The directory to be used for storing the logs",
     )
+    @click.option(
+        "--capture", is_flag=True, help="Pauses just after the domain window appears"
+    )
     @click.pass_context
     def experiment(
         ctx,
@@ -51,6 +54,7 @@ def get_experiment(
         checks_per_policy,
         log_interval,
         log_dir,
+        capture,
         **kwargs,
     ):
         if isinstance(domain_or_domain_selector, Domain):
@@ -67,6 +71,7 @@ def get_experiment(
             checks_per_policy=checks_per_policy,
             log_interval=log_interval,
             path=log_dir,
+            capture_evaluation=capture,
             **kwargs,
         )
 

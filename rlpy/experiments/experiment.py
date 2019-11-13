@@ -1,4 +1,5 @@
 """Standard Experiment for Learning Control in RL."""
+import click
 from collections import defaultdict
 from copy import deepcopy
 import json
@@ -86,6 +87,7 @@ class Experiment(object):
         path="Results/Temp",
         checks_per_policy=1,
         stat_bins_per_state_dim=0,
+        capture_evaluation=False,
         **kwargs
     ):
         """
@@ -127,6 +129,7 @@ class Experiment(object):
         self.random_seeds = np.random.RandomState(self.MAIN_SEED).randint(
             1, self.MAIN_SEED, self.MAX_RUNS
         )
+        self.capture_evaluation = capture_evaluation
         self.result = defaultdict(list)
         if stat_bins_per_state_dim > 0:
             self.state_counts_learn = np.zeros(
@@ -206,6 +209,9 @@ class Experiment(object):
             a = self.agent.policy.pi(s, eps_term, p_actions)
             if visualize:
                 self.performance_domain.show_domain(a)
+                if self.capture_evaluation:
+                    click.pause("Get ready to capture the window?")
+                    self.capture_evaluation = False
 
             r, ns, eps_term, p_actions = self.performance_domain.step(a)
             self._gather_transition_statistics(s, a, ns, r, learning=False)

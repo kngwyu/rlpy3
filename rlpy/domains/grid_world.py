@@ -65,15 +65,20 @@ class GridWorld(Domain):
     DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
+    # Color map to visualize the grid
+    COLOR_MAP = "GridWorld"
 
     @classmethod
     def default_map(cls, name="4x5.txt"):
         return os.path.join(cls.DEFAULT_MAP_DIR, name)
 
-    def _load_map(self, mapfile):
-        self.map = np.loadtxt(mapfile, dtype=np.uint8)
-        if self.map.ndim == 1:
-            self.map = self.map[np.newaxis, :]
+    @staticmethod
+    def _load_map(mapfile):
+        map_ = np.loadtxt(mapfile, dtype=np.uint8)
+        if map_.ndim == 1:
+            return np.expand_dims(map_, 0)
+        else:
+            return map_
 
     def __init__(
         self,
@@ -82,27 +87,32 @@ class GridWorld(Domain):
         random_start=False,
         episode_cap=1000,
     ):
-        self._load_map(mapfile)
-        self.random_start = random_start
-        #: Number of rows and columns of the map
-        self.rows, self.cols = np.shape(self.map)
-        super().__init__(
-            actions_num=4,
-            statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
-            # 2*W*H, small values can cause problem for some planning techniques
-            episode_cap=episode_cap,
-        )
-        #: Movement noise
-        self.noise = noise
-        self.DimNames = ["Row", "Col"]
-        self.state = self._sample_start()
-        # map name for showing
+        map_ = self._load_map(mapfile)
         mapfname = os.path.basename(mapfile)
         dot_pos = mapfname.find(".")
         if dot_pos == -1:
-            self.mapname = mapfname
+            mapname = mapfname
         else:
-            self.mapname = mapfname[:dot_pos]
+            mapname = mapfname[:dot_pos]
+
+        self._init_from_map(map_, mapname, random_start, noise, episode_cap)
+
+    def _init_from_map(self, map_, mapname, random_start, noise, episode_cap):
+        self.map = map_
+        self.random_start = random_start
+        # Number of rows and columns of the map
+        self.rows, self.cols = self.map.shape
+        super().__init__(
+            actions_num=4,
+            statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
+            episode_cap=episode_cap,
+        )
+        # Movement noise
+        self.noise = noise
+        self.DimNames = ["Row", "Col"]
+        self.state = self._sample_start()
+        # map name for the viewer title
+        self.mapname = mapname
         # Used for graphics to show the domain
         self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
         self.vf_fig, self.vf_ax, self.vf_img = None, None, None
@@ -123,7 +133,7 @@ class GridWorld(Domain):
         return self.start_state.copy()
 
     def _show_map(self):
-        cmap = plt.get_cmap("GridWorld")
+        cmap = plt.get_cmap(self.COLOR_MAP)
         self.domain_ax.imshow(
             self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
@@ -281,7 +291,7 @@ class GridWorld(Domain):
             elif cell in (self.START, self.EMPTY):
                 s = np.array([r, c])
                 As = self.possible_actions(s)
-                terminal = self.isTerminal(s)
+                terminal = self.is_terminal(s)
                 Qs = representation.Qs(s, terminal)
                 bestA = representation.best_actions(s, terminal, As)
                 v[r, c] = Qs[As].max()
@@ -338,26 +348,23 @@ class GridWorld(Domain):
         else:
             ns = self.state.copy()
 
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         reward = self._reward(ns, terminal)
         return reward, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self._sample_start()
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
     def _valid_state(self, state):
         y, x = state
         return 0 <= y < self.rows and 0 <= x < self.cols
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
-        if self.map[int(s[0]), int(s[1])] == self.GOAL:
-            return True
-        if self.map[int(s[0]), int(s[1])] == self.PIT:
-            return True
-        return False
+        cell = self.map[int(s[0]), int(s[1])]
+        return cell == self.GOAL or cell == self.PIT
 
     def possible_actions(self, s=None):
         if s is None:

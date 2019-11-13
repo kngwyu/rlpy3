@@ -269,8 +269,21 @@ def createColorMaps():
     """
     cm.register_cmap(
         cmap=colors.ListedColormap(
-            ["w", ".75", "xkcd:bright blue", "xkcd:green", "xkcd:scarlet", "k"],
+            ["w", ".75", "xkcd:bright blue", "xkcd:green", "xkcd:cherry", "k"],
             "GridWorld",
+        )
+    )
+    cm.register_cmap(
+        cmap=colors.ListedColormap(
+            [
+                "xkcd:navy blue",
+                "w",
+                "xkcd:light grey",
+                "xkcd:green",
+                "xkcd:cherry",
+                "k",
+            ],
+            "DeepSea",
         )
     )
     cm.register_cmap(cmap=colors.ListedColormap(["r", "k"], "fiftyChainActions"))

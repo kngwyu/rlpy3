@@ -269,7 +269,7 @@ def createColorMaps():
     """
     cm.register_cmap(
         cmap=colors.ListedColormap(
-            ["w", ".75", "xkcd:bright blue", "xkcd:green", "xkcd:cherry", "k"],
+            ["w", ".75", "xkcd:bright blue", "xkcd:green", "xkcd:scarlet", "k"],
             "GridWorld",
         )
     )
@@ -279,7 +279,7 @@ def createColorMaps():
                 "xkcd:navy blue",
                 "w",
                 "xkcd:light grey",
-                "xkcd:green",
+                "xkcd:wintergreen",
                 "xkcd:cherry",
                 "k",
             ],

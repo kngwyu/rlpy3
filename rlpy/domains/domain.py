@@ -97,10 +97,13 @@ class Domain(ABC):
 
         self.logger = logging.getLogger("rlpy.domains." + self.__class__.__name__)
 
+        self.seed = None
+
     def set_seed(self, seed):
         """
         Set random seed
         """
+        self.seed = seed
         self.random_state.seed(seed)
 
     def __str__(self):

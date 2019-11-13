@@ -391,15 +391,13 @@ class GridWorld(Domain):
         p = np.ones((k, 1)) * self.noise / (k * 1.0)
         p[intended_action_index, 0] += 1 - self.noise
         # Make next states
-        ns = np.tile(s, (k, 1)).astype(int)
-        actions = self.ACTIONS[actions]
-        ns += actions
+        ns = np.tile(s, (k, 1)).astype(int) + self.ACTIONS[actions]
         # Make next possible actions
         pa = np.array([self.possible_actions(sn) for sn in ns])
         # Make rewards
         r = np.ones((k, 1)) * self.STEP_REWARD
-        goal = self.map[ns[:, 0].astype(np.int), ns[:, 1].astype(np.int)] == self.GOAL
-        pit = self.map[ns[:, 0].astype(np.int), ns[:, 1].astype(np.int)] == self.PIT
+        goal = self.map[ns[:, 0], ns[:, 1]] == self.GOAL
+        pit = self.map[ns[:, 0], ns[:, 1]] == self.PIT
         r[goal] = self.GOAL_REWARD
         r[pit] = self.PIT_REWARD
         # Make terminals

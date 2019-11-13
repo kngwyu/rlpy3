@@ -62,6 +62,8 @@ class ValueIteration(MDPSolver):
 
                 s = self.representation.stateID2state(i)
                 # Sweep through possible actions
+                if self.domain.is_terminal(s):
+                    continue
                 for a in self.domain.possible_actions(s):
 
                     self.bellman_backup(s, a, ns_samples=self.ns_samples)

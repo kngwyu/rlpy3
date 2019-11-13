@@ -124,7 +124,7 @@ class Pinball(Domain):
         self.environment._check_bounds()
         state = np.array(self.environment.get_state())
         self.state = state.copy()
-        return reward, state, self.isTerminal(), self.possible_actions()
+        return reward, state, self.is_terminal(), self.possible_actions()
 
     def s0(self):
         self.environment.ball.position[0], self.environment.ball.position[
@@ -139,12 +139,12 @@ class Pinball(Domain):
                 self.environment.ball.ydot,
             ]
         )
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
     def possible_actions(self, s=0):
         return np.array(self.actions)
 
-    def isTerminal(self):
+    def is_terminal(self):
         return self.environment.episode_ended()
 
 

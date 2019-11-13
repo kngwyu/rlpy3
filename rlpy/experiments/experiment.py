@@ -253,10 +253,7 @@ class Experiment(object):
         counts[list(range(counts.shape[0])), idx] += 1
 
     def run(
-        self,
-        visualize_performance=0,
-        visualize_learning=False,
-        visualize_steps=False,
+        self, visualize_performance=0, visualize_learning=False, visualize_steps=False
     ):
         """
         Run the experiment and collect statistics / generate the results

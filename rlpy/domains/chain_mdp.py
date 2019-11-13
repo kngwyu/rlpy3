@@ -136,14 +136,14 @@ class ChainMDP(Domain):
         ns = np.array([ns])
         self.state = ns
 
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
         return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = np.array([0])
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         s = self.state
         return s[0] == self.chain_size - 1

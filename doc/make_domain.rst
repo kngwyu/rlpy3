@@ -112,7 +112,7 @@ SPECIAL Functions
 """""""""""""""""
 In many cases, the Domain will also override the functions:
 
-#. :func:`~rlpy.domains.domain.Domain.isTerminal` - returns a boolean whether or
+#. :func:`~rlpy.domains.domain.Domain.is_terminal` - returns a boolean whether or
    not the current (internal) state is terminal. Default is always return False.
 #. :func:`~rlpy.domains.domain.Domain.possible_actions` - returns an array of
    possible action indices, which often depend on the current state.
@@ -224,7 +224,7 @@ Note that the optimal policy is to always go right.
                 super(ChainMDPTut,self).__init__()
 
 #. Copy the ``step()`` and function declaration and implement it accordingly
-   to return the tuple (r,ns,isTerminal,possible_actions), and similarly for ``s0()``.
+   to return the tuple (r,ns,is_terminal,possible_actions), and similarly for ``s0()``.
    We want the agent to always start at state *[0]* to begin, and only achieves reward 
    and terminates when *s = [n-1]*::
 
@@ -236,18 +236,18 @@ Note that the optimal policy is to always go right.
                     ns = min(self.chain_size-1,s+1)
                 self.state = np.array([ns])
 
-                terminal = self.isTerminal()
+                terminal = self.is_terminal()
                 r = self.GOAL_REWARD if terminal else self.STEP_REWARD
                 return r, ns, terminal, self.possible_actions()
 
             def s0(self):
                 self.state = np.array([0])
-                return self.state, self.isTerminal(), self.possible_actions()
+                return self.state, self.is_terminal(), self.possible_actions()
 
-#. In accordance with the above termination condition, override the ``isTerminal()``
+#. In accordance with the above termination condition, override the ``is_terminal()``
    function by copying its declaration from ``Domain.py``::
 
-            def isTerminal(self):
+            def is_terminal(self):
                 s = self.state
                 return (s[0] == self.chain_size - 1)
 

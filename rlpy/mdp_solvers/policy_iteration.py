@@ -67,7 +67,7 @@ class PolicyIteration(MDPSolver):
 
                 # Skip terminal states and states with no possible action
                 possible_actions = self.domain.possible_actions(s=s)
-                if self.domain.isTerminal(s) or len(possible_actions) == 0:
+                if self.domain.is_terminal(s) or len(possible_actions) == 0:
                     continue
 
                 # Apply Bellman Backup
@@ -124,7 +124,7 @@ class PolicyIteration(MDPSolver):
         while i < self.representation.agg_states_num and self.has_time():
             s = self.representation.stateID2state(i)
             p_actions = self.domain.possible_actions(s)
-            if not self.domain.isTerminal(s) and len(self.domain.possible_actions(s)):
+            if not self.domain.is_terminal(s) and len(self.domain.possible_actions(s)):
                 for a in self.domain.possible_actions(s):
                     self.bellman_backup(s, a, self.ns_samples, policy)
                 p_actions = self.domain.possible_actions(s=s)

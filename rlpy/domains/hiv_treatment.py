@@ -101,9 +101,9 @@ class HIVTreatment(Domain):
         s = np.array([163573.0, 5.0, 11945.0, 46.0, 63919.0, 24.0])
         self.state = s.copy()
         if self.logspace:
-            return np.log10(s), self.isTerminal(), self.possible_actions()
+            return np.log10(s), self.is_terminal(), self.possible_actions()
         self.episode_data[:-1, 0] = s
-        return s, self.isTerminal(), self.possible_actions()
+        return s, self.is_terminal(), self.possible_actions()
 
     def show_domain(self, a=0, s=None):
         """

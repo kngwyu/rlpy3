@@ -228,7 +228,7 @@ Gamma:      {self.discount_factor}
             :py:class:`~rlpy.domains.domain.Domain` above.
 
         :return: The tuple (r, ns, t, p_actions) =
-            (Reward [value], next observed state, isTerminal [boolean])
+            (Reward [value], next observed state, is_terminal [boolean])
 
         """
         pass
@@ -246,7 +246,7 @@ Gamma:      {self.discount_factor}
         """
         self.random_state.set_state(self.random_state_backup)
 
-    def isTerminal(self):
+    def is_terminal(self):
         """
         Returns ``True`` if the current Domain.state is a terminal one, ie,
         one that ends the episode.  This often results from either a failure

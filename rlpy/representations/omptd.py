@@ -115,7 +115,7 @@ class OMPTD(Representation):
         o_s = self.domain.state
         for i, s in enumerate(states):
             self.domain.state = s
-            if not self.domain.isTerminal(s):
+            if not self.domain.is_terminal(s):
                 self.fullphi[i, :] = self.iFDD.phi_non_terminal(s)
         self.domain.state = o_s
         # Normalize features

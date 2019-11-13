@@ -270,15 +270,15 @@ class FiftyChain(Domain):
         elif a == self.RIGHT or (a == self.LEFT and actionFailure):
             ns = min(self.chain_size - 1, self.state + 1)
         self.state = ns
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         r = self.GOAL_REWARD if s in self.GOAL_STATES else 0
         return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self.random_state.randint(0, self.chain_size)
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         return False
 
     def possible_actions(self, s=None):

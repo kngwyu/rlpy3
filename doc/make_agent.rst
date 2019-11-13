@@ -63,7 +63,7 @@ REQUIRED Functions
 
       The Agent *MUST* call the (inherited) :func:`~rlpy.agents.agent.Agent.episode_terminated`
       function after learning if the transition led to a terminal state
-      (ie, ``learn()`` will return ``isTerminal=True``)
+      (ie, ``learn()`` will return ``is_terminal=True``)
 
   .. Note::
 

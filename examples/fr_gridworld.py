@@ -24,11 +24,7 @@ def select_agent(
         eps_min = epsilon_min
     else:
         eps_decay, eps_min = 0.0, 0.0
-    if name is None or name == "lspi":
-        return methods.tabular_lspi(domain, max_steps)
-    elif name == "nac":
-        return methods.tabular_nac(domain)
-    elif name == "tabular-q":
+    if name is None or name == "tabular-q":
         return methods.tabular_q(
             domain,
             epsilon=epsilon,
@@ -36,6 +32,10 @@ def select_agent(
             epsilon_min=eps_min,
             initial_learn_rate=0.5,
         )
+    elif name == "lspi":
+        return methods.tabular_lspi(domain, max_steps)
+    elif name == "nac":
+        return methods.tabular_nac(domain)
     elif name == "ifddk-q":
         return methods.ifddk_q(domain, epsilon=epsilon, initial_learn_rate=0.5)
     elif name == "count-based-q":

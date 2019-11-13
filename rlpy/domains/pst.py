@@ -484,13 +484,13 @@ class PST(Domain):
             totalStepReward += self.SURVEIL_REWARD * min(
                 self.NUM_TARGET, self.numHealthySurveil
             )
-        if self.isTerminal():
+        if self.is_terminal():
             totalStepReward += self.CRASH_REWARD
         totalStepReward += (
             self.FUEL_BURN_REWARD_COEFF * self.fuelUnitsBurned
             + self.MOVE_REWARD_COEFF * distanceTraveled
         )  # Presently movement penalty is set to 0
-        return totalStepReward, ns, self.isTerminal(), self.possible_actions()
+        return totalStepReward, ns, self.is_terminal(), self.possible_actions()
 
     def s0(self):
         locations = np.ones(self.NUM_UAV, dtype="int") * UAVLocation.BASE
@@ -499,7 +499,7 @@ class PST(Domain):
         sensor = np.ones(self.NUM_UAV, dtype="int") * SensorState.RUNNING
 
         self.state = self.properties2StateVec(locations, fuel, actuator, sensor)
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def state2Struct(self, s):
         """
@@ -630,7 +630,7 @@ class PST(Domain):
                     x, actionIDs, ind + 1, partialActionAssignment, maxValue, limits
                 )
 
-    def isTerminal(self):
+    def is_terminal(self):
         sStruct = self.state2Struct(self.state)
         return np.any(
             np.logical_and(sStruct.fuel <= 0, sStruct.locations != UAVLocation.REFUEL)

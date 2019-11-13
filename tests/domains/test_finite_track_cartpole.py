@@ -142,8 +142,8 @@ def test_physicality_hanging():
         s = domain.state
 
     # Ensure that running out of x bounds causes experiment to terminate
-    assert domain.isTerminal(s=np.array([0.0, 0.0, 2.5, 0.0]))
-    assert domain.isTerminal(s=np.array([0.0, 0.0, -2.5, 0.0]))
+    assert domain.is_terminal(s=np.array([0.0, 0.0, 2.5, 0.0]))
+    assert domain.is_terminal(s=np.array([0.0, 0.0, -2.5, 0.0]))
 
 
 def _cartPoleEnergy(domain, s):

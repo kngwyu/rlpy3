@@ -67,11 +67,11 @@ class PuddleWorld(Domain):
 
     def s0(self):
         self.state = self.random_state.rand(2)
-        while self.isTerminal():
+        while self.is_terminal():
             self.state = self.random_state.rand(2)
         return self.state.copy(), False, self.possible_actions()
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return s.sum() > 0.95 * 2
@@ -86,10 +86,10 @@ class PuddleWorld(Domain):
         ns = np.minimum(ns, 1.0)
         ns = np.maximum(ns, 0.0)
         self.state = ns.copy()
-        return self._reward(ns), ns, self.isTerminal(), self.possible_actions()
+        return self._reward(ns), ns, self.is_terminal(), self.possible_actions()
 
     def _reward(self, s):
-        if self.isTerminal(s):
+        if self.is_terminal(s):
             return 0  # goal state reached
         reward = -1
         # compute puddle influence
@@ -128,10 +128,10 @@ class PuddleWorld(Domain):
                 a[0] = x
                 a[1] = y
                 self.val_map[j, i] = representation.V(
-                    a, self.isTerminal(a), self.possible_actions()
+                    a, self.is_terminal(a), self.possible_actions()
                 )
                 self.pi_map[j, i] = representation.best_action(
-                    a, self.isTerminal(a), self.possible_actions()
+                    a, self.is_terminal(a), self.possible_actions()
                 )
 
         if self.valfun_fig is None:

@@ -118,7 +118,7 @@ class FiniteTrackCartPole(CartPoleBase):
         s = self.state
         ns = self._stepFourState(s, a)
         self.state = ns.copy()
-        terminal = self.isTerminal()  # automatically uses self.state
+        terminal = self.is_terminal()  # automatically uses self.state
         reward = self._getReward(a)  # Automatically uses self.state
         possible_actions = self.possible_actions()
         return reward, ns, terminal, possible_actions
@@ -146,7 +146,7 @@ class FiniteTrackCartPole(CartPoleBase):
         for row, thetaDot in enumerate(theta_dots):
             for col, theta in enumerate(thetas):
                 s = np.array([theta, thetaDot, xSlice, xDotSlice])
-                terminal = self.isTerminal(s)
+                terminal = self.is_terminal(s)
                 # Array of Q-function evaluated at all possible actions at
                 # state s
                 Qs = representation.Qs(s, terminal)
@@ -206,7 +206,7 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
     def s0(self):
         # Returns the initial state, pendulum vertical
         self.state = np.zeros(4)
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         # On this domain, reward of 1 is given for each step spent within goal region.
@@ -215,7 +215,7 @@ class FiniteCartPoleBalance(FiniteTrackCartPole):
             s = self.state
         return self.GOAL_REWARD if -pi / 15 < s[StateIndex.THETA] < pi / 15 else 0
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return (
@@ -248,14 +248,14 @@ class FiniteCartPoleBalanceOriginal(FiniteTrackCartPole):
 
     def s0(self):
         self.state = np.zeros(4)
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
-        return self.good_reward if not self.isTerminal(s=s) else -1.0
+        return self.good_reward if not self.is_terminal(s=s) else -1.0
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return (
@@ -284,14 +284,14 @@ class FiniteCartPoleBalanceModern(FiniteTrackCartPole):
 
     def s0(self):
         self.state = np.array([self.random_state.randn() * 0.01, 0.0, 0.0, 0.0])
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
-        return 0.0 if not self.isTerminal(s=s) else -1.0
+        return 0.0 if not self.is_terminal(s=s) else -1.0
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return (
@@ -332,14 +332,14 @@ class FiniteCartPoleSwingUp(FiniteTrackCartPole):
     def s0(self):
         # Returns the initial state, pendulum vertical
         self.state = np.array([pi, 0, 0, 0])
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         if s is None:
             s = self.state
         return self.GOAL_REWARD if -pi / 6 < s[StateIndex.THETA] < pi / 6 else 0
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return not (-2.4 < s[StateIndex.X] < 2.4)

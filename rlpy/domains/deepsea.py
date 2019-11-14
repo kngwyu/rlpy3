@@ -8,25 +8,23 @@ __author__ = "Yuji Kanagawa"
 
 
 class DeepSea(GridWorld):
-    #: Down, Left
+    #: Left Down / Right Down
+    ACTION_LEFT = 0
+    ACTION_RIGHT = 1
     ACTIONS = np.array([[1, -1], [1, 1]])
+    ALL_ACTIONS = np.array([[1, -1], [1, 1], [1, 0]])
     ARROW_NAMES = ["LEFT", "RIGHT"]
     PIT_REWARD = 0.0
     STEP_REWARD = 0.0
     COLOR_MAP = "DeepSea"
 
-    def __init__(self, size=10, randomize=True):
+    def __init__(self, size=10, noise=0.0):
         map_ = np.zeros((size + 1, size + 1), dtype=np.int64)
         map_[0, 0] = self.START
         map_[-1, :] = self.PIT
         map_[:, -1] = self.GOAL
         self.size = size
-        self._init_from_map(map_, "DeepSea-{}".format(size), False, 0.0, size + 1)
-        if randomize:
-            rng = np.random.RandomState(self.seed)
-            self._action_mapping = rng.binomial(1, 0.5, size)
-        else:
-            self._action_mapping = np.ones(size, dtype=np.int64)
+        self._init_from_map(map_, "DeepSea-{}".format(size), False, noise, size + 1)
         self._move_cost = 0.01 / size
 
     def _agent_fig(self, s):
@@ -42,12 +40,15 @@ class DeepSea(GridWorld):
 
     def step(self, a):
         row, col = self.state.astype(int)
-        action_right = int(a) == self._action_mapping[col]
+        action_right = int(a) == self.ACTION_RIGHT
 
         reward = 0.0
         # New state
         if action_right:
-            new_col = min(col + 1, self.size)
+            if self.noise <= 0.0 or self.random_state.random_sample() >= self.noise:
+                new_col = min(col + 1, self.size)
+            else:
+                new_col = col
             reward -= self._move_cost
         else:
             new_col = max(col - 1, 0)
@@ -65,13 +66,18 @@ class DeepSea(GridWorld):
 
     def expected_step(self, s, a):
         s = s.astype(int)
-        current_action = self._action_mapping[s[1]] == int(a) - 0
-        k = len(self.ACTIONS)
+        current_action = int(a)
+        k = len(self.ALL_ACTIONS)
         # Make Probabilities
+        # 0: Left 1: Right 2: NoOP
         p = np.zeros((k, 1))
-        p[current_action, :] = 1.0
+        if current_action == self.ACTION_LEFT:
+            p[current_action, :] = 1.0
+        else:
+            p[current_action, :] = 1.0 - self.noise
+            p[2, :] = self.noise
         # Make next states
-        all_actions = self.ACTIONS[np.arange(k)]
+        all_actions = self.ALL_ACTIONS[np.arange(k)]
         ns = np.clip(np.tile(s, (k, 1)) + all_actions, 0, self.size)
         # Make next possible actions
         pa = np.tile(np.arange(k), (k, 1))

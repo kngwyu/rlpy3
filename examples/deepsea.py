@@ -5,8 +5,8 @@ from rlpy.tools.cli import run_experiment
 import methods
 
 
-def select_domain(size, randomize, **kwargs):
-    return DeepSea(size, randomize=randomize)
+def select_domain(size, noise, **kwargs):
+    return DeepSea(size, noise=noise)
 
 
 def select_agent(
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         default_checks_per_policy=50,
         other_options=[
             click.Option(["--size"], type=int, default=10),
-            click.Option(["--randomize"], is_flag=True),
+            click.Option(["--noise"], type=float, default=0.0),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--beta"], type=float, default=0.05),

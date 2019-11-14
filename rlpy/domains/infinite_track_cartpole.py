@@ -127,7 +127,7 @@ class InfTrackCartPole(CartPoleBase):
         ns = ns[0:2]  # [theta,thetadot], ie, omitting position/velocity of cart
         self.state = ns.copy()
 
-        terminal = self.isTerminal()  # automatically uses self.state
+        terminal = self.is_terminal()  # automatically uses self.state
         reward = self._getReward(a)  # Automatically uses self.state
         possible_actions = self.possible_actions()
         return reward, ns, terminal, possible_actions
@@ -152,7 +152,7 @@ class InfTrackCartPole(CartPoleBase):
         for row, thetaDot in enumerate(theta_dots):
             for col, theta in enumerate(thetas):
                 s = np.array([theta, thetaDot])
-                terminal = self.isTerminal(s)
+                terminal = self.is_terminal(s)
                 # Array of Q-function evaluated at all possible actions at
                 # state s
                 Qs = representation.Qs(s, terminal)
@@ -212,7 +212,7 @@ class InfCartPoleBalance(InfTrackCartPole):
         # Initial state is uniformly random between [-.2,.2] for both
         # dimensions
         self.state = (self.random_state.rand(2) * 2 - 1) * 0.2
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         # Return the reward earned for this state-action pair
@@ -220,9 +220,9 @@ class InfCartPoleBalance(InfTrackCartPole):
         # pi/2
         if s is None:
             s = self.state
-        return self.FELL_REWARD if self.isTerminal(s=s) else 0
+        return self.FELL_REWARD if self.is_terminal(s=s) else 0
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
         return not -np.pi / 2.0 < s[StateIndex.THETA] < np.pi / 2.0
@@ -257,7 +257,7 @@ class InfCartPoleSwingUp(InfTrackCartPole):
     def s0(self):
         """ Returns the initial state: pendulum straight up and unmoving. """
         self.state = np.array([np.pi, 0])
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def _getReward(self, a, s=None):
         """
@@ -273,5 +273,5 @@ class InfCartPoleSwingUp(InfTrackCartPole):
             else 0
         )
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         return False

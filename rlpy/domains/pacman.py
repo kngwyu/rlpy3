@@ -264,7 +264,7 @@ class Pacman(Domain):
         # scoring in pacman
         r = next_state.data.score - self.game_state.data.score
         self.game_state = next_state
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         return r, self._get_state(), terminal, self.possible_actions()
 
     def s0(self):
@@ -285,17 +285,17 @@ class Pacman(Domain):
         self.game_state.data.initialize(self.layout_copy, self.numGhostAgents)
         self._cleanup_graphics = True
 
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
     def possible_actions(self):
-        if self.isTerminal():
+        if self.is_terminal():
             # somewhat hacky, but should not matter anyway, maybe clean up in the future
             return np.array([0])
         # makes an array of possible actions pacman can perform at any given state
         possible_moves = pacman.GameState.getLegalActions(self.game_state, agentIndex=0)
         return np.array([self.actions.index(a) for a in possible_moves])
 
-    def isTerminal(self):
+    def is_terminal(self):
         """
         Checks whether the game should terminate at the given state.
         (Terminate for failure, ie eaten by ghost or out of time, and for

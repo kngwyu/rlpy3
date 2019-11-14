@@ -65,15 +65,20 @@ class GridWorld(Domain):
     DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
+    # Color map to visualize the grid
+    COLOR_MAP = "GridWorld"
 
     @classmethod
     def default_map(cls, name="4x5.txt"):
         return os.path.join(cls.DEFAULT_MAP_DIR, name)
 
-    def _load_map(self, mapfile):
-        self.map = np.loadtxt(mapfile, dtype=np.uint8)
-        if self.map.ndim == 1:
-            self.map = self.map[np.newaxis, :]
+    @staticmethod
+    def _load_map(mapfile):
+        map_ = np.loadtxt(mapfile, dtype=np.uint8)
+        if map_.ndim == 1:
+            return np.expand_dims(map_, 0)
+        else:
+            return map_
 
     def __init__(
         self,
@@ -82,27 +87,32 @@ class GridWorld(Domain):
         random_start=False,
         episode_cap=1000,
     ):
-        self._load_map(mapfile)
-        self.random_start = random_start
-        #: Number of rows and columns of the map
-        self.rows, self.cols = np.shape(self.map)
-        super().__init__(
-            actions_num=4,
-            statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
-            # 2*W*H, small values can cause problem for some planning techniques
-            episode_cap=episode_cap,
-        )
-        #: Movement noise
-        self.noise = noise
-        self.DimNames = ["Row", "Col"]
-        self.state = self._sample_start()
-        # map name for showing
+        map_ = self._load_map(mapfile)
         mapfname = os.path.basename(mapfile)
         dot_pos = mapfname.find(".")
         if dot_pos == -1:
-            self.mapname = mapfname
+            mapname = mapfname
         else:
-            self.mapname = mapfname[:dot_pos]
+            mapname = mapfname[:dot_pos]
+
+        self._init_from_map(map_, mapname, random_start, noise, episode_cap)
+
+    def _init_from_map(self, map_, mapname, random_start, noise, episode_cap):
+        self.map = map_
+        self.random_start = random_start
+        # Number of rows and columns of the map
+        self.rows, self.cols = self.map.shape
+        super().__init__(
+            actions_num=4,
+            statespace_limits=np.array([[0, self.rows - 1], [0, self.cols - 1]]),
+            episode_cap=episode_cap,
+        )
+        # Movement noise
+        self.noise = noise
+        self.DimNames = ["Row", "Col"]
+        self.state = self._sample_start()
+        # map name for the viewer title
+        self.mapname = mapname
         # Used for graphics to show the domain
         self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
         self.vf_fig, self.vf_ax, self.vf_img = None, None, None
@@ -123,7 +133,7 @@ class GridWorld(Domain):
         return self.start_state.copy()
 
     def _show_map(self):
-        cmap = plt.get_cmap("GridWorld")
+        cmap = plt.get_cmap(self.COLOR_MAP)
         self.domain_ax.imshow(
             self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
@@ -230,16 +240,16 @@ class GridWorld(Domain):
 
     def _init_arrow(self, name, x, y):
         arrow_ratio = 0.4
-        Max_Ratio_ArrowHead_to_ArrowLength = 0.25
-        ARROW_WIDTH = 0.5 * Max_Ratio_ArrowHead_to_ArrowLength / 5.0
+        MAX_RATIO_HEAD_TO_LENGTH = 0.25
+        ARROW_WIDTH = 0.5 * MAX_RATIO_HEAD_TO_LENGTH / 5.0
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
         self.arrow_figs[name] = self.vf_ax.quiver(
-            y,
             x,
+            y,
             np.ones(x.shape),
-            np.ones(x.shape),
+            np.ones(y.shape),
             c,
             units="y" if is_y else "x",
             cmap="Actions",
@@ -253,12 +263,10 @@ class GridWorld(Domain):
         self.vf_fig = plt.figure("Value Function")
         self.vf_ax, self.vf_img = self._init_vis_common(self.vf_fig)
         # Create quivers for each action. 4 in total
-        xshift = [-self.SHIFT, self.SHIFT, 0, 0]
-        yshift = [0, 0, -self.SHIFT, self.SHIFT]
-        for name, xshift, yshift in zip(self.ARROW_NAMES, xshift, yshift):
-            x = np.arange(self.rows) + xshift
-            y = np.arange(self.cols) + yshift
-            self._init_arrow(name, *np.meshgrid(x, y))
+        shift = self.ACTIONS * self.SHIFT
+        x, y = np.arange(self.cols), np.arange(self.rows)
+        for name, s in zip(self.ARROW_NAMES, shift):
+            self._init_arrow(name, *np.meshgrid(x + s[1], y + s[0]))
         self.vf_fig.show()
 
     def show_learning(self, representation):
@@ -269,10 +277,10 @@ class GridWorld(Domain):
         self.vf_texts.clear()
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
-        Mask = np.ones((self.cols, self.rows, self.actions_num), dtype="bool")
-        arrowSize = np.zeros((self.cols, self.rows, self.actions_num), dtype="float")
+        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype="bool")
+        arrow_size = np.zeros(arrow_mask.shape, dtype="float")
         # 0 = suboptimal action, 1 = optimal action
-        arrowColors = np.zeros((self.cols, self.rows, self.actions_num), dtype="uint8")
+        arrow_color = np.zeros(arrow_mask.shape, dtype="uint8")
         v = np.zeros((self.rows, self.cols))
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             cell = self.map[r, c]
@@ -280,15 +288,16 @@ class GridWorld(Domain):
                 v[r, c] = 0
             elif cell in (self.START, self.EMPTY):
                 s = np.array([r, c])
-                As = self.possible_actions(s)
-                terminal = self.isTerminal(s)
-                Qs = representation.Qs(s, terminal)
-                bestA = representation.best_actions(s, terminal, As)
-                v[r, c] = Qs[As].max()
-                Mask[c, r, As] = False
-                arrowColors[c, r, bestA] = 1
-                for a, Q in zip(As, Qs):
-                    arrowSize[c, r, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
+                actions = self.possible_actions(s)
+                terminal = self.is_terminal(s)
+                q_values = representation.Qs(s, terminal)
+                best_act = representation.best_actions(s, terminal, actions)
+                v[r, c] = q_values[actions].max()
+                arrow_mask[r, c, actions] = False
+                arrow_color[r, c, best_act] = 1
+                for a, Q in zip(actions, q_values):
+                    arrow_size[r, c, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
+
         vmin, vmax = v.min(), v.max()
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if v[r, c] == vmin:
@@ -299,19 +308,17 @@ class GridWorld(Domain):
                 v[r, c] = linear_map(v[r, c], min(vmin, self.MIN_RETURN), 0, -1, 0)
             else:
                 v[r, c] = linear_map(v[r, c], 0, max(vmax, self.MAX_RETURN), 0, 1)
+
         # Show Value Function
         self.vf_img.set_data(v)
         # Show Policy for arrows
         for i, name in enumerate(self.ARROW_NAMES):
-            flip = -1 if name in ["DOWN", "LEFT"] else 1
-            if name in ["UP", "DOWN"]:
-                dx, dy = flip * arrowSize[:, :, i], np.zeros((self.rows, self.cols))
-            else:
-                dx, dy = np.zeros((self.rows, self.cols)), flip * arrowSize[:, :, i]
-            dx = np.ma.masked_array(dx, mask=Mask[:, :, i])
-            dy = np.ma.masked_array(dy, mask=Mask[:, :, i])
-            c = np.ma.masked_array(arrowColors[:, :, i], mask=Mask[:, :, i])
-            self.arrow_figs[name].set_UVC(dy, dx, c)
+            dy, dx = self.ACTIONS[i]
+            size, mask = arrow_size[:, :, i], arrow_mask[:, :, i]
+            dx = np.ma.masked_array(dx * size, mask=mask)
+            dy = np.ma.masked_array(dy * size * -1, mask=mask)
+            c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
+            self.arrow_figs[name].set_UVC(dx, dy, c)
         self.vf_fig.canvas.draw()
 
     def _reward(self, next_state, _terminal):
@@ -338,26 +345,23 @@ class GridWorld(Domain):
         else:
             ns = self.state.copy()
 
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         reward = self._reward(ns, terminal)
         return reward, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self._sample_start()
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
     def _valid_state(self, state):
         y, x = state
         return 0 <= y < self.rows and 0 <= x < self.cols
 
-    def isTerminal(self, s=None):
+    def is_terminal(self, s=None):
         if s is None:
             s = self.state
-        if self.map[int(s[0]), int(s[1])] == self.GOAL:
-            return True
-        if self.map[int(s[0]), int(s[1])] == self.PIT:
-            return True
-        return False
+        cell = self.map[int(s[0]), int(s[1])]
+        return cell == self.GOAL or cell == self.PIT
 
     def possible_actions(self, s=None):
         if s is None:
@@ -384,15 +388,13 @@ class GridWorld(Domain):
         p = np.ones((k, 1)) * self.noise / (k * 1.0)
         p[intended_action_index, 0] += 1 - self.noise
         # Make next states
-        ns = np.tile(s, (k, 1)).astype(int)
-        actions = self.ACTIONS[actions]
-        ns += actions
+        ns = np.tile(s, (k, 1)).astype(int) + self.ACTIONS[actions]
         # Make next possible actions
         pa = np.array([self.possible_actions(sn) for sn in ns])
         # Make rewards
         r = np.ones((k, 1)) * self.STEP_REWARD
-        goal = self.map[ns[:, 0].astype(np.int), ns[:, 1].astype(np.int)] == self.GOAL
-        pit = self.map[ns[:, 0].astype(np.int), ns[:, 1].astype(np.int)] == self.PIT
+        goal = self.map[ns[:, 0], ns[:, 1]] == self.GOAL
+        pit = self.map[ns[:, 0], ns[:, 1]] == self.PIT
         r[goal] = self.GOAL_REWARD
         r[pit] = self.PIT_REWARD
         # Make terminals

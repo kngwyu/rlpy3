@@ -170,7 +170,7 @@ class IntruderMonitoring(Domain):
                 self.intruders_initial_locations.ravel(),
             ]
         )
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def possible_actionsPerAgent(self, s_i):
         """

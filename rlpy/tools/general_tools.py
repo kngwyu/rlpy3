@@ -273,6 +273,19 @@ def createColorMaps():
             "GridWorld",
         )
     )
+    cm.register_cmap(
+        cmap=colors.ListedColormap(
+            [
+                "xkcd:navy blue",
+                "w",
+                "xkcd:light grey",
+                "xkcd:wintergreen",
+                "xkcd:cherry",
+                "k",
+            ],
+            "DeepSea",
+        )
+    )
     cm.register_cmap(cmap=colors.ListedColormap(["r", "k"], "fiftyChainActions"))
     cm.register_cmap(cmap=colors.ListedColormap(["b", "r"], "FlipBoard"))
     cm.register_cmap(

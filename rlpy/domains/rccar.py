@@ -114,15 +114,15 @@ class RCCar(Domain):
 
         ns = np.array([nx, ny, nspeed, nheading])
         self.state = ns.copy()
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
         return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         self.state = self.INIT_STATE.copy()
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         return np.linalg.norm(self.state[0:2] - self.GOAL) < self.GOAL_RADIUS
 
     def show_domain(self, a):

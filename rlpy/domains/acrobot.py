@@ -98,9 +98,9 @@ class Acrobot(Domain):
 
     def s0(self):
         self.state = np.zeros((4))
-        return np.zeros((4)), self.isTerminal(), self.possible_actions()
+        return np.zeros((4)), self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         s = self.state
         return -np.cos(s[0]) - np.cos(s[1] + s[0]) > 1.0
 
@@ -132,7 +132,7 @@ class Acrobot(Domain):
         ns[2] = bound(ns[2], -self.MAX_VEL_1, self.MAX_VEL_1)
         ns[3] = bound(ns[3], -self.MAX_VEL_2, self.MAX_VEL_2)
         self.state = ns.copy()
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         reward = -1.0 if not terminal else 0.0
         return reward, ns, terminal, self.possible_actions()
 
@@ -323,6 +323,6 @@ class AcrobotLegacy(Acrobot):
 
         ns = s_augmented[:4]  # omit action
         self.state = ns.copy()
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         reward = -1.0 if not terminal else 0.0
         return reward, ns, terminal, self.possible_actions()

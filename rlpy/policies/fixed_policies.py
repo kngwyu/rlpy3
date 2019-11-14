@@ -161,8 +161,8 @@ class FixedPolicy(Policy):
             # action
 
             # Random Action with some probability
-            # TODO fix isTerminal use here
-            if self.random_state.rand() < 0.3 or domain.isTerminal():
+            # TODO fix is_terminal use here
+            if self.random_state.rand() < 0.3 or domain.is_terminal():
                 return self.random_state.choice(domain.possible_actions(s))
 
             # non-Random Policy

@@ -272,14 +272,14 @@ class SystemAdministrator(Domain):
             terminal,
             self.possible_actions(),
         )
-        # Returns the triplet [r,ns,t] => Reward, next state, isTerminal
+        # Returns the triplet [r,ns,t] => Reward, next state, is_terminal
 
     def s0(self):
         # Omits final index
         self.state = np.array(
             [self.RUNNING for dummy in range(0, self.state_space_dims)]
         )
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def possible_actions(self):
         s = self.state

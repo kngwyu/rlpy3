@@ -109,7 +109,7 @@ class MountainCar(Domain):
         position = bound(position, self.XMIN, self.XMAX)
         if position <= self.XMIN and velocity < 0:
             velocity = 0  # Bump into wall
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
         ns = np.array([position, velocity])
         self.state = ns.copy()
@@ -117,9 +117,9 @@ class MountainCar(Domain):
 
     def s0(self):
         self.state = self.INIT_STATE.copy()
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         """
         :return: ``True`` if the car has reached or exceeded the goal position.
 

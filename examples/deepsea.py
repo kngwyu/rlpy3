@@ -1,19 +1,12 @@
 import click
-from rlpy.domains import FixedRewardGridWorld
+from rlpy.domains import DeepSea
 from rlpy.tools.cli import run_experiment
 
 import methods
 
 
-def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
-    map_ = FixedRewardGridWorld.default_map(map_ + ".txt")
-    return FixedRewardGridWorld(
-        map_,
-        random_start=True,
-        noise=noise,
-        step_penalty=step_penalty,
-        episode_cap=episode_cap,
-    )
+def select_domain(size, noise, **kwargs):
+    return DeepSea(size, noise=noise)
 
 
 def select_agent(
@@ -96,13 +89,11 @@ if __name__ == "__main__":
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[
-            click.Option(["--map", "map_"], type=str, default="6x6guided"),
-            click.Option(["--noise"], type=float, default=0.1),
+            click.Option(["--size"], type=int, default=10),
+            click.Option(["--noise"], type=float, default=0.0),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--beta"], type=float, default=0.05),
-            click.Option(["--step-penalty"], type=float, default=0.5),
-            click.Option(["--episode-cap"], type=int, default=20),
             click.Option(["--show-reward"], is_flag=True),
         ],
     )

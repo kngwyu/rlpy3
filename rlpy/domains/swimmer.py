@@ -100,13 +100,13 @@ class Swimmer(Domain):
         self.pos_cm = np.array([10, 0])
         self.v_cm = np.zeros(2)
         self.dtheta = np.zeros(self.d)
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
     @property
     def state(self):
         return np.hstack(self._body_coord())
 
-    def isTerminal(self):
+    def is_terminal(self):
         return False
 
     def possible_actions(self, s=None):
@@ -317,7 +317,12 @@ class Swimmer(Domain):
         self.v_cm = ns[2 + d : 4 + d]
         self.dtheta = ns[4 + d :]
         self.pos_cm = ns[:2]
-        return (self._reward(a), self.state, self.isTerminal(), self.possible_actions())
+        return (
+            self._reward(a),
+            self.state,
+            self.is_terminal(),
+            self.possible_actions(),
+        )
 
     def _dsdt(self, s, a):
         """ just a convenience function for testing and debugging, not really used"""

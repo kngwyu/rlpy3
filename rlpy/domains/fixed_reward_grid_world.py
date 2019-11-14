@@ -25,8 +25,8 @@ class FixedRewardGridWorld(GridWorld):
         if mshape[1] * 2 != mshape[0]:
             raise ValueError("Invalid map with shape {}".format(mshape))
         col = mshape[0] // 2
-        self.map = map_and_reward[:col]
         self.reward_map = map_and_reward[col:]
+        return map_and_reward[:col]
 
     def __init__(
         self,

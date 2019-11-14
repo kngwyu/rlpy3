@@ -145,15 +145,15 @@ class BicycleBalancing(Domain):
         self.episode_data[:-1, self.t] = self.state
         self.episode_data[-1, self.t - 1] = a
 
-        return self._reward(s), ns, self.isTerminal(), self.possible_actions()
+        return self._reward(s), ns, self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         s = self.state
         omega = s[0]
         return omega < -np.pi * 12.0 / 180 or omega > np.pi * 12.0 / 180.0
 
     def _reward(self, s):
-        return -1.0 if self.isTerminal() else 0.0
+        return -1.0 if self.is_terminal() else 0.0
 
     def possible_actions(self):
         return np.arange(9)
@@ -165,7 +165,7 @@ class BicycleBalancing(Domain):
         self.state = s
         self.episode_data[:] = np.nan
         self.episode_data[:-1, 0] = s
-        return s, self.isTerminal(), self.possible_actions()
+        return s, self.is_terminal(), self.possible_actions()
 
     def show_domain(self, a=0, s=None):
         """
@@ -207,6 +207,6 @@ class BicycleRiding(BicycleBalancing):
         ns = self.state
         psi = s[-1]
         npsi = ns[-1]
-        if self.isTerminal():
+        if self.is_terminal():
             return -1.0
         return 0.1 * (psi - npsi)

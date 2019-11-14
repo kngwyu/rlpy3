@@ -89,7 +89,7 @@ class FlipBoard(Domain):
         ns[a_row, :] = np.logical_not(ns[a_row, :])
         ns[:, a_col] = np.logical_not(ns[:, a_col])
         ns[a_row, a_col] = not ns[a_row, a_col]
-        if self.isTerminal():
+        if self.is_terminal():
             terminal = True
             r = 0
         else:
@@ -103,7 +103,7 @@ class FlipBoard(Domain):
         self.state = np.array(
             [[1, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]], dtype="bool"
         ).flatten()
-        return self.state, self.isTerminal(), self.possible_actions()
+        return self.state, self.is_terminal(), self.possible_actions()
 
-    def isTerminal(self):
+    def is_terminal(self):
         return np.count_nonzero(self.state) == self.BOARD_SIZE ** 2

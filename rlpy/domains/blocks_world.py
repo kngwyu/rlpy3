@@ -143,14 +143,14 @@ class BlocksWorld(Domain):
         ns = s.copy()
         ns[A] = B  # A is on top of B now.
         self.state = ns.copy()
-        terminal = self.isTerminal()
+        terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
         return r, ns, terminal, self.possible_actions()
 
     def s0(self):
         # all blocks on table
         self.state = np.arange(self.blocks)
-        return self.state.copy(), self.isTerminal(), self.possible_actions()
+        return self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def possible_actions(self):
         s = self.state
@@ -171,7 +171,7 @@ class BlocksWorld(Domain):
             self.destination_is_table(A, B) or self.clear(B, s)
         )
 
-    def isTerminal(self):
+    def is_terminal(self):
         return np.array_equal(self.state, self.GOAL_STATE)
 
     def top(self, A, s):
@@ -226,7 +226,7 @@ class BlocksWorld(Domain):
         # Nominal Move:
         ns1 = s.copy()
         ns1[A] = B  # A is on top of B now.
-        terminal1 = self.isTerminal(ns1)
+        terminal1 = self.is_terminal(ns1)
         r1 = self.GOAL_REWARD if terminal1 else self.STEP_REWARD
         if self.destination_is_table(A, B):
             p = np.array([1]).reshape((1, -1))
@@ -238,7 +238,7 @@ class BlocksWorld(Domain):
             # consider dropping the block
             ns2 = s.copy()
             ns2[A] = A  # Drop on table
-            terminal2 = self.isTerminal(ns2)
+            terminal2 = self.is_terminal(ns2)
             r2 = self.GOAL_REWARD if terminal2 else self.STEP_REWARD
             p = np.array([1 - self.noise, self.noise]).reshape((2, 1))
             r = np.array([r1, r2]).reshape((2, 1))

@@ -3,6 +3,7 @@ from .fixed_reward_grid_world import FixedRewardGridWorld
 from .bicycle import BicycleBalancing, BicycleRiding
 from .blocks_world import BlocksWorld
 from .chain_mdp import ChainMDP
+from .deepsea import DeepSea
 from .domain import Domain
 from .fifty_chain import FiftyChain
 from .flip_board import FlipBoard

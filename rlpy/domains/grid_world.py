@@ -65,8 +65,6 @@ class GridWorld(Domain):
     DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
-    # UP<->DOWN
-    ARROW_ACTIONS = np.array([[1, 0], [-1, 0], [0, -1], [0, +1]])
     # Color map to visualize the grid
     COLOR_MAP = "GridWorld"
 
@@ -315,10 +313,10 @@ class GridWorld(Domain):
         self.vf_img.set_data(v)
         # Show Policy for arrows
         for i, name in enumerate(self.ARROW_NAMES):
-            dy, dx = self.ARROW_ACTIONS[i]
+            dy, dx = self.ACTIONS[i]
             size, mask = arrow_size[:, :, i], arrow_mask[:, :, i]
             dx = np.ma.masked_array(dx * size, mask=mask)
-            dy = np.ma.masked_array(dy * size, mask=mask)
+            dy = np.ma.masked_array(dy * size * -1, mask=mask)
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
             self.arrow_figs[name].set_UVC(dx, dy, c)
         self.vf_fig.canvas.draw()

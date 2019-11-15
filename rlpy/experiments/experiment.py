@@ -277,6 +277,7 @@ class Experiment(object):
             visualize all steps taken during learning
         """
         self.performance_domain = deepcopy(self.domain)
+        self.performance_domain.performance = True
         self.seed_components()
 
         self.result = defaultdict(list)

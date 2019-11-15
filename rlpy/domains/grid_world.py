@@ -159,7 +159,10 @@ class GridWorld(Domain):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
     def _init_domain_vis(self, s):
-        self.domain_fig = plt.figure("GridWorld: {}".format(self.mapname))
+        fig_name = "GridWorld: {}".format(self.mapname)
+        if self.performance:
+            fig_name += "(Evaluation)"
+        self.domain_fig = plt.figure(fig_name)
         ratio = self.rows / self.cols
         self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
         self._show_map()

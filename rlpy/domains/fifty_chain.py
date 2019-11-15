@@ -222,7 +222,7 @@ class FiftyChain(Domain):
             ]
 
             # Note the comma below, since a tuple of line objects is returned
-            self.V_approx_line, = self.value_function_fig.plot(
+            (self.V_approx_line,) = self.value_function_fig.plot(
                 allStates, V, "r-", linewidth=3
             )
             self.V_star_line = self.value_function_fig.plot(

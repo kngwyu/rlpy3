@@ -89,9 +89,12 @@ class TrajectoryBasedValueIteration(MDPSolver):
                 converged_trajectories += 1
             else:
                 converged_trajectories = 0
-            perf_return, perf_steps, perf_term, perf_disc_return = (
-                self.performance_run()
-            )
+            (
+                perf_return,
+                perf_steps,
+                perf_term,
+                perf_disc_return,
+            ) = self.performance_run()
             converged = converged_trajectories >= self.MIN_CONVERGED_TRAJECTORIES
             self.logger.info(
                 "PI #%d [%s]: BellmanUpdates=%d, ||Bellman_Error||=%0.4f, Return=%0.4f,"

@@ -79,9 +79,12 @@ class ValueIteration(MDPSolver):
             converged = weight_diff < self.convergence_threshold
 
             # log the stats
-            perf_return, perf_steps, perf_term, perf_disc_return = (
-                self.performance_run()
-            )
+            (
+                perf_return,
+                perf_steps,
+                perf_term,
+                perf_disc_return,
+            ) = self.performance_run()
             self.logger.info(
                 "PI #%d [%s]: BellmanUpdates=%d, ||delta-weight_vec||=%0.4f, "
                 "Return=%0.4f, Steps=%d"

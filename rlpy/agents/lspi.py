@@ -192,7 +192,11 @@ class LSPI(BatchAgent):
             # Notice if actions have the same value the first action is
             # selected in the batch mode
             iteration_start_time = tools.clock()
-            best_action, self.all_phi_ns_new_na, action_mask = self.representation.batch_best_action(
+            (
+                best_action,
+                self.all_phi_ns_new_na,
+                action_mask,
+            ) = self.representation.batch_best_action(
                 self.data_ns[: self.samples_count, :],
                 self.all_phi_ns,
                 action_mask,

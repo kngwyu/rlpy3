@@ -127,9 +127,10 @@ class Pinball(Domain):
         return reward, state, self.is_terminal(), self.possible_actions()
 
     def s0(self):
-        self.environment.ball.position[0], self.environment.ball.position[
-            1
-        ] = self.environment.start_pos
+        (
+            self.environment.ball.position[0],
+            self.environment.ball.position[1],
+        ) = self.environment.start_pos
         self.environment.ball.xdot, self.environment.ball.ydot = 0.0, 0.0
         self.state = np.array(
             [

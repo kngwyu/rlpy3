@@ -296,7 +296,9 @@ class GridWorld(Domain):
                 arrow_mask[r, c, actions] = False
                 arrow_color[r, c, best_act] = 1
                 for a, Q in zip(actions, q_values):
-                    arrow_size[r, c, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
+                    arrow_size[r, c, a] = linear_map(
+                        Q, self.MIN_RETURN, self.MAX_RETURN
+                    )
 
         vmin, vmax = v.min(), v.max()
         for r, c in itertools.product(range(self.rows), range(self.cols)):

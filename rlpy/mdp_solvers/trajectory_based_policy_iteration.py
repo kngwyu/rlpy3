@@ -178,9 +178,12 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
             # Update the underlying value function of the policy
             policy.representation = deepcopy(self.representation)  # self.representation
 
-            perf_return, perf_steps, perf_term, perf_disc_return = (
-                self.performance_run()
-            )
+            (
+                perf_return,
+                perf_steps,
+                perf_term,
+                perf_disc_return,
+            ) = self.performance_run()
             self.logger.info(
                 "PI #%d [%s]: BellmanUpdates=%d, ||delta-weight_vec||=%0.4f, "
                 "Return=%0.3f, steps=%d, features=%d"
@@ -263,9 +266,12 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
             weight_diff = l_norm(new_weight_vec - self.representation.weight_vec)
             converged = weight_diff < self.convergence_threshold
             self.representation.weight_vec = new_weight_vec
-            perf_return, perf_steps, perf_term, perf_disc_return = (
-                self.performance_run()
-            )
+            (
+                perf_return,
+                perf_steps,
+                perf_term,
+                perf_disc_return,
+            ) = self.performance_run()
             self.logger.info(
                 "#%d [%s]: Samples=%d, ||weight-Change||=%0.4f, Return = %0.4f"
                 % (

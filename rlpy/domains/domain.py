@@ -96,8 +96,9 @@ class Domain(ABC):
         self._extendDiscreteDimensions()
 
         self.logger = logging.getLogger("rlpy.domains." + self.__class__.__name__)
-
         self.seed = None
+
+        self.performance = False
 
     def set_seed(self, seed):
         """

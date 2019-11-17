@@ -159,7 +159,10 @@ class GridWorld(Domain):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
     def _init_domain_vis(self, s):
-        self.domain_fig = plt.figure("GridWorld: {}".format(self.mapname))
+        fig_name = "GridWorld: {}".format(self.mapname)
+        if self.performance:
+            fig_name += "(Evaluation)"
+        self.domain_fig = plt.figure(fig_name)
         ratio = self.rows / self.cols
         self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
         self._show_map()
@@ -296,7 +299,9 @@ class GridWorld(Domain):
                 arrow_mask[r, c, actions] = False
                 arrow_color[r, c, best_act] = 1
                 for a, Q in zip(actions, q_values):
-                    arrow_size[r, c, a] = linear_map(Q, self.MIN_RETURN, self.MAX_RETURN)
+                    arrow_size[r, c, a] = linear_map(
+                        Q, self.MIN_RETURN, self.MAX_RETURN
+                    )
 
         vmin, vmax = v.min(), v.max()
         for r, c in itertools.product(range(self.rows), range(self.cols)):

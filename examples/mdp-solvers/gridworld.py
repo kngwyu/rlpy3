@@ -7,7 +7,7 @@ from rlpy.mdp_solvers import (
     ValueIteration,
 )
 from rlpy.representations import Tabular
-from rlpy.tools.cli import run_mb_experiment
+from rlpy.tools.cli import run_solver_experiment
 
 
 def select_domain(map_="4x5", **kwargs):
@@ -31,7 +31,7 @@ def select_agent(name, domain, seed, **kwargs):
 
 
 if __name__ == "__main__":
-    run_mb_experiment(
+    run_solver_experiment(
         select_domain,
         select_agent,
         other_options=[

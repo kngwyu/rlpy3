@@ -1,5 +1,6 @@
 from .acrobot import Acrobot, AcrobotLegacy
 from .fixed_reward_grid_world import FixedRewardGridWorld
+from .bernoulli_grid_world import BernoulliGridWorld
 from .bicycle import BicycleBalancing, BicycleRiding
 from .blocks_world import BlocksWorld
 from .chain_mdp import ChainMDP

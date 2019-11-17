@@ -28,13 +28,13 @@ class BernoulliGridWorld(FixedRewardGridWorld):
         self.prob_map = map_and_prob[col:]
         if (self.prob_map < 0).any() or (1 < self.prob_map).any():
             raise ValueError(
-                "Map for BernoulliRewardGridWorld contains invalid probability!"
+                "Map for BernoulliRewardGridWorld contains invalid probability value!"
             )
         return map_and_prob[:col].astype(np.int32)
 
     def __init__(
         self,
-        mapfile=os.path.join(DEFAULT_MAP_DIR, "6x6guided.txt"),
+        mapfile=os.path.join(DEFAULT_MAP_DIR, "5x5normal.txt"),
         noise=0.1,
         random_start=False,
         episode_cap=20,

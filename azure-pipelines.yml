@@ -8,7 +8,9 @@ jobs:
           PYTHON_VERSION: '3.6'
         Python37:
           PYTHON_VERSION: '3.7'
-    maxParallel: 2
+        Python38:
+          PYTHON_VERSION: '3.8'
+    maxParallel: 3
   steps:
     - template: azure-templates/test.yml
       parameters:
@@ -44,17 +46,17 @@ jobs:
       parameters:
         python_version: $(PYTHON_VERSION)
 
-- job: ManyLinux1Wheel
+- job: ManyLinux2010Wheel
   pool:
     vmImage: 'Ubuntu-16.04'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   steps:
   - script: |
-      docker pull quay.io/pypa/manylinux1_x86_64
+      docker pull quay.io/pypa/manylinux2010_x86_64
       docker run --rm -v $PWD:/io quay.io/pypa/manylinux1_x86_64 /io/build-wheels.sh
       mkdir wheelhouse
-      sudo mv dist/*manylinux1*.whl wheelhouse
-    displayName: Build manylinux1 wheel
+      sudo mv dist/*manylinux*.whl wheelhouse
+    displayName: Build manylinux2010 wheel
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: wheelhouse
@@ -72,7 +74,9 @@ jobs:
           PYTHON_VERSION: '3.6'
         Python37:
           PYTHON_VERSION: '3.7'
-    maxParallel: 2
+        Python38:
+          PYTHON_VERSION: '3.8'
+    maxParallel: 4
   steps:
     - template: azure-templates/wheel.yml
       parameters:
@@ -94,7 +98,9 @@ jobs:
           PYTHON_VERSION: '3.6'
         Python37:
           PYTHON_VERSION: '3.7'
-    maxParallel: 2
+        Python38:
+          PYTHON_VERSION: '3.8'
+    maxParallel: 4
   steps:
     - template: azure-templates/wheel.yml
       parameters:

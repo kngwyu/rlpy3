@@ -1,13 +1,13 @@
 RLPy3
 ========
 
-|Azure| |pypi-version|
+|Azure| |pypi-python-version|
 
 .. |Azure| image:: https://dev.azure.com/kngwyu/RLPy/_apis/build/status/kngwyu.rlpy3?branchName=master
    :alt: Azure Pipelines
    :target: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=3&branchName=master
 
-.. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/rlpy3
+.. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/rlpy3.svg
    :alt: PyPI
    :target: https://pypi.org/project/rlpy3/2.0.0b
 

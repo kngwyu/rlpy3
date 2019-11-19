@@ -46,6 +46,7 @@ def select_agent(
             epsilon_decay=eps_decay,
             epsilon_min=eps_min,
             initial_learn_rate=0.5,
+            show_reward=show_reward,
         )
     elif name == "psrl":
         return methods.tabular_psrl(

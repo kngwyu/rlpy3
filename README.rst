@@ -7,9 +7,9 @@ RLPy3
    :alt: Azure Pipelines
    :target: https://dev.azure.com/kngwyu/RLPy/_build/latest?definitionId=3&branchName=master
 
-.. |pypi-version| image:: https://badge.fury.io/py/rlpy3.svg
+.. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/rlpy3
    :alt: PyPI
-   :target: https://pypi.org/project/rlpy3/
+   :target: https://pypi.org/project/rlpy3/2.0.0b
 
 Why Fork?
 ----------
@@ -38,6 +38,13 @@ To see what was changed, see the new `CHANGELOG`_.
 .. _CHANGELOG: ./CHANGELOG.md
 .. _FixedRewardGridWorld: ./rlpy/domains/fixed_reward_grid_world.py
 .. _PSRL: ./rlpy/agents/psrl.py
+
+Install
+--------
+The latest version is 2.0.0 beta, which you can install by::
+
+  pip3 install rlpy3 -U --pre
+
 
 Screenshots
 ------------

@@ -77,9 +77,13 @@ def tabular_q(
     )
 
 
-def count_based_tabular_q(domain, beta=0.05, count_mode="s-a", **kwargs):
+def count_based_tabular_q(
+    domain, beta=0.05, count_mode="s-a", show_reward=False, **kwargs
+):
     agent = tabular_q(domain, **kwargs)
-    return CountBasedBonus(agent, count_mode=count_mode, beta=beta)
+    return CountBasedBonus(
+        agent, count_mode=count_mode, beta=beta, show_reward=show_reward
+    )
 
 
 def tabular_sarsa(domain, discretization=20, lambda_=0.3):

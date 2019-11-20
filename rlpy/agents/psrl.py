@@ -5,7 +5,7 @@ Based on the author's code: https://github.com/iosband/TabulaRL
 import numpy as np
 from rlpy.representations import Enumerable
 from .agent import Agent
-from ._vi_impl import compute_q_values, compute_q_values_opt
+from ._vi_impl import compute_q_values
 
 __author__ = "Yuji Kanagawa"
 

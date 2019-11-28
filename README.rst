@@ -29,9 +29,8 @@ You can download wheels of RLPy3 from `PyPI`_.
 
 In addition, I pushed lots of refactorings, bug fixes, new environments
 such as `FixedRewardGridWorld`_, and new algorithms such as `PSRL`_.
-Refactorings include removing some modules (like one for parallel experiments).
-This does **not** means *these modules are bad*, but I need to keep the entire
-modules simple for maintaining them alone.
+I also removed some modules (like parallel-job utilities) to keep this library
+maintainable by sufficiently low efforts.
 
 To see what was changed, see the new `CHANGELOG`_.
 

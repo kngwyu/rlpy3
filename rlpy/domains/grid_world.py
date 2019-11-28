@@ -196,19 +196,19 @@ class GridWorld(Domain):
         self._set_ticks(ax)
         return ax, img
 
-    def _init_reward_vis(self, r):
+    def _init_reward_vis(self, r, name):
         self.r_fig = plt.figure("Pseudo Reward")
         self.r_ax, self.r_img = self._init_vis_common(self.r_fig)
         self.r_ax.plot(0, 0)
         self.r_fig.show()
 
-    def show_reward(self, reward_):
+    def show_reward(self, reward_, name="Pseudo Reward"):
         """
         Visualize learned reward functions for PSRL or other methods.
         """
         reward = reward_.reshape(self.cols, self.rows).T
         if self.r_fig is None:
-            self._init_reward_vis(reward)
+            self._init_reward_vis(reward, name)
 
         for txt in self.r_texts:
             txt.remove()
@@ -304,11 +304,14 @@ class GridWorld(Domain):
                     )
 
         vmin, vmax = v.min(), v.max()
+        vmin_wrote, vmax_wrote = False, False
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if v[r, c] == vmin:
+            if v[r, c] == vmin and not vmin_wrote:
                 self._vf_text(c, r, vmin)
-            elif v[r, c] == vmax:
+                vmin_wrote = True
+            elif v[r, c] == vmax and not vmax_wrote:
                 self._vf_text(c, r, vmax)
+                vmax_wrote = True
             if v[r, c] < 0:
                 v[r, c] = linear_map(v[r, c], min(vmin, self.MIN_RETURN), 0, -1, 0)
             else:

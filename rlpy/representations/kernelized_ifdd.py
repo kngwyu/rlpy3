@@ -448,6 +448,9 @@ class KernelizediFDD(Representation):
 
         return self.features_num - 1
 
+    def feature_type(self):
+        return float
+
 
 try:
     from .kernels import *  # noqa

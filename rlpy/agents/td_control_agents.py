@@ -26,7 +26,7 @@ class TDControlAgent(Agent, DescentAlgorithm):
         Agent.__init__(self, policy, representation, discount_factor)
         DescentAlgorithm.__init__(self, **kwargs)
         self.eligibility_trace = np.zeros(
-            representation.features_num * representation.actions_num
+            representation.actions_num * representation.features_num
         )
         #: lambda Parameter in SARSA [Sutton Book 1998]
         self.lambda_ = lambda_
@@ -58,10 +58,11 @@ class TDControlAgent(Agent, DescentAlgorithm):
             if expanded > 0:
                 # Correct the size of eligibility traces (pad with zeros for
                 # new features)
-                self.eligibility_trace = add_new_features(
-                    self.eligibility_trace,
+                new_trace = add_new_features(
+                    self.eligibility_trace.reshape(self.representation.actions_num, -1),
                     np.zeros((self.representation.actions_num, expanded)),
                 )
+                self.eligibility_trace = new_trace.flatten()
 
             self.eligibility_trace *= discount_factor * self.lambda_
             self.eligibility_trace += phi

@@ -206,7 +206,7 @@ class Representation(ValueLearner, ABC):
 
         phi_sa = np.zeros((self.actions_num, self.features_num), dtype=phi_s.dtype)
         if self.features_num == 0:
-            return phi_sa
+            return phi_sa.reshape(-1)
         phi_sa[a] = phi_s
         return phi_sa.reshape(-1)
 

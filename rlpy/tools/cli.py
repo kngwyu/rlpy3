@@ -36,7 +36,7 @@ def get_experiment(
     )
     @click.option("--log-interval", type=int, default=10, help="Number of seconds")
     @click.option(
-        "--log-dir",
+        "--logdir",
         type=str,
         default="Results/Temp",
         help="The directory to be used for storing the logs",
@@ -75,7 +75,7 @@ def get_experiment(
         num_policy_checks,
         checks_per_policy,
         log_interval,
-        log_dir,
+        logdir,
         visualize_performance,
         visualize_learning,
         visualize_steps,
@@ -97,7 +97,7 @@ def get_experiment(
             num_policy_checks=num_policy_checks,
             checks_per_policy=checks_per_policy,
             log_interval=log_interval,
-            path=log_dir,
+            path=logdir,
             capture_evaluation=capture,
             **kwargs,
         )

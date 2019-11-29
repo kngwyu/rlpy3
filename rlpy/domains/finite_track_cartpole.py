@@ -1,6 +1,5 @@
 """Cart with a pole domains"""
 import numpy as np
-from rlpy.tools import pl, plt
 from .cartpole_base import CartPoleBase, StateIndex
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -162,11 +161,13 @@ class FiniteTrackCartPole(CartPoleBase):
                 V[row, col] = max(Qs)
 
         self._plot_policy(pi)
-        plt.title("Policy (Slice at x=0, xDot=0)")
         self._plot_valfun(V)
-        plt.title("Value Function (Slice at x=0, xDot=0)")
 
-        pl.draw()
+        self.policy_ax.set_title("Policy (Slice at x=0, xDot=0)")
+        self.value_fn_ax.set_title("Value Function (Slice at x=0, xDot=0)")
+
+        self.policy_fig.canvas.draw()
+        self.value_fn_fig.canvas.draw()
 
     def show_domain(self, a=0):
         """

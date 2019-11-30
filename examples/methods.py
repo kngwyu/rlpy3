@@ -15,6 +15,7 @@ from rlpy import representations
 from rlpy.representations import (
     iFDD,
     iFDDK,
+    IncrementalTabular,
     IndependentDiscretization,
     KernelizediFDD,
     RBF,
@@ -59,8 +60,12 @@ def tabular_q(
     lambda_=0.3,
     initial_learn_rate=0.1,
     boyan_N0=100,
+    incremental=False,
 ):
-    tabular = Tabular(domain, discretization=discretization)
+    if incremental:
+        tabular = IncrementalTabular(domain, discretization=discretization)
+    else:
+        tabular = Tabular(domain, discretization=discretization)
     return Q_Learning(
         eGreedy(
             tabular,
@@ -172,12 +177,13 @@ def tile_ggq(domain, res_mat, lambda_=0.3, initial_learn_rate=0.1, boyan_N0=100)
 def _ifdd_q_common(
     agent_class,
     domain,
+    epsilon=0.1,
     discretization=20,
     threshold=1.0,
     lambda_=0.3,
     initial_learn_rate=0.1,
     boyan_N0=100,
-    ifddplus=1.0,
+    ifddplus=True,
 ):
     ifdd = iFDD(
         domain,
@@ -189,7 +195,7 @@ def _ifdd_q_common(
         iFDDPlus=ifddplus,
     )
     return agent_class(
-        eGreedy(ifdd, epsilon=0.1),
+        eGreedy(ifdd, epsilon=epsilon),
         ifdd,
         discount_factor=domain.discount_factor,
         lambda_=lambda_,

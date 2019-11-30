@@ -168,8 +168,10 @@ class InfTrackCartPole(CartPoleBase):
                 # action
                 V[row, col] = max(Qs)
 
-        # self._plot_policy(pi)
-        # self._plot_valfun(V)
+        self._plot_policy(pi)
+        self._plot_valfun(V)
+        self.policy_fig.canvas.draw()
+        self.value_fn_fig.canvas.draw()
 
 
 class InfCartPoleBalance(InfTrackCartPole):

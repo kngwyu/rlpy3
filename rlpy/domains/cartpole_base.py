@@ -534,7 +534,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             self.action_arrow.remove()
 
         if forceAction == 0:
-            pass  # no force
+            self.action_arrow = None  # no force
         else:  # cw or ccw torque
             is_right = forceAction > 0
             if is_right:

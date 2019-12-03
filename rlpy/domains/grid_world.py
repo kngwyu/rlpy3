@@ -214,11 +214,14 @@ class GridWorld(Domain):
             txt.remove()
         self.r_texts.clear()
         rmin, rmax = reward.min(), reward.max()
+        rmin_wrote, rmax_wrote = False, False
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if reward[r, c] == rmin:
+            if reward[r, c] == rmin and not rmin_wrote:
                 self._vf_text(c, r, rmin, mode="r")
-            elif reward[r, c] == rmax:
+                rmin_wrote = True
+            elif reward[r, c] == rmax and not rmax_wrote:
                 self._vf_text(c, r, rmax, mode="r")
+                rmax_wrote = True
             if reward[r, c] < 0:
                 reward[r, c] = linear_map(
                     reward[r, c], min(rmin, self.MIN_RETURN), 0, -1, 0

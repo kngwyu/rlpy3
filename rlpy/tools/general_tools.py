@@ -1,5 +1,6 @@
 """General Tools for use throughout RLPy"""
 import contextlib
+import copy
 import datetime
 from itertools import combinations, chain
 import numpy as np
@@ -1088,6 +1089,17 @@ def rk4(derivs, y0, t, *args, **kwargs):
         k4 = np.asarray(derivs(y0 + dt * k3, thist + dt, *args, **kwargs))
         yout[i + 1] = y0 + dt / 6.0 * (k1 + 2 * k2 + 2 * k3 + k4)
     return yout
+
+
+class HasLogger:
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k != "logger":
+                setattr(result, k, copy.deepcopy(v, memo))
+        return result
 
 
 # matplotlib configs

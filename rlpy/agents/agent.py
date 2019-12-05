@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import logging
+from rlpy.tools import HasLogger
+
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -15,7 +17,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Agent(ABC):
+class Agent(ABC, HasLogger):
 
     """Learning Agent for obtaining good policices.
 

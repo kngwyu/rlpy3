@@ -1,8 +1,8 @@
 """Policy base class"""
-from rlpy.tools import className, discrete_sample
-import numpy as np
-import logging
 from abc import ABC, abstractmethod
+import logging
+import numpy as np
+from rlpy.tools import className, discrete_sample, HasLogger
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -16,7 +16,7 @@ __license__ = "BSD 3-Clause"
 __author__ = "Alborz Geramifard"
 
 
-class Policy(ABC):
+class Policy(ABC, HasLogger):
 
     """The Policy determines the discrete action that an
     :py:class:`~rlpy.agents.agent.Agent` will take  given its

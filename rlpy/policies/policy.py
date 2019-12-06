@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import logging
 import numpy as np
-from rlpy.tools import className, discrete_sample, HasLogger
+from rlpy.tools import discrete_sample, HasLogger
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -68,32 +68,20 @@ class Policy(ABC, HasLogger):
         """
         pass
 
-    def turnOffExploration(self):
+    def turn_off_exploration(self):
         """
         *Abstract Method:* \n Turn off exploration (e.g., epsilon=0 in epsilon-greedy)
         """
         pass
 
-    # [turnOffExploration code]
-
-    # \b ABSTRACT \b METHOD: Turn exploration on. See code
-    # \ref Policy_turnOnExploration "Here".
-    # [turnOnExploration code]
-    def turnOnExploration(self):
+    def turn_on_exploration(self):
         """
         *Abstract Method:* \n
-        If :py:meth:`~rlpy.policies.Policy.Policy.turnOffExploration` was called
+        If :py:meth:`~rlpy.policies.Policy.Policy.turn_off_exploration` was called
         previously, reverse its effects (e.g. restore epsilon to its previous,
         possibly nonzero, value).
         """
         pass
-
-    def printAll(self):
-        """ Prints all class information to console. """
-        print(className(self))
-        print("=======================================")
-        for property, value in vars(self).items():
-            print(property, ": ", value)
 
 
 class DifferentiablePolicy(Policy):

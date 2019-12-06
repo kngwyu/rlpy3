@@ -66,8 +66,8 @@ Policies which have an explicit exploratory component (eg epsilon-greedy)
 **MUST** override the functions below to prevent exploratory behavior
 when evaluating the policy (which would skew results)
 
-#. :py:meth:`~rlpy.policies.Policy.Policy.turnOffExploration`
-#. :py:meth:`~rlpy.policies.Policy.Policy.turnOnExploration`
+#. :py:meth:`~rlpy.policies.Policy.Policy.turn_off_exploration`
+#. :py:meth:`~rlpy.policies.Policy.Policy.turn_on_exploration`
 
 
 Additional Information
@@ -153,20 +153,20 @@ have explored the entire domain.
                        return self.random_state.choice(b_actions)
 
 #. Because this policy has an exploratory component, we must override the
-   ``turnOffExploration()`` and ``turnOnExploration()`` functions, so that when
+   ``turn_off_exploration()`` and ``turn_on_exploration()`` functions, so that when
    evaluating the policy's performance the exploratory component may be
    automatically disabled so as not to influence results::
 
-           def turnOffExploration(self):
+           def turn_off_exploration(self):
                self.old_epsilon = self.epsilon
                self.epsilon = 0
-           def turnOnExploration(self):
+           def turn_on_exploration(self):
                self.epsilon = self.old_epsilon
 
 
 .. warning::
 
-    If you fail to define ``turnOffExploration()`` and ``turnOnExploration()``
+    If you fail to define ``turn_off_exploration()`` and ``turn_on_exploration()``
     for functions with exploratory components, measured algorithm performance
     will be worse, since exploratory actions by definition are suboptimal based
     on the current model.

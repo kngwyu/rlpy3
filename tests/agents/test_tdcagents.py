@@ -1,9 +1,10 @@
-from rlpy.representations import Representation
-import numpy as np
+import copy
 import logging
-from rlpy.policies import eGreedy
+import numpy as np
 from rlpy.agents import SARSA, Q_Learning
 from rlpy.agents import GreedyGQ
+from rlpy.policies import eGreedy
+from rlpy.representations import Representation
 
 
 class MockRepresentation(Representation):
@@ -29,6 +30,14 @@ class MockRepresentation(Representation):
 
     def feature_type(self):
         return float
+
+
+def test_deepcopy():
+    rep = MockRepresentation()
+    pol = eGreedy(rep)
+    agent = SARSA(pol, rep, 0.9, lambda_=0.0)
+    copied_agent = copy.deepcopy(agent)
+    assert agent.lambda_ == copied_agent.lambda_
 
 
 def test_sarsa_valfun_chain():
@@ -58,8 +67,8 @@ def test_sarsa_valfun_chain():
 
 def test_sarsalambda_valfun_chain():
     """
-        Check if SARSA(lambda) computes the value function of a simple Markov chain correctly.
-        This only tests value function estimation, only one action possible
+    Check if SARSA(λ) computes the value function of a simple Markov chain correctly.
+    This only tests value function estimation, only one action possible
     """
     rep = MockRepresentation()
     pol = eGreedy(rep)
@@ -84,8 +93,8 @@ def test_sarsalambda_valfun_chain():
 
 def test_qlearn_valfun_chain():
     """
-        Check if Q-Learning computes the value function of a simple Markov chain correctly.
-        This only tests value function estimation, only one action possible
+    Check if Q-Learning computes the value function of a simple Markov chain correctly.
+    This only tests value function estimation, only one action possible
     """
     rep = MockRepresentation()
     pol = eGreedy(rep)
@@ -109,8 +118,8 @@ def test_qlearn_valfun_chain():
 
 def test_qlambda_valfun_chain():
     """
-        Check if Q(lambda) computes the value function of a simple Markov chain correctly.
-        This only tests value function estimation, only one action possible
+    Check if Q(λ) computes the value function of a simple Markov chain correctly.
+    This only tests value function estimation, only one action possible
     """
     rep = MockRepresentation()
     pol = eGreedy(rep)
@@ -135,8 +144,8 @@ def test_qlambda_valfun_chain():
 
 def test_ggq_valfun_chain():
     """
-        Check if Greedy-GQ computes the value function of a simple Markov chain correctly.
-        This only tests value function estimation, only one action possible
+    Check if Greedy-GQ computes the value function of a simple Markov chain correctly.
+    This only tests value function estimation, only one action possible
     """
     rep = MockRepresentation()
     pol = eGreedy(rep)

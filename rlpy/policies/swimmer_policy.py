@@ -50,12 +50,12 @@ class SwimmerPolicy(Policy):
                 return self.pi_sam(s, terminal, p_actions)
 
     """
-    def turnOffExploration(self):
+    def turn_off_exploration(self):
         self.old_epsilon = self.epsilon
         self.epsilon = 0
         self.eGreedy = True
 
-    def turnOnExploration(self):
+    def turn_on_exploration(self):
         self.epsilon = self.old_epsilon
         self.eGreedy = False
     """

@@ -201,7 +201,7 @@ class Experiment(object):
         eps_discount_return = 0
         eps_term = 0
 
-        self.agent.policy.turnOffExploration()
+        self.agent.policy.turn_off_exploration()
 
         s, eps_term, p_actions = self.performance_domain.s0()
 
@@ -223,19 +223,13 @@ class Experiment(object):
             eps_length += 1
         if visualize:
             self.performance_domain.show_domain(a)
-        self.agent.policy.turnOnExploration()
+        self.agent.policy.turn_on_exploration()
         # This hidden state is for domains (such as the noise in the helicopter domain)
         # that include unobservable elements that are evolving over time
         # Ideally the domain should be formulated as a POMDP but we are trying
         # to accomodate them as an MDP
 
         return eps_return, eps_length, eps_term, eps_discount_return
-
-    def printAll(self):
-        """
-        prints all information about the experiment
-        """
-        printClass(self)
 
     def _gather_transition_statistics(self, s, a, sn, r, learning=False):
         """

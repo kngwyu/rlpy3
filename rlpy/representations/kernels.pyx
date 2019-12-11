@@ -12,7 +12,7 @@ cimport numpy as np
 import numpy as np
 cimport cython
 ctypedef unsigned int uint
-cimport c_kernels
+from . cimport c_kernels
 cdef extern from "<cmath>" namespace "std":
     double cos(double)
     double sin(double)

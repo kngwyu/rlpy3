@@ -5,7 +5,7 @@ verify_ssl = true
 
 [packages.rlpy]
 editable = true
-extras = ["bebf", "systemadmin"]
+extras = ["bebf", "systemadmin", "gym"]
 path = "."
 
 [packages.importlib_metadata]

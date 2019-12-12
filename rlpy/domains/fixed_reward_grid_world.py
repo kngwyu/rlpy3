@@ -3,6 +3,7 @@ import itertools
 import numpy as np
 from rlpy.tools import __rlpy_location__, plt, with_bold_fonts
 import os
+from pathlib import Path
 
 from .grid_world import GridWorld
 
@@ -15,8 +16,8 @@ class FixedRewardGridWorld(GridWorld):
     """
 
     # directory of maps shipped with rlpy
-    DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "domains", "FixedRewardGridWorldMaps"
+    DEFAULT_MAP_DIR = Path(__rlpy_location__).joinpath(
+        "domains/FixedRewardGridWorldMaps"
     )
 
     def _load_map(self, mapfile):
@@ -30,7 +31,7 @@ class FixedRewardGridWorld(GridWorld):
 
     def __init__(
         self,
-        mapfile=os.path.join(DEFAULT_MAP_DIR, "6x6guided.txt"),
+        mapfile=DEFAULT_MAP_DIR.joinpath("6x6guided.txt"),
         noise=0.1,
         step_penalty=1.0,
         random_start=False,

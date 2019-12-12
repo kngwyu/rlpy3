@@ -39,6 +39,7 @@ def gridworld_obs(domain, mode="onehot"):
 
         def obs_fn(state):
             return rep.phi(state, False).astype(np.float32)
+
     elif mode == "raw":
         low = np.zeros(2)
         high = np.array(domain.map.shape, dtype=np.float32)
@@ -46,6 +47,7 @@ def gridworld_obs(domain, mode="onehot"):
 
         def obs_fn(state):
             return state.astype(np.float32)
+
     else:
         raise ValueError("obs_mode {} is not supported".format(mode))
 
@@ -81,18 +83,17 @@ gym.envs.register(
 )
 
 
-for size in [4, 8, 12, 16, 20, 24, 28, 32]:
-    gym.envs.register(
-        id="DeepSea{}-v0".format(size),
-        entry_point="rlpy.gym:deepsea",
-        max_episode_steps=100,
-        kwargs=dict(size=size),
-        reward_threshold=0.9,
-    )
-    gym.envs.register(
-        id="DeepSea{}-v1".format(size),
-        entry_point="rlpy.gym:deepsea",
-        max_episode_steps=100,
-        kwargs=dict(size=size, mode="raw"),
-        reward_threshold=0.9,
-    )
+gym.envs.register(
+    id="DeepSea-v0",
+    entry_point="rlpy.gym:deepsea",
+    max_episode_steps=100,
+    reward_threshold=0.9,
+)
+
+gym.envs.register(
+    id="DeepSea-v1",
+    entry_point="rlpy.gym:deepsea",
+    max_episode_steps=100,
+    kwargs=dict(mode="raw"),
+    reward_threshold=0.9,
+)

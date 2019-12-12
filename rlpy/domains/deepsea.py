@@ -2,6 +2,7 @@
 The original version was introduced in https://arxiv.org/abs/1703.07608.
 """
 import numpy as np
+from .domain import Domain
 from .grid_world import GridWorld
 
 __author__ = "Yuji Kanagawa"
@@ -26,6 +27,12 @@ class DeepSea(GridWorld):
         self.size = size
         self._init_from_map(map_, "DeepSea-{}".format(size), False, noise, size + 1)
         self._move_cost = 0.01 / size
+        Domain.__init__(
+            self,
+            actions_num=2,
+            statespace_limits=np.array([[0, size], [0, size]]),
+            episode_cap=size,
+        )
 
     def _agent_fig(self, s):
         fig, *_ = self.domain_ax.plot(

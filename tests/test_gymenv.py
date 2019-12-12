@@ -16,7 +16,7 @@ def test_gridworld(envname):
     assert reward == 1.0
 
 
-@pytest.mark.parametrize("envname", ["DeepSea-v0", "DeepSea-v1"])
+@pytest.mark.parametrize("envname", ["DeepSea20-v0", "DeepSea20-v1"])
 def test_deepsea(envname):
     env = gym.make(envname, noise=0.0)
     state = env.reset()

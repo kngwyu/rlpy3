@@ -129,6 +129,14 @@ class GridWorld(Domain):
         self.start_state = starts[idx]
         return self.start_state.copy()
 
+    def _legend_pos(self):
+        x_offset, y_offset = 1.1, 1.1
+        if self.rows > self.cols:
+            x_offset += min(1.0, 0.25 * self.rows / self.cols)
+        if self.cols > self.rows:
+            y_offset += min(1.0, 0.25 * self.cols / self.rows)
+        return x_offset, y_offset
+
     def _show_map(self):
         cmap = plt.get_cmap(self.COLOR_MAP)
         self.domain_ax.imshow(
@@ -138,7 +146,9 @@ class GridWorld(Domain):
         self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
         self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
         self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
-        self.domain_ax.legend(fontsize=12, loc="upper right", bbox_to_anchor=(1.2, 1.1))
+        self.domain_ax.legend(
+            fontsize=12, loc="upper right", bbox_to_anchor=self._legend_pos()
+        )
 
     def _set_ticks(self, ax):
         ax.get_xaxis().set_ticks_position("top")
@@ -160,8 +170,7 @@ class GridWorld(Domain):
         if self.performance:
             fig_name += "(Evaluation)"
         self.domain_fig = plt.figure(fig_name)
-        ratio = self.rows / self.cols
-        self.domain_ax = self.domain_fig.add_axes((0.08, 0.04, 0.86 * ratio, 0.86))
+        self.domain_ax = self.domain_fig.add_subplot(111)
         self._show_map()
         self._set_ticks(self.domain_ax)
         self.agent_fig = self._agent_fig(s)
@@ -178,7 +187,7 @@ class GridWorld(Domain):
         self.domain_fig.canvas.draw()
 
     def _init_vis_common(self, fig):
-        ax = fig.add_subplot(1, 1, 1)
+        ax = fig.add_subplot(111)
         cmap = plt.get_cmap("ValueFunction-New")
         img = ax.imshow(
             self.map,
@@ -189,7 +198,7 @@ class GridWorld(Domain):
         )
         ax.plot([0.0], [0.0], color=cmap(256), label="Max")
         ax.plot([0.0], [0.0], color=cmap(0), label="Min")
-        ax.legend(fontsize=12, bbox_to_anchor=(1, 1))
+        ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
         self._set_ticks(ax)
         return ax, img
 

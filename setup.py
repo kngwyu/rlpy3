@@ -9,6 +9,7 @@ from itertools import filterfalse
 import io
 import os
 from os.path import join as pjoin
+from pathlib import Path
 import re
 import shutil
 import sys
@@ -107,13 +108,12 @@ class CheckSDist(sdist):
             self.run_command("cython")
         else:
             for pyxfile in self._pyxfiles:
-                cfile = pyxfile[:-3] + "c"
-                cppfile = pyxfile[:-3] + "cpp"
-                msg = (
-                    "C-source file '%s' not found." % (cfile)
-                    + " Run 'setup.py cython' before sdist."
-                )
-                assert os.path.isfile(cfile) or os.path.isfile(cppfile), msg
+                cfile = Path(pyxfile[:-3] + "c")
+                cppfile = Path(pyxfile[:-3] + "cpp")
+                if not cfile.exists() and not cppfile.exists():
+                    msg = "C-source file {} not found.".format(cfile)
+                    msg += " Run 'setup.py cython' before sdist"
+                    raise RuntimeError(msg)
         sdist.run(self)
 
 
@@ -121,50 +121,36 @@ class CleanCommand(Command):
     """Custom distutils command to clean the .so and .pyc files."""
 
     user_options = [("all", "a", "")]
+    CLEAN_EXT = [".pyc", ".so", ".o", ".pyo", ".pyd", ".c", ".orig"]
+    CLEAN_EXCLUDE = ["transformations.c"]
 
     def initialize_options(self):
         self.all = True
         self._clean_me = []
         self._clean_trees = []
-        self._clean_exclude = ["transformations.c"]
 
-        for root, dirs, files in list(os.walk("rlpy")):
-            for f in files:
-                if f in self._clean_exclude:
+        for path in Path("rlpy").glob("**/*"):
+            if path.is_file():
+                if path.name in self.CLEAN_EXCLUDE:
                     continue
+                if path.suffix in self.CLEAN_EXT:
+                    self._clean_me.append(path)
+            if path.is_dir():
+                if path.name == "__pycache__":
+                    self._clean_trees.append(path)
 
-                if os.path.splitext(f)[-1] in (
-                    ".pyc",
-                    ".so",
-                    ".o",
-                    ".pyo",
-                    ".pyd",
-                    ".c",
-                    ".orig",
-                ):
-                    self._clean_me.append(pjoin(root, f))
-            for d in dirs:
-                if d == "__pycache__":
-                    self._clean_trees.append(pjoin(root, d))
-
-        for d in ("build",):
-            if os.path.exists(d):
-                self._clean_trees.append(d)
+        for path in Path("build").glob("*"):
+            if path.is_dir() and path.exists():
+                self._clean_trees.append(path)
 
     def finalize_options(self):
         pass
 
     def run(self):
         for clean_me in self._clean_me:
-            try:
-                os.unlink(clean_me)
-            except Exception:
-                pass
+            clean_me.unlink()
         for clean_tree in self._clean_trees:
-            try:
-                shutil.rmtree(clean_tree)
-            except Exception:
-                pass
+            shutil.rmtree(clean_tree.as_posix())
 
 
 CMD_CLASS = {
@@ -215,7 +201,7 @@ def no_cythonize(extensions, **_ignore):
         sources = []
         for sfile in extension.sources:
             path, ext = os.path.splitext(sfile)
-            if ext in (".pyx", ".py"):
+            if path.suffix in (".pyx", ".py"):
                 if extension.language == "c++":
                     ext = ".cpp"
                 else:
@@ -231,7 +217,7 @@ def no_cythonize(extensions, **_ignore):
 if HAS_CYTHON:
     from Cython.Build import cythonize
 
-    extensions = cythonize(extensions)
+    extensions = cythonize(extensions, language_level=3)
 else:
     extensions = no_cythonize(extensions)
 
@@ -250,7 +236,7 @@ REQUIRES_PYTHON = ">=3.5.0"
 
 REQUIRED = ["numpy>=1.15", "scipy>=1.3", "matplotlib>=3.1", "click>=6.0"]
 
-EXTRA = {"systemadmin": "networkx", "bebf": "scikit-learn"}
+EXTRA = {"systemadmin": "networkx", "bebf": "scikit-learn", "gym": "gym>=0.14.0"}
 
 setup(
     name="rlpy3",

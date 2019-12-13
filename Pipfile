@@ -5,7 +5,7 @@ verify_ssl = true
 
 [packages.rlpy]
 editable = true
-extras = ["bebf", "systemadmin"]
+extras = ["bebf", "systemadmin", "gym"]
 path = "."
 
 [packages.importlib_metadata]
@@ -13,4 +13,4 @@ markers = "python_version < '3.8.0"
 
 [dev-packages]
 cython = ">=0.29"
-pytest = ">=5.1"
+pytest = "==5.2.4"

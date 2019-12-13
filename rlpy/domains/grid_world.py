@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 from rlpy.tools import FONTSIZE, linear_map, plt
 from rlpy.tools import __rlpy_location__, findElemArray1D, perms
-import os
+from pathlib import Path
 
 from .domain import Domain
 
@@ -62,7 +62,7 @@ class GridWorld(Domain):
     #: Up, Down, Left, Right
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
-    DEFAULT_MAP_DIR = os.path.join(__rlpy_location__, "domains", "GridWorldMaps")
+    DEFAULT_MAP_DIR = Path(__rlpy_location__).joinpath("domains/GridWorldMaps")
     # Keys to access arrow figures
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
     # Color map to visualize the grid
@@ -70,7 +70,7 @@ class GridWorld(Domain):
 
     @classmethod
     def default_map(cls, name="4x5.txt"):
-        return os.path.join(cls.DEFAULT_MAP_DIR, name)
+        return cls.DEFAULT_MAP_DIR.joinpath(name)
 
     @staticmethod
     def _load_map(mapfile):
@@ -82,18 +82,15 @@ class GridWorld(Domain):
 
     def __init__(
         self,
-        mapfile=os.path.join(DEFAULT_MAP_DIR, "4x5.txt"),
+        mapfile=DEFAULT_MAP_DIR.joinpath("4x5.txt"),
         noise=0.1,
         random_start=False,
         episode_cap=1000,
     ):
+        if isinstance(mapfile, str):
+            mapfile = Path(mapfile)
         map_ = self._load_map(mapfile)
-        mapfname = os.path.basename(mapfile)
-        dot_pos = mapfname.find(".")
-        if dot_pos == -1:
-            mapname = mapfname
-        else:
-            mapname = mapfname[:dot_pos]
+        mapname = mapfile.stem
 
         self._init_from_map(map_, mapname, random_start, noise, episode_cap)
 

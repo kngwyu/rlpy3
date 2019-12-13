@@ -2,7 +2,7 @@
 import itertools
 import numpy as np
 from rlpy.tools import __rlpy_location__, plt
-import os
+from pathlib import Path
 
 from .fixed_reward_grid_world import FixedRewardGridWorld
 
@@ -15,9 +15,7 @@ class BernoulliGridWorld(FixedRewardGridWorld):
     """
 
     # directory of maps shipped with rlpy
-    DEFAULT_MAP_DIR = os.path.join(
-        __rlpy_location__, "domains", "BernoulliGridWorldMaps"
-    )
+    DEFAULT_MAP_DIR = Path(__rlpy_location__).joinpath("domains/BernoulliGridWorldMaps")
 
     def _load_map(self, mapfile):
         map_and_prob = np.loadtxt(mapfile, dtype=np.float64)
@@ -34,7 +32,7 @@ class BernoulliGridWorld(FixedRewardGridWorld):
 
     def __init__(
         self,
-        mapfile=os.path.join(DEFAULT_MAP_DIR, "5x5normal.txt"),
+        mapfile=DEFAULT_MAP_DIR.joinpath("5x5normal.txt"),
         noise=0.1,
         random_start=False,
         episode_cap=20,
@@ -69,30 +67,3 @@ class BernoulliGridWorld(FixedRewardGridWorld):
 
     def expected_step(self, s, a):
         raise NotImplementedError()
-        # Returns k possible outcomes
-        #  p: k-by-1    probability of each transition
-        #  r: k-by-1    rewards
-        # ns: k-by-|s|  next state
-        #  t: k-by-1    terminal values
-        # pa: k-by-??   possible actions for each next state
-        actions = self.possible_actions(s)
-        k = len(actions)
-        # Make Probabilities
-        intended_action_index = findElemArray1D(a, actions)
-        p = np.ones((k, 1)) * self.noise / (k * 1.0)
-        p[intended_action_index, 0] += 1 - self.noise
-        # Make next states
-        ns = np.tile(s, (k, 1)).astype(int) + self.ACTIONS[actions]
-        # Make next possible actions
-        pa = np.array([self.possible_actions(sn) for sn in ns])
-        # Make rewards
-        r = np.ones((k, 1)) * self.STEP_REWARD
-        goal = self.map[ns[:, 0], ns[:, 1]] == self.GOAL
-        pit = self.map[ns[:, 0], ns[:, 1]] == self.PIT
-        r[goal] = self.GOAL_REWARD
-        r[pit] = self.PIT_REWARD
-        # Make terminals
-        t = np.zeros((k, 1), bool)
-        t[goal] = True
-        t[pit] = True
-        return p, r, ns, t, pa

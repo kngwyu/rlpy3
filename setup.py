@@ -8,7 +8,6 @@ BSD license.
 from itertools import filterfalse
 import io
 import os
-from os.path import join as pjoin
 from pathlib import Path
 import re
 import shutil
@@ -201,7 +200,7 @@ def no_cythonize(extensions, **_ignore):
         sources = []
         for sfile in extension.sources:
             path, ext = os.path.splitext(sfile)
-            if path.suffix in (".pyx", ".py"):
+            if ext in (".pyx", ".py"):
                 if extension.language == "c++":
                     ext = ".cpp"
                 else:

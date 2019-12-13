@@ -81,14 +81,14 @@ def deepsea(size=20, mode="onehot", **kwargs):
 for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     name = mapfile.stem
     gym.envs.register(
-        id="GridWorld{}-v0".format(name),
+        id="RLPyGridWorld{}-v0".format(name),
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=100,
         kwargs=dict(mapfile=mapfile),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="GridWorld{}-v1".format(name),
+        id="RLPyGridWorld{}-v1".format(name),
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=100,
         kwargs=dict(mapfile=mapfile, mode="raw"),
@@ -99,14 +99,14 @@ for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     name = mapfile.stem
     gym.envs.register(
-        id="FRGridWorld{}-v0".format(name),
+        id="RLPyGridWorld{}-v0".format(name),
         entry_point="rlpy.gym:fr_gridworld",
         max_episode_steps=20,
         kwargs=dict(mapfile=mapfile),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="FRGridWorld{}-v1".format(name),
+        id="RLPyGridWorld{}-v1".format(name),
         entry_point="rlpy.gym:fr_gridworld",
         max_episode_steps=20,
         kwargs=dict(mapfile=mapfile, mode="raw"),
@@ -116,14 +116,14 @@ for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     name = mapfile.stem
     gym.envs.register(
-        id="BRGridWorld{}-v0".format(name),
+        id="RLPyGridWorld{}-v0".format(name),
         entry_point="rlpy.gym:br_gridworld",
         max_episode_steps=20,
         kwargs=dict(mapfile=mapfile),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="BRGridWorld{}-v1".format(name),
+        id="RLPyGridWorld{}-v1".format(name),
         entry_point="rlpy.gym:br_gridworld",
         max_episode_steps=20,
         kwargs=dict(mapfile=mapfile, mode="raw"),
@@ -132,15 +132,16 @@ for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 
 for size in range(4, 40, 4):
     gym.envs.register(
-        id="DeepSea{}-v0".format(size),
+        id="RLPyDeepSea{}-v0".format(size),
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
+        kwargs=dict(size=size),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="DeepSea{}-v1".format(size),
+        id="RLPyDeepSea{}-v1".format(size),
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
-        kwargs=dict(mode="raw"),
+        kwargs=dict(size=size, mode="raw"),
         reward_threshold=0.9,
     )

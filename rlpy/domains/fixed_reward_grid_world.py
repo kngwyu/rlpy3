@@ -2,7 +2,6 @@
 import itertools
 import numpy as np
 from rlpy.tools import __rlpy_location__, plt, with_bold_fonts
-import os
 from pathlib import Path
 
 from .grid_world import GridWorld

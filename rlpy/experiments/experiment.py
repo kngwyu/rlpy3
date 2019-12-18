@@ -13,7 +13,6 @@ from rlpy.tools import (
     deltaT,
     hhmmss,
     plt,
-    printClass,
     with_pdf_fonts,
     MARKERS,
 )

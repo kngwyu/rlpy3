@@ -18,7 +18,10 @@ if __name__ == "__main__":
                 map_,
                 "--num-policy-checks=20",
                 "--max-steps=4000",
-                "--epsilon=0.1",
+                "--epsilon=0.4",
+                "--epsilon-min=0.1",
                 "--plot-save",
+                # "--agent=count-based-q",
+                # "--beta=1",
             ]
         )

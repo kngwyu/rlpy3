@@ -57,6 +57,15 @@ def select_agent(
             epsilon_decay=eps_decay,
             epsilon_min=eps_min,
         )
+    elif name == "mbie-eb":
+        return methods.tabular_mbie_eb(
+            domain,
+            seed=seed,
+            show_reward=show_reward,
+            epsilon=epsilon,
+            epsilon_decay=eps_decay,
+            epsilon_min=eps_min,
+        )
     elif name == "opt-psrl":
         return methods.tabular_opt_psrl(
             domain,

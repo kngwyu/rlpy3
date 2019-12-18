@@ -3,6 +3,7 @@ from rlpy.agents import (
     GaussianPSRL,
     GreedyGQ,
     LSPI,
+    MBIE_EB,
     NaturalActorCritic,
     OptimisticPSRL,
     PSRL,
@@ -106,6 +107,29 @@ def tabular_psrl(
     )
     return PSRL(
         policy, tabular, domain.discount_factor, seed=seed, show_reward=show_reward
+    )
+
+
+def tabular_mbie_eb(
+    domain,
+    seed,
+    show_reward=False,
+    beta=0.1,
+    epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
+):
+    tabular = Tabular(domain, discretization=20)
+    policy = eGreedy(
+        tabular, epsilon=epsilon, epsilon_decay=epsilon_decay, epsilon_min=epsilon_min
+    )
+    return MBIE_EB(
+        policy,
+        tabular,
+        domain.discount_factor,
+        beta=beta,
+        seed=seed,
+        show_reward=show_reward,
     )
 
 

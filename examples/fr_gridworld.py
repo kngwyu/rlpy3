@@ -17,7 +17,16 @@ def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
 
 
 def select_agent(
-    name, domain, max_steps, seed, epsilon, epsilon_min, beta, show_reward, **kwargs
+    name,
+    domain,
+    max_steps,
+    seed,
+    epsilon,
+    epsilon_min,
+    beta,
+    show_reward,
+    vi_threshold,
+    **kwargs
 ):
     if epsilon_min is not None:
         eps_decay = (epsilon - epsilon_min) / max_steps * 0.9
@@ -65,6 +74,7 @@ def select_agent(
             epsilon=epsilon,
             epsilon_decay=eps_decay,
             epsilon_min=eps_min,
+            vi_threshold=vi_threshold,
         )
     elif name == "opt-psrl":
         return methods.tabular_opt_psrl(
@@ -77,7 +87,7 @@ def select_agent(
             epsilon_min=eps_min,
         )
     elif name == "gaussian-psrl":
-        return methods.tabular_opt_psrl(
+        return methods.tabular_gaussian_psrl(
             domain,
             seed=seed,
             show_reward=show_reward,
@@ -86,7 +96,7 @@ def select_agent(
             epsilon_min=eps_min,
         )
     elif name == "ucbvi":
-        return methods.tabular_opt_psrl(
+        return methods.tabular_ucbvi(
             domain,
             seed=seed,
             show_reward=show_reward,
@@ -113,6 +123,7 @@ if __name__ == "__main__":
             click.Option(["--beta"], type=float, default=0.05),
             click.Option(["--step-penalty"], type=float, default=0.5),
             click.Option(["--episode-cap"], type=int, default=20),
+            click.Option(["--vi-threshold"], type=float, default=1e-6),
             click.Option(["--show-reward"], is_flag=True),
         ],
     )

@@ -24,6 +24,7 @@ class PSRL(Agent):
         seed=1,
         spread_prior=False,
         show_reward=False,
+        vi_threshold=1e-6,
     ):
         """
         :param alpha0: Prior weight for uniform Dirichlet.
@@ -54,6 +55,7 @@ class PSRL(Agent):
         self.ep_cap = self.representation.domain.episode_cap
         self.update_steps = 0
         self.show_reward = show_reward
+        self.vi_threshold = vi_threshold
 
     def _update_prior(self, s, a, reward, terminal, ns):
         s_id = self.representation.state_id(s)
@@ -80,7 +82,9 @@ class PSRL(Agent):
 
     def _solve_sampled_mdp(self):
         r, p = self._sample_mdp(show_reward=self.show_reward)
-        q_value, _ = compute_q_values(r, p, self.ep_cap, self.discount_factor)
+        q_value, _ = compute_q_values(
+            r, p, self.ep_cap, self.discount_factor, self.vi_threshold
+        )
 
         self.representation.weight_vec = q_value.T.flatten()
         self.update_steps += 1

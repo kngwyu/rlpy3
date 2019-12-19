@@ -99,7 +99,13 @@ def tabular_sarsa(domain, discretization=20, lambda_=0.3):
 
 
 def tabular_psrl(
-    domain, seed, show_reward=False, epsilon=0.1, epsilon_decay=0.0, epsilon_min=0.0
+    domain,
+    seed,
+    show_reward=False,
+    epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
+    vi_threshold=1e-6,
 ):
     tabular = Tabular(domain, discretization=20)
     policy = eGreedy(
@@ -118,6 +124,7 @@ def tabular_mbie_eb(
     epsilon=0.1,
     epsilon_decay=0.0,
     epsilon_min=0.0,
+    vi_threshold=1e-6,
 ):
     tabular = Tabular(domain, discretization=20)
     policy = eGreedy(
@@ -141,6 +148,7 @@ def tabular_opt_psrl(
     epsilon_decay=0.0,
     epsilon_min=0.0,
     n_samples=10,
+    vi_threshold=1e-6,
 ):
     tabular = Tabular(domain, discretization=20)
     policy = eGreedy(
@@ -157,7 +165,13 @@ def tabular_opt_psrl(
 
 
 def tabular_gaussian_psrl(
-    domain, seed, show_reward=False, epsilon=0.1, epsilon_decay=0.0, epsilon_min=0.0
+    domain,
+    seed,
+    show_reward=False,
+    epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
+    vi_threshold=1e-6,
 ):
     tabular = Tabular(domain, discretization=20)
     policy = eGreedy(
@@ -168,8 +182,14 @@ def tabular_gaussian_psrl(
     )
 
 
-def tabular_gaussian_psrl(
-    domain, seed, show_reward=False, epsilon=0.1, epsilon_decay=0.0, epsilon_min=0.0
+def tabular_ucbvi(
+    domain,
+    seed,
+    show_reward=False,
+    epsilon=0.1,
+    epsilon_decay=0.0,
+    epsilon_min=0.0,
+    vi_threshold=1e-6,
 ):
     tabular = Tabular(domain, discretization=20)
     policy = eGreedy(

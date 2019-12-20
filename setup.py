@@ -231,7 +231,7 @@ with io.open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
     LONG_DESCRIPTION = "\n" + f.read()
 
 
-REQUIRES_PYTHON = ">=3.5.0"
+REQUIRES_PYTHON = ">=3.6.0"
 
 REQUIRED = ["numpy>=1.15", "scipy>=1.3", "matplotlib>=3.1", "click>=6.0"]
 
@@ -253,7 +253,6 @@ setup(
         "Topic :: Scientific/Engineering",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],

@@ -6,7 +6,7 @@ from rlpy import gym as rlpy_gym  # noqa
 
 @pytest.mark.parametrize("envname", ["GridWorld4x5-v0", "GridWorld4x5-v1"])
 def test_gridworld(envname):
-    env = gym.make(envname, noise=0.0)
+    env = gym.make("RLPy" + envname, noise=0.0)
     state = env.reset()
     assert env.action_space.n == 4
     assert state.shape == env.observation_space.shape
@@ -18,7 +18,7 @@ def test_gridworld(envname):
 
 @pytest.mark.parametrize("envname", ["DeepSea20-v0", "DeepSea20-v1"])
 def test_deepsea(envname):
-    env = gym.make(envname, noise=0.0)
+    env = gym.make("RLPy" + envname, noise=0.0)
     state = env.reset()
     assert env.action_space.n == 2
     assert state.shape == env.observation_space.shape

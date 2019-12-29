@@ -1,7 +1,4 @@
-"""Simple version of MBIE-EB
-Paper:An analysis of model-based Interval Estimation for Markov
-Decision Processes (Strehl and Littman, 2008)
-Link: https://doi.org/10.1016/j.jcss.2007.08.009
+"""Information directed sampling
 """
 import numpy as np
 from rlpy.representations import Enumerable
@@ -11,10 +8,9 @@ from ._vi_impl import compute_q_values
 __author__ = "Yuji Kanagawa"
 
 
-class MBIE_EB(Agent):
+class IDS(Agent):
     """
-    Simplified version of MBIE-EB algorithm,
-    which executes VI only when the episode ends.
+    RL version of MBIE-EB algorithm,
     """
 
     def __init__(

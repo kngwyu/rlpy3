@@ -2,7 +2,7 @@ import click
 from rlpy.domains import GridWorld
 from rlpy.tools.cli import run_experiment
 
-import methods
+import fr_gridworld
 
 
 def select_domain(map_, noise, **kwargs):
@@ -10,30 +10,22 @@ def select_domain(map_, noise, **kwargs):
     return GridWorld(map_, random_start=True, noise=noise, episode_cap=20)
 
 
-def select_agent(name, domain, max_steps, seed, **kwargs):
-    if name is None or name == "lspi":
-        return methods.tabular_lspi(domain, max_steps)
-    elif name == "nac":
-        return methods.tabular_nac(domain)
-    elif name == "tabular-q":
-        return methods.tabular_q(domain, initial_learn_rate=0.11)
-    elif name == "ifddk-q":
-        return methods.ifddk_q(domain, initial_learn_rate=0.11)
-    elif name == "psrl":
-        return methods.tabular_psrl(domain, seed=seed)
-    else:
-        raise NotImplementedError("Method {} is not supported".format(name))
-
-
 if __name__ == "__main__":
     run_experiment(
         select_domain,
-        select_agent,
+        fr_gridworld.select_agent,
         default_max_steps=10000,
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[
             click.Option(["--map", "map_"], type=str, default="4x5"),
             click.Option(["--noise"], type=float, default=0.1),
+            click.Option(["--epsilon"], type=float, default=0.1),
+            click.Option(["--epsilon-min"], type=float, default=None),
+            click.Option(["--beta"], type=float, default=0.05),
+            click.Option(["--step-penalty"], type=float, default=0.5),
+            click.Option(["--episode-cap"], type=int, default=20),
+            click.Option(["--vi-threshold"], type=float, default=1e-6),
+            click.Option(["--show-reward"], is_flag=True),
         ],
     )

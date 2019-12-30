@@ -5,6 +5,7 @@ Large parts of this file were taken from the pandas project
 (https://github.com/pydata/pandas) which have been permitted for use under the
 BSD license.
 """
+import numpy as np
 from itertools import filterfalse
 import io
 import os
@@ -97,6 +98,9 @@ class CheckSDist(sdist):
         "rlpy/representations/hashing.pyx",
         "rlpy/domains/hiv_treatment_dynamics.pyx",
         "rlpy/representations/kernels.pyx",
+        "rlpy/agents/evi/evi.pyx",
+        "rlpy/agents/evi/max_prova.pyx",
+        "rlpy/agents/evi/utils.pyx",
     ]
 
     def initialize_options(self):
@@ -168,6 +172,11 @@ else:
 USE_CYTHON = not os.path.exists("rlpy/representations/hashing.c") or os.getenv(
     "USE_CYTHON", False
 )
+
+libraries = ["m"] if os.name == "posix" else []
+extra_compile_args = ["-O3", "-ffast-math", "-march=native", "-fopenmp"]
+extra_link_args = ["-fopenmp"]
+
 extensions = [
     Extension(
         "rlpy.representations.hashing",
@@ -188,6 +197,30 @@ extensions = [
         ],
         language="c++",
         include_dirs=["rlpy.representations"],
+    ),
+    Extension(
+        "rlpy.agents.evi.evi",
+        ["rlpy/agents/evi/evi.pyx"],
+        include_dirs=[np.get_include()],
+        libraries=libraries,
+        extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
+    ),
+    Extension(
+        "rlpy.agents.evi.max_proba",
+        ["rlpy/agents/evi/max_proba.pyx"],
+        include_dirs=[np.get_include()],
+        libraries=libraries,
+        extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
+    ),
+    Extension(
+        "rlpy.agents.evi.utils",
+        ["rlpy/agents/evi/utils.pyx"],
+        include_dirs=[np.get_include()],
+        libraries=libraries,
+        extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
     ),
     Extension(
         "rlpy.tools._transformations", ["rlpy/tools/transformations.c"], include_dirs=[]

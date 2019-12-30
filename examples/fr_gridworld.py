@@ -66,6 +66,8 @@ def select_agent(
             epsilon_decay=eps_decay,
             epsilon_min=eps_min,
         )
+    elif name == "ucrl":
+        return methods.tabular_ucrl(domain, seed=seed, show_reward=show_reward)
     elif name == "mbie-eb":
         return methods.tabular_mbie_eb(
             domain,

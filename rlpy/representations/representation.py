@@ -1,5 +1,6 @@
 """Representation base class."""
 from abc import ABC, abstractmethod
+import collections
 from copy import deepcopy
 import logging
 import numpy as np
@@ -46,6 +47,14 @@ class Enumerable(Hashable, ABC):
 
     def state_hash(self, s):
         return self.state_id(s)
+
+    def actions_per_state(self):
+        all_states = self.domain.all_states()
+        state_actions_map = collections.OrderedDict()
+        for state in all_states:
+            state_id = self.state_id(state)
+            state_actions_map[state_id] = self.domain.possible_actions(state)
+        return list(state_actions_map.values())
 
 
 class Representation(ValueLearner, ABC):
@@ -583,11 +592,11 @@ class Representation(ValueLearner, ABC):
                         # sampled value to be int
                         if d not in self.domain.continuous_dims:
                             new_s[d] = int(new_s[d])
-                            ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
+                            ns, r = self.domain.sample_step(new_s, a, ns_samples_)
                             next_states[i * ns_samples_ : (i + 1) * ns_samples_, :] = ns
                             rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
             else:
-                next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
+                next_states, rewards = self.domain.sample_step(s, a, ns_samples)
                 self.expected_step_cached[key] = [next_states, rewards]
         else:
             next_states, rewards = cacheHit

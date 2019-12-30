@@ -420,12 +420,5 @@ class GridWorld(Domain):
         t[pit] = True
         return p, r, ns, t, pa
 
-    def allStates(self):
-        if len(self.continuous_dims) > 0:
-            # Recall that discrete dimensions are assumed to be integer
-            return (
-                perms(self.discrete_statespace_width + 1)
-                + self.discrete_statespace_limits[0]
-            )
-        else:
-            return None
+    def all_states(self):
+        return np.array(list(itertools.product(range(self.rows), range(self.cols))))

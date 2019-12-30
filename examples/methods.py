@@ -10,6 +10,7 @@ from rlpy.agents import (
     Q_Learning,
     SARSA,
     UCBVI,
+    UCRL,
 )
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
@@ -96,6 +97,23 @@ def tabular_sarsa(domain, discretization=20, lambda_=0.3):
     tabular = Tabular(domain, discretization=discretization)
     policy = eGreedy(tabular, epsilon=0.1)
     return SARSA(policy, tabular, domain.discount_factor, lambda_=lambda_)
+
+
+def tabular_ucrl(
+    domain, seed, show_reward=False, r_max=1.0, alpha_r=1.0, alpha_p=1.0,
+):
+    tabular = Tabular(domain, discretization=20)
+    policy = eGreedy(tabular, epsilon=0.0)
+    return UCRL(
+        policy,
+        tabular,
+        domain.discount_factor,
+        seed=seed,
+        show_reward=show_reward,
+        r_max=r_max,
+        alpha_r=alpha_r,
+        alpha_p=alpha_p,
+    )
 
 
 def tabular_psrl(

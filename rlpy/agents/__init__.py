@@ -7,3 +7,4 @@ from .mbie_eb import MBIE_EB
 from .natural_actor_critic import NaturalActorCritic
 from .psrl import GaussianPSRL, OptimisticPSRL, PSRL, UCBVI
 from .td_control_agents import Q_Learning, SARSA
+from .ucrl import UCRL

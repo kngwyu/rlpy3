@@ -57,6 +57,8 @@ class PSRL(Agent):
         self.show_reward = show_reward
         self.vi_threshold = vi_threshold
 
+        print(self.representation.actions_per_state())
+
     def _update_prior(self, s, a, reward, terminal, ns):
         s_id = self.representation.state_id(s)
         tau_old = self.r_prior_tau[s_id, a]

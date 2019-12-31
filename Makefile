@@ -9,3 +9,5 @@ example:
 	pipenv run python examples/$(ARGS)
 clean:
 	pipenv run python setup.py clean
+fmt:
+	black .

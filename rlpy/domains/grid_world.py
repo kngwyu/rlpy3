@@ -429,3 +429,8 @@ class GridWorld(Domain):
             )
         else:
             return None
+
+    def get_image(self, state):
+        image = self.map.copy()
+        image[state[0], state[1]] = self.AGENT
+        return image.astype(np.float32).reshape(1, *image.shape)

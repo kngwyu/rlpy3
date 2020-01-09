@@ -15,13 +15,13 @@ class RlpyEnv(gym.Env):
 
     def step(self, action):
         reward, next_state, terminal, possible_actions = self.domain.step(action)
-        obs = self.obs_fn(next_state)
+        obs = self.obs_fn(self.domain, next_state)
         info = {"possible_actions": possible_actions}
         return obs, reward, terminal, info
 
     def reset(self):
         state, _, _ = self.domain.s0()
-        return self.obs_fn(state)
+        return self.obs_fn(self.domain, state)
 
     def seed(self, seed=None):
         self.domain.set_seed(seed)
@@ -37,7 +37,7 @@ def gridworld_obs(domain, mode="onehot"):
         high = np.zeros(rep.features_num)
         obs_space = gym.spaces.Box(low, high)
 
-        def obs_fn(state):
+        def obs_fn(_domain, state):
             return rep.phi(state, False).astype(np.float32)
 
     elif mode == "raw":
@@ -45,8 +45,19 @@ def gridworld_obs(domain, mode="onehot"):
         high = np.array(domain.map.shape, dtype=np.float32)
         obs_space = gym.spaces.Box(low, high)
 
-        def obs_fn(state):
+        def obs_fn(_domain, state):
             return state.astype(np.float32)
+
+    elif mode == "image":
+        obs_space = gym.spaces
+        obs_space = gym.spaces
+        shape = 1, *domain.map.shape
+        low = np.zeros(shape, dtype=np.float32)
+        high = np.ones(shape, dtype=np.float32) * domain.AGENT
+        obs_space = gym.spaces.Box(low, high)
+
+        def obs_fn(domain, _state):
+            return domain.get_image(_state)
 
     else:
         raise ValueError("obs_mode {} is not supported".format(mode))
@@ -78,57 +89,39 @@ def deepsea(size=20, mode="onehot", **kwargs):
     return RlpyEnv(domain, obs_fn, obs_space)
 
 
-for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
+def register_gridworld(mapfile, max_steps=100, threshold=0.9):
     name = mapfile.stem
     gym.envs.register(
         id="RLPyGridWorld{}-v0".format(name),
         entry_point="rlpy.gym:gridworld",
-        max_episode_steps=100,
+        max_episode_steps=max_steps,
         kwargs=dict(mapfile=mapfile),
-        reward_threshold=0.9,
+        reward_threshold=threshold,
     )
     gym.envs.register(
         id="RLPyGridWorld{}-v1".format(name),
         entry_point="rlpy.gym:gridworld",
-        max_episode_steps=100,
+        max_episode_steps=max_steps,
         kwargs=dict(mapfile=mapfile, mode="raw"),
-        reward_threshold=0.9,
+        reward_threshold=threshold,
+    )
+    gym.envs.register(
+        id="RLPyGridWorld{}-v2".format(name),
+        entry_point="rlpy.gym:gridworld",
+        max_episode_steps=max_steps,
+        kwargs=dict(mapfile=mapfile, mode="image"),
+        reward_threshold=threshold,
     )
 
+
+for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
+    register_gridworld(mapfile)
 
 for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    name = mapfile.stem
-    gym.envs.register(
-        id="RLPyGridWorld{}-v0".format(name),
-        entry_point="rlpy.gym:fr_gridworld",
-        max_episode_steps=20,
-        kwargs=dict(mapfile=mapfile),
-        reward_threshold=0.9,
-    )
-    gym.envs.register(
-        id="RLPyGridWorld{}-v1".format(name),
-        entry_point="rlpy.gym:fr_gridworld",
-        max_episode_steps=20,
-        kwargs=dict(mapfile=mapfile, mode="raw"),
-        reward_threshold=0.9,
-    )
+    register_gridworld(mapfile, max_steps=20, threshold=80)
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    name = mapfile.stem
-    gym.envs.register(
-        id="RLPyGridWorld{}-v0".format(name),
-        entry_point="rlpy.gym:br_gridworld",
-        max_episode_steps=20,
-        kwargs=dict(mapfile=mapfile),
-        reward_threshold=0.9,
-    )
-    gym.envs.register(
-        id="RLPyGridWorld{}-v1".format(name),
-        entry_point="rlpy.gym:br_gridworld",
-        max_episode_steps=20,
-        kwargs=dict(mapfile=mapfile, mode="raw"),
-        reward_threshold=0.9,
-    )
+    register_gridworld(mapfile, max_steps=20)
 
 for size in range(4, 40, 4):
     gym.envs.register(
@@ -143,5 +136,12 @@ for size in range(4, 40, 4):
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
         kwargs=dict(size=size, mode="raw"),
+        reward_threshold=0.9,
+    )
+    gym.envs.register(
+        id="RLPyDeepSea{}-v2".format(size),
+        entry_point="rlpy.gym:deepsea",
+        max_episode_steps=size,
+        kwargs=dict(size=size, mode="image"),
         reward_threshold=0.9,
     )

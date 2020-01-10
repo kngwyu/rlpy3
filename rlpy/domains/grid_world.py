@@ -1,4 +1,5 @@
 """Gridworld Domain."""
+from collections import defaultdict
 import numpy as np
 import itertools
 from rlpy.tools import FONTSIZE, linear_map, plt
@@ -117,8 +118,8 @@ class GridWorld(Domain):
         self.goal_reward = self.MAX_RETURN
         self.pit_reward = self.MIN_RETURN
         self.vf_texts = []
-        self.r_fig, self.r_ax, self.r_img = None, None, None
-        self.r_texts = []
+        self.heatmap_fig, self.heatmap_ax, self.heatmap_img = {}, {}, {}
+        self.heatmap_texts = defaultdict(list)
 
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
@@ -186,9 +187,9 @@ class GridWorld(Domain):
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
 
-    def _init_vis_common(self, fig):
+    def _init_vis_common(self, fig, cmap="ValueFunction-New"):
         ax = fig.add_subplot(111)
-        cmap = plt.get_cmap("ValueFunction-New")
+        cmap = plt.get_cmap(cmap)
         img = ax.imshow(
             self.map,
             cmap=cmap,
@@ -196,56 +197,79 @@ class GridWorld(Domain):
             vmin=self.MIN_RETURN,
             vmax=self.MAX_RETURN,
         )
-        ax.plot([0.0], [0.0], color=cmap(256), label="Max")
-        ax.plot([0.0], [0.0], color=cmap(0), label="Min")
+        ax.plot([0.0], [0.0], color=cmap(256), label=f"Max")
+        ax.plot([0.0], [0.0], color=cmap(0), label=f"Min")
         ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
         self._set_ticks(ax)
         return ax, img
 
-    def _init_reward_vis(self, r, name):
-        self.r_fig = plt.figure("Pseudo Reward")
-        self.r_ax, self.r_img = self._init_vis_common(self.r_fig)
-        self.r_ax.plot(0, 0)
-        self.r_fig.show()
+    def _init_heatmap_vis(self, name, cmap):
+        fig = plt.figure(name)
+        self.heatmap_fig[name] = fig
+        ax, img = self._init_vis_common(fig, cmap)
+        self.heatmap_ax[name], self.heatmap_img[name] = ax, img
+        ax.plot(0, 0)
+        fig.show()
 
-    def show_reward(self, reward_, name="Pseudo Reward"):
+    def _normalize_separated(self, value, vmin, vmax):
+        if value < 0:
+            return linear_map(value, min(vmin, self.MIN_RETURN), 0, self.MIN_RETURN, 0)
+        else:
+            return linear_map(value, 0, max(vmax, self.MAX_RETURN), 0, self.MAX_RETURN)
+
+    def _normalize_uniform(self, value, vmin, vmax):
+        vmin = min(vmin, self.MIN_RETURN)
+        vmax = max(vmax, self.MAX_RETURN)
+        return linear_map(value, vmin, vmax, self.MIN_RETURN, self.MAX_RETURN)
+
+    def show_reward(self, reward_):
         """
         Visualize learned reward functions for PSRL or other methods.
         """
         reward = reward_.reshape(self.cols, self.rows).T
-        if self.r_fig is None:
-            self._init_reward_vis(reward, name)
+        self.show_heatmap(reward, "Pseudo Reward")
 
-        for txt in self.r_texts:
-            txt.remove()
-        self.r_texts.clear()
-        rmin, rmax = reward.min(), reward.max()
-        rmin_wrote, rmax_wrote = False, False
+    def show_heatmap(
+        self, value, name, normalize_method="separated", cmap="ValueFunction-New",
+    ):
+        """
+        Visualize learned reward functions for PSRL or other methods.
+        """
+        if name not in self.heatmap_fig:
+            self._init_heatmap_vis(name, cmap)
+        self._reset_texts(self.heatmap_texts[name])
+
+        vmin, vmax = value.min(), value.max()
+        vmin_wrote, vmax_wrote = False, False
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if reward[r, c] == rmin and not rmin_wrote:
-                self._vf_text(c, r, rmin, mode="r")
-                rmin_wrote = True
-            elif reward[r, c] == rmax and not rmax_wrote:
-                self._vf_text(c, r, rmax, mode="r")
-                rmax_wrote = True
-            if reward[r, c] < 0:
-                reward[r, c] = linear_map(
-                    reward[r, c], min(rmin, self.MIN_RETURN), 0, -1, 0
+            if value[r, c] == vmin and not vmin_wrote:
+                self._text_on_cell(
+                    c, r, vmin, self.heatmap_texts[name], self.heatmap_ax[name]
                 )
+                vmin_wrote = True
+            elif value[r, c] == vmax and not vmax_wrote:
+                self._text_on_cell(
+                    c, r, vmax, self.heatmap_texts[name], self.heatmap_ax[name]
+                )
+                vmax_wrote = True
+            if normalize_method == "separated":
+                value[r, c] = self._normalize_separated(value[r, c], vmin, vmax)
             else:
-                reward[r, c] = linear_map(
-                    reward[r, c], 0, max(rmax, self.MAX_RETURN), 0, 1
-                )
-        self.r_img.set_data(reward)
-        self.r_fig.canvas.draw()
+                value[r, c] = self._normalize_uniform(value[r, c], vmin, vmax)
+        self.heatmap_img[name].set_data(value)
+        self.heatmap_fig[name].canvas.draw()
 
-    def _vf_text(self, c, r, v, mode="vf"):
-        if mode == "vf":
-            cache = self.vf_texts
-            ax = self.vf_ax
-        else:
-            cache = self.r_texts
-            ax = self.r_ax
+    def _vf_text(self, c, r, v):
+        self._text_on_cell(c, r, v, self.vf_texts, self.vf_ax)
+
+    @staticmethod
+    def _reset_texts(texts):
+        for txt in texts:
+            txt.remove()
+        texts.clear()
+
+    @staticmethod
+    def _text_on_cell(c, r, v, cache, ax):
         cache.append(
             ax.text(c - 0.2, r + 0.1, format(v, ".1f"), color="xkcd:bright blue")
         )
@@ -284,9 +308,7 @@ class GridWorld(Domain):
     def show_learning(self, representation):
         if self.vf_ax is None:
             self._init_value_vis()
-        for txt in self.vf_texts:
-            txt.remove()
-        self.vf_texts.clear()
+        self._reset_texts(self.vf_texts)
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
         arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype="bool")

@@ -217,7 +217,7 @@ Gamma:      {self.discount_factor}
 
             domains often specify stochastic internal state transitions, such
             that the result of a (state,action) pair might vary on different
-            calls (see also the :py:meth:`~rlpy.domains.domain.Domain.sampleStep`
+            calls (see also the :py:meth:`~rlpy.domains.domain.Domain.sample_step`
             method).
             Be sure to look at unique noise parameters of each domain if you
             require deterministic transitions.
@@ -291,7 +291,12 @@ Gamma:      {self.discount_factor}
             - self.discrete_statespace_limits[:, 0]
         )
 
-    def sampleStep(self, a, num_samples):
+    def all_states(self):
+        """Returns an iterator of all states
+        """
+        raise NotImplementedError(f"All states is not implemented for {type(self)}")
+
+    def sample_step(self, a, num_samples):
         """
         Sample a set number of next states and rewards from the domain.
         This function is used when state transitions are stochastic;

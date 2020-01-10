@@ -583,11 +583,11 @@ class Representation(ValueLearner, ABC):
                         # sampled value to be int
                         if d not in self.domain.continuous_dims:
                             new_s[d] = int(new_s[d])
-                            ns, r = self.domain.sampleStep(new_s, a, ns_samples_)
+                            ns, r = self.domain.sample_step(new_s, a, ns_samples_)
                             next_states[i * ns_samples_ : (i + 1) * ns_samples_, :] = ns
                             rewards[i * ns_samples_ : (i + 1) * ns_samples_] = r
             else:
-                next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
+                next_states, rewards = self.domain.sample_step(s, a, ns_samples)
                 self.expected_step_cached[key] = [next_states, rewards]
         else:
             next_states, rewards = cacheHit

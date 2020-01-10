@@ -312,7 +312,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
                 na = self.policy.pi(ns[j], t[j], pa[j])
                 phi_ns_na += pj * self.representation.phi_sa(ns[j], t[j], na)
         else:
-            next_states, rewards = self.domain.sampleStep(s, a, ns_samples)
+            next_states, rewards = self.domain.sample_step(s, a, ns_samples)
             phi_ns_na = np.mean(
                 [
                     self.representation.phisa(ns, self.policy.pi(ns))

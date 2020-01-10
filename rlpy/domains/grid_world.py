@@ -3,7 +3,7 @@ from collections import defaultdict
 import numpy as np
 import itertools
 from rlpy.tools import FONTSIZE, linear_map, plt
-from rlpy.tools import __rlpy_location__, findElemArray1D, perms
+from rlpy.tools import __rlpy_location__, findElemArray1D
 from pathlib import Path
 
 from .domain import Domain
@@ -235,6 +235,9 @@ class GridWorld(Domain):
         """
         Visualize learned reward functions for PSRL or other methods.
         """
+        if len(value.shape) == 1:
+            value = value.reshape(self.rows, self.cols)
+
         if name not in self.heatmap_fig:
             self._init_heatmap_vis(name, cmap)
         self._reset_texts(self.heatmap_texts[name])
@@ -442,15 +445,9 @@ class GridWorld(Domain):
         t[pit] = True
         return p, r, ns, t, pa
 
-    def allStates(self):
-        if len(self.continuous_dims) > 0:
-            # Recall that discrete dimensions are assumed to be integer
-            return (
-                perms(self.discrete_statespace_width + 1)
-                + self.discrete_statespace_limits[0]
-            )
-        else:
-            return None
+    def all_states(self):
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            yield np.array([r, c])
 
     def get_image(self, state):
         image = self.map.copy()

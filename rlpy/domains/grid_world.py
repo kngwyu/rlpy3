@@ -187,8 +187,10 @@ class GridWorld(Domain):
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
 
-    def _init_vis_common(self, fig, cmap="ValueFunction-New"):
-        ax = fig.add_subplot(111)
+    def _init_vis_common(
+        self, fig, cmap="ValueFunction-New", axarg=(1, 1, 1), initial=True
+    ):
+        ax = fig.add_subplot(*axarg)
         cmap = plt.get_cmap(cmap)
         img = ax.imshow(
             self.map,
@@ -199,16 +201,27 @@ class GridWorld(Domain):
         )
         ax.plot([0.0], [0.0], color=cmap(256), label=f"Max")
         ax.plot([0.0], [0.0], color=cmap(0), label=f"Min")
-        ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
+        if initial:
+            ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
         self._set_ticks(ax)
         return ax, img
 
-    def _init_heatmap_vis(self, name, cmap):
-        fig = plt.figure(name)
-        self.heatmap_fig[name] = fig
-        ax, img = self._init_vis_common(fig, cmap)
-        self.heatmap_ax[name], self.heatmap_img[name] = ax, img
-        fig.show()
+    def _init_heatmap_vis(self, name, cmap, nrows, ncols, index):
+        if name not in self.heatmap_fig:
+            self.heatmap_fig[name] = plt.figure(name)
+            initial = True
+        else:
+            initial = False
+
+        ax, img = self._init_vis_common(
+            self.heatmap_fig[name],
+            cmap=cmap,
+            axarg=(nrows, ncols, index),
+            initial=initial,
+        )
+        self.heatmap_ax[(name, index)], self.heatmap_img[(name, index)] = ax, img
+        if initial:
+            self.heatmap_fig[name].show()
 
     def _normalize_separated(self, value, vmin, vmax):
         if value < 0:
@@ -229,7 +242,14 @@ class GridWorld(Domain):
         self.show_heatmap(reward, "Pseudo Reward")
 
     def show_heatmap(
-        self, value, name, normalize_method="separated", cmap="ValueFunction-New",
+        self,
+        value,
+        name,
+        normalize_method="separated",
+        cmap="ValueFunction-New",
+        nrows=1,
+        ncols=1,
+        index=1,
     ):
         """
         Visualize learned reward functions for PSRL or other methods.
@@ -237,25 +257,25 @@ class GridWorld(Domain):
         if len(value.shape) == 1:
             value = value.reshape(self.rows, self.cols)
 
-        if name not in self.heatmap_fig:
-            self._init_heatmap_vis(name, cmap)
-            initial = True
-        else:
-            initial = False
-        self._reset_texts(self.heatmap_texts[name])
-        self.heatmap_img[name].set_data(value)
+        key = name, index
+
+        if key not in self.heatmap_ax:
+            self._init_heatmap_vis(name, cmap, nrows, ncols, index)
+
+        self._reset_texts(self.heatmap_texts[key])
+        self.heatmap_img[key].set_data(value)
 
         vmin, vmax = value.min(), value.max()
         vmin_wrote, vmax_wrote = False, False
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if value[r, c] == vmin and not vmin_wrote:
                 self._text_on_cell(
-                    c, r, vmin, self.heatmap_texts[name], self.heatmap_ax[name]
+                    c, r, vmin, self.heatmap_texts[key], self.heatmap_ax[key]
                 )
                 vmin_wrote = True
             elif value[r, c] == vmax and not vmax_wrote:
                 self._text_on_cell(
-                    c, r, vmax, self.heatmap_texts[name], self.heatmap_ax[name]
+                    c, r, vmax, self.heatmap_texts[key], self.heatmap_ax[key]
                 )
                 vmax_wrote = True
             if normalize_method == "separated":
@@ -264,8 +284,6 @@ class GridWorld(Domain):
                 value[r, c] = self._normalize_uniform(value[r, c], vmin, vmax)
 
         self.heatmap_fig[name].canvas.draw()
-        if initial:
-            self.heatmap_fig[name].canvas.draw()
 
     def _vf_text(self, c, r, v):
         self._text_on_cell(c, r, v, self.vf_texts, self.vf_ax)

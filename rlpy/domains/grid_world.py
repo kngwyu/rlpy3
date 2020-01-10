@@ -208,7 +208,6 @@ class GridWorld(Domain):
         self.heatmap_fig[name] = fig
         ax, img = self._init_vis_common(fig, cmap)
         self.heatmap_ax[name], self.heatmap_img[name] = ax, img
-        ax.plot(0, 0)
         fig.show()
 
     def _normalize_separated(self, value, vmin, vmax):
@@ -240,7 +239,11 @@ class GridWorld(Domain):
 
         if name not in self.heatmap_fig:
             self._init_heatmap_vis(name, cmap)
+            initial = True
+        else:
+            initial = False
         self._reset_texts(self.heatmap_texts[name])
+        self.heatmap_img[name].set_data(value)
 
         vmin, vmax = value.min(), value.max()
         vmin_wrote, vmax_wrote = False, False
@@ -259,8 +262,10 @@ class GridWorld(Domain):
                 value[r, c] = self._normalize_separated(value[r, c], vmin, vmax)
             else:
                 value[r, c] = self._normalize_uniform(value[r, c], vmin, vmax)
-        self.heatmap_img[name].set_data(value)
+
         self.heatmap_fig[name].canvas.draw()
+        if initial:
+            self.heatmap_fig[name].canvas.draw()
 
     def _vf_text(self, c, r, v):
         self._text_on_cell(c, r, v, self.vf_texts, self.vf_ax)

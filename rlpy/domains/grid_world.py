@@ -188,7 +188,13 @@ class GridWorld(Domain):
         self.domain_fig.canvas.draw()
 
     def _init_vis_common(
-        self, fig, cmap="ValueFunction-New", axarg=(1, 1, 1), initial=True
+        self,
+        fig,
+        cmap="ValueFunction-New",
+        axarg=(1, 1, 1),
+        initial=True,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
     ):
         ax = fig.add_subplot(*axarg)
         cmap = plt.get_cmap(cmap)
@@ -196,8 +202,8 @@ class GridWorld(Domain):
             self.map,
             cmap=cmap,
             interpolation="nearest",
-            vmin=self.MIN_RETURN,
-            vmax=self.MAX_RETURN,
+            vmin=cmap_vmin,
+            vmax=cmap_vmax,
         )
         ax.plot([0.0], [0.0], color=cmap(256), label=f"Max")
         ax.plot([0.0], [0.0], color=cmap(0), label=f"Min")
@@ -206,7 +212,7 @@ class GridWorld(Domain):
         self._set_ticks(ax)
         return ax, img
 
-    def _init_heatmap_vis(self, name, cmap, nrows, ncols, index):
+    def _init_heatmap_vis(self, name, cmap, nrows, ncols, index, cmap_vmin, cmap_vmax):
         if name not in self.heatmap_fig:
             self.heatmap_fig[name] = plt.figure(name)
             initial = True
@@ -218,21 +224,23 @@ class GridWorld(Domain):
             cmap=cmap,
             axarg=(nrows, ncols, index),
             initial=initial,
+            cmap_vmin=cmap_vmin,
+            cmap_vmax=cmap_vmax,
         )
         self.heatmap_ax[(name, index)], self.heatmap_img[(name, index)] = ax, img
         if initial:
             self.heatmap_fig[name].show()
 
-    def _normalize_separated(self, value, vmin, vmax):
+    def _normalize_separated(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
         if value < 0:
-            return linear_map(value, min(vmin, self.MIN_RETURN), 0, self.MIN_RETURN, 0)
+            return linear_map(value, min(vmin, cmap_vmin), 0, cmap_vmin, 0)
         else:
-            return linear_map(value, 0, max(vmax, self.MAX_RETURN), 0, self.MAX_RETURN)
+            return linear_map(value, 0, max(vmax, cmap_vmax), 0, cmap_vmax)
 
-    def _normalize_uniform(self, value, vmin, vmax):
-        vmin = min(vmin, self.MIN_RETURN)
-        vmax = max(vmax, self.MAX_RETURN)
-        return linear_map(value, vmin, vmax, self.MIN_RETURN, self.MAX_RETURN)
+    def _normalize_uniform(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
+        vmin = min(vmin, cmap_vmin)
+        vmax = max(vmax, cmap_vmax)
+        return linear_map(value, vmin, vmax, cmap_vmin, cmap_vmax)
 
     def show_reward(self, reward_):
         """
@@ -250,6 +258,8 @@ class GridWorld(Domain):
         nrows=1,
         ncols=1,
         index=1,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
     ):
         """
         Visualize learned reward functions for PSRL or other methods.
@@ -260,7 +270,9 @@ class GridWorld(Domain):
         key = name, index
 
         if key not in self.heatmap_ax:
-            self._init_heatmap_vis(name, cmap, nrows, ncols, index)
+            self._init_heatmap_vis(
+                name, cmap, nrows, ncols, index, cmap_vmin, cmap_vmax
+            )
 
         self._reset_texts(self.heatmap_texts[key])
         self.heatmap_img[key].set_data(value)
@@ -279,9 +291,13 @@ class GridWorld(Domain):
                 )
                 vmax_wrote = True
             if normalize_method == "separated":
-                value[r, c] = self._normalize_separated(value[r, c], vmin, vmax)
-            else:
-                value[r, c] = self._normalize_uniform(value[r, c], vmin, vmax)
+                value[r, c] = self._normalize_separated(
+                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
+                )
+            elif normalize_method == "uniform":
+                value[r, c] = self._normalize_uniform(
+                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
+                )
 
         self.heatmap_fig[name].canvas.draw()
 

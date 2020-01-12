@@ -6,8 +6,11 @@ import methods
 
 
 def select_domain(map_, noise, **kwargs):
+    random_goal = "RandomGoal" in map_
     map_ = GridWorld.default_map(map_ + ".txt")
-    return GridWorld(map_, random_start=True, noise=noise, episode_cap=20)
+    return GridWorld(
+        map_, random_start=True, random_goal=random_goal, noise=noise, episode_cap=20
+    )
 
 
 def select_agent(name, domain, max_steps, seed, **kwargs):

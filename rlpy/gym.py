@@ -69,7 +69,8 @@ def gridworld_obs(domain, mode="onehot"):
 
 
 def gridworld(mapfile, mode="onehot", **kwargs):
-    domain = domains.GridWorld(mapfile=mapfile, **kwargs)
+    random_goal = "RandomGoal" in mapfile.as_posix()
+    domain = domains.GridWorld(mapfile=mapfile, random_goal=random_goal, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
     return RLPyEnv(domain, obs_fn, obs_space)
 

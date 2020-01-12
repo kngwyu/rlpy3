@@ -86,6 +86,7 @@ class GridWorld(Domain):
         mapfile=DEFAULT_MAP_DIR.joinpath("4x5.txt"),
         noise=0.1,
         random_start=False,
+        random_goal=False,
         episode_cap=1000,
     ):
         if isinstance(mapfile, str):
@@ -93,11 +94,17 @@ class GridWorld(Domain):
         map_ = self._load_map(mapfile)
         mapname = mapfile.stem
 
-        self._init_from_map(map_, mapname, random_start, noise, episode_cap)
+        self._init_from_map(
+            map_, mapname, noise, episode_cap, random_start, random_goal
+        )
 
-    def _init_from_map(self, map_, mapname, random_start, noise, episode_cap):
+    def _init_from_map(
+        self, map_, mapname, noise, episode_cap, random_start=False, random_goal=False
+    ):
         self.map = map_
         self.random_start = random_start
+        self._goals = np.argwhere(map_ == self.GOAL)
+        self.random_goal = random_goal
         # Number of rows and columns of the map
         self.rows, self.cols = self.map.shape
         super().__init__(
@@ -112,8 +119,9 @@ class GridWorld(Domain):
         # map name for the viewer title
         self.mapname = mapname
         # Used for graphics to show the domain
-        self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
-        self.vf_fig, self.vf_ax, self.vf_img = None, None, None
+        self.domain_fig, self.domain_ax, self.domain_img, self.agent_fig = (None,) * 4
+        self.goal_changed = True
+        self.vf_fig, self.vf_ax, self.vf_img = (None,) * 3
         self.arrow_figs = []
         self.goal_reward = self.MAX_RETURN
         self.pit_reward = self.MIN_RETURN
@@ -126,11 +134,20 @@ class GridWorld(Domain):
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
         if self.random_start:
-            idx = self.random_state.randint(len(starts))
+            idx = self.random_state.randint(starts.shape[0])
         else:
             idx = 0
         self.start_state = starts[idx]
         return self.start_state.copy()
+
+    def _sample_goal(self):
+        idx = self.random_state.randint(self._goals.shape[0])
+        for i, (r, c) in enumerate(self._goals):
+            if i == idx:
+                self.map[r, c] = self.GOAL
+            else:
+                self.map[r, c] = self.EMPTY
+        self.goal_changed = True
 
     def _map_mask(self):
         return (self.map != self.BLOCKED).astype(np.float32)
@@ -145,7 +162,7 @@ class GridWorld(Domain):
 
     def _show_map(self):
         cmap = plt.get_cmap(self.COLOR_MAP)
-        self.domain_ax.imshow(
+        self.domain_img = self.domain_ax.imshow(
             self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
         self.domain_ax.plot([0.0], [0.0], color=cmap(1), label="Block")
@@ -188,6 +205,9 @@ class GridWorld(Domain):
         # Draw the environment
         if self.domain_fig is None:
             self._init_domain_vis(s)
+        if self.goal_changed:
+            self.domain_img.set_data(self.map)
+            self.goal_changed = False
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
@@ -495,6 +515,8 @@ class GridWorld(Domain):
 
     def s0(self):
         self.state = self._sample_start()
+        if self.random_goal:
+            self._sample_goal()
         return self.state, self.is_terminal(), self.possible_actions()
 
     def _valid_state(self, state):

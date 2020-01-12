@@ -6,7 +6,7 @@ from rlpy import domains
 from rlpy import representations as reprs
 
 
-class RlpyEnv(gym.Env):
+class RLPyEnv(gym.Env):
     def __init__(self, domain, obs_fn, obs_space):
         self.domain = domain
         self.action_space = gym.spaces.Discrete(domain.actions_num)
@@ -28,6 +28,9 @@ class RlpyEnv(gym.Env):
 
     def render(self, mode="human"):
         self.domain.show_domain()
+
+    def get_obs(self, state):
+        return self.obs_fn(self.domain, state)
 
 
 def gridworld_obs(domain, mode="onehot"):
@@ -68,25 +71,25 @@ def gridworld_obs(domain, mode="onehot"):
 def gridworld(mapfile, mode="onehot", **kwargs):
     domain = domains.GridWorld(mapfile=mapfile, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RlpyEnv(domain, obs_fn, obs_space)
+    return RLPyEnv(domain, obs_fn, obs_space)
 
 
 def fr_gridworld(mapfile, mode="onehot", **kwargs):
     domain = domains.FixedRewardGridWorld(mapfile=mapfile, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RlpyEnv(domain, obs_fn, obs_space)
+    return RLPyEnv(domain, obs_fn, obs_space)
 
 
 def br_gridworld(mapfile, mode="onehot", **kwargs):
     domain = domains.BernoulliGridWorld(mapfile=mapfile, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RlpyEnv(domain, obs_fn, obs_space)
+    return RLPyEnv(domain, obs_fn, obs_space)
 
 
 def deepsea(size=20, mode="onehot", **kwargs):
     domain = domains.DeepSea(size, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RlpyEnv(domain, obs_fn, obs_space)
+    return RLPyEnv(domain, obs_fn, obs_space)
 
 
 def register_gridworld(mapfile, max_steps=100, threshold=0.9):

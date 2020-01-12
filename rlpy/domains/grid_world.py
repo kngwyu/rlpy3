@@ -1,8 +1,9 @@
 """Gridworld Domain."""
+from collections import defaultdict
 import numpy as np
 import itertools
-from rlpy.tools import FONTSIZE, linear_map, plt
-from rlpy.tools import __rlpy_location__, findElemArray1D, perms
+from rlpy.tools import FONTSIZE, linear_map, plt, with_scaled_figure
+from rlpy.tools import __rlpy_location__, findElemArray1D
 from pathlib import Path
 
 from .domain import Domain
@@ -113,12 +114,14 @@ class GridWorld(Domain):
         # Used for graphics to show the domain
         self.domain_fig, self.domain_ax, self.agent_fig = None, None, None
         self.vf_fig, self.vf_ax, self.vf_img = None, None, None
-        self.arrow_figs = {}
+        self.arrow_figs = []
         self.goal_reward = self.MAX_RETURN
         self.pit_reward = self.MIN_RETURN
         self.vf_texts = []
-        self.r_fig, self.r_ax, self.r_img = None, None, None
-        self.r_texts = []
+        self.heatmap_fig, self.heatmap_ax, self.heatmap_img = {}, {}, {}
+        self.heatmap_texts = defaultdict(list)
+        self.policy_fig, self.policy_ax = None, {}
+        self.policy_arrows = defaultdict(list)
 
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
@@ -128,6 +131,9 @@ class GridWorld(Domain):
             idx = 0
         self.start_state = starts[idx]
         return self.start_state.copy()
+
+    def _map_mask(self):
+        return (self.map != self.BLOCKED).astype(np.float32)
 
     def _legend_pos(self):
         x_offset, y_offset = 1.1, 1.1
@@ -150,7 +156,7 @@ class GridWorld(Domain):
             fontsize=12, loc="upper right", bbox_to_anchor=self._legend_pos()
         )
 
-    def _set_ticks(self, ax):
+    def _set_ticks(self, ax, fontsize=FONTSIZE):
         ax.get_xaxis().set_ticks_position("top")
         ax.set_xticks(np.arange(self.cols))
         xlabels = ax.get_xticklabels()
@@ -186,78 +192,145 @@ class GridWorld(Domain):
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
 
-    def _init_vis_common(self, fig):
-        ax = fig.add_subplot(111)
-        cmap = plt.get_cmap("ValueFunction-New")
+    def _init_vis_common(
+        self,
+        fig,
+        cmap="ValueFunction-New",
+        axarg=(1, 1, 1),
+        legend=True,
+        ticks=True,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
+    ):
+        ax = fig.add_subplot(*axarg)
+        cmap = plt.get_cmap(cmap)
         img = ax.imshow(
             self.map,
             cmap=cmap,
             interpolation="nearest",
-            vmin=self.MIN_RETURN,
-            vmax=self.MAX_RETURN,
+            vmin=cmap_vmin,
+            vmax=cmap_vmax,
         )
-        ax.plot([0.0], [0.0], color=cmap(256), label="Max")
-        ax.plot([0.0], [0.0], color=cmap(0), label="Min")
-        ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
-        self._set_ticks(ax)
+        ax.plot([0.0], [0.0], color=cmap(256), label=f"Max")
+        ax.plot([0.0], [0.0], color=cmap(0), label=f"Min")
+        if legend:
+            ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
+        if ticks:
+            self._set_ticks(ax)
         return ax, img
 
-    def _init_reward_vis(self, r, name):
-        self.r_fig = plt.figure("Pseudo Reward")
-        self.r_ax, self.r_img = self._init_vis_common(self.r_fig)
-        self.r_ax.plot(0, 0)
-        self.r_fig.show()
+    def _init_heatmap_vis(
+        self, name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
+    ):
+        if name not in self.heatmap_fig:
+            self.heatmap_fig[name] = plt.figure(name)
+            self.heatmap_fig[name].show()
 
-    def show_reward(self, reward_, name="Pseudo Reward"):
+        ax, img = self._init_vis_common(
+            self.heatmap_fig[name],
+            cmap=cmap,
+            axarg=(nrows, ncols, index),
+            legend=legend,
+            ticks=ticks,
+            cmap_vmin=cmap_vmin,
+            cmap_vmax=cmap_vmax,
+        )
+        self.heatmap_ax[(name, index)], self.heatmap_img[(name, index)] = ax, img
+
+    def _normalize_separated(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
+        if value < 0:
+            return linear_map(value, min(vmin, cmap_vmin), 0, cmap_vmin, 0)
+        else:
+            return linear_map(value, 0, max(vmax, cmap_vmax), 0, cmap_vmax)
+
+    def _normalize_uniform(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
+        vmin = min(vmin, cmap_vmin)
+        vmax = max(vmax, cmap_vmax)
+        return linear_map(value, vmin, vmax, cmap_vmin, cmap_vmax)
+
+    def show_reward(self, reward_):
         """
         Visualize learned reward functions for PSRL or other methods.
         """
         reward = reward_.reshape(self.cols, self.rows).T
-        if self.r_fig is None:
-            self._init_reward_vis(reward, name)
+        self.show_heatmap(reward, "Pseudo Reward")
 
-        for txt in self.r_texts:
-            txt.remove()
-        self.r_texts.clear()
-        rmin, rmax = reward.min(), reward.max()
-        rmin_wrote, rmax_wrote = False, False
+    def show_heatmap(
+        self,
+        value,
+        name,
+        normalize_method="separated",
+        cmap="ValueFunction-New",
+        nrows=1,
+        ncols=1,
+        index=1,
+        legend=True,
+        ticks=True,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
+    ):
+        """
+        Visualize learned reward functions for PSRL or other methods.
+        """
+        if len(value.shape) == 1:
+            value = value.reshape(self.rows, self.cols)
+
+        key = name, index
+
+        if key not in self.heatmap_ax:
+            self._init_heatmap_vis(
+                name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
+            )
+
+        self._reset_texts(self.heatmap_texts[key])
+
+        vmin, vmax = value.min(), value.max()
+        vmin_wrote, vmax_wrote = False, False
         for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if reward[r, c] == rmin and not rmin_wrote:
-                self._vf_text(c, r, rmin, mode="r")
-                rmin_wrote = True
-            elif reward[r, c] == rmax and not rmax_wrote:
-                self._vf_text(c, r, rmax, mode="r")
-                rmax_wrote = True
-            if reward[r, c] < 0:
-                reward[r, c] = linear_map(
-                    reward[r, c], min(rmin, self.MIN_RETURN), 0, -1, 0
+            if value[r, c] == vmin and not vmin_wrote:
+                self._text_on_cell(
+                    c, r, vmin, self.heatmap_texts[key], self.heatmap_ax[key]
                 )
-            else:
-                reward[r, c] = linear_map(
-                    reward[r, c], 0, max(rmax, self.MAX_RETURN), 0, 1
+                vmin_wrote = True
+            elif value[r, c] == vmax and not vmax_wrote:
+                self._text_on_cell(
+                    c, r, vmax, self.heatmap_texts[key], self.heatmap_ax[key]
                 )
-        self.r_img.set_data(reward)
-        self.r_fig.canvas.draw()
+                vmax_wrote = True
+            if normalize_method == "separated":
+                value[r, c] = self._normalize_separated(
+                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
+                )
+            elif normalize_method == "uniform":
+                value[r, c] = self._normalize_uniform(
+                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
+                )
+        self.heatmap_img[key].set_data(value * self._map_mask())
+        self.heatmap_fig[name].canvas.draw()
 
-    def _vf_text(self, c, r, v, mode="vf"):
-        if mode == "vf":
-            cache = self.vf_texts
-            ax = self.vf_ax
-        else:
-            cache = self.r_texts
-            ax = self.r_ax
+    def _vf_text(self, c, r, v):
+        self._text_on_cell(c, r, v, self.vf_texts, self.vf_ax)
+
+    @staticmethod
+    def _reset_texts(texts):
+        for txt in texts:
+            txt.remove()
+        texts.clear()
+
+    @staticmethod
+    def _text_on_cell(c, r, v, cache, ax):
         cache.append(
             ax.text(c - 0.2, r + 0.1, format(v, ".1f"), color="xkcd:bright blue")
         )
 
-    def _init_arrow(self, name, x, y):
-        arrow_ratio = 0.4
+    def _init_arrow(self, name, x, y, ax, arrow_scale=1.0):
+        arrow_ratio = 0.4 * arrow_scale
         MAX_RATIO_HEAD_TO_LENGTH = 0.25
         ARROW_WIDTH = 0.5 * MAX_RATIO_HEAD_TO_LENGTH / 5.0
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
-        self.arrow_figs[name] = self.vf_ax.quiver(
+        arrow_fig = ax.quiver(
             x,
             y,
             np.ones(x.shape),
@@ -269,7 +342,61 @@ class GridWorld(Domain):
             scale=(self.rows if is_y else self.cols) / arrow_ratio,
             width=-ARROW_WIDTH if is_y else ARROW_WIDTH,
         )
-        self.arrow_figs[name].set_clim(vmin=0, vmax=1)
+        arrow_fig.set_clim(vmin=0, vmax=1)
+        return arrow_fig
+
+    def show_policy(
+        self, policy, nrows=1, ncols=1, index=1, ticks=True, scale=1.0,
+    ):
+        if self.policy_fig is None:
+            with with_scaled_figure(scale):
+                self.policy_fig = plt.figure("Policy")
+            self.policy_fig.show()
+        if index not in self.policy_ax:
+            self.policy_ax[index], _ = self._init_vis_common(
+                self.policy_fig, axarg=(nrows, ncols, index), legend=False, ticks=ticks
+            )
+            shift = self.ACTIONS * self.SHIFT
+            x, y = np.arange(self.cols), np.arange(self.rows)
+            for name, s in zip(self.ARROW_NAMES, shift):
+                grid = np.meshgrid(x + s[1], y + s[0])
+                self.policy_arrows[index].append(
+                    self._init_arrow(
+                        name, *grid, self.policy_ax[index], arrow_scale=scale,
+                    )
+                )
+
+        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
+        arrow_size = np.zeros(arrow_mask.shape, dtype=np.float32)
+        arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
+
+        try:
+            policy = policy.reshape(self.rows, self.cols, -1)
+        except ValueError:
+            raise ValueError(f"Invalid policy shape: {policy.shape}")
+        _, _, action_dim = policy.shape
+
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            cell = self.map[r, c]
+            if cell not in (self.START, self.EMPTY):
+                continue
+            s = np.array([r, c])
+            actions = self.possible_actions(s)
+            best_act = policy[r, c].argmax()
+            arrow_mask[r, c, actions] = False
+            arrow_color[r, c, best_act] = 1
+            for a in actions:
+                arrow_size[r, c, a] = policy[r, c, a]
+
+        # Show Policy for arrows
+        for i, name in enumerate(self.ARROW_NAMES):
+            dy, dx = self.ACTIONS[i]
+            size, mask = arrow_size[:, :, i], arrow_mask[:, :, i]
+            dx = np.ma.masked_array(dx * size, mask=mask)
+            dy = np.ma.masked_array(dy * size * -1, mask=mask)
+            c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
+            self.policy_arrows[index][i].set_UVC(dx, dy, c)
+        self.policy_fig.canvas.draw()
 
     def _init_value_vis(self):
         self.vf_fig = plt.figure("Value Function")
@@ -278,21 +405,21 @@ class GridWorld(Domain):
         shift = self.ACTIONS * self.SHIFT
         x, y = np.arange(self.cols), np.arange(self.rows)
         for name, s in zip(self.ARROW_NAMES, shift):
-            self._init_arrow(name, *np.meshgrid(x + s[1], y + s[0]))
+            self.arrow_figs.append(
+                self._init_arrow(name, *np.meshgrid(x + s[1], y + s[0]), self.vf_ax)
+            )
         self.vf_fig.show()
 
     def show_learning(self, representation):
         if self.vf_ax is None:
             self._init_value_vis()
-        for txt in self.vf_texts:
-            txt.remove()
-        self.vf_texts.clear()
+        self._reset_texts(self.vf_texts)
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
-        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype="bool")
-        arrow_size = np.zeros(arrow_mask.shape, dtype="float")
+        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
+        arrow_size = np.zeros(arrow_mask.shape, dtype=np.float32)
         # 0 = suboptimal action, 1 = optimal action
-        arrow_color = np.zeros(arrow_mask.shape, dtype="uint8")
+        arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
         v = np.zeros((self.rows, self.cols))
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             cell = self.map[r, c]
@@ -335,7 +462,7 @@ class GridWorld(Domain):
             dx = np.ma.masked_array(dx * size, mask=mask)
             dy = np.ma.masked_array(dy * size * -1, mask=mask)
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
-            self.arrow_figs[name].set_UVC(dx, dy, c)
+            self.arrow_figs[i].set_UVC(dx, dy, c)
         self.vf_fig.canvas.draw()
 
     def _reward(self, next_state, _terminal):
@@ -420,15 +547,9 @@ class GridWorld(Domain):
         t[pit] = True
         return p, r, ns, t, pa
 
-    def allStates(self):
-        if len(self.continuous_dims) > 0:
-            # Recall that discrete dimensions are assumed to be integer
-            return (
-                perms(self.discrete_statespace_width + 1)
-                + self.discrete_statespace_limits[0]
-            )
-        else:
-            return None
+    def all_states(self):
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            yield np.array([r, c])
 
     def get_image(self, state):
         image = self.map.copy()

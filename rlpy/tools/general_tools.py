@@ -1128,6 +1128,14 @@ def with_bold_fonts():
     rc("font", weight="normal")
 
 
+@contextlib.contextmanager
+def with_scaled_figure(scale):
+    x, y = plt.rcParams["figure.figsize"]
+    rc("figure", figsize=(x * scale, y * scale))
+    yield
+    rc("figure", figsize=(x, y))
+
+
 rc("axes", labelsize=12)
 rc("xtick", labelsize=12)
 rc("ytick", labelsize=12)

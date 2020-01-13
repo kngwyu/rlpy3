@@ -14,6 +14,7 @@ from rlpy.agents import (
 from rlpy.policies import eGreedy, GibbsPolicy
 from rlpy import representations
 from rlpy.representations import (
+    Fourier,
     iFDD,
     iFDDK,
     IncrementalTabular,
@@ -261,7 +262,8 @@ def ifdd_sarsa(*args, **kwargs):
     return _ifdd_q_common(SARSA, *args, **kwargs)
 
 
-def ifddk_q(
+def _ifddk_common(
+    agent_class,
     domain,
     epsilon=0.1,
     discretization=20,
@@ -281,7 +283,7 @@ def ifddk_q(
         lazy=True,
         lambda_=lambda_,
     )
-    return Q_Learning(
+    return agent_class(
         eGreedy(ifddk, epsilon=epsilon),
         ifddk,
         discount_factor=domain.discount_factor,
@@ -292,7 +294,16 @@ def ifddk_q(
     )
 
 
-def kifdd_q(
+def ifddk_q(domain, **kwargs):
+    return _ifddk_common(Q_Learning, **kwargs)
+
+
+def ifddk_sarsa(domain, **kwargs):
+    return _ifddk_common(SARSA, **kwargs)
+
+
+def _kifdd_common(
+    agent_class,
     domain,
     kernel_resolution,
     threshold=1.0,
@@ -315,7 +326,7 @@ def kifdd_q(
         max_active_base_feat=10,
         max_base_feat_sim=0.5,
     )
-    return Q_Learning(
+    return agent_class(
         eGreedy(kifdd, epsilon=0.1),
         kifdd,
         discount_factor=domain.discount_factor,
@@ -326,9 +337,18 @@ def kifdd_q(
     )
 
 
-def rbf_q(
+def kifdd_q(domain, **kwargs):
+    return _kifdd_common(Q_Learning, **kwargs)
+
+
+def kifdd_sarsa(domain, **kwargs):
+    return _kifdd_common(SARSA, **kwargs)
+
+
+def _rbf_common(
+    agent_class,
     domain,
-    seed,
+    seed=1,
     num_rbfs=96,
     resolution=21,
     initial_learn_rate=0.1,
@@ -344,7 +364,7 @@ def rbf_q(
         normalize=True,
         seed=seed,
     )
-    return Q_Learning(
+    return agent_class(
         eGreedy(rbf, epsilon=0.1),
         rbf,
         discount_factor=domain.discount_factor,
@@ -353,3 +373,40 @@ def rbf_q(
         learn_rate_decay_mode="boyan",
         boyan_N0=boyan_N0,
     )
+
+
+def rbf_q(domain, **kwargs):
+    return _rbf_common(Q_Learning, **kwargs)
+
+
+def rbf_sarsa(domain, **kwargs):
+    return _rbf_common(SARSA, **kwargs)
+
+
+def _fourier_common(
+    agent_class,
+    domain,
+    order=3,
+    scaling=False,
+    initial_learn_rate=0.1,
+    lambda_=0.3,
+    boyan_N0=100,
+):
+    fourier = Fourier(domain, order=order, scaling=scaling)
+    return agent_class(
+        eGreedy(fourier, epsilon=0.1),
+        fourier,
+        discount_factor=domain.discount_factor,
+        lambda_=lambda_,
+        initial_learn_rate=initial_learn_rate,
+        learn_rate_decay_mode="boyan",
+        boyan_N0=boyan_N0,
+    )
+
+
+def fourier_q(domain, **kwargs):
+    return _fourier_common(Q_Learning, domain, **kwargs)
+
+
+def fourier_sarsa(domain, **kwargs):
+    return _fourier_common(SARSA, domain, **kwargs)

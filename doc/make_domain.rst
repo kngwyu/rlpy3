@@ -78,7 +78,7 @@ superclass ``__init__()`` function:
    (eg, row in ``statespace_limits`` above) of a continuous-valued dimension.
    This array is empty if all states are discrete.
 
-#. ``self.DimNames`` - array of strings, a name corresponding to each dimension
+#. ``self.dim_names`` - array of strings, a name corresponding to each dimension
    (eg one for each row in ``statespace_limits`` above)
 
 #. ``self.episode_cap`` - integer, maximum number of steps before an episode
@@ -204,7 +204,7 @@ Note that the optimal policy is to always go right.
 
 #. Copy the __init__ declaration from ``Domain.py``, add needed parameters
    (here the number of states in the chain, ``chain_size``), and log them.
-   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.DimNames, self.actions_num,`` 
+   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.dim_names, self.actions_num,`` 
    and ``self.discount_factor``.
    Then call the superclass constructor::
 
@@ -218,7 +218,7 @@ Note that the optimal policy is to always go right.
                 self.statespace_limits  = np.array([[0,chain_size-1]])
                 self.episode_cap         = 2*chain_size
                 self.continuous_dims    = []
-                self.DimNames           = ['State']
+                self.dim_names           = ['State']
                 self.actions_num        = 2
                 self.discount_factor    = 0.9
                 super(ChainMDPTut,self).__init__()

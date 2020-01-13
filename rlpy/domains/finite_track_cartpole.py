@@ -111,7 +111,7 @@ class FiniteTrackCartPole(CartPoleBase):
             ],
             **kwargs
         )
-        self.DimNames = ["Theta", "Thetadot", "X", "Xdot"]
+        self.dim_names = ["Theta", "Thetadot", "X", "Xdot"]
 
     def step(self, a):
         s = self.state

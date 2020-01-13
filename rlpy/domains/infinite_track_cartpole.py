@@ -105,7 +105,7 @@ class InfTrackCartPole(CartPoleBase):
     int_type = "rk4"
 
     def __init__(self, **kwargs):
-        self.DimNames = ["Theta", "Thetadot"]
+        self.dim_names = ["Theta", "Thetadot"]
         super().__init__(
             statespace_limits=np.array([self.ANGLE_LIMITS, self.ANGULAR_RATE_LIMITS]),
             continuous_dims=[StateIndex.THETA, StateIndex.THETA_DOT],

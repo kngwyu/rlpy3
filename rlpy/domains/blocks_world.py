@@ -87,9 +87,9 @@ class BlocksWorld(Domain):
         # [0 0 1 2 3 .. blocks-2] meaning block 0 on the table and all other stacked on top of e
         self.GOAL_STATE = np.hstack(([0], np.arange(0, blocks - 1)))
         # Make Dimension Names
-        self.DimNames = []
+        self.dim_names = []
         for a in range(blocks):
-            self.DimNames.append(["%d on" % a])
+            self.dim_names.append(["%d on" % a])
 
     def show_domain(self, a=0):
         # Draw the environment

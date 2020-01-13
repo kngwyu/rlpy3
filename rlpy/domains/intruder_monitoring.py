@@ -88,7 +88,7 @@ class IntruderMonitoring(Domain):
             _statespace_limits, ((self.NUMBER_OF_AGENTS + self.NUMBER_OF_INTRUDERS), 1)
         )
         self.ACTION_LIMITS = [5] * self.NUMBER_OF_AGENTS
-        self.DimNames = []
+        self.dim_names = []
 
         super().__init__(
             actions_num=5 ** self.NUMBER_OF_AGENTS,

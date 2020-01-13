@@ -190,7 +190,7 @@ class PST(Domain):
         self.uav_actuator_vis = None
         self.comms_line = None
         self.dist_between_locations = self.RECT_GAP + self.LOCATION_WIDTH
-        self.DimNames = (
+        self.dim_names = (
             ["UAV{}-loc".format(i) for i in range(NUM_UAV)]
             + ["UAV{}-fuel".format(i) for i in range(NUM_UAV)]
             + ["UAV{}-act".format(i) for i in range(NUM_UAV)]

@@ -88,7 +88,7 @@ class MountainCar(Domain):
             else self.STEP_REWARD * self.episode_cap
         )
         self.MAX_RETURN = 0
-        self.DimNames = ["X", "Xdot"]
+        self.dim_names = ["X", "Xdot"]
 
     def step(self, a):
         """

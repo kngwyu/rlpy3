@@ -24,10 +24,10 @@ def grid4x5_v2_goal():
 
 @pytest.mark.parametrize(
     "version, goal_fn",
-    [("v0", grid4x5_v0_goal), ("v1", grid4x5_v1_goal), ("v2", grid4x5_v2_goal)],
+    [(0, grid4x5_v0_goal), (1, grid4x5_v1_goal), (2, grid4x5_v2_goal)],
 )
 def test_gridworld(version, goal_fn):
-    env = gym.make("RLPyGridWorld4x5-" + version, noise=0.0)
+    env = gym.make(f"RLPyGridWorld4x5-v{version}", noise=0.0)
     state = env.reset()
     assert env.action_space.n == 4
     assert state.shape == env.observation_space.shape
@@ -38,9 +38,9 @@ def test_gridworld(version, goal_fn):
     np.testing.assert_array_almost_equal(state, goal_fn())
 
 
-@pytest.mark.parametrize("version", ["v0", "v1", "v2"])
+@pytest.mark.parametrize("version", [0, 1, 2])
 def test_deepsea(version):
-    env = gym.make("RLPyDeepSea20-" + version, noise=0.0)
+    env = gym.make(f"RLPyDeepSea20-v{version}", noise=0.0)
     state = env.reset()
     assert env.action_space.n == 2
     assert state.shape == env.observation_space.shape
@@ -48,3 +48,13 @@ def test_deepsea(version):
         state, reward, terminal, _ = env.step(1)
     assert terminal
     assert reward > 0.9
+
+
+@pytest.mark.parametrize(
+    "name, version", [("Box", 0), ("Box", 1), ("Medium", 0), ("Medium", 1)]
+)
+def test_pinball(name, version):
+    env = gym.make(f"RLPyPinball{name}-v{version}")
+    state = env.reset()
+    assert env.action_space.n == 5
+    assert state.shape == env.observation_space.shape

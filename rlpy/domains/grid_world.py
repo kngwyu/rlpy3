@@ -114,7 +114,7 @@ class GridWorld(Domain):
         )
         # Movement noise
         self.noise = noise
-        self.DimNames = ["Row", "Col"]
+        self.dim_names = ["Row", "Col"]
         self.state = self._sample_start()
         # map name for the viewer title
         self.mapname = mapname

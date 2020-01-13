@@ -4,7 +4,7 @@ from .domain import Domain
 import numpy as np
 from itertools import tee
 import itertools
-import os
+from pathlib import Path
 
 try:
     from tkinter import Tk, Canvas
@@ -57,24 +57,24 @@ class Pinball(Domain):
     """
 
     #: default location of config files shipped with rlpy
-    default_config_dir = os.path.join(__rlpy_location__, "domains", "PinballConfigs")
+    DEFAULT_CONFIG_DIR = Path(__rlpy_location__).joinpath("domains/PinballConfigs")
+
+    @classmethod
+    def default_cfg(cls, name="pinball_simple_single.json"):
+        return cls.DEFAULT_CONFIG_DIR.joinpath(name)
 
     def __init__(
         self,
         noise=0.1,
         episode_cap=1000,
-        configuration=os.path.join(default_config_dir, "pinball_simple_single.cfg"),
+        config_file=DEFAULT_CONFIG_DIR.joinpath("pinball_simple_single.json"),
     ):
         """
-        configuration:
-            location of the configuration file
-        episode_cap:
-            maximum length of an episode
-        noise:
-            with probability noise, a uniformly random action is executed
+        :param config_file: Location of the configuration file.
+        :param episode_cap: Maximum length of an episode
+        :param noise: With probability noise, a uniformly random action is executed
         """
         self.NOISE = noise
-        self.configuration = configuration
         self.screen = None
         self.actions = [
             PinballModel.ACC_X,
@@ -91,14 +91,12 @@ class Pinball(Domain):
             continuous_dims=[4],
             episode_cap=episode_cap,
         )
-        self.environment = PinballModel(
-            self.configuration, random_state=self.random_state
-        )
+        self.environment = PinballModel(config_file, random_state=self.random_state)
 
     def show_domain(self, a):
         if self.screen is None:
             master = Tk()
-            master.title("RLPY Pinball")
+            master.title("RLPy Pinball")
             self.screen = Canvas(master, width=500.0, height=500.0)
             self.screen.configure(background="LightGray")
             self.screen.pack()
@@ -149,7 +147,7 @@ class Pinball(Domain):
         return self.environment.episode_ended()
 
 
-class BallModel(object):
+class BallModel:
 
     """ This class maintains the state of the ball
     in the pinball domain. It takes care of moving
@@ -202,7 +200,7 @@ class BallModel(object):
         return val
 
 
-class PinballObstacle(object):
+class PinballObstacle:
 
     """ This class represents a single polygon obstacle in the
     pinball domain and detects when a :class:`BallModel` hits it.
@@ -216,7 +214,7 @@ class PinballObstacle(object):
         :param points: A list of points defining the polygon
         :type points: list of lists
         """
-        self.points = points
+        self.points = np.array(points)
         self.min_x = min(self.points, key=lambda pt: pt[0])[0]
         self.max_x = max(self.points, key=lambda pt: pt[0])[0]
         self.min_y = min(self.points, key=lambda pt: pt[1])[1]
@@ -375,7 +373,7 @@ class PinballObstacle(object):
             return False
 
 
-class PinballModel(object):
+class PinballModel:
 
     """ This class is a self-contained model of the pinball
     domain for reinforcement learning.
@@ -395,13 +393,8 @@ class PinballModel(object):
     THRUST_PENALTY = -5
     END_EPISODE = 10000
 
-    def __init__(self, configuration, random_state=np.random.RandomState()):
+    def __init__(self, config_file, random_state):
         """ Read a configuration file for Pinball and draw the domain to screen
-
-    :param configuration: a configuration file containing the polygons,
-        source(s) and target location.
-    :type configuration: str
-
         """
 
         self.random_state = random_state
@@ -412,33 +405,23 @@ class PinballModel(object):
             self.DEC_Y: (0, -1),
             self.ACC_NONE: (0, 0),
         }
+        import json
 
         # Set up the environment according to the configuration
-        self.obstacles = []
-        self.target_pos = []
-        self.target_rad = 0.01
+        with config_file.open() as f:
+            config = json.load(f)
+        try:
+            self.obstacles = list(map(PinballObstacle, config["obstacles"]))
+            self.target_pos = config["target_pos"]
+            self.target_rad = config["target_rad"]
+            start_pos = config["start_pos"]
+            ball_rad = config["ball_rad"]
+        except KeyError as e:
+            raise KeyError(f"Pinball config doesn't have a key: {e}")
 
-        ball_rad = 0.01
-        start_pos = []
-        with open(configuration) as fp:
-            for line in fp.readlines():
-                tokens = line.strip().split()
-                if not len(tokens):
-                    continue
-                elif tokens[0] == "polygon":
-                    self.obstacles.append(
-                        PinballObstacle(list(zip(*[iter(map(float, tokens[1:]))] * 2)))
-                    )
-                elif tokens[0] == "target":
-                    self.target_pos = [float(tokens[1]), float(tokens[2])]
-                    self.target_rad = float(tokens[3])
-                elif tokens[0] == "start":
-                    start_pos = list(zip(*[iter(map(float, tokens[1:]))] * 2))
-                elif tokens[0] == "ball":
-                    ball_rad = float(tokens[1])
         self.start_pos = start_pos[0]
-        a = self.random_state.randint(len(start_pos))
-        self.ball = BallModel(list(start_pos[a]), ball_rad)
+        start_idx = self.random_state.randint(len(start_pos))
+        self.ball = BallModel(list(start_pos[start_idx]), ball_rad)
 
     def get_state(self):
         """ Access the current 4-dimensional state vector
@@ -520,7 +503,7 @@ class PinballModel(object):
             self.ball.position[1] = 0.05
 
 
-class PinballView(object):
+class PinballView:
 
     """ This class displays a :class:`PinballModel`
 
@@ -592,14 +575,13 @@ class PinballView(object):
 
 def run_pinballview(width, height, configuration):
     """
-
-        Changed from original Pierre-Luc Bacon implementation to reflect
-        the visualization changes in the PinballView Class.
-
+    Changed from original Pierre-Luc Bacon implementation to reflect
+    the visualization changes in the PinballView Class.
     """
+
     width, height = float(width), float(height)
     master = Tk()
-    master.title("RLPY Pinball")
+    master.title("RLPy Pinball")
     screen = Canvas(master, width=500.0, height=500.0)
     screen.configure(background="LightGray")
     screen.pack()

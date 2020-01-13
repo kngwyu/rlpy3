@@ -17,7 +17,9 @@ Config.py
 dist
 *.egg-info
 *.bak
+Untitled.ipynb
 .eggs
+/**/.ipynb_checkpoints
 /**/Results
 /**/Result
 MANIFEST

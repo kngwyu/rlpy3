@@ -128,8 +128,8 @@ class GridWorld(Domain):
         self.vf_texts = []
         self.heatmap_fig, self.heatmap_ax, self.heatmap_img = {}, {}, {}
         self.heatmap_texts = defaultdict(list)
-        self.policy_fig, self.policy_ax = None, {}
-        self.policy_arrows = defaultdict(list)
+        self.policy_fig, self.policy_ax, self.policy_img = None, {}, {}
+        self.policy_arrows, self.policy_texts = defaultdict(list), defaultdict(list)
 
     def _sample_start(self):
         starts = np.argwhere(self.map == self.START)
@@ -185,6 +185,10 @@ class GridWorld(Domain):
         for l in ylabels:
             l.update({"fontsize": FONTSIZE})
 
+    def _noticks(self, ax, fontsize=FONTSIZE):
+        ax.set_xticks([])
+        ax.set_yticks([])
+
     def _agent_fig(self, s):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
@@ -237,6 +241,8 @@ class GridWorld(Domain):
             ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
         if ticks:
             self._set_ticks(ax)
+        else:
+            self._noticks(ax)
         return ax, img
 
     def _init_heatmap_vis(
@@ -255,7 +261,14 @@ class GridWorld(Domain):
             cmap_vmin=cmap_vmin,
             cmap_vmax=cmap_vmax,
         )
-        self.heatmap_ax[(name, index)], self.heatmap_img[(name, index)] = ax, img
+        self.heatmap_ax[name, index], self.heatmap_img[name, index] = ax, img
+
+    def show_reward(self, reward_):
+        """
+        Visualize learned reward functions for PSRL or other methods.
+        """
+        reward = reward_.reshape(self.cols, self.rows).T
+        self.show_heatmap(reward, "Pseudo Reward")
 
     def _normalize_separated(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
         if value < 0:
@@ -266,14 +279,43 @@ class GridWorld(Domain):
     def _normalize_uniform(self, value, vmin, vmax, cmap_vmin, cmap_vmax):
         vmin = min(vmin, cmap_vmin)
         vmax = max(vmax, cmap_vmax)
-        return linear_map(value, vmin, vmax, cmap_vmin, cmap_vmax)
+        return
 
-    def show_reward(self, reward_):
-        """
-        Visualize learned reward functions for PSRL or other methods.
-        """
-        reward = reward_.reshape(self.cols, self.rows).T
-        self.show_heatmap(reward, "Pseudo Reward")
+    def _normalize_value(
+        self,
+        value,
+        method="separated",
+        scaling=True,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
+    ):
+
+        vmin, vmax = value.min(), value.max()
+        vmin_coord, vmax_coord = None, None
+
+        if scaling:
+            vmin_scaled = min(vmin, cmap_vmin)
+            vmax_scaled = min(vmax, cmap_vmax)
+        else:
+            vmin_scaled = vmin
+            vmax_scaled = vmax
+
+        for r, c in itertools.product(range(self.rows), range(self.cols)):
+            if value[r, c] == vmin and vmin_coord is None:
+                vmin_coord = r, c, vmin
+            elif value[r, c] == vmax and vmax_coord is None:
+                vmax_coord = r, c, vmax
+            if method == "separated":
+                if value[r, c] < 0:
+                    value[r, c] = linear_map(value[r, c], vmin_scaled, 0, cmap_vmin, 0)
+                else:
+                    value[r, c] = linear_map(value[r, c], 0, vmax_scaled, 0, cmap_vmax)
+            elif method == "uniform":
+                value[r, c] = linear_map(
+                    value[r, c], vmin_scaled, vmax_scaled, cmap_vmin, cmap_vmax
+                )
+
+        return vmin_coord, vmax_coord
 
     def show_heatmap(
         self,
@@ -281,11 +323,13 @@ class GridWorld(Domain):
         name,
         normalize_method="separated",
         cmap="ValueFunction-New",
+        title=None,
         nrows=1,
         ncols=1,
         index=1,
         legend=True,
         ticks=True,
+        scaling=True,
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
     ):
@@ -301,30 +345,24 @@ class GridWorld(Domain):
             self._init_heatmap_vis(
                 name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
             )
+            if title is not None:
+                self.heatmap_ax[key].set_title(title)
 
         self._reset_texts(self.heatmap_texts[key])
 
-        vmin, vmax = value.min(), value.max()
-        vmin_wrote, vmax_wrote = False, False
-        for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if value[r, c] == vmin and not vmin_wrote:
-                self._text_on_cell(
-                    c, r, vmin, self.heatmap_texts[key], self.heatmap_ax[key]
-                )
-                vmin_wrote = True
-            elif value[r, c] == vmax and not vmax_wrote:
-                self._text_on_cell(
-                    c, r, vmax, self.heatmap_texts[key], self.heatmap_ax[key]
-                )
-                vmax_wrote = True
-            if normalize_method == "separated":
-                value[r, c] = self._normalize_separated(
-                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
-                )
-            elif normalize_method == "uniform":
-                value[r, c] = self._normalize_uniform(
-                    value[r, c], vmin, vmax, cmap_vmin, cmap_vmax
-                )
+        coords = self._normalize_value(
+            value,
+            method=normalize_method,
+            scaling=scaling,
+            cmap_vmin=cmap_vmin,
+            cmap_vmax=cmap_vmax,
+        )
+
+        for r, c, ext_v in coords:
+            self._text_on_cell(
+                c, r, ext_v, self.heatmap_texts[key], self.heatmap_ax[key]
+            )
+
         self.heatmap_img[key].set_data(value * self._map_mask())
         self.heatmap_fig[name].canvas.draw()
 
@@ -345,8 +383,7 @@ class GridWorld(Domain):
 
     def _init_arrow(self, name, x, y, ax, arrow_scale=1.0):
         arrow_ratio = 0.4 * arrow_scale
-        MAX_RATIO_HEAD_TO_LENGTH = 0.25
-        ARROW_WIDTH = 0.5 * MAX_RATIO_HEAD_TO_LENGTH / 5.0
+        ARROW_WIDTH = 0.05
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
@@ -366,14 +403,22 @@ class GridWorld(Domain):
         return arrow_fig
 
     def show_policy(
-        self, policy, nrows=1, ncols=1, index=1, ticks=True, scale=1.0,
+        self,
+        policy,
+        value=None,
+        nrows=1,
+        ncols=1,
+        index=1,
+        ticks=True,
+        scale=1.0,
+        title=None,
     ):
         if self.policy_fig is None:
             with with_scaled_figure(scale):
                 self.policy_fig = plt.figure("Policy")
             self.policy_fig.show()
         if index not in self.policy_ax:
-            self.policy_ax[index], _ = self._init_vis_common(
+            self.policy_ax[index], self.policy_img[index] = self._init_vis_common(
                 self.policy_fig, axarg=(nrows, ncols, index), legend=False, ticks=ticks
             )
             shift = self.ACTIONS * self.SHIFT
@@ -385,6 +430,9 @@ class GridWorld(Domain):
                         name, *grid, self.policy_ax[index], arrow_scale=scale,
                     )
                 )
+
+            if title is not None:
+                self.policy_ax[index].set_title(title)
 
         arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
         arrow_size = np.zeros(arrow_mask.shape, dtype=np.float32)
@@ -416,6 +464,19 @@ class GridWorld(Domain):
             dy = np.ma.masked_array(dy * size * -1, mask=mask)
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
             self.policy_arrows[index][i].set_UVC(dx, dy, c)
+
+        if value is not None:
+            try:
+                value = value.reshape(self.rows, self.cols)
+            except ValueError:
+                raise ValueError(f"Invalid value shape: {value.shape}")
+
+            self._reset_texts(self.policy_texts[index])
+            for r, c, ext_v in self._normalize_value(value):
+                self._text_on_cell(
+                    c, r, ext_v, self.policy_texts[index], self.policy_ax[index]
+                )
+            self.policy_img[index].set_data(value * self._map_mask())
         self.policy_fig.canvas.draw()
 
     def _init_value_vis(self):
@@ -459,19 +520,8 @@ class GridWorld(Domain):
                         Q, self.MIN_RETURN, self.MAX_RETURN
                     )
 
-        vmin, vmax = v.min(), v.max()
-        vmin_wrote, vmax_wrote = False, False
-        for r, c in itertools.product(range(self.rows), range(self.cols)):
-            if v[r, c] == vmin and not vmin_wrote:
-                self._vf_text(c, r, vmin)
-                vmin_wrote = True
-            elif v[r, c] == vmax and not vmax_wrote:
-                self._vf_text(c, r, vmax)
-                vmax_wrote = True
-            if v[r, c] < 0:
-                v[r, c] = linear_map(v[r, c], min(vmin, self.MIN_RETURN), 0, -1, 0)
-            else:
-                v[r, c] = linear_map(v[r, c], 0, max(vmax, self.MAX_RETURN), 0, 1)
+        for r, c, ext_v in self._normalize_value(v):
+            self._vf_text(c, r, ext_v)
 
         # Show Value Function
         self.vf_img.set_data(v)

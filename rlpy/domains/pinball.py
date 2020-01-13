@@ -93,7 +93,7 @@ class Pinball(Domain):
         )
         self.environment = PinballModel(config_file, random_state=self.random_state)
 
-    def show_domain(self, a):
+    def show_domain(self, _a=None):
         if self.screen is None:
             master = Tk()
             master.title("RLPy Pinball")
@@ -444,6 +444,8 @@ class PinballModel:
         :type action: int
 
         """
+        if isinstance(action, np.ndarray):
+            action = action.item()
         for i in range(20):
             if i == 0:
                 self.ball.add_impulse(*self.action_effects[action])

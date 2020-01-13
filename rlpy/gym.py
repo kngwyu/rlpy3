@@ -93,6 +93,18 @@ def deepsea(size=20, mode="onehot", **kwargs):
     return RLPyEnv(domain, obs_fn, obs_space)
 
 
+def pinball(noise, cfg):
+    domain = domains.Pinball(noise=noise, config_file=cfg)
+
+    lim = domain.statespace_limits
+    obs_space = gym.spaces.Box(low=lim[:, 0], high=lim[:, 1])
+    return RLPyEnv(domain, lambda _domain, state: state, obs_space)
+
+
+def _to_camel(snake_str):
+    return "".join(s.title() for s in snake_str.split("_"))
+
+
 def register_gridworld(mapfile, max_steps=100, threshold=0.9):
     name = mapfile.stem
     gym.envs.register(
@@ -129,23 +141,41 @@ for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 
 for size in range(4, 40, 4):
     gym.envs.register(
-        id="RLPyDeepSea{}-v0".format(size),
+        id=f"RLPyDeepSea{size}-v0",
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
         kwargs=dict(size=size),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="RLPyDeepSea{}-v1".format(size),
+        id=f"RLPyDeepSea{size}-v1",
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
         kwargs=dict(size=size, mode="raw"),
         reward_threshold=0.9,
     )
     gym.envs.register(
-        id="RLPyDeepSea{}-v2".format(size),
+        id=f"RLPyDeepSea{size}-v2",
         entry_point="rlpy.gym:deepsea",
         max_episode_steps=size,
         kwargs=dict(size=size, mode="image"),
         reward_threshold=0.9,
+    )
+
+
+for cfgfile in domains.Pinball.DEFAULT_CONFIG_DIR.glob("*.json"):
+    name = _to_camel(cfgfile.stem[len("pinball_") :])
+    gym.envs.register(
+        id=f"RLPyPinball{name}-v0",
+        entry_point="rlpy.gym:pinball",
+        max_episode_steps=1000,
+        kwargs=dict(noise=0.0, cfg=cfgfile),
+        reward_threshold=9000,
+    )
+    gym.envs.register(
+        id=f"RLPyPinball{name}-v1",
+        entry_point="rlpy.gym:pinball",
+        max_episode_steps=1000,
+        kwargs=dict(noise=0.1, cfg=cfgfile),
+        reward_threshold=8000,
     )

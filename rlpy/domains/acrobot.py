@@ -1,5 +1,5 @@
 """classic Acrobot task"""
-from rlpy.tools import wrap, bound, lines, fromAtoB, rk4
+from rlpy.tools import wrap, bound, lines, from_a_to_b, rk4
 from .domain import Domain
 import numpy as np
 import matplotlib.pyplot as plt
@@ -220,7 +220,7 @@ class Acrobot(Domain):
         torque = self.AVAIL_TORQUE[a]
         SHIFT = 0.5
         if torque > 0:  # counterclockwise torque
-            self.action_arrow = fromAtoB(
+            self.action_arrow = from_a_to_b(
                 SHIFT / 2,
                 0.5 * SHIFT,
                 -SHIFT / 2 - 0.5 * SHIFT,
@@ -229,7 +229,7 @@ class Acrobot(Domain):
                 ax=self.domain_ax,
             )
         elif torque < 0:  # clockwise torque
-            self.action_arrow = fromAtoB(
+            self.action_arrow = from_a_to_b(
                 -SHIFT / 2,
                 0.5 * SHIFT,
                 SHIFT / 2,

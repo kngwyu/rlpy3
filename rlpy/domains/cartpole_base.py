@@ -2,7 +2,17 @@
 from .domain import Domain
 import numpy as np
 import scipy.integrate
-from rlpy.tools import plt, mpatches, mpath, fromAtoB, lines, rk4, wrap, bound, colors
+from rlpy.tools import (
+    plt,
+    mpatches,
+    mpath,
+    from_a_to_b,
+    lines,
+    rk4,
+    wrap,
+    bound,
+    colors,
+)
 from abc import ABCMeta, abstractmethod
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -543,7 +553,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
             else:
                 x1 = curX + self.ACTION_ARROW_LENGTH + self.RECT_WIDTH / 2
                 color = "r"
-            self.action_arrow = fromAtoB(
+            self.action_arrow = from_a_to_b(
                 x1,
                 0,
                 curX - self.RECT_WIDTH / 2,

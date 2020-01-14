@@ -169,7 +169,7 @@ Note that the optimal policy is to always go right.
         __license__ = "BSD 3-Clause"
         __author__ = "Ray N. Forcement"
 
-        from rlpy.tools import plt, mpatches, fromAtoB
+        from rlpy.tools import plt, mpatches, from_a_to_b
         from rlpy.domains.domain import Domain
         import numpy as np
 
@@ -275,9 +275,9 @@ Note that the optimal policy is to always go right.
                    for i in np.arange(self.chain_size):
                        ax.add_patch(self.circles[i])
                        if i != self.chain_size-1:
-                            fromAtoB(1+2*i+self.SHIFT,self.Y+self.SHIFT,1+2*(i+1)-self.SHIFT, self.Y+self.SHIFT)
-                            if i != self.chain_size-2: fromAtoB(1+2*(i+1)-self.SHIFT,self.Y-self.SHIFT,1+2*i+self.SHIFT, self.Y-self.SHIFT, 'r')
-                       fromAtoB(.75,self.Y-1.5*self.SHIFT,.75,self.Y+1.5*self.SHIFT,'r',connectionstyle='arc3,rad=-1.2')
+                            from_a_to_b(1+2*i+self.SHIFT,self.Y+self.SHIFT,1+2*(i+1)-self.SHIFT, self.Y+self.SHIFT)
+                            if i != self.chain_size-2: from_a_to_b(1+2*(i+1)-self.SHIFT,self.Y-self.SHIFT,1+2*i+self.SHIFT, self.Y-self.SHIFT, 'r')
+                       from_a_to_b(.75,self.Y-1.5*self.SHIFT,.75,self.Y+1.5*self.SHIFT,'r',connectionstyle='arc3,rad=-1.2')
                        plt.show()
 
                 [p.set_facecolor('w') for p in self.circles]

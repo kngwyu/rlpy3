@@ -211,6 +211,26 @@ def from_a_to_b(
     )
 
 
+def set_xticks(ax, xticks, position=None, fontsize=None):
+    if position is not None:
+        ax.get_xaxis().set_ticks_position(position)
+    ax.set_xticks(xticks)
+    if fontsize is not None:
+        xlabels = ax.get_xticklabels()
+        for l in xlabels:
+            l.update({"fontsize": FONTSIZE})
+
+
+def set_yticks(ax, yticks, position=None, fontsize=None):
+    if position is not None:
+        ax.get_yaxis().set_ticks_position(position)
+    ax.set_yticks(yticks)
+    if fontsize is not None:
+        ylabels = ax.get_yticklabels()
+        for l in ylabels:
+            l.update({"fontsize": FONTSIZE})
+
+
 # matplotlib configs
 create_color_maps()
 

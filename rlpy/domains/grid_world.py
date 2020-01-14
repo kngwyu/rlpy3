@@ -2,8 +2,14 @@
 from collections import defaultdict
 import numpy as np
 import itertools
-from rlpy.tools import FONTSIZE, linear_map, plt, with_scaled_figure
-from rlpy.tools import __rlpy_location__, findElemArray1D
+from rlpy.tools.plotting import (
+    FONTSIZE,
+    plt,
+    set_xticks,
+    set_yticks,
+    with_scaled_figure,
+)
+from rlpy.tools import __rlpy_location__, findElemArray1D, linear_map
 from pathlib import Path
 
 from .domain import Domain
@@ -176,16 +182,8 @@ class GridWorld(Domain):
         )
 
     def _set_ticks(self, ax, fontsize=FONTSIZE):
-        ax.get_xaxis().set_ticks_position("top")
-        ax.set_xticks(np.arange(self.cols))
-        xlabels = ax.get_xticklabels()
-        for l in xlabels:
-            l.update({"fontsize": FONTSIZE})
-
-        ax.set_yticks(np.arange(self.rows))
-        ylabels = ax.get_yticklabels()
-        for l in ylabels:
-            l.update({"fontsize": FONTSIZE})
+        set_xticks(ax, np.arange(self.cols), position="top", fontsize=FONTSIZE)
+        set_yticks(ax, np.arange(self.rows), fontsize=FONTSIZE)
 
     def _noticks(self, ax, fontsize=FONTSIZE):
         ax.set_xticks([])
@@ -385,7 +383,7 @@ class GridWorld(Domain):
 
     def _init_arrow(self, name, x, y, ax, arrow_scale=1.0):
         arrow_ratio = 0.4 * arrow_scale
-        ARROW_WIDTH = 0.05
+        ARROW_WIDTH = 0.04
         is_y = name in ["UP", "DOWN"]
         c = np.zeros(x.shape)
         c[0, 0] = 1
@@ -414,6 +412,7 @@ class GridWorld(Domain):
         ticks=True,
         scale=1.0,
         title=None,
+        arrow_resize=True,
     ):
         if self.policy_fig is None:
             with with_scaled_figure(scale):
@@ -437,7 +436,7 @@ class GridWorld(Domain):
                 self.policy_ax[index].set_title(title)
 
         arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
-        arrow_size = np.zeros(arrow_mask.shape, dtype=np.float32)
+        arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
         arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
 
         try:
@@ -455,8 +454,8 @@ class GridWorld(Domain):
             best_act = policy[r, c].argmax()
             arrow_mask[r, c, actions] = False
             arrow_color[r, c, best_act] = 1
-            for a in actions:
-                arrow_size[r, c, a] = policy[r, c, a]
+            if arrow_resize:
+                arrow_size[r, c] = policy[r, c]
 
         # Show Policy for arrows
         for i, name in enumerate(self.ARROW_NAMES):
@@ -500,7 +499,7 @@ class GridWorld(Domain):
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
         arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
-        arrow_size = np.zeros(arrow_mask.shape, dtype=np.float32)
+        arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
         # 0 = suboptimal action, 1 = optimal action
         arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
         v = np.zeros((self.rows, self.cols))

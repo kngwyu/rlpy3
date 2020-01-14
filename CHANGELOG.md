@@ -4,9 +4,15 @@ Notable changes after forking are tracked in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## Unreleased
+## [2.0.0 Beta1]
+### Added
+* OpenAI gym interface by [#40](https://github.com/kngwyu/rlpy3/pull/40).
+* Enhanced viewers for GridWorld by [#44](https://github.com/kngwyu/rlpy3/pull/44).
 
-## [2.0.0 Beta]
+### Removed
+* Python 3.5 support
+
+## [2.0.0 Beta0]
 
 ### Added
 * PSRL by [#23](https://github.com/kngwyu/rlpy3/pull/23).

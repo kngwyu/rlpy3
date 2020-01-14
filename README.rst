@@ -9,7 +9,7 @@ RLPy3
 
 .. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/rlpy3.svg
    :alt: PyPI
-   :target: https://pypi.org/project/rlpy3/2.0.0b
+   :target: https://pypi.org/project/rlpy3/2.0.0b1
 
 Why Fork?
 ----------

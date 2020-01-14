@@ -211,14 +211,13 @@ def from_a_to_b(
     )
 
 
-def set_xticks(ax, xticks, position=None, fontsize=None):
+def set_xticks(ax, xticks, labels=None, position=None, fontsize=None):
     if position is not None:
         ax.get_xaxis().set_ticks_position(position)
     ax.set_xticks(xticks)
     if fontsize is not None:
-        xlabels = ax.get_xticklabels()
-        for l in xlabels:
-            l.update({"fontsize": FONTSIZE})
+        for l in ax.get_xticklabels():
+            l.set_fontsize(fontsize)
 
 
 def set_yticks(ax, yticks, position=None, fontsize=None):
@@ -226,9 +225,8 @@ def set_yticks(ax, yticks, position=None, fontsize=None):
         ax.get_yaxis().set_ticks_position(position)
     ax.set_yticks(yticks)
     if fontsize is not None:
-        ylabels = ax.get_yticklabels()
-        for l in ylabels:
-            l.update({"fontsize": FONTSIZE})
+        for l in ax.get_yticklabels():
+            l.set_fontsize(fontsize)
 
 
 # matplotlib configs

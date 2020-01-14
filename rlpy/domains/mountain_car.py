@@ -1,6 +1,5 @@
 """Classic mountain car task."""
-from rlpy.tools import plt, bound, fromAtoB
-from rlpy.tools import lines
+from rlpy.tools import bound, cm, from_a_to_b, lines, plt, set_xticks, set_yticks
 from .domain import Domain
 import numpy as np
 
@@ -53,7 +52,7 @@ class MountainCar(Domain):
     CAR_WIDTH = 0.1
     ARROW_LENGTH = 0.2
 
-    def __init__(self, noise=0, discount_factor=0.9):
+    def __init__(self, noise=0, discount_factor=0.9, episode_cap=500):
         """
         :param noise: Magnitude of noise in stochastic velocity changes
         """
@@ -64,20 +63,16 @@ class MountainCar(Domain):
             ),
             continuous_dims=[0, 1],
             discount_factor=discount_factor,
-            episode_cap=10000,
+            episode_cap=episode_cap,
         )
         self.noise = noise
         self.dim_names = ["X", "Xdot"]
 
         # Visualization stuffs
-        self.vf_fig, self.vf_img = None, None
+        self.vf_fig, self.vf_x, self.vf_xdot, self.vf_surf = (None, ) * 4
         self.domain_fig, self.domain_ax = None, None
         self.policy_fig = None
         self.action_arrow = None
-        self.x_ticks = np.linspace(0, self.X_DISCR - 1, 5)
-        self.x_ticks_labels = np.linspace(self.XMIN, self.XMAX, 5)
-        self.y_ticks = np.linspace(0, self.X_DOT_DISCR - 1, 5)
-        self.y_ticks_labels = np.linspace(self.XDOTMIN, self.XDOTMAX, 5)
         if discount_factor < 1.0:
             self.min_return = (
                 self.STEP_REWARD
@@ -171,7 +166,7 @@ class MountainCar(Domain):
             self.action_arrow = None
 
         if self.ACTIONS[a] > 0:
-            self.action_arrow = fromAtoB(
+            self.action_arrow = from_a_to_b(
                 car_front_x,
                 car_front_y,
                 car_front_x + self.ARROW_LENGTH * np.cos(slope),
@@ -182,8 +177,8 @@ class MountainCar(Domain):
                 0,
                 "simple",
             )
-        if self.ACTIONS[a] < 0:
-            self.action_arrow = fromAtoB(
+        elif self.ACTIONS[a] < 0:
+            self.action_arrow = from_a_to_b(
                 car_back_x,
                 car_back_y,
                 car_back_x - self.ARROW_LENGTH * np.cos(slope),
@@ -197,41 +192,38 @@ class MountainCar(Domain):
         self.domain_fig.canvas.draw()
         self.domain_fig.canvas.flush_events()
 
+    def _init_vf_vis(self):
+        fig = plt.figure("Value Function")
+        self.vf_ax = fig.add_subplot(111, projection="3d")
+        x_space = np.linspace(self.XMIN, self.XMAX, self.X_DISCR)
+        xdot_space = np.linspace(self.XMIN, self.XMAX, self.X_DISCR)
+        self.vf_x, self.vf_xdot = np.meshgrid(x_space, xdot_space)
+        self.vf_ax.set_xlabel(r"$x$")
+        self.vf_ax.set_ylabel(r"$\dot x$")
+        return fig
+
     def show_learning(self, representation):
         pi = np.zeros((self.X_DISCR, self.X_DOT_DISCR), np.uint8)
         V = np.zeros((self.X_DISCR, self.X_DOT_DISCR))
 
         if self.vf_fig is None:
-            self.vf_fig = plt.figure("Value Function")
-            self.vf_im = plt.imshow(
-                V,
-                cmap="ValueFunction",
-                interpolation="nearest",
-                origin="lower",
-                vmin=self.min_return,
-                vmax=self.max_return,
-            )
+            self.vf_fig = self._init_vf_vis()
 
-            plt.xticks(self.x_ticks, self.x_ticks_labels, fontsize=12)
-            plt.yticks(self.y_ticks, self.y_ticks_labels, fontsize=12)
-            plt.xlabel(r"$x$")
-            plt.ylabel(r"$\dot x$")
+            # self.policy_fig = plt.figure("Policy")
+            # self.policy_im = plt.imshow(
+            #     pi,
+            #     cmap="MountainCarActions",
+            #     interpolation="nearest",
+            #     origin="lower",
+            #     vmin=0,
+            #     vmax=self.actions_num,
+            # )
 
-            self.policy_fig = plt.figure("Policy")
-            self.policy_im = plt.imshow(
-                pi,
-                cmap="MountainCarActions",
-                interpolation="nearest",
-                origin="lower",
-                vmin=0,
-                vmax=self.actions_num,
-            )
-
-            plt.xticks(self.x_ticks, self.x_ticks_labels, fontsize=12)
-            plt.yticks(self.y_ticks, self.y_ticks_labels, fontsize=12)
-            plt.xlabel(r"$x$")
-            plt.ylabel(r"$\dot x$")
-            plt.show()
+            # plt.xticks(self.x_ticks, self.x_ticks_labels, fontsize=12)
+            # plt.yticks(self.y_ticks, self.y_ticks_labels, fontsize=12)
+            # plt.xlabel(r"$x$")
+            # plt.ylabel(r"$\dot x$")
+            # plt.show()
 
         for row, xDot in enumerate(
             np.linspace(self.XDOTMIN, self.XDOTMAX, self.X_DOT_DISCR)
@@ -241,11 +233,14 @@ class MountainCar(Domain):
                 Qs = representation.Qs(s, False)
                 As = self.possible_actions()
                 pi[row, col] = representation.best_action(s, False, As)
-                V[row, col] = max(Qs)
-        self.vf_im.set_data(V)
-        self.policy_im.set_data(pi)
+                V[col, row] = max(Qs)
+        if self.vf_surf is not None:
+            self.vf_surf.remove()
+        self.vf_surf = self.vf_ax.plot_surface(
+            self.vf_x, self.vf_xdot, V, cmap=cm.coolwarm, linewidth=0, antialiased=False
+        )
+        self.vf_fig.canvas.draw()
+        # self.policy_im.set_data(pi)
 
-        self.vf_fig = plt.figure("Value Function")
-        plt.draw()
-        self.policy_fig = plt.figure("Policy")
-        plt.draw()
+        # self.policy_fig = plt.figure("Policy")
+        # plt.draw()

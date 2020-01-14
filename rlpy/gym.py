@@ -139,7 +139,7 @@ for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile, max_steps=20)
 
-for size in range(4, 40, 4):
+for size in range(4, 40, 2):
     gym.envs.register(
         id=f"RLPyDeepSea{size}-v0",
         entry_point="rlpy.gym:deepsea",

@@ -32,10 +32,10 @@ class FixedRewardGridWorld(GridWorld):
         self,
         mapfile=DEFAULT_MAP_DIR.joinpath("6x6guided.txt"),
         noise=0.1,
-        step_penalty=1.0,
         random_start=False,
         random_goal=False,
         episode_cap=lambda height, width: (width + height) * 2,
+        step_penalty=None,
     ):
         super().__init__(
             mapfile=mapfile,
@@ -44,6 +44,8 @@ class FixedRewardGridWorld(GridWorld):
             random_goal=random_goal,
             episode_cap=episode_cap,
         )
+        if step_penalty is None:
+            step_penalty = self.reward_map.max() / 1000
         self.step_penalty = step_penalty
 
     def _reward(self, next_state, terminal):

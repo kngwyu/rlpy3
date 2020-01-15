@@ -105,24 +105,24 @@ def _to_camel(snake_str):
     return "".join(s.title() for s in snake_str.split("_"))
 
 
-def register_gridworld(mapfile, max_steps=100, threshold=0.9):
+def register_gridworld(mapfile, prefix="", max_steps=100, threshold=0.9):
     name = mapfile.stem
     gym.envs.register(
-        id="RLPyGridWorld{}-v0".format(name),
+        id=f"RLPy{prefix}GridWorld{name}-v0",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
         kwargs=dict(mapfile=mapfile),
         reward_threshold=threshold,
     )
     gym.envs.register(
-        id="RLPyGridWorld{}-v1".format(name),
+        id=f"RLPy{prefix}GridWorld{name}-v1",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
         kwargs=dict(mapfile=mapfile, mode="raw"),
         reward_threshold=threshold,
     )
     gym.envs.register(
-        id="RLPyGridWorld{}-v2".format(name),
+        id=f"RLPy{prefix}GridWorld{name}-v2",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
         kwargs=dict(mapfile=mapfile, mode="image"),
@@ -134,10 +134,10 @@ for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile)
 
 for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    register_gridworld(mapfile, max_steps=20, threshold=80)
+    register_gridworld(mapfile, prefix="FR", max_steps=20, threshold=80)
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    register_gridworld(mapfile, max_steps=20)
+    register_gridworld(mapfile, prefix="BR", max_steps=20)
 
 for size in range(4, 40, 2):
     gym.envs.register(

@@ -76,8 +76,8 @@ class PSRL(Agent):
             r_sample[s] = mu + self.random_state.randn(self.n_actions) / np.sqrt(tau)
             for a in range(self.n_actions):
                 p_sample[s, a] = self.random_state.dirichlet(self.p_prior[s, a])
-        if show_reward and hasattr(self.representation.domain, "show_reward"):
-            self.representation.domain.show_reward(r_sample.mean(axis=-1))
+        if show_reward and self.update_steps % 10 == 0:
+            self._show_reward(r_sample.mean(axis=-1))
         return r_sample, p_sample
 
     def _solve_sampled_mdp(self):

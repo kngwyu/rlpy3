@@ -121,9 +121,7 @@ for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile)
 
 for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    register_gridworld(
-        mapfile, cls=domains.FixedRewardGridWorld, threshold=80
-    )
+    register_gridworld(mapfile, cls=domains.FixedRewardGridWorld, threshold=80)
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile, cls=domains.BernoulliGridWorld)

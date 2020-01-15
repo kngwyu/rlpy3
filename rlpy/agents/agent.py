@@ -73,6 +73,18 @@ class Agent(ABC, HasLogger):
         #: http://www.incompleteideas.net/sutton/book/7/node1.html
         self.eligibility_trace = None
 
+        if hasattr(self.representation.domain, "show_reward"):
+
+            def _show_reward_impl(r):
+                self.representation.domain.show_reward(r)
+
+        else:
+
+            def _show_reward_impl(_r):
+                pass
+
+        self._show_reward = _show_reward_impl
+
     def set_seed(self, seed):
         """
         Set random seed

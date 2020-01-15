@@ -28,6 +28,7 @@ def grid4x5_v2_goal():
 )
 def test_gridworld(version, goal_fn):
     env = gym.make(f"RLPyGridWorld4x5-v{version}", noise=0.0)
+    assert env.unwrapped.domain.episode_cap == 18
     state = env.reset()
     assert env.action_space.n == 4
     assert state.shape == env.observation_space.shape

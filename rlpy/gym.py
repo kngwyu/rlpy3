@@ -68,21 +68,9 @@ def gridworld_obs(domain, mode="onehot"):
     return obs_fn, obs_space
 
 
-def gridworld(mapfile, mode="onehot", **kwargs):
+def gridworld(mapfile, mode="onehot", cls=domains.GridWorld, **kwargs):
     random_goal = "RandomGoal" in mapfile.as_posix()
-    domain = domains.GridWorld(mapfile=mapfile, random_goal=random_goal, **kwargs)
-    obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RLPyEnv(domain, obs_fn, obs_space)
-
-
-def fr_gridworld(mapfile, mode="onehot", **kwargs):
-    domain = domains.FixedRewardGridWorld(mapfile=mapfile, **kwargs)
-    obs_fn, obs_space = gridworld_obs(domain, mode=mode)
-    return RLPyEnv(domain, obs_fn, obs_space)
-
-
-def br_gridworld(mapfile, mode="onehot", **kwargs):
-    domain = domains.BernoulliGridWorld(mapfile=mapfile, **kwargs)
+    domain = cls(mapfile=mapfile, random_goal=random_goal, **kwargs)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
     return RLPyEnv(domain, obs_fn, obs_space)
 
@@ -95,7 +83,6 @@ def deepsea(size=20, mode="onehot", **kwargs):
 
 def pinball(noise, cfg):
     domain = domains.Pinball(noise=noise, config_file=cfg)
-
     lim = domain.statespace_limits
     obs_space = gym.spaces.Box(low=lim[:, 0], high=lim[:, 1])
     return RLPyEnv(domain, lambda _domain, state: state, obs_space)
@@ -105,27 +92,27 @@ def _to_camel(snake_str):
     return "".join(s.title() for s in snake_str.split("_"))
 
 
-def register_gridworld(mapfile, prefix="", max_steps=100, threshold=0.9):
-    name = mapfile.stem
+def register_gridworld(mapfile, cls=domains.GridWorld, max_steps=100, threshold=0.9):
+    name = cls.__name__ + mapfile.stem
     gym.envs.register(
-        id=f"RLPy{prefix}GridWorld{name}-v0",
+        id=f"RLPy{name}-v0",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
-        kwargs=dict(mapfile=mapfile),
+        kwargs=dict(mapfile=mapfile, cls=cls),
         reward_threshold=threshold,
     )
     gym.envs.register(
-        id=f"RLPy{prefix}GridWorld{name}-v1",
+        id=f"RLPy{name}-v1",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
-        kwargs=dict(mapfile=mapfile, mode="raw"),
+        kwargs=dict(mapfile=mapfile, cls=cls, mode="raw"),
         reward_threshold=threshold,
     )
     gym.envs.register(
-        id=f"RLPy{prefix}GridWorld{name}-v2",
+        id=f"RLPy{name}-v2",
         entry_point="rlpy.gym:gridworld",
         max_episode_steps=max_steps,
-        kwargs=dict(mapfile=mapfile, mode="image"),
+        kwargs=dict(mapfile=mapfile, cls=cls, mode="image"),
         reward_threshold=threshold,
     )
 
@@ -134,10 +121,12 @@ for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile)
 
 for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    register_gridworld(mapfile, prefix="FR", max_steps=20, threshold=80)
+    register_gridworld(
+        mapfile, cls=domains.FixedRewardGridWorld, threshold=80
+    )
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
-    register_gridworld(mapfile, prefix="BR", max_steps=20)
+    register_gridworld(mapfile, cls=domains.BernoulliGridWorld)
 
 for size in range(4, 40, 2):
     gym.envs.register(

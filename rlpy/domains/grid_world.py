@@ -73,8 +73,7 @@ class GridWorld(Domain):
     def default_map(cls, name="4x5.txt"):
         return cls.DEFAULT_MAP_DIR.joinpath(name)
 
-    @staticmethod
-    def _load_map(mapfile):
+    def _load_map(self, mapfile):
         map_ = np.loadtxt(mapfile, dtype=np.uint8)
         if map_.ndim == 1:
             return np.expand_dims(map_, 0)
@@ -87,12 +86,15 @@ class GridWorld(Domain):
         noise=0.1,
         random_start=False,
         random_goal=False,
-        episode_cap=1000,
+        episode_cap=lambda height, width: (width + height) * 2,
     ):
         if isinstance(mapfile, str):
             mapfile = Path(mapfile)
         map_ = self._load_map(mapfile)
         mapname = mapfile.stem
+
+        if callable(episode_cap):
+            episode_cap = episode_cap(*map_.shape)
 
         self._init_from_map(
             map_, mapname, noise, episode_cap, random_start, random_goal

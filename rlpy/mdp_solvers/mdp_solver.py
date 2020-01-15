@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import logging
-from rlpy.tools import checkNCreateDirectory, className, deltaT, vec2id
+from rlpy.tools import checkNCreateDirectory, class_name, deltaT, vec2id
 from rlpy.tools.encoders import NpAwareEncoder
 from collections import defaultdict
 import os
@@ -155,7 +155,7 @@ class MDPSolver(ABC):
         Check to see if the representation is Tabular as Policy Iteration and
         Value Iteration only work with Tabular representation.
         """
-        return className(self.representation) == "Tabular"
+        return class_name(self.representation) == "Tabular"
 
     def collect_samples(self, samples):
         """

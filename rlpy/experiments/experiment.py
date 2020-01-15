@@ -493,7 +493,7 @@ class Experiment(object):
                 "self.agent.policy",
                 "self.agent.representation",
             ]:
-                replacements[v] = "className({})".format(obj)
+                replacements[v] = "class_name({})".format(obj)
             else:
                 replacements[v] = str(v)
 

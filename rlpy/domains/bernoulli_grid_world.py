@@ -35,7 +35,8 @@ class BernoulliGridWorld(FixedRewardGridWorld):
         mapfile=DEFAULT_MAP_DIR.joinpath("5x5normal.txt"),
         noise=0.1,
         random_start=False,
-        episode_cap=20,
+        random_goal=False,
+        episode_cap=lambda height, width: (width + height) * 2,
     ):
         super().__init__(
             mapfile=mapfile,

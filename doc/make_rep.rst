@@ -236,7 +236,7 @@ Please use the following header at the top of each file::
 * Fill in the appropriate ``__author__`` name and ``__credits__`` as needed.
   Note that RLPy requires the BSD 3-Clause license.
 
-* If you installed RLPy in a writeable directory, the className of the new 
+* If you installed RLPy in a writeable directory, the class_name of the new 
   representation can be added to
   the ``__init__.py`` file in the ``representations/`` directory.
   (This allows other files to import the new representation).

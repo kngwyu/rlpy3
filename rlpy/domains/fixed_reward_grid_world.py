@@ -34,12 +34,14 @@ class FixedRewardGridWorld(GridWorld):
         noise=0.1,
         step_penalty=1.0,
         random_start=False,
-        episode_cap=20,
+        random_goal=False,
+        episode_cap=lambda height, width: (width + height) * 2,
     ):
         super().__init__(
             mapfile=mapfile,
             noise=noise,
             random_start=random_start,
+            random_goal=random_goal,
             episode_cap=episode_cap,
         )
         self.step_penalty = step_penalty

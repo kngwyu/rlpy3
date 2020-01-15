@@ -2,7 +2,7 @@
 from rlpy.tools import vec2id
 from .policy import Policy
 import numpy as np
-from rlpy.tools import className
+from rlpy.tools import class_name
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -79,12 +79,12 @@ class FixedPolicy(Policy):
 
     def pi2(self, s, terminal, p_actions):
         domain = self.representation.domain
-        if className(domain) not in self.SUPPORTED_DOMAINS:
+        if class_name(domain) not in self.SUPPORTED_DOMAINS:
             raise ValueError(
-                "ERROR: There is no fixed policy defined for %s" % className(domain)
+                "ERROR: There is no fixed policy defined for %s" % class_name(domain)
             )
 
-        if className(domain) == "GridWorld":
+        if class_name(domain) == "GridWorld":
             # Actions are Up, Down, Left, Right
             if self.policy_name not in self.GRID_WORLD_POLICY_NAMES:
                 raise ValueError(
@@ -145,7 +145,7 @@ class FixedPolicy(Policy):
                 )
             return self.curAction
 
-        if className(domain) == "InfCartPoleBalance":
+        if class_name(domain) == "InfCartPoleBalance":
             # Fixed policy rotate the pendulum in the opposite direction of the
             # thetadot
             theta, thetadot = s
@@ -153,7 +153,7 @@ class FixedPolicy(Policy):
                 return 2
             else:
                 return 0
-        if className(domain) == "BlocksWorld":
+        if class_name(domain) == "BlocksWorld":
             # Fixed policy rotate the blocksworld = Optimal Policy
             # (Always pick the next piece of the tower and move it to the tower
             # Policy: Identify the top of the tower.
@@ -220,7 +220,7 @@ class FixedPolicy(Policy):
                         return domain.getActionPutAonTable(block)
                     else:
                         return domain.getActionPutAonB(block, block - 1)
-        if className(domain) == "IntruderMonitoring":
+        if class_name(domain) == "IntruderMonitoring":
             # Each UAV assign themselves to a target
             # Each UAV finds the closest danger zone to its target and go towards there.
             # If UAVs_num > Target, the rest will hold position
@@ -256,14 +256,14 @@ class FixedPolicy(Policy):
             #                print "Action", a
             #                print '============'
             return vec2id(actions, np.ones(len(agents), dtype=np.integer) * 5)
-        if className(domain) == "SystemAdministrator":
+        if class_name(domain) == "SystemAdministrator":
             # Select a broken computer and reset it
             brokenComputers = np.where(s == 0)[0]
             if len(brokenComputers):
                 return self.random_state.choice(brokenComputers)
             else:
                 return domain.computers_num
-        if className(domain) == "MountainCar":
+        if class_name(domain) == "MountainCar":
             # Accelerate in the direction of the valley
             # WORK IN PROGRESS
             x, xdot = s
@@ -271,7 +271,7 @@ class FixedPolicy(Policy):
                 return 2
             else:
                 return 0
-        if className(domain) == "PST":
+        if class_name(domain) == "PST":
             # One stays at comm, n-1 stay at target area. Whenever fuel is
             # lower than reaching the base the move back
             print(s)

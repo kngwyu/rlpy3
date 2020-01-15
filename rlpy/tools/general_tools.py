@@ -239,7 +239,6 @@ def state2bin(s, num_bins, limits):
         print(
             "Tools.py: WARNING: ", s, " < ", limits[0], ". Using the chopped value of s"
         )
-        #        print("WARNING: %s is out of limits of %s . Using the chopped value of s" %(str(s),str(limits)))
         s = limits[0]
     return int((s - limits[0]) * num_bins / (width * 1.0))
 
@@ -258,7 +257,7 @@ def hhmmss(t):
     return str(datetime.timedelta(seconds=round(t)))
 
 
-def className(obj):
+def class_name(obj):
     """ Return the name of a class as a string. """
     return obj.__class__.__name__
 
@@ -710,7 +709,7 @@ def powerset(iterable, ascending=1):
 
 def printClass(obj):
     """ Print class name and all attributes of object ``obj``. """
-    print(className(obj))
+    print(class_name(obj))
     print("=======================================")
     for property, value in vars(obj).items():
         print(property, ": ", value)

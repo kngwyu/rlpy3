@@ -139,7 +139,6 @@ class MountainCar(Domain):
         self.domain_ax.add_line(self.car)
         # Goal
         self.domain_ax.plot(self.GOAL, np.sin(3 * self.GOAL), "yd", markersize=10.0)
-        self.domain_ax.set_aspect("1")
         self.domain_ax.axis("off")
         self.domain_fig.show()
 

@@ -1,5 +1,5 @@
 """Classic mountain car task."""
-from rlpy.tools import bound, cm, from_a_to_b, lines, plt, set_xticks, set_yticks
+from rlpy.tools import bound, cm, from_a_to_b, lines, plt
 from .domain import Domain
 import numpy as np
 
@@ -31,10 +31,10 @@ class MountainCar(Domain):
     Based on `RL-Community Java Implementation <http://library.rl-community.org/wiki/Mountain_Car_(Java)>`_
     """
 
-    XMIN = -1.2  #: Lower bound on domain position
-    XMAX = 0.6  #: Upper bound on domain position
-    XDOTMIN = -0.07  #: Lower bound on car velocity
-    XDOTMAX = 0.07  #: Upper bound on car velocity
+    X_MIN = -1.2  #: Lower bound on domain position
+    X_MAX = 0.6  #: Upper bound on domain position
+    XDOT_MIN = -0.07  #: Lower bound on car velocity
+    XDOT_MAX = 0.07  #: Upper bound on car velocity
     INIT_STATE = np.array([-0.5, 0.0])  #: Initial car state
     STEP_REWARD = -1  #: Penalty for each step taken before reaching the goal
     GOAL_REWARD = 0  #: Reward for reach the goal.
@@ -47,7 +47,7 @@ class MountainCar(Domain):
 
     # Used for visualization:
     X_DISCR = 20
-    X_DOT_DISCR = 20
+    XDOT_DISCR = 20
     CAR_HEIGHT = 0.2
     CAR_WIDTH = 0.1
     ARROW_LENGTH = 0.2
@@ -59,7 +59,7 @@ class MountainCar(Domain):
         super().__init__(
             actions_num=3,
             statespace_limits=np.array(
-                [[self.XMIN, self.XMAX], [self.XDOTMIN, self.XDOTMAX]]
+                [[self.X_MIN, self.X_MAX], [self.XDOT_MIN, self.XDOT_MAX]]
             ),
             continuous_dims=[0, 1],
             discount_factor=discount_factor,
@@ -95,10 +95,10 @@ class MountainCar(Domain):
             + self.ACTIONS[a] * self.ACCEL_COEF
             + np.cos(self.HILL_PEAK_FREQ * position) * self.GRAVITY
         )
-        velocity = bound(velocity, self.XDOTMIN, self.XDOTMAX)
+        velocity = bound(velocity, self.XDOT_MIN, self.XDOT_MAX)
         position += velocity
-        position = bound(position, self.XMIN, self.XMAX)
-        if position <= self.XMIN and velocity < 0:
+        position = bound(position, self.X_MIN, self.X_MAX)
+        if position <= self.X_MIN and velocity < 0:
             velocity = 0  # Bump into wall
         terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
@@ -122,12 +122,12 @@ class MountainCar(Domain):
         self.domain_fig = plt.figure("MountainCar")
         self.domain_ax = self.domain_fig.add_subplot(111)
         # plot mountain
-        mountain_x = np.linspace(self.XMIN, self.XMAX, 1000)
+        mountain_x = np.linspace(self.X_MIN, self.X_MAX, 1000)
         mountain_y = np.sin(3 * mountain_x)
         self.domain_ax.fill_between(
             mountain_x, min(mountain_y) - self.CAR_HEIGHT * 2, mountain_y, color="g"
         )
-        self.domain_ax.set_xlim([self.XMIN - 0.2, self.XMAX])
+        self.domain_ax.set_xlim([self.X_MIN - 0.2, self.X_MAX])
         self.domain_ax.set_ylim(
             [
                 min(mountain_y) - self.CAR_HEIGHT * 2,
@@ -195,40 +195,24 @@ class MountainCar(Domain):
     def _init_vf_vis(self):
         fig = plt.figure("Value Function")
         self.vf_ax = fig.add_subplot(111, projection="3d")
-        x_space = np.linspace(self.XMIN, self.XMAX, self.X_DISCR)
-        xdot_space = np.linspace(self.XMIN, self.XMAX, self.X_DISCR)
+        x_space = np.linspace(self.X_MIN, self.X_MAX, self.X_DISCR)
+        xdot_space = np.linspace(self.XDOT_MIN, self.XDOT_MAX, self.XDOT_DISCR)
         self.vf_x, self.vf_xdot = np.meshgrid(x_space, xdot_space)
         self.vf_ax.set_xlabel(r"$x$")
         self.vf_ax.set_ylabel(r"$\dot x$")
         return fig
 
     def show_learning(self, representation):
-        pi = np.zeros((self.X_DISCR, self.X_DOT_DISCR), np.uint8)
-        V = np.zeros((self.X_DISCR, self.X_DOT_DISCR))
+        pi = np.zeros((self.X_DISCR, self.XDOT_DISCR), np.uint8)
+        V = np.zeros((self.X_DISCR, self.XDOT_DISCR))
 
         if self.vf_fig is None:
             self.vf_fig = self._init_vf_vis()
 
-            # self.policy_fig = plt.figure("Policy")
-            # self.policy_im = plt.imshow(
-            #     pi,
-            #     cmap="MountainCarActions",
-            #     interpolation="nearest",
-            #     origin="lower",
-            #     vmin=0,
-            #     vmax=self.actions_num,
-            # )
-
-            # plt.xticks(self.x_ticks, self.x_ticks_labels, fontsize=12)
-            # plt.yticks(self.y_ticks, self.y_ticks_labels, fontsize=12)
-            # plt.xlabel(r"$x$")
-            # plt.ylabel(r"$\dot x$")
-            # plt.show()
-
         for row, xDot in enumerate(
-            np.linspace(self.XDOTMIN, self.XDOTMAX, self.X_DOT_DISCR)
+            np.linspace(self.XDOT_MIN, self.XDOT_MAX, self.XDOT_DISCR)
         ):
-            for col, x in enumerate(np.linspace(self.XMIN, self.XMAX, self.X_DISCR)):
+            for col, x in enumerate(np.linspace(self.X_MIN, self.X_MAX, self.X_DISCR)):
                 s = np.array([x, xDot])
                 Qs = representation.Qs(s, False)
                 As = self.possible_actions()
@@ -240,7 +224,3 @@ class MountainCar(Domain):
             self.vf_x, self.vf_xdot, V, cmap=cm.coolwarm, linewidth=0, antialiased=False
         )
         self.vf_fig.canvas.draw()
-        # self.policy_im.set_data(pi)
-
-        # self.policy_fig = plt.figure("Policy")
-        # plt.draw()

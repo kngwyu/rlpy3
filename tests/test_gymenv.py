@@ -39,6 +39,21 @@ def test_gridworld(version, goal_fn):
     np.testing.assert_array_almost_equal(state, goal_fn())
 
 
+@pytest.mark.parametrize("version", [0, 1])
+def test_randomgoal_gridworld(version):
+    env = gym.make(f"RLPyGridWorld11x11-4Rooms-RandomGoal-v{version}", noise=0.0)
+    state = env.reset()
+    assert env.action_space.n == 4
+    assert state.shape == env.observation_space.shape
+    state, reward, terminal, info = env.step(0)
+    raw = info["raw_obs"]
+    assert raw.shape == (3,)
+    assert raw[:2].tolist() == [0, 0]
+    assert 0 <= raw[2] <= 2
+    raw_space = env.raw_observation_space
+    assert raw_space.dtype == np.int64
+
+
 @pytest.mark.parametrize("version", [0, 1, 2])
 def test_deepsea(version):
     env = gym.make(f"RLPyDeepSea20-v{version}", noise=0.0)

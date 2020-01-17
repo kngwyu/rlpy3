@@ -74,6 +74,7 @@ class Domain(ABC):
         :param episode_cap: The cap used to bound each episode (return to state 0 after)
         """
         self.actions_num = actions_num
+        self.raw_statespace_limits = statespace_limits.copy()
         self.statespace_limits = statespace_limits
         self.discount_factor = float(discount_factor)
         if continuous_dims is None:

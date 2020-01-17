@@ -10,13 +10,14 @@ class RLPyEnv(gym.Env):
     def __init__(self, domain, obs_fn, obs_space):
         self.domain = domain
         self.action_space = gym.spaces.Discrete(domain.actions_num)
+        self.raw_observation_space = _get_box_space(domain)
         self.observation_space = obs_space
         self.obs_fn = obs_fn
 
     def step(self, action):
         reward, next_state, terminal, possible_actions = self.domain.step(action)
         obs = self.obs_fn(self.domain, next_state)
-        info = {"possible_actions": possible_actions}
+        info = {"possible_actions": possible_actions, "raw_obs": next_state}
         return obs, reward, terminal, info
 
     def reset(self):
@@ -44,9 +45,7 @@ def gridworld_obs(domain, mode="onehot"):
             return rep.phi(state, False).astype(np.float32)
 
     elif mode == "raw":
-        low = np.zeros(2)
-        high = np.array(domain.map.shape, dtype=np.float32)
-        obs_space = gym.spaces.Box(low, high)
+        obs_space = _get_box_space(domain)
 
         def obs_fn(_domain, state):
             return state.astype(np.float32)
@@ -83,13 +82,17 @@ def deepsea(size=20, mode="onehot", **kwargs):
 
 def pinball(noise, cfg):
     domain = domains.Pinball(noise=noise, config_file=cfg)
-    lim = domain.statespace_limits
-    obs_space = gym.spaces.Box(low=lim[:, 0], high=lim[:, 1])
+    obs_space = _get_box_space(domain)
     return RLPyEnv(domain, lambda _domain, state: state, obs_space)
 
 
 def _to_camel(snake_str):
     return "".join(s.title() for s in snake_str.split("_"))
+
+
+def _get_box_space(domain):
+    lim = domain.raw_statespace_limits
+    return gym.spaces.Box(low=lim[:, 0], high=lim[:, 1], dtype=lim.dtype)
 
 
 def register_gridworld(mapfile, cls=domains.GridWorld, max_steps=100, threshold=0.9):

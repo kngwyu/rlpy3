@@ -131,7 +131,7 @@ class GridWorld(Domain):
 
         super().__init__(
             actions_num=4,
-            statespace_limits=np.array(state_space),
+            statespace_limits=np.array(state_space, dtype=np.int64),
             episode_cap=episode_cap,
         )
         self._get_obs = _get_obs

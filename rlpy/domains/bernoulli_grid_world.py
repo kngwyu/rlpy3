@@ -5,6 +5,7 @@ from rlpy.tools import __rlpy_location__, plt
 from pathlib import Path
 
 from .fixed_reward_grid_world import FixedRewardGridWorld
+from .grid_world import GridWorld
 
 __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"
@@ -38,7 +39,8 @@ class BernoulliGridWorld(FixedRewardGridWorld):
         random_goal=False,
         episode_cap=lambda height, width: (width + height) * 2,
     ):
-        super().__init__(
+        GridWorld.__init__(
+            self,
             mapfile=mapfile,
             noise=noise,
             random_start=random_start,

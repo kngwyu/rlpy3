@@ -1,6 +1,5 @@
 """Classic mountain car task."""
-from rlpy.tools import plt, bound, fromAtoB
-from rlpy.tools import lines
+from rlpy.tools import bound, cm, from_a_to_b, lines, plt
 from .domain import Domain
 import numpy as np
 
@@ -32,63 +31,57 @@ class MountainCar(Domain):
     Based on `RL-Community Java Implementation <http://library.rl-community.org/wiki/Mountain_Car_(Java)>`_
     """
 
-    XMIN = -1.2  # : Lower bound on domain position
-    XMAX = 0.6  #: Upper bound on domain position
-    XDOTMIN = -0.07  # : Lower bound on car velocity
-    XDOTMAX = 0.07  #: Upper bound on car velocity
-    INIT_STATE = np.array([-0.5, 0.0])  # : Initial car state
-    STEP_REWARD = -1  # : Penalty for each step taken before reaching the goal
+    X_MIN = -1.2  #: Lower bound on domain position
+    X_MAX = 0.6  #: Upper bound on domain position
+    XDOT_MIN = -0.07  #: Lower bound on car velocity
+    XDOT_MAX = 0.07  #: Upper bound on car velocity
+    INIT_STATE = np.array([-0.5, 0.0])  #: Initial car state
+    STEP_REWARD = -1  #: Penalty for each step taken before reaching the goal
     GOAL_REWARD = 0  #: Reward for reach the goal.
-    #: X-Position of the goal location (Should be at/near hill peak)
-    GOAL = 0.5
-    actions = [-1, 0, 1]
-    #: Magnitude of noise (times accelerationFactor) in stochastic velocity changes
-    noise = 0
-    accelerationFactor = 0.001  # : Magnitude of acceleration action
-    gravityFactor = -0.0025
+    GOAL = 0.5  #: X-Position of the goal location (Should be at/near hill peak)
+    ACTIONS = [-1, 0, 1]  #: actions
+    ACCEL_COEF = 0.001  #: Magnitude of acceleration action
+    GRAVITY = -0.0025
     #: Hill peaks are generated as sinusoid; this is freq. of that sinusoid.
-    hillPeakFrequency = 3.0
+    HILL_PEAK_FREQ = 3.0
 
-    # Used for visual stuff:
-    domain_fig = None
-    valueFunction_fig = None
-    policy_fig = None
-    actionArrow = None
-    X_discretization = 20
-    XDot_discretization = 20
+    # Used for visualization:
+    X_DISCR = 20
+    XDOT_DISCR = 20
     CAR_HEIGHT = 0.2
     CAR_WIDTH = 0.1
     ARROW_LENGTH = 0.2
 
-    def __init__(self, noise=0, discount_factor=0.9):
+    def __init__(self, noise=0, discount_factor=0.9, episode_cap=500):
         """
-        :param noise: Magnitude of noise (times accelerationFactor) in stochastic velocity changes
-
+        :param noise: Magnitude of noise in stochastic velocity changes
         """
         super().__init__(
             actions_num=3,
             statespace_limits=np.array(
-                [[self.XMIN, self.XMAX], [self.XDOTMIN, self.XDOTMAX]]
+                [[self.X_MIN, self.X_MAX], [self.XDOT_MIN, self.XDOT_MAX]]
             ),
             continuous_dims=[0, 1],
             discount_factor=discount_factor,
-            episode_cap=10000,
+            episode_cap=episode_cap,
         )
         self.noise = noise
-        # Visual stuff:
-        self.xTicks = np.linspace(0, self.X_discretization - 1, 5)
-        self.xTicksLabels = np.linspace(self.XMIN, self.XMAX, 5)
-        self.yTicks = np.linspace(0, self.XDot_discretization - 1, 5)
-        self.yTicksLabels = np.linspace(self.XDOTMIN, self.XDOTMAX, 5)
-        self.MIN_RETURN = (
-            self.STEP_REWARD
-            * (1 - discount_factor ** self.episode_cap)
-            / (1 - discount_factor)
-            if discount_factor != 1
-            else self.STEP_REWARD * self.episode_cap
-        )
-        self.MAX_RETURN = 0
         self.dim_names = ["X", "Xdot"]
+
+        # Visualization stuffs
+        self.vf_fig, self.vf_x, self.vf_xdot, self.vf_surf = (None, ) * 4
+        self.domain_fig, self.domain_ax = None, None
+        self.policy_fig = None
+        self.action_arrow = None
+        if discount_factor < 1.0:
+            self.min_return = (
+                self.STEP_REWARD
+                * (1.0 - discount_factor ** self.episode_cap)
+                / (1.0 - discount_factor)
+            )
+        else:
+            self.min_return = self.STEP_REWARD * self.episode_cap
+        self.max_return = 0
 
     def step(self, a):
         """
@@ -96,18 +89,16 @@ class MountainCar(Domain):
 
         """
         position, velocity = self.state
-        noise = (
-            self.accelerationFactor * self.noise * 2 * (self.random_state.rand() - 0.5)
-        )
+        noise = self.ACCEL_COEF * self.noise * 2 * (self.random_state.rand() - 0.5)
         velocity += (
             noise
-            + self.actions[a] * self.accelerationFactor
-            + np.cos(self.hillPeakFrequency * position) * self.gravityFactor
+            + self.ACTIONS[a] * self.ACCEL_COEF
+            + np.cos(self.HILL_PEAK_FREQ * position) * self.GRAVITY
         )
-        velocity = bound(velocity, self.XDOTMIN, self.XDOTMAX)
+        velocity = bound(velocity, self.XDOT_MIN, self.XDOT_MAX)
         position += velocity
-        position = bound(position, self.XMIN, self.XMAX)
-        if position <= self.XMIN and velocity < 0:
+        position = bound(position, self.X_MIN, self.X_MAX)
+        if position <= self.X_MIN and velocity < 0:
             velocity = 0  # Bump into wall
         terminal = self.is_terminal()
         r = self.GOAL_REWARD if terminal else self.STEP_REWARD
@@ -127,37 +118,39 @@ class MountainCar(Domain):
 
         return self.state[0] > self.GOAL
 
-    def show_domain(self, a):
+    def _init_domain_vis(self):
+        self.domain_fig = plt.figure("MountainCar")
+        self.domain_ax = self.domain_fig.add_subplot(111)
+        # plot mountain
+        mountain_x = np.linspace(self.X_MIN, self.X_MAX, 1000)
+        mountain_y = np.sin(3 * mountain_x)
+        self.domain_ax.fill_between(
+            mountain_x, min(mountain_y) - self.CAR_HEIGHT * 2, mountain_y, color="g"
+        )
+        self.domain_ax.set_xlim([self.X_MIN - 0.2, self.X_MAX])
+        self.domain_ax.set_ylim(
+            [
+                min(mountain_y) - self.CAR_HEIGHT * 2,
+                max(mountain_y) + self.CAR_HEIGHT * 2,
+            ]
+        )
+        # plot car
+        self.car = lines.Line2D([], [], linewidth=20, color="b", alpha=0.8)
+        self.domain_ax.add_line(self.car)
+        # Goal
+        self.domain_ax.plot(self.GOAL, np.sin(3 * self.GOAL), "yd", markersize=10.0)
+        self.domain_ax.axis("off")
+        self.domain_fig.show()
+
+    def show_domain(self, a=0):
         """
          Plot the car and an arrow indicating the direction of accelaration
          Parts of this code was adopted from Jose Antonio Martin H.
          <jamartinh@fdi.ucm.es> online source code
         """
-        s = self.state
-        pos, vel = s
-        if self.domain_fig is None:  # Need to initialize the figure
-            self.domain_fig = plt.figure("MountainCar")
-            # plot mountain
-            mountain_x = np.linspace(self.XMIN, self.XMAX, 1000)
-            mountain_y = np.sin(3 * mountain_x)
-            plt.gca().fill_between(
-                mountain_x, min(mountain_y) - self.CAR_HEIGHT * 2, mountain_y, color="g"
-            )
-            plt.xlim([self.XMIN - 0.2, self.XMAX])
-            plt.ylim(
-                [
-                    min(mountain_y) - self.CAR_HEIGHT * 2,
-                    max(mountain_y) + self.CAR_HEIGHT * 2,
-                ]
-            )
-            # plot car
-            self.car = lines.Line2D([], [], linewidth=20, color="b", alpha=0.8)
-            plt.gca().add_line(self.car)
-            # Goal
-            plt.plot(self.GOAL, np.sin(3 * self.GOAL), "yd", markersize=10.0)
-            plt.axis("off")
-            plt.gca().set_aspect("1")
-            plt.show()
+        pos, vel = self.state
+        if self.domain_fig is None:
+            self._init_domain_vis()
         car_middle_x = pos
         car_middle_y = np.sin(3 * pos)
         slope = np.arctan(3 * np.cos(3 * pos))
@@ -167,12 +160,12 @@ class MountainCar(Domain):
         car_front_y = car_middle_y + self.CAR_WIDTH * np.sin(slope) / 2.0
         self.car.set_data([car_back_x, car_front_x], [car_back_y, car_front_y])
         # Arrows
-        if self.actionArrow is not None:
-            self.actionArrow.remove()
-            self.actionArrow = None
+        if self.action_arrow is not None:
+            self.action_arrow.remove()
+            self.action_arrow = None
 
-        if self.actions[a] > 0:
-            self.actionArrow = fromAtoB(
+        if self.ACTIONS[a] > 0:
+            self.action_arrow = from_a_to_b(
                 car_front_x,
                 car_front_y,
                 car_front_x + self.ARROW_LENGTH * np.cos(slope),
@@ -183,8 +176,8 @@ class MountainCar(Domain):
                 0,
                 "simple",
             )
-        if self.actions[a] < 0:
-            self.actionArrow = fromAtoB(
+        elif self.ACTIONS[a] < 0:
+            self.action_arrow = from_a_to_b(
                 car_back_x,
                 car_back_y,
                 car_back_x - self.ARROW_LENGTH * np.cos(slope),
@@ -198,57 +191,35 @@ class MountainCar(Domain):
         self.domain_fig.canvas.draw()
         self.domain_fig.canvas.flush_events()
 
+    def _init_vf_vis(self):
+        fig = plt.figure("Value Function")
+        self.vf_ax = fig.add_subplot(111, projection="3d")
+        x_space = np.linspace(self.X_MIN, self.X_MAX, self.X_DISCR)
+        xdot_space = np.linspace(self.XDOT_MIN, self.XDOT_MAX, self.XDOT_DISCR)
+        self.vf_x, self.vf_xdot = np.meshgrid(x_space, xdot_space)
+        self.vf_ax.set_xlabel(r"$x$")
+        self.vf_ax.set_ylabel(r"$\dot x$")
+        return fig
+
     def show_learning(self, representation):
-        pi = np.zeros((self.X_discretization, self.XDot_discretization), "uint8")
-        V = np.zeros((self.X_discretization, self.XDot_discretization))
+        pi = np.zeros((self.X_DISCR, self.XDOT_DISCR), np.uint8)
+        V = np.zeros((self.X_DISCR, self.XDOT_DISCR))
 
-        if self.valueFunction_fig is None:
-            self.valueFunction_fig = plt.figure("Value Function")
-            self.valueFunction_im = plt.imshow(
-                V,
-                cmap="ValueFunction",
-                interpolation="nearest",
-                origin="lower",
-                vmin=self.MIN_RETURN,
-                vmax=self.MAX_RETURN,
-            )
-
-            plt.xticks(self.xTicks, self.xTicksLabels, fontsize=12)
-            plt.yticks(self.yTicks, self.yTicksLabels, fontsize=12)
-            plt.xlabel(r"$x$")
-            plt.ylabel(r"$\dot x$")
-
-            self.policy_fig = plt.figure("Policy")
-            self.policy_im = plt.imshow(
-                pi,
-                cmap="MountainCarActions",
-                interpolation="nearest",
-                origin="lower",
-                vmin=0,
-                vmax=self.actions_num,
-            )
-
-            plt.xticks(self.xTicks, self.xTicksLabels, fontsize=12)
-            plt.yticks(self.yTicks, self.yTicksLabels, fontsize=12)
-            plt.xlabel(r"$x$")
-            plt.ylabel(r"$\dot x$")
-            plt.show()
+        if self.vf_fig is None:
+            self.vf_fig = self._init_vf_vis()
 
         for row, xDot in enumerate(
-            np.linspace(self.XDOTMIN, self.XDOTMAX, self.XDot_discretization)
+            np.linspace(self.XDOT_MIN, self.XDOT_MAX, self.XDOT_DISCR)
         ):
-            for col, x in enumerate(
-                np.linspace(self.XMIN, self.XMAX, self.X_discretization)
-            ):
+            for col, x in enumerate(np.linspace(self.X_MIN, self.X_MAX, self.X_DISCR)):
                 s = np.array([x, xDot])
                 Qs = representation.Qs(s, False)
                 As = self.possible_actions()
                 pi[row, col] = representation.best_action(s, False, As)
-                V[row, col] = max(Qs)
-        self.valueFunction_im.set_data(V)
-        self.policy_im.set_data(pi)
-
-        self.valueFunction_fig = plt.figure("Value Function")
-        plt.draw()
-        self.policy_fig = plt.figure("Policy")
-        plt.draw()
+                V[col, row] = max(Qs)
+        if self.vf_surf is not None:
+            self.vf_surf.remove()
+        self.vf_surf = self.vf_ax.plot_surface(
+            self.vf_x, self.vf_xdot, V, cmap=cm.coolwarm, linewidth=0, antialiased=False
+        )
+        self.vf_fig.canvas.draw()

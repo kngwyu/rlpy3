@@ -1,5 +1,5 @@
 """Simple Chain MDP domain."""
-from rlpy.tools import plt, mpatches, fromAtoB
+from rlpy.tools import plt, mpatches, from_a_to_b
 import numpy as np
 from .domain import Domain
 
@@ -96,21 +96,21 @@ class ChainMDP(Domain):
             for i in range(self.chain_size):
                 ax.add_patch(self.circles[i])
                 if i < self.chain_size - 1:
-                    fromAtoB(
+                    from_a_to_b(
                         1 + 2 * i + self.SHIFT,
                         self.Y + self.SHIFT,
                         1 + 2 * (i + 1) - self.SHIFT,
                         self.Y + self.SHIFT,
                     )
                 if i < self.chain_size - 2:
-                    fromAtoB(
+                    from_a_to_b(
                         1 + 2 * (i + 1) - self.SHIFT,
                         self.Y - self.SHIFT,
                         1 + 2 * i + self.SHIFT,
                         self.Y - self.SHIFT,
                         "r",
                     )
-                fromAtoB(
+                from_a_to_b(
                     0.75,
                     self.Y - 1.5 * self.SHIFT,
                     0.75,

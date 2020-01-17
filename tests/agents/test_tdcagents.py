@@ -22,6 +22,7 @@ class MockRepresentation(Representation):
         self.weight = np.zeros((self.actions_num, self.features_num))
         self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.domain = None
 
     def phi_non_terminal(self, s):
         ret = np.zeros(self.features_num)

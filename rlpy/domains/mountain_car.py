@@ -69,7 +69,7 @@ class MountainCar(Domain):
         self.dim_names = ["X", "Xdot"]
 
         # Visualization stuffs
-        self.vf_fig, self.vf_x, self.vf_xdot, self.vf_surf = (None, ) * 4
+        self.vf_fig, self.vf_x, self.vf_xdot, self.vf_surf = (None,) * 4
         self.domain_fig, self.domain_ax = None, None
         self.policy_fig = None
         self.action_arrow = None

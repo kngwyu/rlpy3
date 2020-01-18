@@ -13,6 +13,7 @@ class RLPyEnv(gym.Env):
         self.raw_observation_space = _get_box_space(domain)
         self.observation_space = obs_space
         self.obs_fn = obs_fn
+        self._init_state_reserved = None
 
     def step(self, action):
         reward, next_state, terminal, possible_actions = self.domain.step(action)
@@ -22,7 +23,11 @@ class RLPyEnv(gym.Env):
 
     def reset(self):
         state, _, _ = self.domain.s0()
+        self._init_state_reserved = state
         return self.obs_fn(self.domain, state)
+
+    def initial_raw_obs(self):
+        return self._init_state_reserved
 
     def seed(self, seed=None):
         self.domain.set_seed(seed)

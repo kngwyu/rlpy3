@@ -46,12 +46,14 @@ def test_randomgoal_gridworld(version):
     assert env.action_space.n == 4
     assert state.shape == env.observation_space.shape
     state, reward, terminal, info = env.step(0)
-    raw = info["raw_obs"]
-    assert raw.shape == (3,)
-    assert raw[:2].tolist() == [0, 0]
-    assert 0 <= raw[2] <= 2
+    # Test raw obs
     raw_space = env.raw_observation_space
     assert raw_space.dtype == np.int64
+    for raw in info["raw_obs"], env.initial_raw_obs():
+        raw = info["raw_obs"]
+        assert raw.shape == (3,)
+        assert raw[:2].tolist() == [0, 0]
+        assert 0 <= raw[2] <= 2
 
 
 @pytest.mark.parametrize("version", [0, 1, 2])

@@ -123,11 +123,14 @@ class GridWorld(Domain):
             def _get_obs(state):
                 return np.append(state, self._goal_index)
 
-            state_space.append([0, len(self._goals)])
+            self.num_goals = len(self._goals)
+            state_space.append([0, self.num_goals])
         else:
 
             def _get_obs(state):
                 return state
+
+            self.num_goals = 1
 
         super().__init__(
             actions_num=4,
@@ -637,8 +640,12 @@ class GridWorld(Domain):
         return p, r, ns, t, pa
 
     def all_states(self):
-        for r, c in itertools.product(range(self.rows), range(self.cols)):
-            yield np.array([r, c])
+        if self.random_goal:
+            factors = range(self.rows), range(self.cols), range(self.num_goals)
+        else:
+            factors = range(self.rows), range(self.cols)
+        for t in itertools.product(*factors):
+            yield np.array(t)
 
     def get_image(self, state):
         image = self.map.copy()

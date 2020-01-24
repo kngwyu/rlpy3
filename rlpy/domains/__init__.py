@@ -20,6 +20,7 @@ from .helicopter_hover import HelicopterHover, HelicopterHoverExtended
 from .hiv_treatment import HIVTreatment
 from .infinite_track_cartpole import InfCartPoleBalance, InfCartPoleSwingUp
 from .intruder_monitoring import IntruderMonitoring
+from .lifegame_survival import LifeGameSurvival
 from .mountain_car import MountainCar
 from .pacman import Pacman
 from .pst import PST

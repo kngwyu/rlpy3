@@ -85,6 +85,12 @@ def deepsea(size=20, mode="onehot", **kwargs):
     return RLPyEnv(domain, obs_fn, obs_space)
 
 
+def lifegame(mapfile, **kwargs):
+    domain = domains.LifeGameSurvival(mapfile)
+    obs_fn, obs_space = gridworld_obs(domain, mode="image")
+    return RLPyEnv(domain, obs_fn, obs_space)
+
+
 def pinball(noise, cfg):
     domain = domains.Pinball(noise=noise, config_file=cfg)
     obs_space = _get_box_space(domain)
@@ -133,6 +139,15 @@ for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile, cls=domains.BernoulliGridWorld)
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.glob("*.txt"):
+    gym.envs.register(
+        id=f"RLPyLifeGame{mapfile.stem}-v0",
+        entry_point="rlpy.gym:lifegame",
+        max_episode_steps=200,
+        kwargs=dict(mapfile=mapfile),
+        reward_threshold=1.0,
+    )
 
 for size in range(4, 40, 2):
     gym.envs.register(

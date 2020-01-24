@@ -68,6 +68,16 @@ def test_deepsea(version):
     assert reward > 0.9
 
 
+def test_lifegame():
+    env = gym.make("RLPyLifeGame7x7inf-v0")
+    state = env.reset()
+    assert env.action_space.n == 4
+    assert state.shape == env.observation_space.shape
+    state, reward, terminal, _ = env.step(1)
+    assert not terminal
+    assert reward == 0.01
+
+
 @pytest.mark.parametrize(
     "name, version", [("Box", 0), ("Box", 1), ("Medium", 0), ("Medium", 1)]
 )

@@ -106,19 +106,10 @@ class GridWorld(Domain):
             map_, mapname, noise, episode_cap, random_start, random_goal
         )
 
-    def _init_from_map(
-        self, map_, mapname, noise, episode_cap, random_start=False, random_goal=False
-    ):
-        self.map = map_
-        self.random_start = random_start
-        self._goals = np.argwhere(map_ == self.GOAL)
-        self._goal_index = 0
-        self.random_goal = random_goal
-        # Number of rows and columns of the map
-        self.rows, self.cols = self.map.shape
+    def _set_obs_and_space(self):
         state_space = [[0, self.rows - 1], [0, self.cols - 1]]
         # If random goal, we have to include goal index to the state
-        if random_goal:
+        if self.random_goal:
 
             def _get_obs(state):
                 return np.append(state, self._goal_index)
@@ -131,13 +122,26 @@ class GridWorld(Domain):
                 return state
 
             self.num_goals = 1
+        self._get_obs = _get_obs
+        return state_space
 
+    def _init_from_map(
+        self, map_, mapname, noise, episode_cap, random_start=False, random_goal=False
+    ):
+        self.map = map_
+        self._starts = np.argwhere(self.map == self.START)
+        self.random_start = random_start and len(self._starts) > 1
+        self._goals = np.argwhere(map_ == self.GOAL)
+        self._goal_index = 0
+        self.random_goal = random_goal
+        # Number of rows and columns of the map
+        self.rows, self.cols = self.map.shape
+        state_space = self._set_obs_and_space()
         super().__init__(
             actions_num=4,
             statespace_limits=np.array(state_space, dtype=np.int64),
             episode_cap=episode_cap,
         )
-        self._get_obs = _get_obs
         # Movement noise
         self.noise = noise
         self.dim_names = ["Row", "Col"]
@@ -146,7 +150,7 @@ class GridWorld(Domain):
         self.mapname = mapname
         # Used for graphics to show the domain
         self.domain_fig, self.domain_ax, self.domain_img, self.agent_fig = (None,) * 4
-        self._goal_changed = True
+        self._map_changed = True
         self.vf_fig, self.vf_ax, self.vf_img = (None,) * 3
         self.arrow_figs = []
         self.goal_reward = self.MAX_RETURN
@@ -158,12 +162,14 @@ class GridWorld(Domain):
         self.policy_arrows, self.policy_texts = defaultdict(list), defaultdict(list)
 
     def _sample_start(self):
-        starts = np.argwhere(self.map == self.START)
         if self.random_start:
-            idx = self.random_state.randint(starts.shape[0])
+            idx = self.random_state.randint(self._starts.shape[0])
+            self._map_changed = True
         else:
             idx = 0
-        self.start_state = starts[idx]
+        self.start_state = self._starts[idx]
+        r, c = self.start_state
+        self.map[r, c] = self.START
         return self.start_state.copy()
 
     def _sample_goal(self):
@@ -173,7 +179,7 @@ class GridWorld(Domain):
                 self.map[r, c] = self.GOAL
             else:
                 self.map[r, c] = self.EMPTY
-        self._goal_changed = True
+        self._map_changed = True
         self._goal_index = idx
 
     def _map_mask(self):
@@ -228,9 +234,9 @@ class GridWorld(Domain):
         # Draw the environment
         if self.domain_fig is None:
             self._init_domain_vis(s)
-        if self._goal_changed:
+        if self._map_changed:
             self.domain_img.set_data(self.map)
-            self._goal_changed = False
+            self._map_changed = False
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()

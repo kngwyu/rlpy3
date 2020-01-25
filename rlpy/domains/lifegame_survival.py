@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import itertools
 import numpy as np
 from rlpy.tools import __rlpy_location__
@@ -8,6 +9,37 @@ from .grid_world import GridWorld
 
 __license__ = "BSD 3-Clause"
 __author__ = "Yuji Kanagawa"
+
+
+class LifeLike(ABC):
+    """Rule of life-like cellular automaton
+    """
+
+    @abstractmethod
+    def __call__(self, current, neighbors):
+        pass
+
+
+class LifeGame(LifeLike):
+    def __call__(self, current, active_neighbors):
+        if current:
+            return 2 <= active_neighbors <= 3
+        else:
+            return active_neighbors == 3
+
+
+class DryLife(LifeLike):
+    def __call__(self, current, active_neighbors):
+        if current:
+            return 2 <= active_neighbors <= 3
+        else:
+            return active_neighbors == 3 or active_neighbors == 7
+
+
+RULE_REGISTORY = {
+    "life": LifeGame,
+    "dry": DryLife,
+}
 
 
 class LifeGameSurvival(GridWorld):
@@ -30,7 +62,8 @@ class LifeGameSurvival(GridWorld):
 
     def __init__(
         self,
-        mapfile=DEFAULT_MAP_DIR.joinpath("7x7inf.txt"),
+        mapfile=DEFAULT_MAP_DIR.joinpath("7x7ever.txt"),
+        rule="life",
         episode_cap=100,
         collison_penalty=1.0,
         survive_reward=0.01,
@@ -46,6 +79,10 @@ class LifeGameSurvival(GridWorld):
         self.survive_reward = survive_reward
         self._init = self.map.copy()
         self._active_cells = self.map == self.PIT
+        try:
+            self._rule = RULE_REGISTORY[rule]()
+        except KeyError:
+            raise NotImplementedError(f"Rule {rule} is not implemented")
 
     def s0(self):
         self.state = self._sample_start()
@@ -67,10 +104,7 @@ class LifeGameSurvival(GridWorld):
                 neighbor = self._cycle((r + rplus, c + cplus))
                 if self._active_cells[neighbor]:
                     active_neighbors += 1
-            if self._active_cells[r, c]:
-                next_[r, c] = 2 <= active_neighbors <= 3
-            else:
-                next_[r, c] = active_neighbors == 3
+            next_[r, c] = self._rule(self._active_cells[r, c], active_neighbors)
         self._active_cells = next_
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if next_[r, c]:
@@ -96,11 +130,10 @@ class LifeGameSurvival(GridWorld):
         self._map_changed = True
 
         # Check collison
-        if self.is_terminal():
-            terminal = True
+        terminal = self.is_terminal()
+        if terminal:
             reward = -self.collison_penalty
         else:
-            terminal = False
             reward = self.survive_reward
         return reward, self._get_obs(ns), terminal, self.possible_actions()
 

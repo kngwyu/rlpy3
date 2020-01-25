@@ -92,8 +92,8 @@ def deepsea(size=20, mode="onehot", **kwargs):
     return RLPyEnv(domain, obs_fn, obs_space)
 
 
-def lifegame(mapfile, mode="image", **kwargs):
-    domain = domains.LifeGameSurvival(mapfile)
+def lifegame(mapfile, rule, mode="image", **kwargs):
+    domain = domains.LifeGameSurvival(mapfile, rule)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
     return RLPyEnv(domain, obs_fn, obs_space)
 
@@ -154,21 +154,30 @@ for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile, cls=domains.BernoulliGridWorld)
 
-for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.glob("*.txt"):
+
+def register_lifegame(rule, prefix, mapfile):
+    name = prefix + mapfile.stem
     gym.envs.register(
-        id=f"RLPyLifeGame{mapfile.stem}-v0",
+        id=f"RLPyLifeGame{name}-v0",
         entry_point="rlpy.gym:lifegame",
         max_episode_steps=200,
-        kwargs=dict(mapfile=mapfile, mode="image"),
+        kwargs=dict(mapfile=mapfile, rule=rule, mode="image"),
         reward_threshold=1.0,
     )
     gym.envs.register(
-        id=f"RLPyLifeGame{mapfile.stem}-v1",
+        id=f"RLPyLifeGame{name}-v1",
         entry_point="rlpy.gym:lifegame",
         max_episode_steps=200,
-        kwargs=dict(mapfile=mapfile, mode="binary-image"),
+        kwargs=dict(mapfile=mapfile, rule=rule, mode="binary-image"),
         reward_threshold=1.0,
     )
+
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("life").glob("*.txt"):
+    register_lifegame("life", "", mapfile)
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("dry").glob("*.txt"):
+    register_lifegame("dry", "Dry", mapfile)
 
 for size in range(4, 40, 2):
     gym.envs.register(

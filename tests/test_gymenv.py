@@ -98,7 +98,7 @@ def test_deepsea(version):
 
 @pytest.mark.parametrize("version", [0, 1])
 def test_lifegame(version):
-    env = gym.make(f"RLPyLifeGame7x7inf-v{version}")
+    env = gym.make(f"RLPyLifeGame7x7ever-v{version}")
     state = env.reset()
     assert env.action_space.n == 4
     assert state.shape == env.observation_space.shape

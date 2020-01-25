@@ -5,9 +5,10 @@ from rlpy.tools.cli import run_experiment
 from fr_gridworld import select_agent
 
 
-def select_domain(init, episode_cap, **kwargs):
-    init = LifeGameSurvival.default_map(init + ".txt")
-    return LifeGameSurvival(init, episode_cap=episode_cap)
+def select_domain(rule, init, episode_cap, **kwargs):
+    path = LifeGameSurvival.DEFAULT_MAP_DIR
+    init = path.joinpath(rule).joinpath(init + ".txt")
+    return LifeGameSurvival(init, rule=rule, episode_cap=episode_cap)
 
 
 if __name__ == "__main__":
@@ -18,7 +19,8 @@ if __name__ == "__main__":
         default_num_policy_checks=10,
         default_checks_per_policy=50,
         other_options=[
-            click.Option(["--init"], type=str, default="7x7inf"),
+            click.Option(["--rule"], type=str, default="life"),
+            click.Option(["--init"], type=str, default="7x7ever"),
             click.Option(["--episode-cap"], type=int, default=100),
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),

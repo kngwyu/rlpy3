@@ -168,10 +168,10 @@ class GridWorld(Domain):
             self._map_changed = True
         else:
             idx = 0
-        self.start_state = self._starts[idx]
-        r, c = self.start_state
+        start = self._starts[idx]
+        r, c = start
         self.map[r, c] = self.START
-        return self.start_state.copy()
+        return start
 
     def _sample_goal(self):
         idx = self.random_state.randint(self._goals.shape[0])
@@ -219,7 +219,7 @@ class GridWorld(Domain):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
     def _init_domain_vis(self, s):
-        fig_name = "GridWorld: {}".format(self.mapname)
+        fig_name = f"{(self.__class__.__name__)}: {self.mapname}"
         if self.performance:
             fig_name += "(Evaluation)"
         self.domain_fig = plt.figure(fig_name)

@@ -56,8 +56,6 @@ def gridworld_obs(domain, mode="onehot"):
             return state.astype(np.float32)
 
     elif mode == "image":
-        obs_space = gym.spaces
-        obs_space = gym.spaces
         shape = 1, *domain.map.shape
         low = np.zeros(shape, dtype=np.float32)
         high = np.ones(shape, dtype=np.float32) * domain.AGENT
@@ -65,6 +63,15 @@ def gridworld_obs(domain, mode="onehot"):
 
         def obs_fn(domain, _state):
             return domain.get_image(_state)
+
+    elif mode == "binary-image":
+        shape = domain.MAP_CATEGORY, *domain.map.shape
+        low = np.zeros(shape, dtype=np.float32)
+        high = np.ones(shape, dtype=np.float32)
+        obs_space = gym.spaces.Box(low, high)
+
+        def obs_fn(domain, _state):
+            return domain.get_binary_image(_state)
 
     else:
         raise ValueError("obs_mode {} is not supported".format(mode))
@@ -85,9 +92,9 @@ def deepsea(size=20, mode="onehot", **kwargs):
     return RLPyEnv(domain, obs_fn, obs_space)
 
 
-def lifegame(mapfile, **kwargs):
+def lifegame(mapfile, mode="image", **kwargs):
     domain = domains.LifeGameSurvival(mapfile)
-    obs_fn, obs_space = gridworld_obs(domain, mode="image")
+    obs_fn, obs_space = gridworld_obs(domain, mode=mode)
     return RLPyEnv(domain, obs_fn, obs_space)
 
 
@@ -129,6 +136,13 @@ def register_gridworld(mapfile, cls=domains.GridWorld, max_steps=100, threshold=
         kwargs=dict(mapfile=mapfile, cls=cls, mode="image"),
         reward_threshold=threshold,
     )
+    gym.envs.register(
+        id=f"RLPy{name}-v3",
+        entry_point="rlpy.gym:gridworld",
+        max_episode_steps=max_steps,
+        kwargs=dict(mapfile=mapfile, cls=cls, mode="binary-image"),
+        reward_threshold=threshold,
+    )
 
 
 for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
@@ -145,7 +159,14 @@ for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.glob("*.txt"):
         id=f"RLPyLifeGame{mapfile.stem}-v0",
         entry_point="rlpy.gym:lifegame",
         max_episode_steps=200,
-        kwargs=dict(mapfile=mapfile),
+        kwargs=dict(mapfile=mapfile, mode="image"),
+        reward_threshold=1.0,
+    )
+    gym.envs.register(
+        id=f"RLPyLifeGame{mapfile.stem}-v1",
+        entry_point="rlpy.gym:lifegame",
+        max_episode_steps=200,
+        kwargs=dict(mapfile=mapfile, mode="binary-image"),
         reward_threshold=1.0,
     )
 

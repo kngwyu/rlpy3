@@ -66,6 +66,7 @@ class GridWorld(Domain):
     SHIFT = 0.1
     # Constants in the map
     EMPTY, BLOCKED, START, GOAL, PIT, AGENT = range(6)
+    MAP_CATEGORY = 6
     #: Up, Down, Left, Right
     ACTIONS = np.array([[-1, 0], [+1, 0], [0, -1], [0, +1]])
     # directory of maps shipped with rlpy
@@ -657,3 +658,12 @@ class GridWorld(Domain):
         image = self.map.copy()
         image[state[0], state[1]] = self.AGENT
         return np.expand_dims(image.astype(np.float32), 0)
+
+    def get_binary_image(self, state):
+        images = []
+        for i in range(5):
+            images.append((self.map == i).astype(np.float32))
+        agent_image = np.zeros_like(self.map).astype(np.float32)
+        agent_image[state[0], state[1]] = 1.0
+        images.append(agent_image)
+        return np.stack(images)

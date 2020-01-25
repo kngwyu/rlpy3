@@ -20,6 +20,7 @@ class LifeGameSurvival(GridWorld):
     # directory of maps shipped with rlpy
     DEFAULT_MAP_DIR = Path(__rlpy_location__).joinpath("domains/LifeGameInit")
     NEIGHBORS = [-1, 0, 1]
+    MAP_CATEGORY = 3
 
     def _load_map(self, mapfile):
         map_ = np.loadtxt(mapfile, dtype=np.uint8)
@@ -102,3 +103,10 @@ class LifeGameSurvival(GridWorld):
             terminal = False
             reward = self.survive_reward
         return reward, self._get_obs(ns), terminal, self.possible_actions()
+
+    def get_binary_image(self, state):
+        empty = np.bitwise_or(self.map == self.EMPTY, self.map == self.START)
+        pit = self.map == self.PIT
+        agent = np.zeros_like(pit)
+        agent[state[0], state[1]] = 1
+        return np.stack([empty, pit, agent])

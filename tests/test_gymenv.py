@@ -22,9 +22,37 @@ def grid4x5_v2_goal():
     return map_.astype(np.float32).reshape(1, 4, 5)
 
 
+def grid4x5_v3_goal():
+    layers = []
+    layers.append(
+        np.array([[1, 1, 1, 1, 1], [1, 0, 0, 0, 1], [1, 1, 1, 0, 1], [0, 0, 0, 0, 1]])
+    )
+    layers.append(
+        np.array([[0, 0, 0, 0, 0], [0, 1, 1, 1, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 0]])
+    )
+    layers.append(
+        np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [1, 0, 0, 0, 0]])
+    )
+    layers.append(
+        np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 1, 0]])
+    )
+    layers.append(
+        np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 1, 1, 0, 0]])
+    )
+    layers.append(
+        np.array([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 1, 0]])
+    )
+    return np.stack(layers).astype(np.float32)
+
+
 @pytest.mark.parametrize(
     "version, goal_fn",
-    [(0, grid4x5_v0_goal), (1, grid4x5_v1_goal), (2, grid4x5_v2_goal)],
+    [
+        (0, grid4x5_v0_goal),
+        (1, grid4x5_v1_goal),
+        (2, grid4x5_v2_goal),
+        (3, grid4x5_v3_goal),
+    ],
 )
 def test_gridworld(version, goal_fn):
     env = gym.make(f"RLPyGridWorld4x5-v{version}", noise=0.0)
@@ -66,6 +94,17 @@ def test_deepsea(version):
         state, reward, terminal, _ = env.step(1)
     assert terminal
     assert reward > 0.9
+
+
+@pytest.mark.parametrize("version", [0, 1])
+def test_lifegame(version):
+    env = gym.make(f"RLPyLifeGame7x7ever-v{version}")
+    state = env.reset()
+    assert env.action_space.n == 4
+    assert state.shape == env.observation_space.shape
+    state, reward, terminal, _ = env.step(1)
+    assert not terminal
+    assert reward == 0.01
 
 
 @pytest.mark.parametrize(

@@ -56,8 +56,6 @@ def gridworld_obs(domain, mode="onehot"):
             return state.astype(np.float32)
 
     elif mode == "image":
-        obs_space = gym.spaces
-        obs_space = gym.spaces
         shape = 1, *domain.map.shape
         low = np.zeros(shape, dtype=np.float32)
         high = np.ones(shape, dtype=np.float32) * domain.AGENT
@@ -65,6 +63,15 @@ def gridworld_obs(domain, mode="onehot"):
 
         def obs_fn(domain, _state):
             return domain.get_image(_state)
+
+    elif mode == "binary-image":
+        shape = domain.MAP_CATEGORY, *domain.map.shape
+        low = np.zeros(shape, dtype=np.float32)
+        high = np.ones(shape, dtype=np.float32)
+        obs_space = gym.spaces.Box(low, high)
+
+        def obs_fn(domain, _state):
+            return domain.get_binary_image(_state)
 
     else:
         raise ValueError("obs_mode {} is not supported".format(mode))
@@ -81,6 +88,12 @@ def gridworld(mapfile, mode="onehot", cls=domains.GridWorld, **kwargs):
 
 def deepsea(size=20, mode="onehot", **kwargs):
     domain = domains.DeepSea(size, **kwargs)
+    obs_fn, obs_space = gridworld_obs(domain, mode=mode)
+    return RLPyEnv(domain, obs_fn, obs_space)
+
+
+def lifegame(mapfile, rule, mode="image", **kwargs):
+    domain = domains.LifeGameSurvival(mapfile, rule)
     obs_fn, obs_space = gridworld_obs(domain, mode=mode)
     return RLPyEnv(domain, obs_fn, obs_space)
 
@@ -123,6 +136,13 @@ def register_gridworld(mapfile, cls=domains.GridWorld, max_steps=100, threshold=
         kwargs=dict(mapfile=mapfile, cls=cls, mode="image"),
         reward_threshold=threshold,
     )
+    gym.envs.register(
+        id=f"RLPy{name}-v3",
+        entry_point="rlpy.gym:gridworld",
+        max_episode_steps=max_steps,
+        kwargs=dict(mapfile=mapfile, cls=cls, mode="binary-image"),
+        reward_threshold=threshold,
+    )
 
 
 for mapfile in domains.GridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
@@ -133,6 +153,34 @@ for mapfile in domains.FixedRewardGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
 
 for mapfile in domains.BernoulliGridWorld.DEFAULT_MAP_DIR.glob("*.txt"):
     register_gridworld(mapfile, cls=domains.BernoulliGridWorld)
+
+
+def register_lifegame(rule, prefix, mapfile):
+    name = prefix + mapfile.stem
+    gym.envs.register(
+        id=f"RLPyLifeGame{name}-v0",
+        entry_point="rlpy.gym:lifegame",
+        max_episode_steps=200,
+        kwargs=dict(mapfile=mapfile, rule=rule, mode="image"),
+        reward_threshold=1.0,
+    )
+    gym.envs.register(
+        id=f"RLPyLifeGame{name}-v1",
+        entry_point="rlpy.gym:lifegame",
+        max_episode_steps=200,
+        kwargs=dict(mapfile=mapfile, rule=rule, mode="binary-image"),
+        reward_threshold=1.0,
+    )
+
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("life").glob("*.txt"):
+    register_lifegame("life", "", mapfile)
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("dry").glob("*.txt"):
+    register_lifegame("dry", "Dry", mapfile)
+
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("seeds").glob("*.txt"):
+    register_lifegame("seeds", "Seeds", mapfile)
 
 for size in range(4, 40, 2):
     gym.envs.register(

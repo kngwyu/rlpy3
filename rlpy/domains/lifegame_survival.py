@@ -36,9 +36,18 @@ class DryLife(LifeLike):
             return active_neighbors == 3 or active_neighbors == 7
 
 
+class Seeds(LifeLike):
+    def __call__(self, current, active_neighbors):
+        if current:
+            return False
+        else:
+            return active_neighbors == 2
+
+
 RULE_REGISTORY = {
     "life": LifeGame,
     "dry": DryLife,
+    "seeds": Seeds,
 }
 
 
@@ -62,7 +71,7 @@ class LifeGameSurvival(GridWorld):
 
     def __init__(
         self,
-        mapfile=DEFAULT_MAP_DIR.joinpath("7x7ever.txt"),
+        mapfile=DEFAULT_MAP_DIR.joinpath("life/7x7ever.txt"),
         rule="life",
         episode_cap=100,
         collison_penalty=1.0,

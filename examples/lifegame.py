@@ -1,3 +1,7 @@
+"""
+This is only for testing.
+Lifegame is too difiicult for tabular methods.
+"""
 import click
 from rlpy.domains import LifeGameSurvival
 from rlpy.tools.cli import run_experiment
@@ -7,8 +11,10 @@ from fr_gridworld import select_agent
 
 def select_domain(rule, init, episode_cap, **kwargs):
     path = LifeGameSurvival.DEFAULT_MAP_DIR
-    init = path.joinpath(rule).joinpath(init + ".txt")
-    return LifeGameSurvival(init, rule=rule, episode_cap=episode_cap)
+    if not init.endswith(".txt"):
+        init = init + ".txt"
+    init_file = path.joinpath(rule).joinpath(init)
+    return LifeGameSurvival(init_file, rule=rule, episode_cap=episode_cap)
 
 
 if __name__ == "__main__":

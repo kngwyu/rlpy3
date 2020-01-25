@@ -179,6 +179,9 @@ for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("life").glob("*
 for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("dry").glob("*.txt"):
     register_lifegame("dry", "Dry", mapfile)
 
+for mapfile in domains.LifeGameSurvival.DEFAULT_MAP_DIR.joinpath("seeds").glob("*.txt"):
+    register_lifegame("seeds", "Seeds", mapfile)
+
 for size in range(4, 40, 2):
     gym.envs.register(
         id=f"RLPyDeepSea{size}-v0",

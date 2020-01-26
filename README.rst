@@ -9,7 +9,7 @@ RLPy3
 
 .. |pypi-python-version| image:: https://img.shields.io/pypi/pyversions/rlpy3.svg
    :alt: PyPI
-   :target: https://pypi.org/project/rlpy3/2.0.0b2
+   :target: https://pypi.org/project/rlpy3/2.0.0b1
 
 Why Fork?
 ----------
@@ -40,7 +40,7 @@ To see what was changed, see the new `CHANGELOG`_.
 
 Install
 --------
-The latest version is 2.0.0b2, which you can install by::
+The latest version is 2.0.0b1, which you can install by::
 
   pip3 install rlpy3 -U --pre
 

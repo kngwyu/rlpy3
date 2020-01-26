@@ -10,6 +10,22 @@ from matplotlib import path as mpath  # noqa
 import numpy as np
 
 
+class ModeHolder:
+    def __init__(self):
+        self._inner = False
+
+    def __nonzero__(self):
+        return self._inner
+
+
+JUPYTER_MODE = ModeHolder()
+
+
+def jupyter_mode(mode=True):
+    global JUPYTER_MODE
+    JUPYTER_MODE._inner = True
+
+
 def nogui_mode():
     mpl.use("agg")
     plt.ioff()

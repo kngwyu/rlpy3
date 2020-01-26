@@ -4,6 +4,7 @@ import numpy as np
 import itertools
 from rlpy.tools.plotting import (
     FONTSIZE,
+    JUPYTER_MODE,
     plt,
     set_xticks,
     set_yticks,
@@ -161,6 +162,7 @@ class GridWorld(Domain):
         self.heatmap_texts = defaultdict(list)
         self.policy_fig, self.policy_ax, self.policy_img = None, {}, {}
         self.policy_arrows, self.policy_texts = defaultdict(list), defaultdict(list)
+        self.domain_display = None
 
     def _sample_start(self):
         if self.random_start:
@@ -241,6 +243,11 @@ class GridWorld(Domain):
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
+        if JUPYTER_MODE:
+            if self.domain_display is None:
+                self.domain_display = display(self.domain_fig, display_id=True)
+            else:
+                self.domain_display.update(self.domain_fig)
 
     def _init_vis_common(
         self,

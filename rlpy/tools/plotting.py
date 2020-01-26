@@ -14,7 +14,7 @@ class ModeHolder:
     def __init__(self):
         self._inner = False
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._inner
 
 

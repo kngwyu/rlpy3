@@ -245,7 +245,7 @@ class GridWorld(Domain):
         self.domain_fig.canvas.draw()
         if JUPYTER_MODE:
             if self.domain_display is None:
-                self.domain_display = display(self.domain_fig, display_id=True)
+                self.domain_display = display(self.domain_fig, display_id=True)  # noqa
             else:
                 self.domain_display.update(self.domain_fig)
 

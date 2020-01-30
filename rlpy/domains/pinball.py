@@ -1,6 +1,5 @@
 """Pinball domain for reinforcement learning
 """
-from .domain import Domain
 import numpy as np
 from itertools import tee
 import itertools
@@ -12,7 +11,9 @@ except ImportError:
     import warnings
 
     warnings.warn("TkInter is not found for Pinball.")
+
 from rlpy.tools import __rlpy_location__
+from .domain import Domain
 
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
 __credits__ = [
@@ -51,9 +52,9 @@ class Pinball(Domain):
     **REFERENCE:**
 
     .. seealso::
-        G.D. Konidaris and A.G. Barto:
-        *Skill Discovery in Continuous Reinforcement Learning domains using Skill Chaining.*
-        Advances in Neural Information Processing Systems 22, pages 1015-1023, December 2009.
+       G.D. Konidaris and A.G. Barto:
+       *Skill Discovery in Continuous Reinforcement Learning domains using Skill Chaining.*
+       Advances in Neural Information Processing Systems 22, pages 1015-1023, December 2009.
     """
 
     #: default location of config files shipped with rlpy
@@ -446,12 +447,10 @@ class PinballModel:
         """
         if isinstance(action, np.ndarray):
             action = action.item()
+        self.ball.add_impulse(*self.action_effects[action])
+
         for i in range(20):
-            if i == 0:
-                self.ball.add_impulse(*self.action_effects[action])
-
             self.ball.step()
-
             # Detect collisions
             ncollision = 0
             dxdy = np.array([0, 0])
@@ -464,14 +463,14 @@ class PinballModel:
             if ncollision == 1:
                 self.ball.xdot = dxdy[0]
                 self.ball.ydot = dxdy[1]
-                if i == 19:
-                    self.ball.step()
             elif ncollision > 1:
                 self.ball.xdot = -self.ball.xdot
                 self.ball.ydot = -self.ball.ydot
-
             if self.episode_ended():
                 return self.END_EPISODE
+
+        if ncollision == 1:
+            self.ball.step()
 
         self.ball.add_drag()
         self._check_bounds()

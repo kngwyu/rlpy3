@@ -80,7 +80,7 @@ class BlocksWorld(Domain):
         self.noise = noise
         self.TABLE = blocks + 1
         # This is the true size of the state space refer to [Geramifard11_ICML]
-        self.real_states_num = sum(
+        self.num_states_real = sum(
             nchoosek(blocks, i) * factorial(blocks - i) * pow(i, blocks - i)
             for i in range(blocks)
         )

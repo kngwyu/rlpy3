@@ -102,7 +102,7 @@ class Representation(ValueLearner, ABC):
         self.discretization = discretization
         #: Number of aggregated states based on the discretization.
         #: If the represenation is adaptive, set to the best resolution possible
-        self.agg_states_num = np.prod(self.bins_per_dim.astype("uint64"))
+        self.num_states_total = np.prod(self.bins_per_dim.astype(np.uint64))
         self.logger = logging.getLogger(
             "rlpy.representations." + self.__class__.__name__
         )

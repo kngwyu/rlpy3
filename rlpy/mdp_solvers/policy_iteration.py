@@ -56,7 +56,7 @@ class PolicyIteration(MDPSolver):
             policy_evaluation_iteration += 1
 
             # Sweep The State Space
-            for i in range(0, self.representation.agg_states_num):
+            for i in range(0, self.representation.num_states_total):
 
                 # Check for solver time
                 if not self.has_time():
@@ -121,7 +121,7 @@ class PolicyIteration(MDPSolver):
         """
         policyChanges = 0
         i = 0
-        while i < self.representation.agg_states_num and self.has_time():
+        while i < self.representation.num_states_total and self.has_time():
             s = self.representation.stateID2state(i)
             p_actions = self.domain.possible_actions(s)
             if not self.domain.is_terminal(s) and len(self.domain.possible_actions(s)):

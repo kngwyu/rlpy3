@@ -32,7 +32,7 @@ class Tabular(Representation, Enumerable):
 
     def phi_non_terminal(self, s):
         hashVal = self._hash_state(s)
-        F_s = np.zeros(self.agg_states_num, bool)
+        F_s = np.zeros(self.num_states_total, bool)
         F_s[hashVal] = 1
         return F_s
 

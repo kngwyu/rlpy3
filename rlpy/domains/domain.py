@@ -78,12 +78,12 @@ class Domain(ABC):
         self.statespace_limits = statespace_limits
         self.discount_factor = float(discount_factor)
         if continuous_dims is None:
-            self.states_num = int(
+            self.num_states = int(
                 np.prod(self.statespace_limits[:, 1] - self.statespace_limits[:, 0])
             )
             self.continuous_dims = []
         else:
-            self.states_num = np.inf
+            self.num_states = np.inf
             self.continuous_dims = continuous_dims
 
         self.episode_cap = episode_cap
@@ -112,7 +112,7 @@ class Domain(ABC):
         res = """{self.__class__}:
 ------------
 Dimensions: {self.state_space_dims}
-|S|:        {self.states_num}
+|S|:        {self.num_states}
 |A|:        {self.actions_num}
 Episode Cap:{self.episode_cap}
 Gamma:      {self.discount_factor}

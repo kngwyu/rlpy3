@@ -49,7 +49,7 @@ class ValueIteration(MDPSolver):
         converged = False
         iteration = 0
 
-        num_states = self.representation.agg_states_num
+        num_states = self.representation.num_states_total
 
         while self.has_time() and not converged:
             iteration += 1

@@ -167,7 +167,7 @@ class PST(Domain):
 
         self.NUM_UAV = NUM_UAV
         # Number of states (LOC, FUEL...) * NUM_UAV
-        self.states_num = NUM_UAV * UAVIndex.SIZE
+        self.num_states = NUM_UAV * UAVIndex.SIZE
         locations_lim = np.array(np.tile([0, UAVLocation.SIZE - 1], (NUM_UAV, 1)))
         fuel_lim = np.array(np.tile([0, self.FULL_FUEL], (NUM_UAV, 1)))
         actuator_lim = np.array(np.tile([0, ActuatorState.SIZE - 1], (NUM_UAV, 1)))

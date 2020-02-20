@@ -99,7 +99,7 @@ class Pacman(Domain):
         self.savedtimer = None
         self.gameDisplay = None
         super().__init__(
-            actions_num=len(self.actions),
+            num_actions=len(self.actions),
             statespace_limits=self._statespace_limits(),
             episode_cap=1000,
         )

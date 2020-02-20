@@ -271,7 +271,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
         Returns an integer for each available action.  Some child domains allow
         different numbers of actions.
         """
-        return np.arange(self.actions_num)
+        return np.arange(self.num_actions)
 
     def _stepFourState(self, s, a):
         """
@@ -423,7 +423,7 @@ class CartPoleBase(Domain, metaclass=ABCMeta):
                 interpolation="nearest",
                 origin="lower",
                 vmin=0,
-                vmax=self.actions_num,
+                vmax=self.num_actions,
             )
             self._init_ticks_common(self.policy_ax)
             self.policy_ax.set_title("CartPole Policy")

@@ -114,7 +114,7 @@ class SystemAdministrator(Domain):
         self.loadNetwork(path)
         super().__init__(
             # TODO Need a check here for degenerate number of Actions, including no-op
-            actions_num=self.computers_num + 1,
+            num_actions=self.computers_num + 1,
             statespace_limits=np.tile(
                 [0, self._NUM_VALUES - 1], (self.computers_num, 1)
             ),

@@ -48,7 +48,7 @@ class PuddleWorld(Domain):
 
     def __init__(self, noise_level=0.01, discount_factor=1.0):
         super().__init__(
-            actions_num=len(self.actions),
+            num_actions=len(self.actions),
             statespace_limits=np.array([[0.0, 1.0]] * 2),
             continuous_dims=np.arange(2),
             episode_cap=1000,
@@ -77,7 +77,7 @@ class PuddleWorld(Domain):
         return s.sum() > 0.95 * 2
 
     def possible_actions(self, s=0):
-        return np.arange(self.actions_num)
+        return np.arange(self.num_actions)
 
     def step(self, a):
         a = self.actions[a]

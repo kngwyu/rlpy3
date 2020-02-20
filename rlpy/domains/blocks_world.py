@@ -68,7 +68,7 @@ class BlocksWorld(Domain):
 
     def __init__(self, blocks=6, towerSize=6, noise=0.3):
         super().__init__(
-            actions_num=blocks ** 2,
+            num_actions=blocks ** 2,
             # Block i is on top of what?
             # if block i is on top of block i => block i is on top of table
             statespace_limits=np.tile([0, blocks - 1], (blocks, 1)),

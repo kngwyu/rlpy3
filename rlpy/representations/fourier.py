@@ -38,7 +38,7 @@ class Fourier(Representation):
         if scaling:
             coeff_norms = np.array(list(map(norm, self.coeffs)))
             coeff_norms[0] = 1.0
-            self.alpha_scale = np.tile(1.0 / coeff_norms, (domain.actions_num,))
+            self.alpha_scale = np.tile(1.0 / coeff_norms, (domain.num_actions,))
         else:
             self.alpha_scale = 1.0
 

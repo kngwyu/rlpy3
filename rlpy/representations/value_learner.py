@@ -9,19 +9,19 @@ class ValueLearner:
     Have weights for all feature/action pairs and learning algorithms
     """
 
-    def __init__(self, actions_num, features_num):
+    def __init__(self, num_actions, features_num):
         try:
             #: A numpy array of the Linear Weights, one for each feature (theta)
-            self.weight = np.zeros((actions_num, features_num))
+            self.weight = np.zeros((num_actions, features_num))
         except MemoryError:
             raise MemoryError(
                 "Unable to allocate weights of size: {}\n".format(
-                    features_num * actions_num
+                    features_num * num_actions
                 )
             )
-        self.actions_num = actions_num
+        self.num_actions = num_actions
         self.features_num = features_num
-        self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
+        self._phi_sa_cache = np.empty((self.num_actions, self.features_num))
 
     @property
     def weight_vec(self):
@@ -76,9 +76,9 @@ class ValueLearner:
             - A: the corresponding array of actionIDs (integers)
         """
         if len(phi_s) == 0:
-            return np.zeros((self.actions_num))
-        if self._phi_sa_cache.shape != (self.actions_num, self.features_num):
-            self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
+            return np.zeros((self.num_actions))
+        if self._phi_sa_cache.shape != (self.num_actions, self.features_num):
+            self._phi_sa_cache = np.empty((self.num_actions, self.features_num))
         Q = np.multiply(self.weight, phi_s, out=self._phi_sa_cache).sum(axis=1)
         # stacks phi_s in cache
         return Q

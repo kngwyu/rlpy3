@@ -121,7 +121,7 @@ class HelicopterHoverExtended(Domain):
         if statespace_limits is None:
             statespace_limits = self.statespace_limits_full
         super().__init__(
-            actions_num=np.prod(self.actions.shape[0]),
+            num_actions=np.prod(self.actions.shape[0]),
             statespace_limits=statespace_limits,
             discount_factor=discount_factor,
             episode_cap=episode_cap,
@@ -157,7 +157,7 @@ class HelicopterHoverExtended(Domain):
             return -np.sum(s[:9] ** 2) - np.sum(s[10:12] ** 2)
 
     def possible_actions(self, s=None):
-        return np.arange(self.actions_num)
+        return np.arange(self.num_actions)
 
     def step(self, a):
         a = self.actions[a]

@@ -36,7 +36,7 @@ class GreedyGQ(Agent, DescentAlgorithm):
         super().__init__(policy, representation, discount_factor)
         DescentAlgorithm.__init__(self, **kwargs)
         self.eligibility_trace = np.zeros(
-            representation.features_num * representation.actions_num
+            representation.features_num * representation.num_actions
         )
         # use a state-only version of eligibility trace for dabney decay mode
         self.eligibility_trace_s = np.zeros(representation.features_num)
@@ -57,7 +57,7 @@ class GreedyGQ(Agent, DescentAlgorithm):
         phi_prime = self.representation.phi_sa(ns, terminal, na, phi_prime_s)
         nnz = count_nonzero(phi_s)  # Number of non-zero elements
 
-        expanded = (len(phi) - len(self.gqweight)) // self.representation.actions_num
+        expanded = (len(phi) - len(self.gqweight)) // self.representation.num_actions
         if expanded > 0:
             self._expand_vectors(expanded)
         # Set eligibility traces:
@@ -101,13 +101,13 @@ class GreedyGQ(Agent, DescentAlgorithm):
         """
         correct size of GQ weight and e-traces when new features were expanded
         """
-        new_elem = np.zeros((self.representation.actions_num, num_expansions))
+        new_elem = np.zeros((self.representation.num_actions, num_expansions))
         self.gqweight = add_new_features(self.gqweight, new_elem)
         if self.lambda_:
             # Correct the size of eligibility traces (pad with zeros for new
             # features)
             self.eligibility_trace = add_new_features(
-                self.eligibility_trace, self.representation.actions_num, new_elem
+                self.eligibility_trace, self.representation.num_actions, new_elem
             )
             self.eligibility_trace_s = add_new_features(
                 self.eligibility_trace_s, np.zeros((1, num_expansions))

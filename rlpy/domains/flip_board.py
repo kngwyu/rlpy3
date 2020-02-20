@@ -52,7 +52,7 @@ class FlipBoard(Domain):
     def __init__(self):
         boards_num = self.BOARD_SIZE ** 2
         super().__init__(
-            actions_num=boards_num,
+            num_actions=boards_num,
             statespace_limits=np.tile([0, 1], (boards_num, 1)),
             discount_factor=1.0,
             episode_cap=min(100, boards_num),

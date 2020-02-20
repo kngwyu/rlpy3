@@ -555,10 +555,10 @@ def add_new_features(weight_vec, new_elem=None):
     """
     :param weight_vec: The weight vector (often feature weights from
         representation) used for s-a pairs
-        (i.e, len(weight_vec) = actions_num * numFeats)
-    :param actions_num: The total number of possible actions
+        (i.e, len(weight_vec) = num_actions * numFeats)
+    :param num_actions: The total number of possible actions
     :param new_elem: (Optional) The weights associated with each action of the
-        feature to  insert (often new_elem = const * np.ones(actions_num, 1)).
+        feature to  insert (often new_elem = const * np.ones(num_actions, 1)).
         If not specified or = None, assume 0 weight on new features.
 
     Adds new elements into ``weight_vec`` in the correct location based on

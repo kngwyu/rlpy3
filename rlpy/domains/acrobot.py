@@ -89,7 +89,7 @@ class Acrobot(Domain):
     def __init__(self):
         st_max = np.array([np.pi, np.pi, self.MAX_VEL_1, self.MAX_VEL_2])
         super().__init__(
-            actions_num=3,
+            num_actions=3,
             statespace_limits=np.stack((-st_max, st_max), axis=1),
             discount_factor=1.0,
             continuous_dims=np.arange(4),

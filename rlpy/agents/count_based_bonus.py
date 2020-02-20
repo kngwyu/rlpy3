@@ -42,7 +42,7 @@ class CountBasedBonus(Agent):
 
     def _counter_shape(self):
         n_states = self.representation.features_num
-        n_actions = self.representation.domain.actions_num
+        n_actions = self.representation.domain.num_actions
         if self.count_mode == 0:
             return n_states
         elif self.count_mode == 1:

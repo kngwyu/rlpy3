@@ -91,7 +91,7 @@ class IntruderMonitoring(Domain):
         self.dim_names = []
 
         super().__init__(
-            actions_num=5 ** self.NUMBER_OF_AGENTS,
+            num_actions=5 ** self.NUMBER_OF_AGENTS,
             statespace_limits=statespace_limits,
             discount_factor=0.8,
             episode_cap=100,

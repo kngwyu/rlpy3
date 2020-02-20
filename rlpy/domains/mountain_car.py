@@ -57,7 +57,7 @@ class MountainCar(Domain):
         :param noise: Magnitude of noise in stochastic velocity changes
         """
         super().__init__(
-            actions_num=3,
+            num_actions=3,
             statespace_limits=np.array(
                 [[self.X_MIN, self.X_MAX], [self.XDOT_MIN, self.XDOT_MAX]]
             ),

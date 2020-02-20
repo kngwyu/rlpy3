@@ -140,7 +140,7 @@ class GridWorld(Domain):
         self.rows, self.cols = self.map.shape
         state_space = self._set_obs_and_space()
         super().__init__(
-            actions_num=4,
+            num_actions=4,
             statespace_limits=np.array(state_space, dtype=np.int64),
             episode_cap=episode_cap,
         )
@@ -468,7 +468,7 @@ class GridWorld(Domain):
             if title is not None:
                 self.policy_ax[index].set_title(title)
 
-        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
+        arrow_mask = np.ones((self.rows, self.cols, self.num_actions), dtype=np.bool)
         arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
         arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
 
@@ -531,7 +531,7 @@ class GridWorld(Domain):
         self._reset_texts(self.vf_texts)
         # Boolean 3 dimensional array. The third array highlights the action.
         # Thie mask is used to see in which cells what actions should exist
-        arrow_mask = np.ones((self.rows, self.cols, self.actions_num), dtype=np.bool)
+        arrow_mask = np.ones((self.rows, self.cols, self.num_actions), dtype=np.bool)
         arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
         # 0 = suboptimal action, 1 = optimal action
         arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
@@ -618,7 +618,7 @@ class GridWorld(Domain):
             s = self.state
         s = s.astype(np.int64)
         possible_a = []
-        for a in range(self.actions_num):
+        for a in range(self.num_actions):
             ns = s + self.ACTIONS[a]
             if self._valid_state(ns) and self.map[ns[0], ns[1]] != self.BLOCKED:
                 possible_a.append(a)

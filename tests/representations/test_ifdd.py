@@ -18,7 +18,7 @@ def test_deterministic():
     rep = iFDD(
         domain, discovery_threshold, initialRep, debug=0, useCache=1, sparsify=sparsify
     )
-    rep.theta = np.arange(rep.features_num * domain.actions_num) * 10
+    rep.theta = np.arange(rep.features_num * domain.num_actions) * 10
     print("Initial [0,1] => ", end=" ")
     ANSWER = np.sort(rep.findFinalActiveFeatures([0, 1]))
     print(ANSWER)

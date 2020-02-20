@@ -66,7 +66,7 @@ class HIVTreatment(Domain):
         else:
             statespace_limits = np.array([[0.0, 1e8]] * 6)
         super().__init__(
-            actions_num=4,
+            num_actions=4,
             statespace_limits=statespace_limits,
             episode_cap=200,  #: total of 1000 days with a measurement every 5 days
             discount_factor=0.98,

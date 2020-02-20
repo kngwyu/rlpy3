@@ -138,7 +138,7 @@ class FiftyChain(Domain):
     # Constants in the map
     def __init__(self):
         super().__init__(
-            actions_num=2,
+            num_actions=2,
             statespace_limits=np.array([[0, self.chain_size - 1]]),
             # Set discount_factor to be 0.8 for this domain per L & P 2007
             discount_factor=0.8,
@@ -287,7 +287,7 @@ class FiftyChain(Domain):
         if self.using_optimal_policy:
             return np.array([self.optimal_policy[s]])
         else:
-            return np.arange(self.actions_num)
+            return np.arange(self.num_actions)
 
     def L_inf_distance_to_V_star(self, representation):
         """

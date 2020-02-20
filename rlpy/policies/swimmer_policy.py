@@ -36,7 +36,7 @@ class SwimmerPolicy(Policy):
         self.angles = np.zeros(2 + self.d * 2 + 1, dtype=np.bool)
         self.angles[2 : 2 + self.d - 1] = True
         self.actions = cartesian((d - 1) * [[-2.0, 0.0, 2]])
-        self.actions_num = len(self.actions)
+        self.num_actions = len(self.actions)
 
     def pi(self, s, terminal, p_actions):
         coin = self.random_state.rand()

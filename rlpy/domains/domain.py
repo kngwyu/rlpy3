@@ -58,14 +58,14 @@ class Domain(ABC):
 
     def __init__(
         self,
-        actions_num,
+        num_actions,
         statespace_limits,
         discount_factor=0.9,
         continuous_dims=None,
         episode_cap=None,
     ):
         """
-        :param actions_num: The number of Actions the agent can perform
+        :param num_actions: The number of Actions the agent can perform
         :param discount_factor: The discount factor by which rewards are reduced
         :param statespace_limits: Limits of each dimension of the state space.
         Each row corresponds to one dimension and has two elements [min, max]
@@ -73,7 +73,7 @@ class Domain(ABC):
         :param continuous_dims: List of the continuous dimensions of the domain
         :param episode_cap: The cap used to bound each episode (return to state 0 after)
         """
-        self.actions_num = actions_num
+        self.num_actions = num_actions
         self.raw_statespace_limits = statespace_limits.copy()
         self.statespace_limits = statespace_limits
         self.discount_factor = float(discount_factor)
@@ -113,7 +113,7 @@ class Domain(ABC):
 ------------
 Dimensions: {self.state_space_dims}
 |S|:        {self.num_states}
-|A|:        {self.actions_num}
+|A|:        {self.num_actions}
 Episode Cap:{self.episode_cap}
 Gamma:      {self.discount_factor}
 """.format(
@@ -199,7 +199,7 @@ Gamma:      {self.discount_factor}
             integers and multidimensional quantities.
 
         """
-        return np.arange(self.actions_num)
+        return np.arange(self.num_actions)
 
     # TODO: change 'a' to be 'aID' to make it clearer when we refer to
     # actions vs. integer IDs of actions?  They aren't always interchangeable.

@@ -40,7 +40,7 @@ class PSRL(Agent):
         self.epsilon = 0.0
         self.tau = tau
         n_states = self.representation.features_num
-        n_actions = self.representation.domain.actions_num
+        n_actions = self.representation.domain.num_actions
 
         self.r_prior_mu = np.ones((n_states, n_actions)) * mu0
         self.r_prior_tau = np.ones((n_states, n_actions)) * tau0

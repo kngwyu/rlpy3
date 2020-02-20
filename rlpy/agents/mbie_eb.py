@@ -38,7 +38,7 @@ class MBIE_EB(Agent):
             raise ValueError("PSRL works only with a tabular representation.")
 
         n_states = self.representation.features_num
-        n_actions = self.representation.domain.actions_num
+        n_actions = self.representation.domain.num_actions
 
         self.beta = beta
 

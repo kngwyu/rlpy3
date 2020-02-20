@@ -29,7 +29,7 @@ class DeepSea(GridWorld):
         self._move_cost = 0.01 / size
         Domain.__init__(
             self,
-            actions_num=2,
+            num_actions=2,
             statespace_limits=np.array([[0, size], [0, size]]),
             episode_cap=size,
         )

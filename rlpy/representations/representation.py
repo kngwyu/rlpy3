@@ -92,7 +92,7 @@ class Representation(ValueLearner, ABC):
         :param discretization: Number of bins used for each continuous dimension.
             For discrete dimensions, this parameter is ignored.
         """
-        super().__init__(domain.actions_num, features_num)
+        super().__init__(domain.num_actions, features_num)
         # A dictionary used to cache expected results of step().
         # Used for planning algorithms
         self.expected_step_cached = {}
@@ -204,7 +204,7 @@ class Representation(ValueLearner, ABC):
         if snippet is True:
             return phi_s, a * self.features_num, (a + 1) * self.features_num
 
-        phi_sa = np.zeros((self.actions_num, self.features_num), dtype=phi_s.dtype)
+        phi_sa = np.zeros((self.num_actions, self.features_num), dtype=phi_s.dtype)
         if self.features_num == 0:
             return phi_sa.reshape(-1)
         phi_sa[a] = phi_s
@@ -387,7 +387,7 @@ class Representation(ValueLearner, ABC):
         :return: all_phi_s_a (of dimension p x (s_a) )
         """
         p, n = all_phi_s.shape
-        a_num = self.actions_num
+        a_num = self.num_actions
         if use_sparse:
             phi_s_a = sp.lil_matrix((p, n * a_num), dtype=all_phi_s.dtype)
         else:
@@ -421,14 +421,14 @@ class Representation(ValueLearner, ABC):
 
         """
         p, n = all_phi_s.shape
-        a_num = self.actions_num
+        a_num = self.num_actions
 
         if action_mask is None:
             action_mask = np.ones((p, a_num))
             for i, s in enumerate(all_s):
                 action_mask[i, self.domain.possible_actions(s)] = 0
 
-        a_num = self.actions_num
+        a_num = self.num_actions
         if use_sparse:
             # all_phi_s_a will be ap-by-an
             all_phi_s_a = sp.kron(np.eye(a_num, a_num), all_phi_s)

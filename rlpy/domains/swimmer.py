@@ -87,7 +87,7 @@ class Swimmer(Domain):
             + [[-np.pi * 2, np.pi * 2]] * d
         )
         super().__init__(
-            actions_num=len(self.actions),
+            num_actions=len(self.actions),
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
             episode_cap=1000,
@@ -110,7 +110,7 @@ class Swimmer(Domain):
         return False
 
     def possible_actions(self, s=None):
-        return np.arange(self.actions_num)
+        return np.arange(self.num_actions)
 
     def show_domain(self, a=None):
         if a is not None:
@@ -163,7 +163,7 @@ class Swimmer(Domain):
                 # Assign pi to be optimal action (which maximizes Q-function)
                 maxQ = np.max(Qs)
                 pi[row, col] = np.random.choice(np.arange(len(Qs))[Qs == maxQ])
-                good_pi[row, col] = good_pol.pi(s, False, np.arange(self.actions_num))
+                good_pi[row, col] = good_pol.pi(s, False, np.arange(self.num_actions))
                 # Assign V to be the value of the Q-function under optimal
                 # action
                 V[row, col] = maxQ
@@ -207,7 +207,7 @@ class Swimmer(Domain):
             cmap = cmap.from_list("Custom cmap", cmaplist, cmap.N)
 
             # define the bins and normalize
-            bounds = np.linspace(0, self.actions_num, self.actions_num + 1)
+            bounds = np.linspace(0, self.num_actions, self.num_actions + 1)
             norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
             if xlim is not None and ylim is not None:
                 extent = [xlim[0], xlim[1], ylim[0], ylim[1]]

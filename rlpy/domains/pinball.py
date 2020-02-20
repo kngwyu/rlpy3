@@ -85,7 +85,7 @@ class Pinball(Domain):
             PinballModel.ACC_NONE,
         ]
         super().__init__(
-            actions_num=len(self.actions),
+            num_actions=len(self.actions),
             statespace_limits=np.array(
                 [[0.0, 1.0], [0.0, 1.0], [-2.0, 2.0], [-2.0, 2.0]]
             ),

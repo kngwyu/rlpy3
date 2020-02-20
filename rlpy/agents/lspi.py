@@ -56,7 +56,7 @@ class LSPI(BatchAgent):
         # Make A and r incrementally if the representation can not expand
         self.fixed_rep = not representation.IS_DYNAMIC
         if self.fixed_rep:
-            f_size = representation.features_num * representation.actions_num
+            f_size = representation.features_num * representation.num_actions
             self.b = np.zeros((f_size, 1))
             self.A = np.zeros((f_size, f_size))
 

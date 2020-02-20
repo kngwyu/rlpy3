@@ -53,5 +53,5 @@ def check_random_trajectory(domain_class):
 
 def check_specifications(domain_class):
     domain = domain_class()
-    for v in ["statespace_limits", "actions_num", "episode_cap"]:
+    for v in ["statespace_limits", "num_actions", "episode_cap"]:
         assert getattr(domain, v) is not None

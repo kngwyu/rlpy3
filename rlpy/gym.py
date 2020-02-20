@@ -9,7 +9,7 @@ from rlpy import representations as reprs
 class RLPyEnv(gym.Env):
     def __init__(self, domain, obs_fn, obs_space):
         self.domain = domain
-        self.action_space = gym.spaces.Discrete(domain.actions_num)
+        self.action_space = gym.spaces.Discrete(domain.num_actions)
         self.raw_observation_space = _get_box_space(domain)
         self.observation_space = obs_space
         self.obs_fn = obs_fn

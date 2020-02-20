@@ -84,7 +84,7 @@ superclass ``__init__()`` function:
 #. ``self.episode_cap`` - integer, maximum number of steps before an episode
    terminated (even if not in a terminal state).
 
-#. ``actions_num`` - integer, the total number of possible actions (ie, the size
+#. ``num_actions`` - integer, the total number of possible actions (ie, the size
    of the action space).  This number **MUST** be a finite integer - continuous action
    spaces are not currently supported.
 
@@ -204,7 +204,7 @@ Note that the optimal policy is to always go right.
 
 #. Copy the __init__ declaration from ``Domain.py``, add needed parameters
    (here the number of states in the chain, ``chain_size``), and log them.
-   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.dim_names, self.actions_num,`` 
+   Assign ``self.statespace_limits, self.episode_cap, self.continuous_dims, self.dim_names, self.num_actions,`` 
    and ``self.discount_factor``.
    Then call the superclass constructor::
 
@@ -219,7 +219,7 @@ Note that the optimal policy is to always go right.
                 self.episode_cap         = 2*chain_size
                 self.continuous_dims    = []
                 self.dim_names           = ['State']
-                self.actions_num        = 2
+                self.num_actions        = 2
                 self.discount_factor    = 0.9
                 super(ChainMDPTut,self).__init__()
 

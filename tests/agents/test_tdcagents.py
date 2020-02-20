@@ -16,11 +16,11 @@ class MockRepresentation(Representation):
         """
         self.expected_step_cached = {}
         self.state_space_dims = 1
-        self.actions_num = 1
+        self.num_actions = 1
         self.discretization = 3
         self.features_num = 4
-        self.weight = np.zeros((self.actions_num, self.features_num))
-        self._phi_sa_cache = np.empty((self.actions_num, self.features_num))
+        self.weight = np.zeros((self.num_actions, self.features_num))
+        self._phi_sa_cache = np.empty((self.num_actions, self.features_num))
         self.logger = logging.getLogger(self.__class__.__name__)
         self.domain = None
 

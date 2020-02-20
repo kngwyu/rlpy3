@@ -71,7 +71,7 @@ class ChainMDP(Domain):
         self.circles = None
         self.fig = None
         super().__init__(
-            actions_num=2,
+            num_actions=2,
             statespace_limits=np.array([[0, chain_size - 1]]),
             episode_cap=2 * chain_size,
         )

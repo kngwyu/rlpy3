@@ -154,7 +154,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         # The policy is maintained as separate copy of the representation.
         # This way as the representation is updated the policy remains intact
         policy = eGreedy(deepcopy(self.representation), epsilon=0, deterministic=True)
-        a_num = self.domain.actions_num
+        a_num = self.domain.num_actions
 
         while self.has_time() and not converged:
 
@@ -238,7 +238,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
             samples += self.samples_num
 
             #  2. Calculate A and b estimates
-            a_num = self.domain.actions_num
+            a_num = self.domain.num_actions
             n = self.representation.features_num
             discount_factor = self.domain.discount_factor
 
@@ -306,7 +306,7 @@ class TrajectoryBasedPolicyIteration(MDPSolver):
         if hasFunction(self.domain, "expected_step"):
             p, r, ns, t, pa = self.domain.expected_step(s, a)
             phi_ns_na = np.zeros(
-                self.representation.features_num * self.domain.actions_num
+                self.representation.features_num * self.domain.num_actions
             )
             for j, pj in enumerate(p):
                 na = self.policy.pi(ns[j], t[j], pa[j])

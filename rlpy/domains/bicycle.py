@@ -68,7 +68,7 @@ class BicycleBalancing(Domain):
         self.actions = np.array(list(product([-2, 0, 2], [-0.02, 0.0, 0.02])))
         smax = np.array([np.pi * 12 / 180, np.pi, np.pi * 80 / 180, np.pi, np.pi])
         super().__init__(
-            actions_num=self.actions.shape[0],
+            num_actions=self.actions.shape[0],
             statespace_limits=np.stack((-smax, smax), axis=1),
             discount_factor=0.98,
             continuous_dims=np.arange(5),

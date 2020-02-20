@@ -78,7 +78,7 @@ class RCCar(Domain):
         )
         self.noise = noise
         super().__init__(
-            actions_num=9,
+            num_actions=9,
             statespace_limits=statespace_limits,
             continuous_dims=np.arange(statespace_limits.shape[0]),
             discount_factor=0.9,

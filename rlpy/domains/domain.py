@@ -79,7 +79,7 @@ class Domain(ABC):
         self.discount_factor = float(discount_factor)
         if continuous_dims is None:
             self.num_states = int(
-                np.prod(self.statespace_limits[:, 1] - self.statespace_limits[:, 0])
+                np.prod(self.statespace_limits[:, 1] - self.statespace_limits[:, 0] + 1)
             )
             self.continuous_dims = []
         else:

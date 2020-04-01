@@ -76,6 +76,8 @@ class GridWorld(Domain):
     ARROW_NAMES = ["UP", "DOWN", "LEFT", "RIGHT"]
     # Color map to visualize the grid
     COLOR_MAP = "GridWorld"
+    # Value normalizing for heatmaps
+    NORMALIZE_METHODS = ["uniform", "separated", "none"]
 
     @classmethod
     def default_map(cls, name="4x5.txt"):
@@ -315,23 +317,16 @@ class GridWorld(Domain):
         return
 
     def _normalize_value(
-        self,
-        value,
-        method="separated",
-        scaling=True,
-        cmap_vmin=MIN_RETURN,
-        cmap_vmax=MAX_RETURN,
+        self, value, method="separated", cmap_vmin=MIN_RETURN, cmap_vmax=MAX_RETURN,
     ):
+        if method not in self.NORMALIZE_METHODS:
+            raise ValueError(f"Unsupported normalize method: {method}")
 
         vmin, vmax = value.min(), value.max()
         vmin_coord, vmax_coord = None, None
 
-        if scaling:
-            vmin_scaled = min(vmin, cmap_vmin)
-            vmax_scaled = min(vmax, cmap_vmax)
-        else:
-            vmin_scaled = vmin
-            vmax_scaled = vmax
+        vmin_scaled = min(vmin, cmap_vmin)
+        vmax_scaled = min(vmax, cmap_vmax)
 
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if value[r, c] == vmin and vmin_coord is None:
@@ -347,6 +342,10 @@ class GridWorld(Domain):
                 value[r, c] = linear_map(
                     value[r, c], vmin_scaled, vmax_scaled, cmap_vmin, cmap_vmax
                 )
+            elif method == "none":
+                pass
+            else:
+                assert False, "Unreachable"
 
         return vmin_coord, vmax_coord
 
@@ -362,7 +361,7 @@ class GridWorld(Domain):
         index=1,
         legend=True,
         ticks=True,
-        scaling=True,
+        colorbar=False,
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
     ):
@@ -381,22 +380,23 @@ class GridWorld(Domain):
             if title is not None:
                 self.heatmap_ax[key].set_title(title)
 
-        self._reset_texts(self.heatmap_texts[key])
+            if colorbar:
+                cbar = self.heatmap_ax[key].figure.colorbar(
+                    self.heatmap_img[key], ax=self.heatmap_ax[key]
+                )
+                cbar.ax.set_ylabel("", rotation=-90, va="bottom")
 
         coords = self._normalize_value(
-            value,
-            method=normalize_method,
-            scaling=scaling,
-            cmap_vmin=cmap_vmin,
-            cmap_vmax=cmap_vmax,
+            value, method=normalize_method, cmap_vmin=cmap_vmin, cmap_vmax=cmap_vmax,
         )
-
-        for r, c, ext_v in coords:
-            self._text_on_cell(
-                c, r, ext_v, self.heatmap_texts[key], self.heatmap_ax[key]
-            )
-
         self.heatmap_img[key].set_data(value * self._map_mask())
+
+        if not colorbar:
+            self._reset_texts(self.heatmap_texts[key])
+            for r, c, ext_v in coords:
+                self._text_on_cell(
+                    c, r, ext_v, self.heatmap_texts[key], self.heatmap_ax[key]
+                )
         self.heatmap_fig[name].canvas.draw()
 
     def _vf_text(self, c, r, v):

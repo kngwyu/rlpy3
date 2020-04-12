@@ -85,7 +85,7 @@ class FixedRewardGridWorld(GridWorld):
                 continue
             self.domain_ax.text(c - 0.2, r + 0.1, str(raw_reward), color=color)
 
-    def _show_map(self):
-        super()._show_map()
+    def _show_map(self, legend=False):
+        super()._show_map(legend=legend)
         with with_bold_fonts():
             self._show_numbers()

@@ -198,18 +198,19 @@ class GridWorld(Domain):
             y_offset += min(1.0, 0.25 * self.cols / self.rows)
         return x_offset, y_offset
 
-    def _show_map(self):
+    def _show_map(self, legend=False):
         cmap = plt.get_cmap(self.COLOR_MAP)
         self.domain_img = self.domain_ax.imshow(
             self.map, cmap=cmap, interpolation="nearest", vmin=0, vmax=5
         )
-        self.domain_ax.plot([0.0], [0.0], color=cmap(1), label="Block")
-        self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
-        self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
-        self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
-        self.domain_ax.legend(
-            fontsize=12, loc="upper right", bbox_to_anchor=self._legend_pos()
-        )
+        if legend:
+            self.domain_ax.plot([0.0], [0.0], color=cmap(1), label="Block")
+            self.domain_ax.plot([0.0], [0.0], color=cmap(2), label="Start")
+            self.domain_ax.plot([0.0], [0.0], color=cmap(3), label="Goal")
+            self.domain_ax.plot([0.0], [0.0], color=cmap(4), label="Pit")
+            self.domain_ax.legend(
+                fontsize=12, loc="upper right", bbox_to_anchor=self._legend_pos()
+            )
 
     def _set_ticks(self, ax, fontsize=FONTSIZE):
         set_xticks(ax, np.arange(self.cols), position="top", fontsize=FONTSIZE)
@@ -222,23 +223,23 @@ class GridWorld(Domain):
     def _agent_fig(self, s):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
-    def _init_domain_vis(self, s):
+    def _init_domain_vis(self, s, legend=False):
         fig_name = f"{(self.__class__.__name__)}: {self.mapname}"
         if self.performance:
             fig_name += "(Evaluation)"
         self.domain_fig = plt.figure(fig_name)
         self.domain_ax = self.domain_fig.add_subplot(111)
-        self._show_map()
+        self._show_map(legend=legend)
         self._set_ticks(self.domain_ax)
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.show()
 
-    def show_domain(self, a=0, s=None):
+    def show_domain(self, a=0, s=None, legend=False):
         if s is None:
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            self._init_domain_vis(s)
+            self._init_domain_vis(s, legend=legend)
         if self._map_changed:
             self.domain_img.set_data(self.map)
             self._map_changed = False
@@ -445,6 +446,8 @@ class GridWorld(Domain):
         ticks=True,
         scale=1.0,
         title=None,
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
         arrow_resize=True,
     ):
         if self.policy_fig is None:
@@ -453,7 +456,12 @@ class GridWorld(Domain):
             self.policy_fig.show()
         if index not in self.policy_ax:
             self.policy_ax[index], self.policy_img[index] = self._init_vis_common(
-                self.policy_fig, axarg=(nrows, ncols, index), legend=False, ticks=ticks
+                self.policy_fig,
+                axarg=(nrows, ncols, index),
+                legend=False,
+                ticks=ticks,
+                cmap_vmin=cmap_vmin,
+                cmap_vmax=cmap_vmax,
             )
             shift = self.ACTIONS * self.SHIFT
             x, y = np.arange(self.cols), np.arange(self.rows)

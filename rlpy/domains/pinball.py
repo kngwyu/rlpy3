@@ -1,7 +1,7 @@
 """Pinball domain for reinforcement learning
 """
 import numpy as np
-from itertools import tee
+from itertools import product, tee
 import itertools
 from pathlib import Path
 
@@ -69,14 +69,17 @@ class Pinball(Domain):
         noise=0.1,
         episode_cap=1000,
         config_file=DEFAULT_CONFIG_DIR.joinpath("pinball_simple_single.json"),
+        xy_discr=10,
+        v_discr=5,
     ):
         """
         :param config_file: Location of the configuration file.
         :param episode_cap: Maximum length of an episode
         :param noise: With probability noise, a uniformly random action is executed
+        :param xy_discr: Number of x/y discritization for visualization
+        :param c_discr: Number of v discritization for visualization
         """
         self.NOISE = noise
-        self.screen = None
         self.actions = [
             PinballModel.ACC_X,
             PinballModel.DEC_Y,
@@ -93,6 +96,12 @@ class Pinball(Domain):
             episode_cap=episode_cap,
         )
         self.environment = PinballModel(config_file, random_state=self.random_state)
+
+        # Visualization stuffs
+        self.screen = None
+        self.heatmap = None
+        self.xy_discr = xy_discr
+        self.v_discr = v_discr
 
     def show_domain(self, _a=None):
         if self.screen is None:
@@ -146,6 +155,81 @@ class Pinball(Domain):
 
     def is_terminal(self):
         return self.environment.episode_ended()
+
+    def show_learning(self, representation):
+        VMIN, VMAX = -100, 100
+        if self.heatmap is None:
+            self.heatmap = _PinballHeatMap(self.xy_discr, vmin=VMIN, vmax=VMAX)
+        v_unit = 4.0 / self.v_discr
+        xy_unit = 1.0 / self.xy_discr
+        dat = np.zeros((self.xy_discr, self.xy_discr))
+        for y_i, x_i in product(range(self.xy_discr), range(self.xy_discr)):
+            x = xy_unit * x_i
+            y = xy_unit * y_i
+            q = 0
+            for xdot_i, ydot_i in product(range(self.v_discr), range(self.v_discr)):
+                xdot = -2.0 + xdot_i * v_unit
+                ydot = -2.0 + ydot_i * v_unit
+                s = np.array([x, y, xdot, ydot])
+                q += representation.Qs(s, False).mean()
+            dat[y_i, x_i] = q / (self.v_discr * self.v_discr)
+        self.heatmap.update(dat)
+        self.heatmap.draw()
+
+    def all_states(self):
+        s = []
+        v_unit = 4.0 / self.v_discr
+        xy_unit = 1.0 / self.xy_discr
+        for y_i, x_i in product(range(self.xy_discr), range(self.xy_discr)):
+            x = xy_unit * x_i
+            y = xy_unit * y_i
+            for xdot_i, ydot_i in product(range(self.v_discr), range(self.v_discr)):
+                xdot = -2.0 + xdot_i * v_unit
+                ydot = -2.0 + ydot_i * v_unit
+                s.append([x, y, xdot, ydot])
+        return np.stack(s)
+
+
+class _PinballHeatMap:
+    def __init__(
+        self,
+        xy_discr,
+        nrows=1,
+        ncols=1,
+        name="Pinball Value Function",
+        cmap="ValueFunction-New",
+        vmin=-10,
+        vmax=10,
+    ):
+        from rlpy.tools.plotting import plt
+
+        self.fig = plt.figure(name)
+        self.images = []
+        cmap = plt.get_cmap(cmap)
+        self.data_shape = xy_discr, xy_discr
+        dummy_data = np.zeros(self.data_shape)
+        self.axes = []
+        self.imgs = []
+        for i in range(nrows * ncols):
+            ax = self.fig.add_subplot(nrows, ncols, i + 1)
+            img = ax.imshow(
+                dummy_data, cmap=cmap, interpolation="nearest", vmin=vmin, vmax=vmax,
+            )
+            cbar = ax.figure.colorbar(img, ax=ax)
+            cbar.ax.set_ylabel("", rotation=-90, va="bottom")
+            ax.set_xticks([])
+            ax.set_yticks([])
+            self.axes.append(ax)
+            self.imgs.append(img)
+
+        self.fig.tight_layout()
+        self.fig.canvas.draw()
+
+    def update(self, data, index=0):
+        self.imgs[index].set_data(data.reshape(self.data_shape))
+
+    def draw(self):
+        self.fig.canvas.draw()
 
 
 class BallModel:

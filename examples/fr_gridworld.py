@@ -121,7 +121,7 @@ if __name__ == "__main__":
             click.Option(["--epsilon"], type=float, default=0.1),
             click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--beta"], type=float, default=0.05),
-            click.Option(["--step-penalty"], type=float, default=0.5),
+            click.Option(["--step-penalty"], type=float, default=0.01),
             click.Option(["--episode-cap"], type=int, default=40),
             click.Option(["--vi-threshold"], type=float, default=1e-6),
             click.Option(["--show-reward"], is_flag=True),

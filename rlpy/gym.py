@@ -219,7 +219,7 @@ for cfgfile in domains.Pinball.DEFAULT_CONFIG_DIR.glob("*.json"):
         id=f"RLPyPinball{name}-v1",
         entry_point="rlpy.gym:pinball",
         max_episode_steps=1000,
-        kwargs=dict(noise=0.1, cfg=cfgfile),
+        kwargs=dict(noise=0.01, cfg=cfgfile),
         reward_threshold=8000,
     )
     gym.envs.register(

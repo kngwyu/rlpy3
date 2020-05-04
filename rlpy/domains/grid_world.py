@@ -162,7 +162,7 @@ class GridWorld(Domain):
         self.vf_texts = []
         self.heatmap_fig, self.heatmap_ax, self.heatmap_img = {}, {}, {}
         self.heatmap_texts = defaultdict(list)
-        self.policy_fig, self.policy_ax, self.policy_img = None, {}, {}
+        self.policy_fig, self.policy_ax, self.policy_img = {}, {}, {}
         self.policy_arrows, self.policy_texts = defaultdict(list), defaultdict(list)
         self.domain_display = None
 
@@ -449,14 +449,17 @@ class GridWorld(Domain):
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
         arrow_resize=True,
+        figure_title="Policy"
     ):
-        if self.policy_fig is None:
+        if figure_title not in self.policy_fig:
             with with_scaled_figure(scale):
-                self.policy_fig = plt.figure("Policy")
-            self.policy_fig.show()
-        if index not in self.policy_ax:
-            self.policy_ax[index], self.policy_img[index] = self._init_vis_common(
-                self.policy_fig,
+                self.policy_fig[figure_title] = plt.figure(figure_title)
+            self.policy_fig[figure_title].show()
+        fig = self.policy_fig[figure_title]
+        key = figure_title, index
+        if key not in self.policy_ax:
+            self.policy_ax[key], self.policy_img[key] = self._init_vis_common(
+                fig,
                 axarg=(nrows, ncols, index),
                 legend=False,
                 ticks=ticks,
@@ -467,14 +470,14 @@ class GridWorld(Domain):
             x, y = np.arange(self.cols), np.arange(self.rows)
             for name, s in zip(self.ARROW_NAMES, shift):
                 grid = np.meshgrid(x + s[1], y + s[0])
-                self.policy_arrows[index].append(
+                self.policy_arrows[key].append(
                     self._init_arrow(
-                        name, *grid, self.policy_ax[index], arrow_scale=scale,
+                        name, *grid, self.policy_ax[key], arrow_scale=scale,
                     )
                 )
 
             if title is not None:
-                self.policy_ax[index].set_title(title)
+                self.policy_ax[key].set_title(title)
 
         arrow_mask = np.ones((self.rows, self.cols, self.num_actions), dtype=np.bool)
         arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
@@ -505,7 +508,7 @@ class GridWorld(Domain):
             dx = np.ma.masked_array(dx * size, mask=mask)
             dy = np.ma.masked_array(dy * size * -1, mask=mask)
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
-            self.policy_arrows[index][i].set_UVC(dx, dy, c)
+            self.policy_arrows[key][i].set_UVC(dx, dy, c)
 
         if value is not None:
             try:
@@ -513,13 +516,13 @@ class GridWorld(Domain):
             except ValueError:
                 raise ValueError(f"Invalid value shape: {value.shape}")
 
-            self._reset_texts(self.policy_texts[index])
+            self._reset_texts(self.policy_texts[key])
             for r, c, ext_v in self._normalize_value(value):
                 self._text_on_cell(
-                    c, r, ext_v, self.policy_texts[index], self.policy_ax[index]
+                    c, r, ext_v, self.policy_texts[key], self.policy_ax[key]
                 )
-            self.policy_img[index].set_data(value * self._map_mask())
-        self.policy_fig.canvas.draw()
+            self.policy_img[key].set_data(value * self._map_mask())
+        fig.canvas.draw()
 
     def _init_value_vis(self):
         self.vf_fig = plt.figure("Value Function")

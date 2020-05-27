@@ -449,7 +449,7 @@ class GridWorld(Domain):
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
         arrow_resize=True,
-        figure_title="Policy"
+        figure_title="Policy",
     ):
         if figure_title not in self.policy_fig:
             with with_scaled_figure(scale):

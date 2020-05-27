@@ -22,7 +22,7 @@ class FixedRewardGridWorld(GridWorld):
     def _load_map(self, mapfile):
         map_and_reward = np.loadtxt(mapfile, dtype=np.float64)
         mshape = map_and_reward.shape
-        if mshape[1] * 2 != mshape[0]:
+        if mshape[0] % 2 == 1:
             raise ValueError("Invalid map with shape {}".format(mshape))
         col = mshape[0] // 2
         self.reward_map = map_and_reward[col:]

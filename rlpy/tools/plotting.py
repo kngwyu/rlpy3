@@ -58,6 +58,19 @@ def create_color_maps():
     cm.register_cmap(
         cmap=colors.ListedColormap(
             [
+                "w",
+                ".60",
+                "xkcd:pale blue",
+                "xkcd:pale light green",
+                "xkcd:pale red",
+                "k",
+            ],
+            "PaleGridWorld",
+        )
+    )
+    cm.register_cmap(
+        cmap=colors.ListedColormap(
+            [
                 "xkcd:navy blue",
                 "w",
                 "xkcd:light grey",

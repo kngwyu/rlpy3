@@ -271,8 +271,8 @@ class GridWorld(Domain):
             vmin=cmap_vmin,
             vmax=cmap_vmax,
         )
-        ax.plot([0.0], [0.0], color=cmap(256), label=f"Max")
-        ax.plot([0.0], [0.0], color=cmap(0), label=f"Min")
+        ax.plot([0.0], [0.0], color=cmap(256), label="Max")
+        ax.plot([0.0], [0.0], color=cmap(0), label="Min")
         if legend:
             ax.legend(fontsize=12, bbox_to_anchor=self._legend_pos())
         if ticks:
@@ -446,6 +446,7 @@ class GridWorld(Domain):
         ticks=True,
         scale=1.0,
         title=None,
+        colorbar=False,
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
         arrow_resize=True,
@@ -479,6 +480,12 @@ class GridWorld(Domain):
             if title is not None:
                 self.policy_ax[key].set_title(title)
 
+            if colorbar:
+                cbar = self.policy_ax[key].figure.colorbar(
+                    self.policy_img[key], ax=self.policy_ax[key]
+                )
+                cbar.ax.set_ylabel("", rotation=-90, va="bottom")
+
         arrow_mask = np.ones((self.rows, self.cols, self.num_actions), dtype=np.bool)
         arrow_size = np.ones(arrow_mask.shape, dtype=np.float32)
         arrow_color = np.zeros(arrow_mask.shape, dtype=np.uint8)
@@ -510,17 +517,19 @@ class GridWorld(Domain):
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
             self.policy_arrows[key][i].set_UVC(dx, dy, c)
 
-        if value is not None:
+        if value is None:
+            self.policy_img[key].set_data(self.map * 0.0)
+        else:
             try:
                 value = value.reshape(self.rows, self.cols)
             except ValueError:
                 raise ValueError(f"Invalid value shape: {value.shape}")
-
-            self._reset_texts(self.policy_texts[key])
-            for r, c, ext_v in self._normalize_value(value):
-                self._text_on_cell(
-                    c, r, ext_v, self.policy_texts[key], self.policy_ax[key]
-                )
+            if not colorbar:
+                self._reset_texts(self.policy_texts[key])
+                for r, c, ext_v in self._normalize_value(value):
+                    self._text_on_cell(
+                        c, r, ext_v, self.policy_texts[key], self.policy_ax[key]
+                    )
             self.policy_img[key].set_data(value * self._map_mask())
         fig.canvas.draw()
 

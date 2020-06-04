@@ -154,7 +154,7 @@ class Pinball(Domain):
         return np.array(self.actions)
 
     def is_terminal(self):
-        return self.environment.episode_ended()
+        return self.environment.goal_reward() is not None
 
     def show_learning(self, representation):
         VMIN, VMAX = -100, 100
@@ -458,6 +458,38 @@ class PinballObstacle:
             return False
 
 
+class PinballTarget:
+    """
+    Abstracts the goal position/radian of Pinball.
+    """
+
+    def __init__(self, target_pos, target_rad, target_reward_scale=1.0):
+        if isinstance(target_pos[0], list):
+            self.num_goals = len(target_pos)
+        else:
+            self.num_goals = 1
+            target_pos = [target_pos]
+
+        if isinstance(target_rad, float):
+            target_rad = [target_rad] * self.num_goals
+        if isinstance(target_reward_scale, float):
+            target_reward_scale = [target_reward_scale] * self.num_goals
+
+        self.pos = np.array(target_pos)
+        self.rad = np.array(target_rad)
+        self.reward_scale = np.array(target_reward_scale)
+
+    def __repr__(self):
+        return f"Target(pos: {self.pos} rad: {self.rad} reward: {self.reward_scale})"
+
+    def _collide(self, pos):
+        for i in range(self.num_goals):
+            dist = np.linalg.norm(np.array(pos) - np.array(self.pos[i]))
+            if dist < self.rad[i]:
+                return self.reward_scale[i]
+        return None
+
+
 class PinballModel:
 
     """ This class is a self-contained model of the pinball
@@ -497,6 +529,10 @@ class PinballModel:
             config = json.load(f)
         try:
             self.obstacles = list(map(PinballObstacle, config["obstacles"]))
+            reward_scale = config.get("target_reward_scale", 1.0)
+            self._targets = PinballTarget(
+                config["target_pos"], config["target_rad"], reward_scale
+            )
             self.target_pos = config["target_pos"]
             self.target_rad = config["target_rad"]
             start_pos = config["start_pos"]
@@ -550,8 +586,9 @@ class PinballModel:
             elif ncollision > 1:
                 self.ball.xdot = -self.ball.xdot
                 self.ball.ydot = -self.ball.ydot
-            if self.episode_ended():
-                return self.END_EPISODE
+            reward_scale = self.goal_reward()
+            if reward_scale is not None:
+                return self.END_EPISODE * reward_scale
 
         if ncollision == 1:
             self.ball.step()
@@ -564,17 +601,8 @@ class PinballModel:
 
         return self.THRUST_PENALTY
 
-    def episode_ended(self):
-        """ Find out if the ball reached the target
-
-        :returns: True if the ball reached the target position
-        :rtype: bool
-
-        """
-        return (
-            np.linalg.norm(np.array(self.ball.position) - np.array(self.target_pos))
-            < self.target_rad
-        )
+    def goal_reward(self):
+        return self._targets._collide(self.ball.position)
 
     def _check_bounds(self):
         """ Make sure that the ball stays within the environment """
@@ -586,6 +614,9 @@ class PinballModel:
             self.ball.position[1] = 0.95
         if self.ball.position[1] < 0.0:
             self.ball.position[1] = 0.05
+
+    def targets(self):
+        return zip(self._targets.pos, self._targets.rad)
 
 
 class PinballView:
@@ -610,12 +641,6 @@ class PinballView:
         self.x, self.y = self._to_pixels(self.model.ball.position)
         self.rad = int(self.model.ball.radius * self.width)
 
-        self.DARK_GRAY = [64, 64, 64]
-        self.DARK_BLUE = [0, 0, 128]
-        self.LIGHT_GRAY = [232, 232, 232]
-        self.BALL_COLOR = [0, 0, 255]
-        self.TARGET_COLOR = [255, 0, 0]
-
         for obs in model.obstacles:
             coords_list = list(map(self._to_pixels, obs.points))
             chain = itertools.chain(*coords_list)
@@ -623,11 +648,10 @@ class PinballView:
             self.screen.create_polygon(coords, fill="blue")
         self.screen.pack()
 
-        self.target_x, self.target_y = self._to_pixels(self.model.target_pos)
-        self.target_rad = int(self.model.target_rad * self.width)
-        _ = self.drawcircle(
-            self.screen, self.target_x, self.target_y, self.target_rad, "red"
-        )
+        for pos, rad in self.model.targets():
+            x, y = self._to_pixels(pos)
+            rad = int(rad * self.width)
+            _ = self.drawcircle(self.screen, x, y, rad, "red")
         self.ball_id = self.drawcircle(self.screen, self.x, self.y, self.rad, "black")
         self.screen.pack()
 
@@ -685,7 +709,7 @@ def run_pinballview(width, height, configuration):
     while not done:
         user_action = np.random.choice(actions)
         environment_view.blit()
-        if environment.episode_ended():
+        if environment.goal_reward() is not None:
             done = True
         if environment.take_action(user_action) == environment.END_EPISODE:
             done = True

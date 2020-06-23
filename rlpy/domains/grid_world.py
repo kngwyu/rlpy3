@@ -329,6 +329,9 @@ class GridWorld(Domain):
         vmin_scaled = min(vmin, cmap_vmin)
         vmax_scaled = min(vmax, cmap_vmax)
 
+        if method == "none":
+            return vmin_coord, vmax_coord
+
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if value[r, c] == vmin and vmin_coord is None:
                 vmin_coord = r, c, vmin
@@ -343,10 +346,8 @@ class GridWorld(Domain):
                 value[r, c] = linear_map(
                     value[r, c], vmin_scaled, vmax_scaled, cmap_vmin, cmap_vmax
                 )
-            elif method == "none":
-                pass
             else:
-                assert False, "Unreachable"
+                raise ValueError(f"Unsupported normalize method {method}")
 
         return vmin_coord, vmax_coord
 
@@ -360,6 +361,7 @@ class GridWorld(Domain):
         nrows=1,
         ncols=1,
         index=1,
+        scale=1.0,
         legend=True,
         ticks=True,
         colorbar=False,
@@ -375,9 +377,10 @@ class GridWorld(Domain):
         key = name, index
 
         if key not in self.heatmap_ax:
-            self._init_heatmap_vis(
-                name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
-            )
+            with with_scaled_figure(scale):
+                self._init_heatmap_vis(
+                    name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
+                )
             if title is not None:
                 self.heatmap_ax[key].set_title(title)
 

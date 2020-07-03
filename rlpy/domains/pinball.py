@@ -1,7 +1,7 @@
 """Pinball domain for reinforcement learning
 """
 import numpy as np
-from itertools import product, tee
+from itertools import product
 import itertools
 from pathlib import Path
 
@@ -31,7 +31,6 @@ __author__ = [
 
 
 class Pinball(Domain):
-
     """
     The goal of this domain is to maneuver a small ball on a plate into a hole.
     The plate may contain obstacles which should be avoided.
@@ -71,6 +70,8 @@ class Pinball(Domain):
         config_file=DEFAULT_CONFIG_DIR.joinpath("pinball_simple_single.json"),
         xy_discr=10,
         v_discr=5,
+        screen_width=500.0,
+        screen_height=500.0,
     ):
         """
         :param config_file: Location of the configuration file.
@@ -102,52 +103,35 @@ class Pinball(Domain):
         self.heatmap = None
         self.xy_discr = xy_discr
         self.v_discr = v_discr
+        self.screen_width = screen_width
+        self.screen_height = screen_height
 
     def show_domain(self, _a=None):
         if self.screen is None:
-            master = Tk()
-            master.title("RLPy Pinball")
-            self.screen = Canvas(master, width=500.0, height=500.0)
+            tk_window = Tk()
+            tk_window.title("RLPy Pinball")
+            width, height = self.screen_width, self.screen_height
+            self.screen = Canvas(tk_window, width=width, height=height)
             self.screen.configure(background="LightGray")
             self.screen.pack()
             self.environment_view = PinballView(
-                self.screen, 500.0, 500.0, self.environment
+                self.screen, width, height, self.environment,
             )
         self.environment_view.blit()
         self.screen.pack()
         self.screen.update()
 
     def step(self, a):
-        s = self.state
-        [
-            self.environment.ball.position[0],
-            self.environment.ball.position[1],
-            self.environment.ball.xdot,
-            self.environment.ball.ydot,
-        ] = s
         if self.random_state.random_sample() < self.NOISE:
             # Random Move
             a = self.random_state.choice(self.possible_actions())
         reward = self.environment.take_action(a)
-        self.environment._check_bounds()
-        state = np.array(self.environment.get_state())
-        self.state = state.copy()
-        return reward, state, self.is_terminal(), self.possible_actions()
+        self.state = self.environment.get_state()
+        return reward, self.state.copy(), self.is_terminal(), self.possible_actions()
 
     def s0(self):
-        (
-            self.environment.ball.position[0],
-            self.environment.ball.position[1],
-        ) = self.environment.start_pos
-        self.environment.ball.xdot, self.environment.ball.ydot = 0.0, 0.0
-        self.state = np.array(
-            [
-                self.environment.ball.position[0],
-                self.environment.ball.position[1],
-                self.environment.ball.xdot,
-                self.environment.ball.ydot,
-            ]
-        )
+        self.environment.reset()
+        self.state = self.environment.get_state()
         return self.state, self.is_terminal(), self.possible_actions()
 
     def possible_actions(self, s=0):
@@ -204,11 +188,9 @@ class _PinballHeatMap:
         from rlpy.tools.plotting import plt
 
         self.fig = plt.figure(name)
-        self.images = []
         cmap = plt.get_cmap(cmap)
         self.data_shape = xy_discr, xy_discr
         dummy_data = np.zeros(self.data_shape)
-        self.axes = []
         self.imgs = []
         for i in range(nrows * ncols):
             ax = self.fig.add_subplot(nrows, ncols, i + 1)
@@ -219,7 +201,6 @@ class _PinballHeatMap:
             cbar.ax.set_ylabel("", rotation=-90, va="bottom")
             ax.set_xticks([])
             ax.set_yticks([])
-            self.axes.append(ax)
             self.imgs.append(img)
 
         self.fig.tight_layout()
@@ -241,48 +222,30 @@ class BallModel:
     """
 
     DRAG = 0.995
+    VMAX = 2.0
 
     def __init__(self, start_position, radius):
         """
         :param start_position: The initial position
-        :type start_position: float
+        :type start_position: np.ndarray
         :param radius: The ball radius
         :type radius: float
         """
         self.position = start_position
         self.radius = radius
-        self.xdot = 0.0
-        self.ydot = 0.0
+        self.dxdy = np.zeros(2)
 
-    def add_impulse(self, delta_xdot, delta_ydot):
-        """ Change the momentum of the ball
-        :param delta_xdot: The change in velocity in the x direction
-        :type delta_xdot: float
-        :param delta_ydot: The change in velocity in the y direction
-        :type delta_ydot: float
-        """
-        self.xdot += delta_xdot / 5
-        self.ydot += delta_ydot / 5
-        self.xdot = self._clip(self.xdot)
-        self.ydot = self._clip(self.ydot)
+    def add_impulse(self, delta):
+        """ Changes the momentum of the ball. """
+        self.dxdy = np.clip(self.dxdy + delta / 5, -self.VMAX, self.VMAX)
 
     def add_drag(self):
-        """ Add a fixed amount of drag to the current velocity """
-        self.xdot *= self.DRAG
-        self.ydot *= self.DRAG
+        """ Add a fixed amount of drag to the current velocity. """
+        self.dxdy *= self.DRAG
 
     def step(self):
-        """ Move the ball by one increment """
-        self.position[0] += self.xdot * self.radius / 20.0
-        self.position[1] += self.ydot * self.radius / 20.0
-
-    def _clip(self, val, low=-2, high=2):
-        """ Clip a value in a given range """
-        if val > high:
-            val = high
-        if val < low:
-            val = low
-        return val
+        """ Moves the ball by one increment """
+        self.position += self.dxdy * self.radius / 20.0
 
 
 class PinballObstacle:
@@ -310,26 +273,22 @@ class PinballObstacle:
 
     def collision(self, ball):
         """ Determines if the ball hits this obstacle
-
-    :param ball: An instance of :class:`BallModel`
-    :type ball: :class:`BallModel`
+        :param ball: An instance of :class:`BallModel`
+        :type ball: :class:`BallModel`
         """
+
         self._double_collision = False
-
-        if ball.position[0] - ball.radius > self.max_x:
+        x, y = ball.position
+        if x + ball.radius < self.min_x or self.max_x < x - ball.radius:
             return False
-        if ball.position[0] + ball.radius < self.min_x:
-            return False
-        if ball.position[1] - ball.radius > self.max_y:
-            return False
-        if ball.position[1] + ball.radius < self.min_y:
+        if y + ball.radius < self.min_y or self.max_y < y - ball.radius:
             return False
 
-        a, b = tee(np.vstack([np.array(self.points), self.points[0]]))
-        next(b, None)
         intercept_found = False
-        for pt_pair in zip(a, b):
-            if self._intercept_edge(pt_pair, ball):
+        n_points = self.points.shape[0]
+        for i in range(n_points):
+            pt_pair = self.points[i], self.points[(i + 1) % n_points]
+            if self._intercept_edge(*pt_pair, ball):
                 if intercept_found:
                     # Ball has hit a corner
                     self._intercept = self._select_edge(pt_pair, self._intercept, ball)
@@ -341,58 +300,51 @@ class PinballObstacle:
         return intercept_found
 
     def collision_effect(self, ball):
-        """ Based of the collision detection result triggered
-    in :func:`PinballObstacle.collision`, compute the
-        change in velocity.
-
-    :param ball: An instance of :class:`BallModel`
-    :type ball: :class:`BallModel`
-
         """
+        Based of the collision detection result triggered in
+        :func:`PinballObstacle.collision`, compute the change in velocity.
+
+        :param ball: An instance of :class:`BallModel`
+        :type ball: :class:`BallModel`
+        """
+
         if self._double_collision:
-            return [-ball.xdot, -ball.ydot]
+            return -ball.dxdy
 
         # Normalize direction
         obstacle_vector = self._intercept[1] - self._intercept[0]
         if obstacle_vector[0] < 0:
             obstacle_vector = self._intercept[0] - self._intercept[1]
 
-        velocity_vector = np.array([ball.xdot, ball.ydot])
-        theta = self._angle(velocity_vector, obstacle_vector) - np.pi
-        if theta < 0:
-            theta += 2 * np.pi
-
-        intercept_theta = self._angle([-1, 0], obstacle_vector)
+        theta = angle_between(ball.dxdy, obstacle_vector) - np.pi
+        intercept_theta = angle_between([-1.0, 0.0], obstacle_vector)
         theta += intercept_theta
 
         if theta > 2 * np.pi:
             theta -= 2 * np.pi
 
-        velocity = np.linalg.norm([ball.xdot, ball.ydot])
-
-        return [velocity * np.cos(theta), velocity * np.sin(theta)]
+        velocity = np.linalg.norm(ball.dxdy)
+        return np.array([np.cos(theta), np.sin(theta)]) * velocity
 
     def _select_edge(self, intersect1, intersect2, ball):
-        """ If the ball hits a corner, select one of two edges.
-
-    :param intersect1: A pair of points defining an edge of the polygon
-    :type intersect1: list of lists
-    :param intersect2: A pair of points defining an edge of the polygon
-    :type intersect2: list of lists
-    :returns: The edge with the smallest angle with the velocity vector
-    :rtype: list of lists
-
+        """If the ball hits a corner, select one of two edges.
+        :param intersect1: A pair of points defining an edge of the polygon
+        :type intersect1: list of lists
+        :param intersect2: A pair of points defining an edge of the polygon
+        :type intersect2: list of lists
+        :returns: The edge with the smallest angle with the velocity vector
+        :rtype: list of lists
         """
-        velocity = np.array([ball.xdot, ball.ydot])
+
         obstacle_vector1 = intersect1[1] - intersect1[0]
         obstacle_vector2 = intersect2[1] - intersect2[0]
 
-        angle1 = self._angle(velocity, obstacle_vector1)
+        angle1 = angle_between(ball.dxdy, obstacle_vector1)
         if angle1 > np.pi:
             angle1 -= np.pi
 
-        angle2 = self._angle(velocity, obstacle_vector2)
-        if angle1 > np.pi:
+        angle2 = angle_between(ball.dxdy, obstacle_vector2)
+        if angle2 > np.pi:
             angle2 -= np.pi
 
         if np.abs(angle1 - np.pi / 2) < np.abs(angle2 - np.pi / 2):
@@ -401,52 +353,41 @@ class PinballObstacle:
 
     def _angle(self, v1, v2):
         """ Compute the angle difference between two vectors
+        :param v1: The x,y coordinates of the vector
+        :type: v1: list
+        :param v2: The x,y coordinates of the vector
+        :type: v2: list
+        :rtype: float
+        """
 
-    :param v1: The x,y coordinates of the vector
-    :type: v1: list
-    :param v2: The x,y coordinates of the vector
-    :type: v2: list
-    :rtype: float
-
-    """
         angle_diff = np.arctan2(v1[0], v1[1]) - np.arctan2(v2[0], v2[1])
         if angle_diff < 0:
             angle_diff += 2 * np.pi
         return angle_diff
 
-    def _intercept_edge(self, pt_pair, ball):
-        """ Compute the projection on and edge and find out
-
-    if it intercept with the ball.
-    :param pt_pair: The pair of points defining an edge
-    :type pt_pair: list of lists
-    :param ball: An instance of :class:`BallModel`
-    :type ball: :class:`BallModel`
-    :returns: True if the ball has hit an edge of the polygon
-    :rtype: bool
-
+    def _intercept_edge(self, pt0, pt1, ball):
         """
-        # Find the projection on an edge
-        obstacle_edge = pt_pair[1] - pt_pair[0]
-        difference = np.array(ball.position) - pt_pair[0]
+        Compute the projection on and edge and find out if it intercept with the ball.
+        """
 
-        scalar_proj = difference.dot(obstacle_edge) / obstacle_edge.dot(obstacle_edge)
-        if scalar_proj > 1.0:
-            scalar_proj = 1.0
-        elif scalar_proj < 0.0:
-            scalar_proj = 0.0
+        # Find the projection on an edge
+        obstacle_edge = pt1 - pt0
+        difference = np.array(ball.position) - pt0
+
+        scalar_proj = np.clip(
+            difference.dot(obstacle_edge) / obstacle_edge.dot(obstacle_edge), 0.0, 1.0
+        )
 
         # Compute the distance to the closest point
-        closest_pt = pt_pair[0] + obstacle_edge * scalar_proj
+        closest_pt = pt0 + obstacle_edge * scalar_proj
         obstacle_to_ball = ball.position - closest_pt
         distance = obstacle_to_ball.dot(obstacle_to_ball)
 
         if distance <= ball.radius * ball.radius:
             # A collision only if the ball is not already moving away
-            velocity = np.array([ball.xdot, ball.ydot])
             ball_to_obstacle = closest_pt - ball.position
 
-            angle = self._angle(ball_to_obstacle, velocity)
+            angle = angle_between(ball_to_obstacle, ball.dxdy)
             if angle > np.pi:
                 angle = 2 * np.pi - angle
 
@@ -491,13 +432,9 @@ class PinballTarget:
 
 
 class PinballModel:
-
-    """ This class is a self-contained model of the pinball
-    domain for reinforcement learning.
-
-    It can be used either over RL-Glue through the :class:`PinballRLGlue`
-    adapter or interactively with :class:`PinballView`.
-
+    """
+    This class is a self-contained model of the pinball domain for
+    reinforcement learning.
     """
 
     ACC_X = 0
@@ -511,16 +448,16 @@ class PinballModel:
     END_EPISODE = 10000
 
     def __init__(self, config_file, random_state):
-        """ Read a configuration file for Pinball and draw the domain to screen
+        """ Reads a configuration file for Pinball and draw the domain to screen
         """
 
         self.random_state = random_state
         self.action_effects = {
-            self.ACC_X: (1, 0),
-            self.ACC_Y: (0, 1),
-            self.DEC_X: (-1, 0),
-            self.DEC_Y: (0, -1),
-            self.ACC_NONE: (0, 0),
+            self.ACC_X: np.array([1.0, 0.0]),
+            self.ACC_Y: np.array([0.0, 1.0]),
+            self.DEC_X: np.array([-1.0, 0.0]),
+            self.DEC_Y: np.array([0.0, -1.0]),
+            self.ACC_NONE: np.array([0.0, 0.0]),
         }
         import json
 
@@ -535,28 +472,28 @@ class PinballModel:
             )
             self.target_pos = config["target_pos"]
             self.target_rad = config["target_rad"]
-            start_pos = config["start_pos"]
+            start_positions = np.array(config["start_pos"])
             ball_rad = config["ball_rad"]
         except KeyError as e:
-            raise KeyError(f"Pinball config doesn't have a key: {e}")
+            raise KeyError(f"Invalid Pinball config: missing a key {e}")
 
-        self.start_pos = start_pos[0]
-        start_idx = self.random_state.randint(len(start_pos))
-        self.ball = BallModel(list(start_pos[start_idx]), ball_rad)
+        self.start_positions = np.array(start_positions)
+        self.ball = BallModel(self.sample_start(), ball_rad)
+
+    def reset(self):
+        self.ball.position = self.sample_start()
+        self.ball.dxdy.fill(0.0)
+
+    def sample_start(self):
+        idx = self.random_state.randint(self.start_positions.shape[0])
+        return self.start_positions[idx].copy()
 
     def get_state(self):
-        """ Access the current 4-dimensional state vector
-
+        """ Access the current 4-dimensional state vector.
         :returns: a list containing the x position, y position, xdot, ydot
-        :rtype: list
-
+        :rtype: np.ndarray
         """
-        return [
-            self.ball.position[0],
-            self.ball.position[1],
-            self.ball.xdot,
-            self.ball.ydot,
-        ]
+        return np.concatenate((self.ball.position, self.ball.dxdy))
 
     def take_action(self, action):
         """ Take a step in the environment
@@ -567,25 +504,23 @@ class PinballModel:
         """
         if isinstance(action, np.ndarray):
             action = action.item()
-        self.ball.add_impulse(*self.action_effects[action])
+        self.ball.add_impulse(self.action_effects[action])
 
         for i in range(20):
             self.ball.step()
             # Detect collisions
             ncollision = 0
-            dxdy = np.array([0, 0])
+            dxdy = np.array([0.0, 0.0])
 
             for obs in self.obstacles:
                 if obs.collision(self.ball):
-                    dxdy = dxdy + obs.collision_effect(self.ball)
+                    dxdy += obs.collision_effect(self.ball)
                     ncollision += 1
 
             if ncollision == 1:
-                self.ball.xdot = dxdy[0]
-                self.ball.ydot = dxdy[1]
+                self.ball.dxdy = dxdy
             elif ncollision > 1:
-                self.ball.xdot = -self.ball.xdot
-                self.ball.ydot = -self.ball.ydot
+                self.ball.dxdy *= -1
             reward_scale = self.goal_reward()
             if reward_scale is not None:
                 return self.END_EPISODE * reward_scale
@@ -606,36 +541,27 @@ class PinballModel:
 
     def _check_bounds(self):
         """ Make sure that the ball stays within the environment """
-        if self.ball.position[0] > 1.0:
-            self.ball.position[0] = 0.95
-        if self.ball.position[0] < 0.0:
-            self.ball.position[0] = 0.05
-        if self.ball.position[1] > 1.0:
-            self.ball.position[1] = 0.95
-        if self.ball.position[1] < 0.0:
-            self.ball.position[1] = 0.05
+        for i in range(2):
+            if self.ball.position[i] > 1.0:
+                self.ball.position[i] = 0.95
+            elif self.ball.position[i] < 0.0:
+                self.ball.position[i] = 0.05
 
     def targets(self):
         return zip(self._targets.pos, self._targets.rad)
 
 
 class PinballView:
-
-    """ This class displays a :class:`PinballModel`
-
-    This class is used in conjunction with the :func:`run_pinballview`
-    function, acting as a *controller*.
-
+    """
+    This class displays a :class:`PinballModel`.
+    Used in conjunction with the :func:`run_pinballview` function,
+    acting as a *controller*.
     """
 
     def __init__(self, screen, width, height, model):
-        """
-           Changed from original PyGame implementation to work
-           with Tkinter visualization.
-        """
         self.screen = screen
-        self.width = 500.0
-        self.height = 500.0
+        self.width = width
+        self.height = height
         self.model = model
 
         self.x, self.y = self._to_pixels(self.model.ball.position)
@@ -659,14 +585,14 @@ class PinballView:
         return canv.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=color)
 
     def _to_pixels(self, pt):
-        """ Converts from real units in the 0-1 range to pixel units
+        """Converts from real units in the 0-1 range to pixel units
 
         :param pt: a point in real units
         :type pt: list
         :returns: the input point in pixel units
         :rtype: list
-
         """
+
         return [int(pt[0] * self.width), int(pt[1] * self.height)]
 
     def blit(self):
@@ -682,6 +608,13 @@ class PinballView:
         self.screen.pack()
 
 
+def angle_between(v1, v2):
+    angle_diff = np.arctan2(*v1) - np.arctan2(*v2)
+    if angle_diff < 0:
+        angle_diff += 2 * np.pi
+    return angle_diff
+
+
 def run_pinballview(width, height, configuration):
     """
     Changed from original Pierre-Luc Bacon implementation to reflect
@@ -689,9 +622,9 @@ def run_pinballview(width, height, configuration):
     """
 
     width, height = float(width), float(height)
-    master = Tk()
-    master.title("RLPy Pinball")
-    screen = Canvas(master, width=500.0, height=500.0)
+    tk_window = Tk()
+    tk_window.title("RLPy Pinball")
+    screen = Canvas(tk_window, width=500.0, height=500.0)
     screen.configure(background="LightGray")
     screen.pack()
 

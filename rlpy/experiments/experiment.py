@@ -195,10 +195,8 @@ class Experiment(object):
         """
 
         # Set Exploration to zero and sample one episode from the domain
-        eps_length = 0
-        eps_return = 0
-        eps_discount_return = 0
-        eps_term = 0
+        eps_length, eps_return, eps_discount_return, eps_term = 0, 0, 0, 0
+        a = None
 
         self.agent.policy.turn_off_exploration()
 

@@ -26,8 +26,8 @@ __credits__ = [
 __license__ = "BSD 3-Clause"
 __author__ = [
     "Pierre-Luc Bacon",  # author of the original version
-    "Austin Hays",
-]  # adapted for RLPy and TKinter
+    "Austin Hays",  # adapted for RLPy and TKinter
+]
 
 
 class Pinball(Domain):

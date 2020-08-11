@@ -329,9 +329,6 @@ class GridWorld(Domain):
         vmin_scaled = min(vmin, cmap_vmin)
         vmax_scaled = min(vmax, cmap_vmax)
 
-        if method == "none":
-            return vmin_coord, vmax_coord
-
         for r, c in itertools.product(range(self.rows), range(self.cols)):
             if value[r, c] == vmin and vmin_coord is None:
                 vmin_coord = r, c, vmin
@@ -346,7 +343,7 @@ class GridWorld(Domain):
                 value[r, c] = linear_map(
                     value[r, c], vmin_scaled, vmax_scaled, cmap_vmin, cmap_vmax
                 )
-            else:
+            elif method != "none":
                 raise ValueError(f"Unsupported normalize method {method}")
 
         return vmin_coord, vmax_coord

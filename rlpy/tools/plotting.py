@@ -264,7 +264,7 @@ create_color_maps()
 DEFAULT_FONTS = {
     "weight": "normal",
     "size": 14,
-    "sans-serif": ["Source Han Sans JP", "Source Sans Pro", "Helvetica", "DejaVu Sans"],
+    "sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
 }
 rc("font", **DEFAULT_FONTS)
 rc("pdf", fonttype=42)

@@ -163,7 +163,7 @@ class SystemAdministrator(Domain):
                 )  # Add an edge between each neighbor
             self.networkPos = nx.circular_layout(self.networkGraph)
             nx.draw_networkx_nodes(self.networkGraph, self.networkPos, node_color="w")
-            nx.draw_networkx_edges(self.networkGraph, self.networkPos, edges_color="k")
+            nx.draw_networkx_edges(self.networkGraph, self.networkPos, edge_color="k")
             nx.draw_networkx_labels(self.networkGraph, self.networkPos)
             plt.show()
         else:

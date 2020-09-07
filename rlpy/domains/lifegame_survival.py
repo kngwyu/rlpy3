@@ -33,7 +33,7 @@ class DryLife(LifeLike):
         if current:
             return 2 <= active_neighbors <= 3
         else:
-            return active_neighbors == 3 or active_neighbors == 7
+            return active_neighbors in [3, 7]
 
 
 class Seeds(LifeLike):

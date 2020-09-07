@@ -79,11 +79,13 @@ class FixedRewardGridWorld(GridWorld):
                 else:
                     reward = 0.7
                 color = cmap(reward)
-            elif self.map[r, c] == self.GOAL or self.PIT:
+            elif self.map[r, c] in [self.GOAL, self.PIT]:
                 color = "w"
             else:
                 continue
-            self.domain_ax.text(c - 0.2, r + 0.1, str(raw_reward), color=color)
+            self.domain_ax.text(
+                c - 0.4, r + 0.1, str(raw_reward), color=color, fontsize=12.0,
+            )
 
     def _show_map(self, legend=False):
         super()._show_map(legend=legend)

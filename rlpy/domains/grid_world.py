@@ -223,23 +223,27 @@ class GridWorld(Domain):
     def _agent_fig(self, s):
         return self.domain_ax.plot(s[1], s[0], "k>", markersize=20 - self.cols)[0]
 
-    def _init_domain_vis(self, s, legend=False):
+    def _init_domain_vis(self, s, legend=False, noticks=False):
         fig_name = f"{(self.__class__.__name__)}: {self.mapname}"
         if self.performance:
             fig_name += "(Evaluation)"
         self.domain_fig = plt.figure(fig_name)
         self.domain_ax = self.domain_fig.add_subplot(111)
         self._show_map(legend=legend)
-        self._set_ticks(self.domain_ax)
+        if noticks:
+            self.domain_ax.set_xticks([])
+            self.domain_ax.set_yticks([])
+        else:
+            self._set_ticks(self.domain_ax)
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.show()
 
-    def show_domain(self, a=0, s=None, legend=False):
+    def show_domain(self, a=0, s=None, legend=False, noticks=False):
         if s is None:
             s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            self._init_domain_vis(s, legend=legend)
+            self._init_domain_vis(s, legend=legend, noticks=noticks)
         if self._map_changed:
             self.domain_img.set_data(self.map)
             self._map_changed = False

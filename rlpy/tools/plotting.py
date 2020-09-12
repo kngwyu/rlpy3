@@ -285,9 +285,9 @@ def with_bold_fonts():
 
 
 @contextlib.contextmanager
-def with_scaled_figure(scale):
+def with_scaled_figure(scale_x, scale_y):
     x, y = plt.rcParams["figure.figsize"]
-    rc("figure", figsize=(x * scale, y * scale))
+    rc("figure", figsize=(x * scale_x, y * scale_y))
     yield
     rc("figure", figsize=(x, y))
 

@@ -366,6 +366,7 @@ class GridWorld(Domain):
         legend=True,
         ticks=True,
         colorbar=False,
+        notext=False,
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
     ):
@@ -378,7 +379,9 @@ class GridWorld(Domain):
         key = name, index
 
         if key not in self.heatmap_ax:
-            with with_scaled_figure(scale):
+            scale_x = np.sqrt(ncols / nrows)
+            scale_y = np.sqrt(nrows / ncols)
+            with with_scaled_figure(scale_x * scale, scale_y):
                 self._init_heatmap_vis(
                     name, cmap, nrows, ncols, index, legend, ticks, cmap_vmin, cmap_vmax
                 )
@@ -396,7 +399,7 @@ class GridWorld(Domain):
         )
         self.heatmap_img[key].set_data(value * self._map_mask())
 
-        if not colorbar:
+        if not colorbar and not notext:
             self._reset_texts(self.heatmap_texts[key])
             for r, c, ext_v in coords:
                 self._text_on_cell(
@@ -457,7 +460,9 @@ class GridWorld(Domain):
         figure_title="Policy",
     ):
         if figure_title not in self.policy_fig:
-            with with_scaled_figure(scale):
+            scale_x = np.sqrt(ncols / nrows)
+            scale_y = np.sqrt(nrows / ncols)
+            with with_scaled_figure(scale_x * scale, scale_y * scale):
                 self.policy_fig[figure_title] = plt.figure(figure_title)
             self.policy_fig[figure_title].show()
         fig = self.policy_fig[figure_title]

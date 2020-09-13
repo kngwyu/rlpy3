@@ -169,6 +169,11 @@ Gamma:      {self.discount_factor}
         """
         pass
 
+    def close_visualizations(self):
+        """ Close matplotlib windows.
+        """
+        pass
+
     @abstractmethod
     def s0(self):
         """

@@ -690,6 +690,16 @@ class GridWorld(Domain):
         for t in itertools.product(*factors):
             yield np.array(t)
 
+    def close_visualizations(self):
+        if self.domain_fig is not None:
+            plt.close(self.domain_fig)
+        if self.vf_fig is not None:
+            plt.close(self.vf_fig)
+        for fig in self.policy_fig.values():
+            plt.close(fig)
+        for fig in self.heatmap_fig.values():
+            plt.close(fig)
+
     def get_image(self, state):
         image = self.map.copy()
         image[state[0], state[1]] = self.AGENT

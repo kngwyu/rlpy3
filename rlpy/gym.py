@@ -38,6 +38,9 @@ class RLPyEnv(gym.Env):
     def get_obs(self, state):
         return self.obs_fn(self.domain, state)
 
+    def close(self):
+        self.domain.close_visualizations()
+
 
 def gridworld_obs(domain, mode="onehot"):
     if mode == "onehot":

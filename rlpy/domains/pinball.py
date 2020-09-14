@@ -160,6 +160,12 @@ class Pinball(Domain):
         self.heatmap.update(dat)
         self.heatmap.draw()
 
+    def close_visualizations(self):
+        if self.screen is not None:
+            self.screen.destroy()
+        if self.heatmap is not None:
+            self.heatmap.close()
+
     def all_states(self):
         s = []
         v_unit = 4.0 / self.v_discr
@@ -205,6 +211,11 @@ class _PinballHeatMap:
 
         self.fig.tight_layout()
         self.fig.canvas.draw()
+
+        def close():
+            plt.close(self.fig)
+
+        self.close = close
 
     def update(self, data, index=0):
         self.imgs[index].set_data(data.reshape(self.data_shape))

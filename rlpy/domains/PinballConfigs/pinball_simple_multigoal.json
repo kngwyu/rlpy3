@@ -15,5 +15,6 @@
   "start_pos": [[0.2, 0.9]],
   "target_pos": [[0.9, 0.2], [0.9, 0.9]],
   "target_rad": [0.04, 0.03],
-  "target_reward_scale": [1.0, 0.5]
+  "target_reward_scale": [1.0, 0.5],
+  "target_color": ["red", "green"]
 }

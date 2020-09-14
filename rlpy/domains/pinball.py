@@ -404,7 +404,9 @@ class PinballTarget:
     Abstracts the goal position/radian of Pinball.
     """
 
-    def __init__(self, target_pos, target_rad, target_reward_scale=1.0):
+    def __init__(
+        self, target_pos, target_rad, target_color="red", target_reward_scale=1.0,
+    ):
         if isinstance(target_pos[0], list):
             self.num_goals = len(target_pos)
         else:
@@ -415,10 +417,13 @@ class PinballTarget:
             target_rad = [target_rad] * self.num_goals
         if isinstance(target_reward_scale, float):
             target_reward_scale = [target_reward_scale] * self.num_goals
+        if isinstance(target_color, str):
+            target_color = [target_color] * self.num_goals
 
         self.pos = np.array(target_pos)
         self.rad = np.array(target_rad)
         self.reward_scale = np.array(target_reward_scale)
+        self.color = target_color
 
     def __repr__(self):
         return f"Target(pos: {self.pos} rad: {self.rad} reward: {self.reward_scale})"
@@ -466,12 +471,12 @@ class PinballModel:
             config = json.load(f)
         try:
             self.obstacles = list(map(PinballObstacle, config["obstacles"]))
-            reward_scale = config.get("target_reward_scale", 1.0)
             self._targets = PinballTarget(
-                config["target_pos"], config["target_rad"], reward_scale
+                config["target_pos"],
+                config["target_rad"],
+                config.get("target_color", "red"),
+                config.get("target_reward_scale", 1.0),
             )
-            self.target_pos = config["target_pos"]
-            self.target_rad = config["target_rad"]
             start_positions = np.array(config["start_pos"])
             ball_rad = config["ball_rad"]
         except KeyError as e:
@@ -548,7 +553,7 @@ class PinballModel:
                 self.ball.position[i] = 0.05
 
     def targets(self):
-        return zip(self._targets.pos, self._targets.rad)
+        return zip(self._targets.pos, self._targets.rad, self._targets.color)
 
 
 class PinballView:
@@ -574,10 +579,10 @@ class PinballView:
             self.screen.create_polygon(coords, fill="blue")
         self.screen.pack()
 
-        for pos, rad in self.model.targets():
+        for pos, rad, color in self.model.targets():
             x, y = self._to_pixels(pos)
             rad = int(rad * self.width)
-            _ = self.drawcircle(self.screen, x, y, rad, "red")
+            _ = self.drawcircle(self.screen, x, y, rad, color)
         self.ball_id = self.drawcircle(self.screen, self.x, self.y, self.rad, "black")
         self.screen.pack()
 

@@ -407,6 +407,8 @@ class GridWorld(Domain):
                 )
         self.heatmap_fig[name].canvas.draw()
 
+        return key
+
     def _vf_text(self, c, r, v):
         self._text_on_cell(c, r, v, self.vf_texts, self.vf_ax)
 
@@ -544,6 +546,8 @@ class GridWorld(Domain):
                     )
             self.policy_img[key].set_data(value * self._map_mask())
         fig.canvas.draw()
+
+        return key
 
     def _init_value_vis(self):
         self.vf_fig = plt.figure("Value Function")

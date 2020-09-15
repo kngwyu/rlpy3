@@ -454,6 +454,8 @@ class GridWorld(Domain):
         scale=1.0,
         title=None,
         colorbar=False,
+        notext=False,
+        cmap="ValueFunction-New",
         cmap_vmin=MIN_RETURN,
         cmap_vmax=MAX_RETURN,
         arrow_resize=True,
@@ -473,6 +475,7 @@ class GridWorld(Domain):
                 axarg=(nrows, ncols, index),
                 legend=False,
                 ticks=ticks,
+                cmap=cmap,
                 cmap_vmin=cmap_vmin,
                 cmap_vmax=cmap_vmax,
             )
@@ -533,7 +536,7 @@ class GridWorld(Domain):
                 value = value.reshape(self.rows, self.cols)
             except ValueError:
                 raise ValueError(f"Invalid value shape: {value.shape}")
-            if not colorbar:
+            if not colorbar and not notext:
                 self._reset_texts(self.policy_texts[key])
                 for r, c, ext_v in self._normalize_value(value):
                     self._text_on_cell(

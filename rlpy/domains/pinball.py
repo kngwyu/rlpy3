@@ -1,9 +1,11 @@
 """Pinball domain for reinforcement learning
 """
-import numpy as np
-from itertools import product
 import itertools
+
+from itertools import product
 from pathlib import Path
+
+import numpy as np
 
 try:
     from tkinter import Tk, Canvas
@@ -125,9 +127,9 @@ class Pinball(Domain):
         if self.random_state.random_sample() < self.NOISE:
             # Random Move
             a = self.random_state.choice(self.possible_actions())
-        reward = self.environment.take_action(a)
+        reward, is_terminal = self.environment.take_action(a)
         self.state = self.environment.get_state()
-        return reward, self.state.copy(), self.is_terminal(), self.possible_actions()
+        return reward, self.state.copy(), is_terminal, self.possible_actions()
 
     def s0(self):
         self.environment.reset()
@@ -463,6 +465,15 @@ class PinballModel:
     THRUST_PENALTY = -5
     END_EPISODE = 10000
 
+    ACTION_STEPS = 20
+
+    class _Collision:
+        def __init__(self, dxdy):
+            self.dxdy = dxdy
+
+    class _DoubleCollision:
+        pass
+
     def __init__(self, config_file, random_state):
         """ Reads a configuration file for Pinball and draw the domain to screen
         """
@@ -511,6 +522,19 @@ class PinballModel:
         """
         return np.concatenate((self.ball.position, self.ball.dxdy))
 
+    def _detect_collision(self):
+        dxdy = None
+        for obs in self.obstacles:
+            if obs.collision(self.ball):
+                if dxdy is not None:
+                    return PinballModel._DoubleCollision()
+                dxdy = obs.collision_effect(self.ball)
+
+        if dxdy is None:
+            return None
+        else:
+            return PinballModel._Collision(dxdy)
+
     def take_action(self, action):
         """ Take a step in the environment
 
@@ -522,35 +546,29 @@ class PinballModel:
             action = action.item()
         self.ball.add_impulse(self.action_effects[action])
 
-        for i in range(20):
+        for i in range(self.ACTION_STEPS):
             self.ball.step()
             # Detect collisions
-            ncollision = 0
-            dxdy = np.array([0.0, 0.0])
+            collision = self._detect_collision()
 
-            for obs in self.obstacles:
-                if obs.collision(self.ball):
-                    dxdy += obs.collision_effect(self.ball)
-                    ncollision += 1
-
-            if ncollision == 1:
-                self.ball.dxdy = dxdy
-            elif ncollision > 1:
+            if isinstance(collision, PinballModel._Collision):
+                self.ball.dxdy = collision.dxdy
+                if i + 1 == self.ACTION_STEPS:
+                    self.ball.step()
+            elif isinstance(collision, PinballModel._DoubleCollision):
                 self.ball.dxdy *= -1
+
             reward_scale = self.goal_reward()
             if reward_scale is not None:
-                return self.END_EPISODE * reward_scale
-
-        if ncollision == 1:
-            self.ball.step()
+                return self.END_EPISODE * reward_scale, True
 
         self.ball.add_drag()
         self._check_bounds()
 
         if action == self.ACC_NONE:
-            return self.STEP_PENALTY
+            return self.STEP_PENALTY, False
 
-        return self.THRUST_PENALTY
+        return self.THRUST_PENALTY, False
 
     def goal_reward(self):
         return self._targets._collide(self.ball.position)
@@ -658,9 +676,7 @@ def run_pinballview(width, height, configuration):
     while not done:
         user_action = np.random.choice(actions)
         environment_view.blit()
-        if environment.goal_reward() is not None:
-            done = True
-        if environment.take_action(user_action) == environment.END_EPISODE:
+        if environment.take_action(user_action)[1] == environment.END_EPISODE:
             done = True
 
         environment_view.blit()

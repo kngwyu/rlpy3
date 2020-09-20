@@ -181,13 +181,11 @@ class Pinball(Domain):
                 s.append([x, y, xdot, ydot])
         return np.stack(s)
 
-    @property
-    def starts(self):
-        return self.environment.start_positions
+    def change_start(self, new_start, index=0):
+        self.environment.start_positions[index] = new_start
 
-    @property
-    def targets(self):
-        return self.environment._targets
+    def change_target(self, new_target, index=0):
+        self.environment._targets.pos[index] = new_target
 
 
 class _PinballHeatMap:

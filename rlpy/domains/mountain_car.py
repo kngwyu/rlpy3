@@ -220,6 +220,6 @@ class MountainCar(Domain):
         if self.vf_surf is not None:
             self.vf_surf.remove()
         self.vf_surf = self.vf_ax.plot_surface(
-            self.vf_x, self.vf_xdot, V, cmap=cm.coolwarm, linewidth=0, antialiased=False
+            self.vf_x, self.vf_xdot, V, cmap=cm.coolwarm, linewidth=0, antialiased=False,
         )
         self.vf_fig.canvas.draw()

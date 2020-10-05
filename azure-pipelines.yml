@@ -1,7 +1,7 @@
 jobs:
 - job: LinuxTest
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   strategy:
     matrix:
         Python36:
@@ -18,7 +18,7 @@ jobs:
 
 - job: macOSTest
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-latest'
   strategy:
     matrix:
         Python36:
@@ -33,7 +33,7 @@ jobs:
 
 - job: WindowsTest
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-latest'
   strategy:
     matrix:
         Python36:
@@ -48,7 +48,7 @@ jobs:
 
 - job: ManyLinux2010Wheel
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   steps:
   - script: |
@@ -64,7 +64,7 @@ jobs:
 
 - job: macOSWheel
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-latest'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   strategy:
     matrix:
@@ -86,7 +86,7 @@ jobs:
 
 - job: WindowsWheel
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-latest'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
   strategy:
     matrix:

@@ -108,7 +108,7 @@ def test_lifegame(version):
 
 
 @pytest.mark.parametrize(
-    "name, version", [("Box", 0), ("Box", 1), ("Medium", 0), ("Medium", 1)]
+    "name, version", [("Box", 0), ("Box", 1), ("SimpleSingle", 0), ("MediumSingle", 1)]
 )
 def test_pinball(name, version):
     env = gym.make(f"RLPyPinball{name}-v{version}")

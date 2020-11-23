@@ -110,14 +110,14 @@ class ChainMDP(Domain):
                         self.Y - self.SHIFT,
                         "r",
                     )
-                from_a_to_b(
-                    0.75,
-                    self.Y - 1.5 * self.SHIFT,
-                    0.75,
-                    self.Y + 1.5 * self.SHIFT,
-                    "r",
-                    connectionstyle="arc3,rad=-1.2",
-                )
+            from_a_to_b(
+                0.75,
+                self.Y - 1.5 * self.SHIFT,
+                0.75,
+                self.Y + 1.5 * self.SHIFT,
+                "r",
+                connectionstyle="arc3,rad=-1.2",
+            )
             self.fig.show()
 
         for i, p in enumerate(self.circles):

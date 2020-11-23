@@ -94,7 +94,6 @@ class GridWorld(Domain):
         self,
         mapfile=DEFAULT_MAP_DIR.joinpath("4x5.txt"),
         noise=0.1,
-        random_start=False,
         random_goal=False,
         episode_cap=lambda height, width: (width + height) * 2,
     ):
@@ -106,9 +105,7 @@ class GridWorld(Domain):
         if callable(episode_cap):
             episode_cap = episode_cap(*map_.shape)
 
-        self._init_from_map(
-            map_, mapname, noise, episode_cap, random_start, random_goal
-        )
+        self._init_from_map(map_, mapname, noise, episode_cap, random_goal)
 
     def _set_obs_and_space(self):
         state_space = [[0, self.rows - 1], [0, self.cols - 1]]
@@ -129,12 +126,10 @@ class GridWorld(Domain):
         self._get_obs = _get_obs
         return state_space
 
-    def _init_from_map(
-        self, map_, mapname, noise, episode_cap, random_start=False, random_goal=False
-    ):
+    def _init_from_map(self, map_, mapname, noise, episode_cap, random_goal=False):
         self.map = map_
         self._starts = np.argwhere(self.map == self.START)
-        self.random_start = random_start and len(self._starts) > 1
+        self.random_start = len(self._starts) > 1
         self._goals = np.argwhere(map_ == self.GOAL)
         self._goal_index = 0
         self.random_goal = random_goal

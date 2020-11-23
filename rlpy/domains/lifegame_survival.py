@@ -78,11 +78,7 @@ class LifeGameSurvival(GridWorld):
         survive_reward=0.01,
     ):
         super().__init__(
-            mapfile=mapfile,
-            noise=0.0,
-            random_start=True,
-            random_goal=False,
-            episode_cap=episode_cap,
+            mapfile=mapfile, noise=0.0, random_goal=False, episode_cap=episode_cap,
         )
         self.collison_penalty = collison_penalty
         self.survive_reward = survive_reward

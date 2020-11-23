@@ -35,16 +35,11 @@ class BernoulliGridWorld(FixedRewardGridWorld):
         self,
         mapfile=DEFAULT_MAP_DIR.joinpath("5x5normal.txt"),
         noise=0.1,
-        random_start=False,
         random_goal=False,
         episode_cap=lambda height, width: (width + height) * 2,
     ):
         GridWorld.__init__(
-            self,
-            mapfile=mapfile,
-            noise=noise,
-            random_start=random_start,
-            episode_cap=episode_cap,
+            self, mapfile=mapfile, noise=noise, episode_cap=episode_cap,
         )
 
     def _reward(self, next_state, terminal):

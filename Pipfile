@@ -9,7 +9,7 @@ extras = ["bebf", "systemadmin", "gym"]
 path = "."
 
 [packages.importlib_metadata]
-markers = "python_version < '3.8.0"
+markers = "python_version < '3.8.0'"
 
 [dev-packages]
 cython = ">=0.29"

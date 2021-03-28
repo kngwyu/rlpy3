@@ -47,8 +47,8 @@ class GridWorld(Domain):
     Four cardinal directions: up, down, left, right (given that
     the destination is not blocked or out of range). \n
     **TRANSITION:**
-    There is 30% probability of failure for each move, in which case the action
-    is replaced with a random action at each timestep. Otherwise the move succeeds
+    By defaulf, there is 10% probability of failure for each move, in which case the
+    action is replaced with a random action at each timestep. Otherwise the move succeeds
     and the agent moves in the intended direction. \n
     **REWARD:**
     The reward on each step is -.001 , except for actions
@@ -186,7 +186,7 @@ class GridWorld(Domain):
         return (self.map != self.BLOCKED).astype(np.float32)
 
     def _legend_pos(self):
-        x_offset, y_offset = 1.1, 1.1
+        x_offset, y_offset = 1.2, 1.2
         if self.rows > self.cols:
             x_offset += min(1.0, 0.25 * self.rows / self.cols)
         if self.cols > self.rows:
@@ -317,7 +317,11 @@ class GridWorld(Domain):
         return
 
     def _normalize_value(
-        self, value, method="separated", cmap_vmin=MIN_RETURN, cmap_vmax=MAX_RETURN,
+        self,
+        value,
+        method="separated",
+        cmap_vmin=MIN_RETURN,
+        cmap_vmax=MAX_RETURN,
     ):
         if method not in self.NORMALIZE_METHODS:
             raise ValueError(f"Unsupported normalize method: {method}")
@@ -390,7 +394,10 @@ class GridWorld(Domain):
                 cbar.ax.set_ylabel("", rotation=-90, va="bottom")
 
         coords = self._normalize_value(
-            value, method=normalize_method, cmap_vmin=cmap_vmin, cmap_vmax=cmap_vmax,
+            value,
+            method=normalize_method,
+            cmap_vmin=cmap_vmin,
+            cmap_vmax=cmap_vmax,
         )
         self.heatmap_img[key].set_data(value * self._map_mask())
 
@@ -482,7 +489,10 @@ class GridWorld(Domain):
                 grid = np.meshgrid(x + s[1], y + s[0])
                 self.policy_arrows[key].append(
                     self._init_arrow(
-                        name, *grid, self.policy_ax[key], arrow_scale=scale,
+                        name,
+                        *grid,
+                        self.policy_ax[key],
+                        arrow_scale=scale,
                     )
                 )
 

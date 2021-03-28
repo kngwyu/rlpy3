@@ -170,8 +170,7 @@ Gamma:      {self.discount_factor}
         pass
 
     def close_visualizations(self):
-        """ Close matplotlib windows.
-        """
+        """Close matplotlib windows."""
         pass
 
     @abstractmethod
@@ -298,8 +297,7 @@ Gamma:      {self.discount_factor}
         )
 
     def all_states(self):
-        """Returns an iterator of all states
-        """
+        """Returns an iterator of all states"""
         raise NotImplementedError(f"All states is not implemented for {type(self)}")
 
     def sample_step(self, a, num_samples):

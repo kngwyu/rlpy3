@@ -12,7 +12,7 @@ from rlpy.tools.cli import run_solver_experiment
 
 def select_domain(map_="4x5", **kwargs):
     map_ = GridWorld.default_map(map_ + ".txt")
-    return GridWorld(map_, random_start=True, noise=0.1)
+    return GridWorld(map_, noise=0.1)
 
 
 def select_agent(name, domain, seed, **kwargs):

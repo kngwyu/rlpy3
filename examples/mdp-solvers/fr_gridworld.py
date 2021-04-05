@@ -12,9 +12,7 @@ from rlpy.tools.cli import run_solver_experiment
 
 def select_domain(map_, step_penalty, **kwargs):
     map_ = FixedRewardGridWorld.default_map(map_ + ".txt")
-    return FixedRewardGridWorld(
-        map_, random_start=True, noise=0.1, step_penalty=step_penalty
-    )
+    return FixedRewardGridWorld(map_, noise=0.1, step_penalty=step_penalty)
 
 
 def select_agent(name, domain, seed, threshold, **kwargs):

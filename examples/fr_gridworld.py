@@ -9,7 +9,6 @@ def select_domain(map_, noise, step_penalty, episode_cap, **kwargs):
     map_ = FixedRewardGridWorld.default_map(map_ + ".txt")
     return FixedRewardGridWorld(
         map_,
-        random_start=True,
         noise=noise,
         step_penalty=step_penalty,
         episode_cap=episode_cap,

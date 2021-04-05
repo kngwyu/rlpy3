@@ -108,7 +108,7 @@ class Pinball(Domain):
         self.screen_width = screen_width
         self.screen_height = screen_height
 
-    def show_domain(self, _a=None):
+    def show_domain(self, a=None):
         if self.screen is None:
             tk_window = Tk()
             tk_window.title("RLPy Pinball")
@@ -117,7 +117,10 @@ class Pinball(Domain):
             self.screen.configure(background="LightGray")
             self.screen.pack()
             self.environment_view = PinballView(
-                self.screen, width, height, self.environment,
+                self.screen,
+                width,
+                height,
+                self.environment,
             )
         self.environment_view.blit()
         self.screen.pack()
@@ -209,7 +212,11 @@ class _PinballHeatMap:
         for i in range(nrows * ncols):
             ax = self.fig.add_subplot(nrows, ncols, i + 1)
             img = ax.imshow(
-                dummy_data, cmap=cmap, interpolation="nearest", vmin=vmin, vmax=vmax,
+                dummy_data,
+                cmap=cmap,
+                interpolation="nearest",
+                vmin=vmin,
+                vmax=vmax,
             )
             cbar = ax.figure.colorbar(img, ax=ax)
             cbar.ax.set_ylabel("", rotation=-90, va="bottom")
@@ -234,7 +241,7 @@ class _PinballHeatMap:
 
 class BallModel:
 
-    """ This class maintains the state of the ball
+    """This class maintains the state of the ball
     in the pinball domain. It takes care of moving
     it according to the current velocity and drag coefficient.
 
@@ -269,7 +276,7 @@ class BallModel:
 
 class PinballObstacle:
 
-    """ This class represents a single polygon obstacle in the
+    """This class represents a single polygon obstacle in the
     pinball domain and detects when a :class:`BallModel` hits it.
 
     When a collision is detected, it also provides a way to
@@ -291,7 +298,7 @@ class PinballObstacle:
         self._intercept = None
 
     def collision(self, ball):
-        """ Determines if the ball hits this obstacle
+        """Determines if the ball hits this obstacle
         :param ball: An instance of :class:`BallModel`
         :type ball: :class:`BallModel`
         """
@@ -371,7 +378,7 @@ class PinballObstacle:
         return intersect2
 
     def _angle(self, v1, v2):
-        """ Compute the angle difference between two vectors
+        """Compute the angle difference between two vectors
         :param v1: The x,y coordinates of the vector
         :type: v1: list
         :param v2: The x,y coordinates of the vector
@@ -424,7 +431,11 @@ class PinballTarget:
     """
 
     def __init__(
-        self, target_pos, target_rad, target_color="red", target_reward_scale=1.0,
+        self,
+        target_pos,
+        target_rad,
+        target_color="red",
+        target_reward_scale=1.0,
     ):
         if isinstance(target_pos[0], list):
             self.num_goals = len(target_pos)
@@ -481,8 +492,7 @@ class PinballModel:
         pass
 
     def __init__(self, config_file, random_state):
-        """ Reads a configuration file for Pinball and draw the domain to screen
-        """
+        """Reads a configuration file for Pinball and draw the domain to screen"""
 
         self.random_state = random_state
         self.action_effects = {
@@ -522,7 +532,7 @@ class PinballModel:
         return self.start_positions[idx].copy()
 
     def get_state(self):
-        """ Access the current 4-dimensional state vector.
+        """Access the current 4-dimensional state vector.
         :returns: a list containing the x position, y position, xdot, ydot
         :rtype: np.ndarray
         """
@@ -542,7 +552,7 @@ class PinballModel:
             return PinballModel._Collision(dxdy)
 
     def take_action(self, action):
-        """ Take a step in the environment
+        """Take a step in the environment
 
         :param action: The action to apply over the ball
         :type action: int

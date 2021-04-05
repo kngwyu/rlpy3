@@ -245,6 +245,7 @@ class GridWorld(Domain):
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
+        self.domain_fig.show()
         if JUPYTER_MODE:
             if self.domain_display is None:
                 self.domain_display = display(self.domain_fig, display_id=True)  # noqa
@@ -567,6 +568,8 @@ class GridWorld(Domain):
         self.vf_fig.show()
 
     def show_learning(self, representation):
+        import matplotlib as mpl
+
         if self.vf_ax is None:
             self._init_value_vis()
         self._reset_texts(self.vf_texts)

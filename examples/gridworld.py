@@ -9,7 +9,7 @@ def select_domain(map_, noise, **kwargs):
     random_goal = "RandomGoal" in map_
     map_ = GridWorld.default_map(map_ + ".txt")
     return GridWorld(
-        map_, random_start=True, random_goal=random_goal, noise=noise, episode_cap=20
+        map_, random_goal=random_goal, noise=noise, episode_cap=20
     )
 
 

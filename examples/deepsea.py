@@ -22,5 +22,6 @@ if __name__ == "__main__":
             click.Option(["--epsilon-min"], type=float, default=None),
             click.Option(["--beta"], type=float, default=0.05),
             click.Option(["--show-reward"], is_flag=True),
+            click.Option(["--vi-threshold"], type=float, default=0.001),
         ],
     )

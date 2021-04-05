@@ -4,7 +4,6 @@ import contextlib
 import matplotlib as mpl
 from matplotlib import cm, colors, lines, rc  # noqa
 from matplotlib import pylab as pl
-from matplotlib import pyplot as plt
 from matplotlib import patches as mpatches  # noqa
 from matplotlib import path as mpath  # noqa
 import numpy as np
@@ -27,6 +26,8 @@ def jupyter_mode(mode=True):
 
 
 def nogui_mode():
+    from matplotlib import pyplot as plt
+
     mpl.use("agg")
     plt.ioff()
 
@@ -38,9 +39,13 @@ def nogui_mode():
 
 # Try GUI backend first
 try:
-    mpl.use("tkAgg")
+    mpl.use("TkAgg")
+    from matplotlib import pyplot as plt
+
     plt.ion()
 except ImportError:
+    from matplotlib import pyplot as plt
+
     nogui_mode()
 
 

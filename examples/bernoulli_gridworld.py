@@ -8,7 +8,9 @@ from fr_gridworld import select_agent
 def select_domain(map_, noise, episode_cap, **kwargs):
     map_ = BernoulliGridWorld.default_map(map_ + ".txt")
     return BernoulliGridWorld(
-        map_, random_start=True, noise=noise, episode_cap=episode_cap,
+        map_,
+        noise=noise,
+        episode_cap=episode_cap,
     )
 
 

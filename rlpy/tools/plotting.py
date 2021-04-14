@@ -37,9 +37,17 @@ def nogui_mode():
     plt.show = _stub
 
 
+def __mpl_select_backend() -> None:
+    backend = mpl.get_backend().lower()
+    if any(map(lambda gui: backend.startswith(gui), ["qt", "tk", "gtk"])):
+        return
+    else:
+        mpl.use("TkAgg")
+
+
 # Try GUI backend first
 try:
-    mpl.use("TkAgg")
+    __mpl_select_backend()
     from matplotlib import pyplot as plt
 
     plt.ion()

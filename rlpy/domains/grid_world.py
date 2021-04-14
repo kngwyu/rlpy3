@@ -231,7 +231,6 @@ class GridWorld(Domain):
         else:
             self._set_ticks(self.domain_ax)
         self.agent_fig = self._agent_fig(s)
-        self.domain_fig.show()
 
     def show_domain(self, a=0, s=None, legend=False, noticks=False):
         if s is None:
@@ -245,7 +244,7 @@ class GridWorld(Domain):
         self.agent_fig.remove()
         self.agent_fig = self._agent_fig(s)
         self.domain_fig.canvas.draw()
-        self.domain_fig.show()
+        self.domain_fig.canvas.flush_events()
         if JUPYTER_MODE:
             if self.domain_display is None:
                 self.domain_display = display(self.domain_fig, display_id=True)  # noqa
@@ -552,7 +551,7 @@ class GridWorld(Domain):
                     )
             self.policy_img[key].set_data(value * self._map_mask())
         fig.canvas.draw()
-
+        fig.canvas.flush_events()
         return key
 
     def _init_value_vis(self):
@@ -565,11 +564,8 @@ class GridWorld(Domain):
             self.arrow_figs.append(
                 self._init_arrow(name, *np.meshgrid(x + s[1], y + s[0]), self.vf_ax)
             )
-        self.vf_fig.show()
 
     def show_learning(self, representation):
-        import matplotlib as mpl
-
         if self.vf_ax is None:
             self._init_value_vis()
         self._reset_texts(self.vf_texts)
@@ -612,6 +608,7 @@ class GridWorld(Domain):
             c = np.ma.masked_array(arrow_color[:, :, i], mask=mask)
             self.arrow_figs[i].set_UVC(dx, dy, c)
         self.vf_fig.canvas.draw()
+        self.vf_fig.canvas.flush_events()
 
     def _reward(self, next_state, _terminal):
         if self.map[next_state[0], next_state[1]] == self.GOAL:

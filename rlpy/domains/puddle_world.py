@@ -39,16 +39,12 @@ class PuddleWorld(Domain):
 
     """
 
-    domain_fig = None
-    valfun_fig = None
-    polfun_fig = None
-
-    actions = 0.05 * np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype=np.float)
-    puddles = np.array([[[0.1, 0.75], [0.45, 0.75]], [[0.45, 0.4], [0.45, 0.8]]])
+    ACTIONS = 0.05 * np.array([[1, 0], [0, 1], [-1, 0], [0, -1]], dtype=np.float)
+    PUDDLES = np.array([[[0.1, 0.75], [0.45, 0.75]], [[0.45, 0.4], [0.45, 0.8]]])
 
     def __init__(self, noise_level=0.01, discount_factor=1.0):
         super().__init__(
-            num_actions=len(self.actions),
+            num_actions=len(self.ACTIONS),
             statespace_limits=np.array([[0.0, 1.0]] * 2),
             continuous_dims=np.arange(2),
             episode_cap=1000,
@@ -65,6 +61,12 @@ class PuddleWorld(Domain):
                 a[1] = y
                 self.reward_map[j, i] = self._reward(a)
 
+        # Some visualization stuff
+        self.domain_fig = None
+        self.valfun_fig = None
+        self.polfun_fig = None
+        self.reward_im = None
+
     def s0(self):
         self.state = self.random_state.rand(2)
         while self.is_terminal():
@@ -80,7 +82,7 @@ class PuddleWorld(Domain):
         return np.arange(self.num_actions)
 
     def step(self, a):
-        a = self.actions[a]
+        a = self.ACTIONS[a]
         ns = self.state + a + self.random_state.randn() * self.noise_level
         # make sure we stay inside the [0,1]^2 region
         ns = np.minimum(ns, 1.0)
@@ -93,12 +95,12 @@ class PuddleWorld(Domain):
             return 0  # goal state reached
         reward = -1
         # compute puddle influence
-        d = self.puddles[:, 1, :] - self.puddles[:, 0, :]
+        d = self.PUDDLES[:, 1, :] - self.PUDDLES[:, 0, :]
         denom = (d ** 2).sum(axis=1)
-        g = ((s - self.puddles[:, 0, :]) * d).sum(axis=1) / denom
+        g = ((s - self.PUDDLES[:, 0, :]) * d).sum(axis=1) / denom
         g = np.minimum(g, 1)
         g = np.maximum(g, 0)
-        dists = np.sqrt(((self.puddles[:, 0, :] + g * d - s) ** 2).sum(axis=1))
+        dists = np.sqrt(((self.PUDDLES[:, 0, :] + g * d - s) ** 2).sum(axis=1))
         dists = dists[dists < 0.1]
         if len(dists):
             reward -= 400 * (0.1 - dists[dists < 0.1]).max()
@@ -108,18 +110,15 @@ class PuddleWorld(Domain):
         s = self.state
         # Draw the environment
         if self.domain_fig is None:
-            self.domain_fig = plt.figure("Domain")
+            self.domain_fig = plt.figure("Puddleworld")
             self.reward_im = plt.imshow(
                 self.reward_map, extent=(0, 1, 0, 1), origin="lower"
             )
             self.state_mark = plt.plot(s[0], s[1], "kd", markersize=20)
-            plt.figure("Domain").canvas.draw()
-            plt.figure("Domain").canvas.flush_events()
         else:
-            self.domain_fig = plt.figure("Domain")
             self.state_mark[0].set_data([s[0]], [s[1]])
-            plt.figure("Domain").canvas.draw()
-            plt.figure("Domain").canvas.flush_events()
+        self.domain_fig.canvas.draw()
+        self.domain_fig.canvas.flush_events()
 
     def show_learning(self, representation):
         a = np.zeros((2))
@@ -136,26 +135,26 @@ class PuddleWorld(Domain):
 
         if self.valfun_fig is None:
             self.valfun_fig = plt.figure("Value Function")
-            plt.clf()
             self.val_im = plt.imshow(self.val_map, extent=(0, 1, 0, 1), origin="lower")
-            plt.colorbar()
+            self.val_cb = self.valfun_fig.colorbar(self.val_im)
         else:
-            self.valfun_fig = plt.figure("Value Function")
             self.val_im.set_data(self.val_map)
             self.val_im.autoscale()
-        plt.draw()
+
+        self.valfun_fig.canvas.draw()
+        self.valfun_fig.canvas.flush_events()
 
         if self.polfun_fig is None:
             self.polfun_fig = plt.figure("Policy")
-            plt.clf()
             self.pol_im = plt.imshow(
                 self.pi_map, extent=(0, 1, 0, 1), origin="lower", cmap="4Actions"
             )
         else:
-            self.polfun_fig = plt.figure("Policy")
             self.pol_im.set_data(self.pi_map)
             self.pol_im.autoscale()
-        plt.draw()
+
+        self.polfun_fig.canvas.draw()
+        self.polfun_fig.canvas.flush_events()
 
 
 class PuddleGapWorld(PuddleWorld):
